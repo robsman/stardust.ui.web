@@ -70,14 +70,26 @@ if (!window.bpm.portal.GenericController) {
 			if (this.getContextRootUrl) {
 				urlPrefix = this.getContextRootUrl();	
 			}
-			
+
+			var head = document.getElementsByTagName('head')[0];
+
+			var link1 = document.createElement('link');
+			link1.href = urlPrefix + "/plugins/modern-skin/modern.css";
+			link1.rel = 'stylesheet';
+			link1.type = 'text/css';
+			head.appendChild(link1);
+
+			var link2 = document.createElement('link');
+			link2.href = urlPrefix + "/plugins/modern-skin/modern.font.icons.css";
+			link2.rel = 'stylesheet';
+			link2.type = 'text/css';
+			head.appendChild(link2);
+
 			jQuery.ajax({
 				type : 'GET',
 				url : urlPrefix + "/services/rest/common/html5/api/themes/current/custom",
 				async : true
 			}).done(function(json){
-				var head = document.getElementsByTagName('head')[0];
-				
 				for(var i in json.stylesheets) {
 					var link = document.createElement('link');
 					link.href = urlPrefix + "/" + json.stylesheets[i];
@@ -867,7 +879,7 @@ if (!window.bpm.portal.GenericController) {
 				this.interaction.saveData(lastPart, transferData, {success: function(retData) {
 					currentBindings[lastPart].docId = null;
 					currentBindings[lastPart].docName = null;
-					currentBindings[lastPart].docIcon = "../../plugins/views-common/images/icons/page_white_error.png";
+					currentBindings[lastPart].docIcon = "pi pi-document-error pi-lg";
 				}, failure: function() {
 					success = false;
 					alert(self.i18nLabelProvider.getLabel("panel.save.error", "Failure to save data"));

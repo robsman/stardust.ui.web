@@ -12,10 +12,13 @@ package org.eclipse.stardust.ui.web.html5.utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.stardust.ui.web.plugin.utils.WebResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -30,6 +33,7 @@ public class DumpDependencies
    public static final String DELIMITER = "/";
    public static final String NEWLINE = "\n";
    public static final String PLUGINS_PREFIX = "plugins";
+   public static final String COPYRIGHT_HEADER = "(.*)Copyright \\(c\\) (.*) SunGard CSA LLC(.*)";
 
    private StringBuilder dependencies = new StringBuilder();
 
@@ -58,7 +62,7 @@ public class DumpDependencies
 
       ApplicationContext context = new ClassPathXmlApplicationContext(configLocations);
 
-      List<ResourceDependency> htmlResourceDependencies = ResourceDependencyUtils.discoverDependencies(context);
+      List<ResourceDependency> htmlResourceDependencies = ResourceDependencyUtils.discoverDependenciesAfterConcatenation(context);
 
       dependencies.append("Dependency Type");
       dependencies.append(SEPERATOR);
@@ -80,22 +84,22 @@ public class DumpDependencies
          
          html5PluginIds.add(resourceDependency.getPluginId());
          dependencies
-               .append(getDependencies(resourceDependency.getLibs(), resourceDependency.getPluginLocation(), true));
+               .append(getDependencies(resourceDependency.getLibs(), resourceDependency.getPluginId(), resourceDependency.getPluginLocation(), true));
       }
 
       dependencies.append("HTML5 Deps Styles");
       for (ResourceDependency resourceDependency : htmlResourceDependencies)
       {
-         dependencies.append(getDependencies(resourceDependency.getStyles(), resourceDependency.getPluginLocation(),
-               false));
+         dependencies.append(getDependencies(resourceDependency.getStyles(), resourceDependency.getPluginId(),
+               resourceDependency.getPluginLocation(), false));
       }
 
       dependencies.append("HTML5 Deps Scripts");
       // Scripts can be commented if not required
       for (ResourceDependency resourceDependency : htmlResourceDependencies)
       {
-         dependencies.append(getDependencies(resourceDependency.getScripts(), resourceDependency.getPluginLocation(),
-               false));
+         dependencies.append(getDependencies(resourceDependency.getScripts(), resourceDependency.getPluginId(),
+               resourceDependency.getPluginLocation(), false));
       }
       
       // For all plugins/Resources
@@ -107,8 +111,8 @@ public class DumpDependencies
       {
          if (!html5PluginIds.contains(resourceDependency.getPluginId()))// Filter HTML5 plugins
          {
-            dependencies.append(getDependencies(resourceDependency.getLibs(), resourceDependency.getPluginLocation(),
-                  true));
+            dependencies.append(getDependencies(resourceDependency.getLibs(), resourceDependency.getPluginId(),
+                  resourceDependency.getPluginLocation(), true));
          }
       }
       
@@ -117,8 +121,8 @@ public class DumpDependencies
       {
          if (!html5PluginIds.contains(resourceDependency.getPluginId()))// Filter HTML5 plugins
          {
-            dependencies.append(getDependencies(resourceDependency.getStyles(), resourceDependency.getPluginLocation(),
-                  false));
+            dependencies.append(getDependencies(resourceDependency.getStyles(), resourceDependency.getPluginId(),
+                  resourceDependency.getPluginLocation(), false));
          }
       }
 
@@ -151,26 +155,31 @@ public class DumpDependencies
       }
    }
 
+
    /**
-    * @param resourceDependencyEntries
-    * @param jarLocation
-    * @param versionInfo
-    * @return Formatted output string containing dependencies
-    */
-   private String getDependencies(List<String> resourceDependencyEntries, String jarLocation, boolean versionInfo)
+ * @param resourceDependencyEntries
+ * @param pluginId
+ * @param jarLocation
+ * @param versionInfo
+ * @return
+ */
+   private String getDependencies(List<WebResource> resourceDependencyEntries, String pluginId, String jarLocation, boolean versionInfo)
    {
       StringBuilder dependencies = new StringBuilder();
       for (int i = 0; i < resourceDependencyEntries.size(); i++)
       {
-         String reseDepEntry = resourceDependencyEntries.get(i);
+         StringBuilder tempDep = new StringBuilder();
+         WebResource webResource = resourceDependencyEntries.get(i);
+         String reseDepEntry = webResource.webUri;
          
-         dependencies.append(SEPERATOR);
+         tempDep.append(SEPERATOR);
 
          // For jarName
          String jarName = jarLocation.substring(jarLocation.lastIndexOf(DELIMITER) + 1, jarLocation.length());
-         dependencies.append(jarName);
 
-         dependencies.append(SEPERATOR);
+         tempDep.append(jarName);
+
+         tempDep.append(SEPERATOR);
 
          // For Resource Path
          reseDepEntry = reseDepEntry.replaceAll("//", "/");
@@ -184,9 +193,9 @@ public class DumpDependencies
          String libraryname = null;
          String libraryVersion = null;
 
-         dependencies.append(name);
-         dependencies.append(SEPERATOR);
-         dependencies.append(path);
+         tempDep.append(name);
+         tempDep.append(SEPERATOR);
+         tempDep.append(path);
 
          if (versionInfo)
          {
@@ -200,18 +209,80 @@ public class DumpDependencies
                
                if (libraryVersion.matches("[0-9,.]+"))
                {
-                  dependencies.append(SEPERATOR);
-                  dependencies.append(libraryname);
+                  tempDep.append(SEPERATOR);
+                  tempDep.append(libraryname);
                   
-                  dependencies.append(SEPERATOR);
-                  dependencies.append(libraryVersion);
+                  tempDep.append(SEPERATOR);
+                  tempDep.append(libraryVersion);
                }
                
             }
          }
 
-         dependencies.append(NEWLINE);
+         tempDep.append(NEWLINE);
+
+         String fullFilePath = getFullFilePath(path, name, pluginId);
+
+         if (isThirdPartyDependency(fullFilePath)) {
+        	 dependencies.append(tempDep.toString());
+         }
+
       }
       return dependencies.toString();
    }
+   
+	/**
+	 * @param path
+	 * @param name
+	 * @param pluginId
+	 * @return
+	 */
+	private String getFullFilePath(String path, String name, String pluginId) {
+		String filePath = "/META-INF/" + pluginId + ".portal-plugin";
+		if (pluginId != null) {
+			InputStream resourceAsStream = DumpDependencies.class
+					.getResourceAsStream(filePath);
+
+			String pluginPath = null;
+
+			if (resourceAsStream != null) {
+				Scanner scanner = new Scanner(resourceAsStream);
+				pluginPath = scanner.nextLine();
+			}
+
+			if (pluginPath.endsWith("/")) {
+				pluginPath = pluginPath.substring(0, pluginPath.length() - 1);
+			}
+			return pluginPath + path + "/" + name;
+		}
+		return "/META-INF/webapp" + path + "/" + name;
+	}
+
+	/**
+	 * @param path
+	 * @return
+	 */
+	private boolean isThirdPartyDependency(String path) {
+		InputStream resourceAsStream = DumpDependencies.class
+				.getResourceAsStream(path);
+
+		if (resourceAsStream != null) {
+			int numberOfLinesScanned = 10;
+			StringBuilder fileHeaderContents = new StringBuilder();
+			Scanner scanner = null;
+			scanner = new Scanner(resourceAsStream);
+			while (scanner.hasNextLine() && numberOfLinesScanned > 0) {
+				String line = scanner.nextLine();
+				if (line.trim().length() > 0) {
+					fileHeaderContents.append(line);
+				}
+				numberOfLinesScanned--;
+			}
+
+			if (fileHeaderContents.toString().matches(COPYRIGHT_HEADER)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

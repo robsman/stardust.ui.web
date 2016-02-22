@@ -153,11 +153,14 @@ define(
 								self.connectionTypeSelect.val());
 					});
 
-					this.databaseTypeSelect
-							.change(function() {
-								if (!self.view.validate()) {
-									return;
-								}
+               this.databaseTypeSelect
+                     .change({
+                        panel : this
+                     },
+                     function(event) {
+                        if (!event.data.panel.view.validate()) {
+                           return;
+                        }
 								if (self.databaseTypeSelect.val() == "others") {
 									self.showHideCommonDbConfig(true);
 									self.showHideOthersDbConfig();
@@ -182,12 +185,10 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.view.submitChanges({
-							attributes : {
-									"stardust:sqlScriptingOverlay::url":
-										event.data.panel.urlInput.val()
-								}
-						});
+						event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::hostname",null);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::port",null);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::dbname",null);
 					
 					});
 					
@@ -198,13 +199,11 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.view.submitChanges({
-							attributes : {
-									"stardust:sqlScriptingOverlay::driverClassName":
-									event.data.panel.driverInput.val()
-								}
-						});
-					
+
+						event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::hostname",null);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::port",null);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::dbname",null);
 					});
 
 					this.hostInput.change({
@@ -214,13 +213,10 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.view.submitChanges({
-							attributes : {
-									"stardust:sqlScriptingOverlay::hostname":
-									event.data.panel.hostInput.val()
-								}
-						});
-					
+
+						event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::url",null);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::driverClassName",null);
 					});
 					
 					this.portInput.change({
@@ -230,12 +226,10 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.view.submitChanges({
-							attributes : {
-									"stardust:sqlScriptingOverlay::port":
-									event.data.panel.portInput.val()
-								}
-						});
+
+						event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::url",null);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::driverClassName",null);
 					
 					});
 
@@ -246,13 +240,10 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.view.submitChanges({
-							attributes : {
-									"stardust:sqlScriptingOverlay::dbname":
-									event.data.panel.dataBaseNameInput.val()
-								}
-						});
-					
+
+						event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::url",null);
+                        event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::driverClassName",null);
 					});
 					
 					this.userNameInput.change({
@@ -262,12 +253,9 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.view.submitChanges({
-							attributes : {
-									"stardust:sqlScriptingOverlay::username":
-									event.data.panel.userNameInput.val()
-								}
-						});
+					
+						event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
+						
 					
 					});
 					
@@ -280,13 +268,8 @@ define(
 					function(event) {
 						if (!event.data.panel.validate()) {
 							return;
-						}
-						event.data.panel.view.submitChanges({
-							attributes : {
-									"stardust:sqlScriptingOverlay::password":
-									event.data.panel.passwordInput.val()
-								}
-						});
+						}					
+						event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
 					
 					});
 					
@@ -318,7 +301,7 @@ define(
 									event.data.panel.dbCatalogInput.val()
 								}
 						});
-					
+						event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
 					});
 					this.dbSchemaInput.change({
 						panel : this
@@ -333,7 +316,7 @@ define(
 									event.data.panel.dbSchemaInput.val()
 								}
 						});
-					
+						event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
 					});
 					this.spNameInput.change({
 						panel : this
@@ -348,7 +331,7 @@ define(
 									event.data.panel.spNameInput.val()
 								}
 						});
-					
+						event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
 					});
 					this.customSqlQueryCbx.change({
 						panel : this
@@ -356,6 +339,16 @@ define(
 					function(event) {
 					//	self.submitChanges();
 						if(event.data.panel.customSqlQueryCbx.prop("checked")){
+							/*
+							event.data.panel.dbCatalogInput.val(null);
+							event.data.panel.dbSchemaInput.val(null);
+							event.data.panel.spNameInput.val(null);
+							
+							*/
+							event.data.panel.dbCatalogInput.val(null);
+							event.data.panel.dbSchemaInput.val(null);
+							event.data.panel.spNameInput.val(null);
+							
 							event.data.panel.simpleQueryDiv.hide();
 							event.data.panel.view.submitChanges({
 									attributes : {
@@ -365,6 +358,10 @@ define(
 										"stardust:sqlScriptingOverlay::useCustomSqlQuery":event.data.panel.customSqlQueryCbx.prop("checked")
 									}
 							});
+							
+							
+							
+							
 							event.data.panel.customSqlQueryDiv.show();
 						}else{
 							event.data.panel.customSqlQueryDiv.hide();
@@ -389,11 +386,15 @@ define(
 					this.codeEditor.getEditor().on('blur', function(e) {
 						self.submitChanges();
 					});
-					this.inputBodyAccessPointInput
-							.change(function() {
-								if (!self.view.validate()) {
-									return;
-								}
+               this.inputBodyAccessPointInput
+                     .change(
+                           {
+                               panel : this
+                           },
+                           function(event) {
+                        if (!event.data.panel.view.validate()) {
+                           return;
+                        }
 
 								if (self.inputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
 
@@ -499,10 +500,14 @@ define(
 									}
 								}
 							});
-					this.outputBodyAccessPointInput
-							.change(function() {
-								if (!self.view.validate()) {
-									return;
+					   this.outputBodyAccessPointInput
+							 .change(
+								   {
+									  panel : this
+								   },
+								   function(event) {
+								if (!event.data.panel.view.validate()) {
+								   return;
 								}
 
 								if (self.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
@@ -1027,10 +1032,11 @@ define(
 				};
 
 				StoredProcedureIntegrationOverlay.prototype.populateDataSourceBeanDefinition = function() {
-					if (!this.view.validate()) {
+/*
+				if (!this.view.validate()) {
 						return;
 					}
-
+*/
 					var beanDefinition = "";
 					var driverClassName = "";
 					var url = "";
@@ -1130,10 +1136,7 @@ define(
 				 */
 				StoredProcedureIntegrationOverlay.prototype.submitChanges = function(
 						changes) {
-					if(changes){
-						this.view
-						.submitChanges(changes);
-					}else{
+
 					this.view
 							.submitChanges({
 								attributes : {
@@ -1177,7 +1180,6 @@ define(
 											: null
 								}
 							});
-				}
 				};
 				/**
 				 * 
@@ -1223,7 +1225,18 @@ define(
 								/*	"carnot:engine:camel::additionalSpringBeanDefinitions" : this
 											.populateDataSourceBeanDefinition(),*/
 									"carnot:engine:camel::routeEntries" : this
-											.getRoute()
+											.getRoute(),
+									 "stardust:sqlScriptingOverlay::url" : (this.urlInput.val()!=null)?this.urlInput.val():null,
+									 "stardust:sqlScriptingOverlay::driverClassName" : (this.driverInput.val()!=null)?this.driverInput.val():null,
+									 
+									 
+									"stardust:sqlScriptingOverlay::catalogName" : this.dbCatalogInput.val(),
+									"stardust:sqlScriptingOverlay::schemaName" : this.dbSchemaInput.val(),
+									"stardust:sqlScriptingOverlay::storedProcedureName" : this.spNameInput.val(),
+									"stardust:sqlScriptingOverlay::useCustomSqlQuery" : this.customSqlQueryCbx
+											.prop("checked") ? this.customSqlQueryCbx
+											.prop("checked")
+											: null		
 								}
 							});
 				};
@@ -1231,45 +1244,74 @@ define(
 				 * 
 				 */
 				StoredProcedureIntegrationOverlay.prototype.validate = function() {
-					var valid = true;
-					// this.outputBodyAccessPointInput.removeClass("error");
-					/*if(m_utils.isEmptyString(this.outputBodyAccessPointInput.val()) || this.outputBodyAccessPointInput.val()==m_constants.TO_BE_DEFINED){
-						 this.view.errorMessages .push("No Out Mapping provided."); 
-						 this.outputBodyAccessPointInput.addClass("error"); 
-						 valid = false;
-					}*/
-					
-					/*
-					if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
-						 this.view.errorMessages .push("No SQL Query provided."); 
-						 valid = false;
-					}
 
-					if(this.connectionTypeSelect.val()=="direct" && (this.databaseTypeSelect.val()!="others" && this.databaseTypeSelect.val()!=m_constants.TO_BE_DEFINED) ){
-						//when using direct connection verify host,port,databasename
-						this.hostInput.removeClass("error");
-						this.portInput.removeClass("error");
-						this.dataBaseNameInput.removeClass("error");
-						
-						if(m_utils.isEmptyString(this.hostInput.val()) ){
-							 this.view.errorMessages .push("No Host provided."); 
-							 this.hostInput.addClass("error"); 
-							 valid = false;
+					var valid = true;
+					   if(this.connectionTypeSelect.val()=="direct" && (this.databaseTypeSelect.val()!="others" && this.databaseTypeSelect.val()!=m_constants.TO_BE_DEFINED) ){
+						  this.showHideCommonDbConfig();
+						  this.showHideOthersDbConfig(true);
+						  this.hostInput.removeClass("error");
+						  this.portInput.removeClass("error");
+						  this.dataBaseNameInput.removeClass("error");
+						  if(m_utils.isEmptyString(this.hostInput.val()) ){
+							  this.view.errorMessages .push("No Data Source Host provided."); 
+							  this.hostInput.addClass("error"); 
+							  valid = false;
+						  }
+						 var numRegexp=new RegExp("[^0-9]");
+						 if( numRegexp.test(this.portInput.val()) ||(m_utils.isEmptyString(this.portInput.val())) ||(Number(this.portInput.val() ) < 1  ||  Number(this.portInput.val()) > 65535)) {
+							  this.view.errorMessages .push("Port number should be from 1-65535.");
+							  this.portInput.addClass("error"); 
+							  valid = false;
+						  }
+						  if(m_utils.isEmptyString(this.dataBaseNameInput.val()) ){
+							  this.view.errorMessages .push("No Data Source Name provided.");
+							  this.dataBaseNameInput.addClass("error"); 
+							  valid = false;
+						  }
+					   }
+					if(this.connectionTypeSelect.val()=="direct" && (this.databaseTypeSelect.val() =="others") ){
+							 // when using others connection verify url/driver
+							 this.showHideCommonDbConfig(true);
+							 this.showHideOthersDbConfig();
+							 this.urlInput.removeClass("error");
+							 this.driverInput.removeClass("error");
+					   if(m_utils.isEmptyString(this.urlInput.val()) ){
+							  this.view.errorMessages .push("No URL provided.");
+							  this.urlInput.addClass("error"); 
+							  valid = false;
+						  }
+						if(m_utils.isEmptyString(this.driverInput.val()) ){
+							  this.view.errorMessages .push("No Driver provided.");
+							  this.driverInput.addClass("error"); 
+							  valid = false;
+						  }
+					   }
+
+						// validation for configuration tab
+						if(this.customSqlQueryCbx.is(":checked")){
+						 if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
+							   this.view.errorMessages .push("No SQL Query provided."); 
+							   valid = false;
+						   }
+
+						}else{
+							this.spNameInput.removeClass("error");
+							if(m_utils.isEmptyString(this.spNameInput.val())){
+								 this.view.errorMessages.push("No Name provided."); 
+								 this.spNameInput.addClass("error"); 
+								 valid = false;
+							}
 						}
-						
-						if(m_utils.isEmptyString(this.portInput.val()) ){
-							 this.view.errorMessages .push("No port number provided.");
-							 this.portInput.addClass("error"); 
-							 valid = false;
-						}
-						if(m_utils.isEmptyString(this.dataBaseNameInput.val()) ){
-							 this.view.errorMessages .push("No SID name provided.");
-							 this.dataBaseNameInput.addClass("error"); 
-							 valid = false;
-						}
-					}
-					*/
+						this.userNameInput.removeClass("error");
+						if(m_utils.isEmptyString(this.userNameInput.val())){
+								 this.view.errorMessages.push("No User provided."); 
+								 this.userNameInput.addClass("error"); 
+								 valid = false;
+							}
+
+					
 					return true;
 				};
+				
 			}
 		});

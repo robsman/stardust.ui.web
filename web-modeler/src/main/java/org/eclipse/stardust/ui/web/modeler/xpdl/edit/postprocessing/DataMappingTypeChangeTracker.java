@@ -4,10 +4,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
-import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 
 @Component
@@ -53,8 +51,11 @@ public class DataMappingTypeChangeTracker implements ChangePostprocessor
                }
             }
          }
-
-         change.markUnmodified(candidate);
+         ActivityType activity = ModelUtils.findContainingActivity(dataMapping);
+         if (null != activity)
+         {
+            change.markAlsoModified(activity);
+         }
       }
    }
 }

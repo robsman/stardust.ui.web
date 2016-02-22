@@ -6,12 +6,16 @@
 	href="../../../common/css/iPopupDialogStyle.css">
 </link>
 <link href="../../css/bpm-reporting.css" rel="stylesheet"
-	type="text/css">
-
+	type="text/css"></link>
+<link rel="stylesheet" type="text/css" href="../../../html5-common/styles/portal-icons.css" />
+<link rel="stylesheet" type="text/css"
+	href="../../../modern-skin/modern.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../../modern-skin/modern.font.icons.css"></link>
 <script src="../../js/commonRequire.js"></script>
 <script data-require="require.js@*"
 	data-main="../../js/ReportStoragePopupMain" data-semver="2.1.4"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+	src="../../../views-common/js/libs/require/2.1.15/require.min.js"></script>
 </head>
 
 <body ng-controller="ReportStorageController"
@@ -19,8 +23,8 @@
     <div id="reportStoragePopup" style="visibility: hidden;">	
 		<div id="titleBar" class="iPopupDialogTitleBar">
 			<span class="iPopupDialogTitleText">{{getI18N('reporting.storage.saveInstance.title')}}
-			</span> <input type="button" title="Close" ng-click="closePopup()"
-				class="iPopupDialogCloseControl" />
+			</span> 
+			<span ng-click="closePopup()" class="iPopupDialogCloseButton"> <i class="pi pi-dialog-close pi-lg"  title="Close"></i></span>
 		</div>
 		<div class="iPopupDialogContentArea">
 			<div class="iPopupDialogSpacerDiv"></div>

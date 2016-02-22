@@ -12,16 +12,14 @@
 }
 
 .messagePanel {
-	font-family: Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height:20px;
 	background-color: #FFD966;
 	border: 1px solid #CCCCCC;
 }
 
 .messagePanel .messagePanelText {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 18px;
 	padding-left: 5px;
 	margin-left:5px;
@@ -86,13 +84,21 @@
 
 .genericTablePaginatorInfo
 {
-	font-size: 9px;
+	font-size: .82em;
 	color: #999999;
 }
 
-.genericTableSortColHdr
-{
-	background: transparent url("./css-images/colHeader-Sort.png") no-repeat scroll right center;
+/*  iceCmd sort classes will be here only and removed duplicate from modern.css and nirvanaRime.css
+*/
+
+.genericTableSortColHdr{
+	color: #A69A88;
+}
+
+.genericTableSortColHdr:before{
+	font-family: FontAwesome !important;
+    content: "\f0dc";
+    font-size: 1.33333333em !important;
 	height: 16px;
 	width: 10px;
 	padding-left: 4px;
@@ -100,31 +106,43 @@
 
 .genericTableHdr{
     text-align: center;
-    font: 11px tahoma;
-    color: #484848;
+    font-size: 1em;
+    color: #333333;
     padding: 0px;
     font-weight: bold;
-    background: #FFF url( './css-images/table_col_header.gif' ) repeat-x bottom left;
-    border: 1px solid #d9d9d9;
+    background: #FFF;
+    border: none;
+    border-bottom:solid 1px #708090;
     vertical-align:top;
 }
 
 /* Overrides the ICEfaces Default Styles in connection with above style */
-.iceCmdSrtHdrAsc 
-{
-	background: transparent url("./css-images/colHeader-Sort-Acending.png") no-repeat scroll right center;
+
+.iceCmdSrtHdr .iceCmdSrtHdrDesc ,.iceCmdSrtHdr .iceCmdSrtHdrAsc{
+	color: #A69A88;
+}
+
+.iceCmdSrtHdrAsc:before{
+	font-family: "FontAwesome";
+	content: "\f0d8"; /* fa-caret-up */
+	font-size: 1.33333333em !important;
 	height: 16px;
 	width: 10px;
 	padding-left: 4px;
 }
 
-.iceCmdSrtHdrDesc
-{
-	background: transparent url("./css-images/colHeader-Sort-Decending.png") no-repeat scroll right center;
+.iceCmdSrtHdrDesc:before{
+	font-family: "FontAwesome";
+	content: "\f0d7"; /* fa-caret-down */
+	font-size: 1.33333333em !important;
 	height: 16px;
 	width: 10px;
 	padding-left: 4px;
 }
+
+/*
+iceCmd sort classes
+*/
 
 .dataFilterSummaryText
 {
@@ -165,13 +183,13 @@
 
 .breadCrumbTitle
 {
-	font-size: 8pt;
+	font-size: .73em;
 	color: #5c5b5b;
 }
 
 .breadCrumbTitleLink
 {
-	font-size: 8pt;
+	font-size: .73em;
 	color: #5c5b5b;
 	text-decoration:underline; 
 }
@@ -223,8 +241,7 @@
 
 .popupDialogHdr .headerText {
 	color: #333333;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	padding: 0px;
 	line-height: 20px;
@@ -248,8 +265,6 @@
 }
 
 .popupDialogHdr .windowClose {
-	background: url(../images/icons/dialog-windowbttn-close.png) no-repeat scroll 0 transparent;
-	border: none;
 	float: right;
 	padding-top: 6px;
 	padding-right: 10px;
@@ -344,8 +359,7 @@
 	color: #333333;
 	padding: 0px 10px 0px 10px;
 	border-bottom: 1px solid #D9D9D9;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	text-align: left;
 	vertical-align: middle;
@@ -368,8 +382,7 @@
 }
 
 .pnlConfirmationBtns input {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	color: #333333;
 	background: #FFFFFF url( "./css-images/button-background.png" ) bottom repeat-x;
 	border: 1px solid #CCCCCC;
@@ -460,14 +473,13 @@ div.columnItemBoxInput input{
 
 div.columnItemBoxLabel{
 	margin-left: 20px;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	color: #333333;
 	white-space: nowrap;
 }
 
 div.columnsListBox {
-	max-height: 500px;
+	max-height: 250px;
 	overflow: auto;
 }
 /* *********** Column Selector - END ************* */
@@ -510,7 +522,7 @@ div.columnsListBox {
 }
 
 .commonMenuItem .iceOutTxt{
-	font-size: 12px;
+	font-size: 1.1em;
 	color: #75C0CD;
 }
 
@@ -539,8 +551,15 @@ div.columnsListBox {
 
 .commonMenuHeadingItem .iceOutTxt {
 	line-height: 30px;
-	font-size: 12px;
+	font-size: 1.1em;
 	color: #B9B5AE;
 	padding-left: 10px;
 }
 /* Common Menu End */
+
+
+
+/* IFRAME pop overer */
+.iframePopover {
+	background-color: #FCFCFC;
+}

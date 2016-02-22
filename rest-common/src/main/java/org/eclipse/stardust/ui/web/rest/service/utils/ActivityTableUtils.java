@@ -15,6 +15,7 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtil
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getLastPerformer;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAbortable;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAuxiliaryActivity;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isDelegable;
 
 import java.io.Serializable;
@@ -27,6 +28,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
@@ -71,6 +74,7 @@ import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
@@ -79,11 +83,13 @@ import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
@@ -127,6 +133,8 @@ public class ActivityTableUtils
    private static final String COL_CRITICALITY = "criticality";
 
    private static final String COL_PRIOIRTY = "priority";
+   
+   private static final String COL_BENCHMARK = "benchmark";
 
    private static final String TODAY = "today";
 
@@ -141,7 +149,7 @@ public class ActivityTableUtils
    private static final String LAST_YEAR = "lastYear";
 
    private static final String ALL = "all";
-
+   
    public static double PORTAL_CRITICALITY_MUL_FACTOR = 1000;
 
    public static enum MODE {
@@ -149,6 +157,9 @@ public class ActivityTableUtils
    }
 
    private static final Logger trace = LogManager.getLogger(ActivityTableUtils.class);
+   
+   @Resource
+   private ActivityInstanceUtils activityInstanceUtils;
 
    /**
     * Adds filter criteria to the query
@@ -338,7 +349,7 @@ public class ActivityTableUtils
       if (null != filterDTO.assignedTo)
       {
          FilterOrTerm or = filter.addOrTerm();
-         for (ParticipantSearchResponseDTO participant : filterDTO.assignedTo.participants)
+         for (ParticipantDTO participant : filterDTO.assignedTo.participants)
          {  
 
             if(ParticipantType.USER.toString().equals( participant.type) ){
@@ -364,7 +375,7 @@ public class ActivityTableUtils
       if ( null != filterDTO.completedBy)
       {
          FilterOrTerm or = filter.addOrTerm();
-         for (ParticipantSearchResponseDTO user : filterDTO.completedBy.participants)
+         for (ParticipantDTO user : filterDTO.completedBy.participants)
          {
             or.add(new org.eclipse.stardust.engine.api.query.PerformedByUserFilter(user.OID));
          }
@@ -518,6 +529,10 @@ public class ActivityTableUtils
                ? WorklistQuery.PROCESS_INSTANCE_OID
                      : ActivityInstanceQuery.PROCESS_INSTANCE_OID, options.asc);
       }
+      else if (COL_BENCHMARK.equals(options.orderBy))
+      {
+         query.orderBy(ActivityInstanceQuery.BENCHMARK_VALUE, options.asc);
+      }
    }
 
    /**
@@ -553,7 +568,8 @@ public class ActivityTableUtils
     * @param postData
     * @return
     */
-   public static Options populatePostData(Options options, String postData, List<DescriptorColumnDTO> availableDescriptorColumns)
+   public static Options populatePostData(Options options, String postData,
+         List<DescriptorColumnDTO> availableDescriptorColumns)
    {
       JsonMarshaller jsonIo = new JsonMarshaller();
       JsonObject postJSON = jsonIo.readJsonObject(postData);
@@ -565,7 +581,6 @@ public class ActivityTableUtils
          options.filter = getFilters(filters.toString(), availableDescriptorColumns);
       }
 
-
       JsonArray visbleColumns = postJSON.getAsJsonObject("descriptors").get("visibleColumns").getAsJsonArray();
       List<String> columnsList = new ArrayList<String>();
       for (JsonElement jsonElement : visbleColumns)
@@ -574,7 +589,26 @@ public class ActivityTableUtils
       }
       options.visibleDescriptorColumns = columnsList;
       options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();
+      if (null != postJSON.get("worklistId"))
+      {
+         options.worklistId = postJSON.get("worklistId").getAsString();
+      }
 
+      if (null != postJSON.get("fetchTrivialManualActivities"))
+      {
+         options.fetchTrivialManualActivities = postJSON.get("fetchTrivialManualActivities").getAsBoolean();
+      }
+      if (null != postJSON.get("extraColumns"))
+      {
+         JsonArray extraColumns = postJSON.get("extraColumns").getAsJsonArray();
+         List<String> extraColumnsList = new ArrayList<String>();
+         for (JsonElement jsonElement : extraColumns)
+         {
+            extraColumnsList.add(jsonElement.getAsString());
+         }
+         options.extraColumns = extraColumnsList;
+      }
+      
       return options;
    }
 
@@ -627,16 +661,31 @@ public class ActivityTableUtils
       worklistFilter.descriptorFilterMap = descriptorColumnMap;
    }
 
-
+   
    /**
+    * 
     * @param queryResult
+    * @param mode
     * @return
     */
    public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode)
    {
+      return buildTableResult(queryResult, mode, null);
+   }
+   
+   public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode, Map<String, TrivialManualActivityDTO> trivialManualActivityDetails)
+   {
+      return buildTableResult(queryResult, mode, trivialManualActivityDetails, null);
+   }
+   /**
+    * @param queryResult
+    * @return
+    */
+   public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode, Map<String, TrivialManualActivityDTO> trivialManualActivityDetails, List<String> extraColumns)
+   {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
       List<CriticalityCategory> criticalityConfigurations = CriticalityUtils.getCriticalityConfiguration();
-
+    
       ModelCache modelCache = ModelCache.findModelCache();
       QueryResultDTO resultDTO = new QueryResultDTO();
       if (null != queryResult)
@@ -646,19 +695,30 @@ public class ActivityTableUtils
             if (object instanceof ActivityInstance)
             {
                ActivityInstance ai = (ActivityInstance) object;
-
                ActivityInstanceDTO dto;
-               if (!ActivityInstanceUtils.isTrivialManualActivity(ai))
-               {
-                  dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
-               }
-               else
+               
+               if (ActivityInstanceUtils.isTrivialManualActivity(ai))
                {
                   TrivialActivityInstanceDTO trivialDto = DTOBuilder.build(ai, TrivialActivityInstanceDTO.class);
                   trivialDto.trivial = true;
+                 
+                  if (null != trivialManualActivityDetails
+                        && trivialManualActivityDetails.keySet().contains(String.valueOf(ai.getOID())))
+                  {
+                     TrivialManualActivityDTO tivialManualActivity = trivialManualActivityDetails.get(String.valueOf(ai
+                           .getOID()));
+                     trivialDto.dataMappings = tivialManualActivity.dataMappings;
+                     trivialDto.inOutData = tivialManualActivity.inOutData;
+                  }
+
                   dto = trivialDto;
                }
+               else 
+               {
+                  dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
+               }
 
+               dto.auxillary = isAuxiliaryActivity(ai.getActivity());
                dto.duration = ActivityInstanceUtils.getDuration(ai);
                dto.assignedTo = getAssignedToLabel(ai);
                dto.criticality = populateCriticalityDTO(criticalityConfigurations, ai);
@@ -667,37 +727,52 @@ public class ActivityTableUtils
                dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
                dto.descriptorValues = getProcessDescriptors(modelCache, ai);
                dto.activatable = findIfActivatable(ai);
-
+               dto.relocationEligible = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isRelocationEligible(ai);
+               dto.benchmark = getBenchmarkForActivity(ai);
+               
                List<Note> notes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(ai
                      .getProcessInstance());
                if (null != notes)
                {
                   dto.notesCount = notes.size();
                }
-
+               
+               if (CollectionUtils.isNotEmpty(extraColumns) && extraColumns.contains(Constants.RESUBMISSION_TIME))
+               {
+                  Date resubmissionDate = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils
+                        .getResubmissionDate(ai);
+                  if (null != resubmissionDate)
+                  {
+                     dto.resubmissionTime = resubmissionDate.getTime();
+                  }
+               }
+               ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
+                     ai.getModelOID(), ai.getProcessDefinitionId());
+               dto.processInstance.supportsProcessAttachments = ProcessDefinitionUtils.supportsProcessAttachments(processDefinition);
+               
                if (mode.equals(MODE.ACTIVITY_TABLE))
                {
                   dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
                   dto.participantPerformer = getParticipantPerformer(ai);
-                  dto.isCaseInstance = ai.getProcessInstance().isCaseProcessInstance();
                   dto.abortActivity = !dto.isCaseInstance && isAbortable(ai);
                   dto.delegable = isDelegable(ai);
                   dto.abortProcess = ProcessInstanceUtils.isAbortable(ai.getProcessInstance());
+                  
                }
                else
                {
                   dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
-                  dto.defaultCaseActivity = ActivityInstanceUtils.isDefaultCaseActivity(ai);
                   if (!dto.defaultCaseActivity)
                   {
                      dto.abortActivity = isAbortable(ai);
                      dto.delegable = isDelegable(ai);
                   }
-                  else
-                  {
-                     dto.processInstance.processName = getCaseName(ai);
-                  }
-
+               }
+               dto.defaultCaseActivity = ActivityInstanceUtils.isDefaultCaseActivity(ai);
+               dto.isCaseInstance = ai.getProcessInstance().isCaseProcessInstance();
+               if(dto.defaultCaseActivity)
+               {
+                  dto.activity.name = getCaseName(ai);
                }
                list.add(dto);
             }
@@ -801,7 +876,7 @@ public class ActivityTableUtils
     * @param ai
     * @return
     */
-   private static boolean findIfActivatable(ActivityInstance ai)
+   protected static boolean findIfActivatable(ActivityInstance ai)
    {
       boolean isActivable = isActivatable(ai);
       if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(ai.getQualityAssuranceState()))
@@ -832,6 +907,23 @@ public class ActivityTableUtils
       CriticalityDTO criticalityDTO = DTOBuilder.build(criticalCategory, CriticalityDTO.class);
       criticalityDTO.value = criticalityValue;
       return criticalityDTO;
+   }
+   
+   /**
+    * 
+    * @param ai
+    * @return
+    */
+   public static BenchmarkDTO getBenchmarkForActivity(ActivityInstance ai)
+   {
+      BenchmarkDTO dto = new BenchmarkDTO();
+      if (null != ai.getBenchmarkResult())
+      {
+         dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkColor(ai);
+         dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkLabel(ai);
+         dto.value = ai.getBenchmarkResult().getCategory();
+      }
+      return dto;
    }
 
    /**
@@ -880,7 +972,9 @@ public class ActivityTableUtils
       List<ProcessDescriptor> processDescriptorsList = CollectionUtils.newList();
 
       Model model = modelCache.getModel(ai.getModelOID());
-      ProcessDefinition processDefinition = model != null ? model.getProcessDefinition(ai.getProcessDefinitionId()) : null;
+      ProcessDefinition processDefinition = (model != null)
+            ? model.getProcessDefinition(ai.getProcessDefinitionId())
+            : null;
       if (processDefinition != null)
       {
          ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) ai.getProcessInstance();

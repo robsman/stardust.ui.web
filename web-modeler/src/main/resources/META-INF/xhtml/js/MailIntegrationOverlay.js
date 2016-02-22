@@ -10,13 +10,13 @@ define(
                   "bpm-modeler/js/m_mailRouteDefinitionHandler",
                   "bpm-modeler/js/m_angularContextUtils",
                   "bpm-modeler/js/MailIntegrationOverlayTestTabHandler",
-                  "bpm-modeler/js/MailIntegrationOverlayResponseTabHandler" ],
+                  "bpm-modeler/js/MailIntegrationOverlayResponseTabHandler","bpm-modeler/js/m_user" ],
          function(m_utils, m_i18nUtils, m_constants, m_urlUtils, m_commandsController,
                   m_command, m_model, m_accessPoint, m_typeDeclaration,
                   m_parameterDefinitionsPanel, m_codeEditorAce, m_modelElementUtils,
                   m_routeDefinitionUtils, m_mailRouteDefinitionHandler,
                   m_angularContextUtils, mailIntegrationOverlayTestTabHandler,
-                  mailIntegrationOverlayResponseTabHandler)
+                  mailIntegrationOverlayResponseTabHandler,m_user)
          {
             return {
                create : function(view)
@@ -231,7 +231,10 @@ define(
                   this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
                   this.parameterDefinitionsPanel.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
                   
-                  
+                  this.autoStartupRow.hide();
+                  if(this.isIntegrator()){
+                    this.autoStartupRow.show();
+                  }
                   this.serverInput.val(this
                            .getExtendedAttributeValue("stardust:emailOverlay::server"));
                   this.mailFormatSelect
@@ -278,11 +281,6 @@ define(
                            .getExtendedAttributeValue("stardust:emailOverlay::user"));
                   this.passwordInput.val(this
                            .getExtendedAttributeValue("stardust:emailOverlay::pwd"));
-                  this.transactedRouteInput
-                           .prop(
-                                    "checked",
-                                    this
-                                             .getExtendedAttributeValue("carnot:engine:camel::transactedRoute"));
                   this.autoStartupInput
                            .prop(
                                     "checked",
@@ -404,6 +402,16 @@ define(
                      }
                   }, false);
                };
+               MailIntegrationOverlay.prototype.validateRecipientsFields = function(inputField){
+                  if(!m_utils.isEmptyString(inputField.val())){
+                    if(inputField.val().indexOf(';') != -1){
+                       this.view.errorMessages.push("To configure multiple recipients please use comma instead of semicolon.");
+                       inputField.addClass("error");
+                          valid = false;
+                    }
+                   }
+               }
+               
                /**
                 * Validates the provided values.
                 */
@@ -415,6 +423,16 @@ define(
                   this.passwordInput.removeClass("error");
                   this.templatePathInput.removeClass("error");
                   this.parameterDefinitionNameInput.removeClass("error");
+                  this.fromInput.removeClass("error");
+                  this.validateRecipientsFields(this.fromInput);
+                  this.toInput.removeClass("error");
+                  this.validateRecipientsFields(this.toInput);
+                  this.ccInput.removeClass("error");
+                  this.validateRecipientsFields(this.ccInput);
+                  this.bccInput.removeClass("error");
+                  this.validateRecipientsFields(this.bccInput);
+                 
+                  
                   var parameterDefinitionNameInputWhithoutSpaces = this.parameterDefinitionNameInput
                            .val().replace(/ /g, "");
                   if ((parameterDefinitionNameInputWhithoutSpaces == "exchange")
@@ -1039,7 +1057,8 @@ define(
                   }
                   attributes["stardust:emailOverlay::templateSource"] = this.templateSourceSelect.val();
                   attributes["carnot:engine:camel::routeEntries"] = this.getRoute(attributes, aps);
-
+              attributes["stardust:emailOverlay::templateConfigurations"]=angular.toJson(this.templateConfigurations);
+                
                   this.view.submitChanges({
                      attributes : attributes,
                      contexts : {
@@ -1057,22 +1076,6 @@ define(
                MailIntegrationOverlay.prototype.registerConfigurationTabEvents = function()
                {
                   var self = this;
-                  this.transactedRouteInput
-                           .change(
-                                    {
-                                       panel : this
-                                    },
-                                    function(event)
-                                    {
-                                       var attributes=event.data.panel.getApplication().attributes;
-                                       attributes["carnot:engine:camel::transactedRoute"]=event.data.panel.transactedRouteInput.prop("checked");
-                                       attributes["carnot:engine:camel::routeEntries"]= event.data.panel.getRoute(attributes,event.data.panel.getApplication().contexts.application.accessPoints);
-                                       event.data.panel.view
-                                                .submitChanges(
-                                                         {
-                                                            attributes : attributes
-                                                         }, false);
-                                    });
                   this.autoStartupInput
                            .change(
                                     {
@@ -1379,8 +1382,8 @@ define(
                            .jQuerySelect("#mailIntegrationOverlay #storeEmailInput");
                   this.storeAttachmentsInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #storeAttachmentsInput");
-                  this.transactedRouteInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #transactedRouteInput");
+                  this.autoStartupRow = m_utils
+                  .jQuerySelect("#mailIntegrationOverlay #autoStartupRow");
                   this.autoStartupInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #autoStartupInput");
                   this.templateSourceSelect = m_utils
@@ -1634,10 +1637,13 @@ define(
                }, {
                   value : "data",
                   title : "Data"
-               }, {
-                  value : "DOCUMENT_REQUEST",
-                  title : "Document Request"
-               } ];
+               }
+//TODO: DOCUMENT_REQUEST should be enabled once Correspondance structure will be part of the the Predefined model.
+//               , {
+//                  value : "DOCUMENT_REQUEST",
+//                  title : "Document Request"
+//               }
+               ];
                MailIntegrationOverlay.prototype.getSourceOptions = function(item){
                    var sourceOptions = [ {
                           value : "repository",
@@ -1716,6 +1722,8 @@ define(
                 */
                MailIntegrationOverlay.prototype.updateTemplateConfTab = function(item)
                {
+                  this.view.errorMessagesList.empty();
+                  this.view.errorMessages = [];
                   this.hideTemplateErroType();
                   var submitElements = {};
                   var specificAttributes = this.getApplication().attributes;
@@ -1763,34 +1771,52 @@ define(
                      m_utils.jQuerySelect("#templateConfigurationTab").show();
                      m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
                   }
-                  else
-                  {
-                     // filter Mail Attachments AP
-                     filteredAccessPoints = m_routeDefinitionUtils.filterAccessPoint(
-                              accessPoints, "mailAttachmentsAP");
-                     // add Document Request AP
-                     var documentRequestAp = m_routeDefinitionUtils.findAccessPoint(
-                              filteredAccessPoints, "DOCUMENT_REQUEST");
-                     if (!documentRequestAp)
-                     {
-                        filteredAccessPoints.push({
-                           id : "DOCUMENT_REQUEST",
-                           name : "Document Request",
-                           dataType : "struct",
-                           direction : "IN",
-                           structuredDataTypeFullId : this.getScopeModel().id + ":"
-                                    + "DOCUMENT_REQUEST",
-                           attributes : {
-                              "stardust:predefined" : true
-                           }
-                        });
-                     }
-                     specificAttributes["stardust:emailOverlay::attachmentsTemplateSource"] = "DOCUMENT_REQUEST";
-                     specificAttributes["stardust:emailOverlay::attachmentsTemplateSourceType"] = null;
-                     specificAttributes["stardust:emailOverlay::templateConfigurations"] = null;
-                     m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
-                     m_utils.jQuerySelect("#templateConfigurationTab").hide();
-                  }
+//                  else
+//                  {
+//                     // filter Mail Attachments AP
+//                     filteredAccessPoints = m_routeDefinitionUtils.filterAccessPoint(
+//                              accessPoints, "mailAttachmentsAP");
+//                     // add Document Request AP
+//                     var documentRequestAp = m_routeDefinitionUtils.findAccessPoint(
+//                              filteredAccessPoints, "DOCUMENT_REQUEST");
+//                     //var documentRequestType=m_model.findTypeDeclaration(this.getScopeModel().id + ":"+ "DOCUMENT_REQUEST");
+//                     var documentRequestType=m_model.findTypeDeclaration("PredefinedModel:CORRESPONDENCE");
+//                     
+//                     if(!documentRequestType){
+//                        this.view
+//                        .submitChanges(
+//                                 {
+//                                    attributes :{
+//                                       "stardust:emailOverlay::attachmentsTemplateSource" :  "embedded"
+//                                       }
+//                                 }, true);
+//                        
+//                        this.view.errorMessages
+//                        .push("DOCUMENT_REQUEST structure is not available in the current model, please create it.");
+//                        this.view.showErrorMessages();
+//                        return;
+//                     }
+//                     if (!documentRequestAp)
+//                     {//TODO: this feature is disabled with 9.0.
+//                        filteredAccessPoints.push({
+//                           id : "DOCUMENT_REQUEST",
+//                           name : "Document Request",
+//                           dataType : "struct",
+//                           direction : "IN",
+//                           structuredDataTypeFullId : "PredefinedModel:CORRESPONDENCE",
+////                              this.getScopeModel().id + ":"
+////                                    + "DOCUMENT_REQUEST",
+//                           attributes : {
+//                              "stardust:predefined" : true
+//                           }
+//                        });
+//                     }
+//                     specificAttributes["stardust:emailOverlay::attachmentsTemplateSource"] = "DOCUMENT_REQUEST";
+//                     specificAttributes["stardust:emailOverlay::attachmentsTemplateSourceType"] = null;
+//                     specificAttributes["stardust:emailOverlay::templateConfigurations"] = null;
+//                     m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
+//                     m_utils.jQuerySelect("#templateConfigurationTab").hide();
+//                  }
                   submitElements.attributes = specificAttributes;
                   submitElements.attributes["carnot:engine:camel::routeEntries"] = this.getRoute(submitElements.attributes,filteredAccessPoints);
                   submitElements.contexts = {
@@ -2022,5 +2048,8 @@ define(
                {
                   m_utils.jQuerySelect("#typeErrorMessagesTab").hide();
                };
+               MailIntegrationOverlay.prototype.isIntegrator = function(){
+                  return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+               }
             }
          });

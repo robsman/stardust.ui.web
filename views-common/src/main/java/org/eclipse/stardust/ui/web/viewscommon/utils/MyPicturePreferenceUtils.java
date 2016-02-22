@@ -40,7 +40,7 @@ public class MyPicturePreferenceUtils
    private static final String AVATAR_BASE_URL = "http://www.gravatar.com/avatar/";
    private static final String AVATAR_PREFERENCE = "monsterid";
    private static final int AVATAR_IMAGE_SIZE = 128;
-   private static final String DEFAULT_USER_IMAGE = "/plugins/views-common/images/icons/user-default.png";
+   private static final String DEFAULT_USER_IMAGE = "pi pi-user-avatar";
    private static final String DMS_CONTENT_SERVLET_NAME = "/dms-content/";
    private static final String GENERIC_COMPONENT_SELECTION_KEY = "?.#."; // moduleId.viewId.<featureId>
    private static final String REFERENCE_ID = "preference";

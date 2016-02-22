@@ -952,13 +952,16 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
          List<DefaultMutableTreeNode> childNodes = CollectionUtils.newArrayList();
          for (String permissionId : permissionIds)
          {
-            // Create Permission Node
-            DefaultMutableTreeNode treeNode = addPermissionNode(null, permissionId,
-                  (getMessages().getString(PERMISSION_KEY + permissionId)));
-            
-            updateParticipantNodes(treeNode);
-            childNodes.add(treeNode);
+            if(UiPermissionUtils.isGeneralPermissionId(permissionId)){
+               // Create Permission Node
+               DefaultMutableTreeNode treeNode = addPermissionNode(null, permissionId,
+                     (getMessages().getString(PERMISSION_KEY + permissionId)));
+               
+               updateParticipantNodes(treeNode);
+               childNodes.add(treeNode);
+            }
          }
+
          //Sort all permission nodes
          Collections.sort(childNodes, TREE_NODE_COMPARATOR);
          //Add permissions to General Permission's ROOT node

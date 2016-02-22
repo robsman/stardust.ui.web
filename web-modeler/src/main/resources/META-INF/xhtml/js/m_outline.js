@@ -86,7 +86,11 @@ define(
         	isEditLocked=this.model.isReadonly() &&
 				         this.model.editLock &&
 				         ("lockedByOther" === this.model.editLock.lockStatus);
-
+        	
+          if (this.model.isUpgradeNeeded) {
+            modelTreeType = 'model-upgrade';
+          }	
+        	
         if(isLocked){
         	modelTreeType="lockedModel";
         	if(isEditLocked){
@@ -287,8 +291,13 @@ define(
 
       function refreshModelStatus(model) {
         var modelNode = m_utils.jQuerySelect("li#" + model.uuid, displayScope + " #outline");
+        
         modelNode.attr("rel", model.isReadonly() ? "lockedModel" : "model");
 
+        if (model.isUpgradeNeeded && !model.isReadonly()) {
+          modelNode.attr("rel", "model-upgrade");
+        }
+        
         if (model.isReadonly() && model.editLock
             && ("lockedByOther" === model.editLock.lockStatus)) {
 
@@ -303,6 +312,8 @@ define(
       }
 
       var readAllModels = function(force, dontReloadStrategy) {
+        var outlineMsgDiv = jQuery("div#outlineMsgDiv");
+        outlineMsgDiv.hide();
         jQuery("div#outlineLoadingMsg").show();
         jQuery("div#outlineLoadingMsg").html(
             m_i18nUtils.getProperty("modeler.outline.loading.message"));
@@ -319,13 +330,23 @@ define(
         var outlineRoot = jQuery(displayScope + "#outline");
 
         var sessionRef = m_session.initialize();
+        var modelupgradeRequired = false;
         jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", true),
             function(index, model) {
         	  try{
-        		  if (!(model.attributes && model.attributes['simpleModel'])
+        		  if (!(model.attributes && model.attributes['stardust:model:simpleModel'])
         				  || sessionRef.showSimpleModels) {
     	              newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
     	              refreshModelStatus(model);
+                  if (!modelupgradeRequired && model.isUpgradeNeeded && !model.isReadonly()) {
+                    modelupgradeRequired = true;
+                    outlineMsgDiv.show();
+                    var outlineMsg = jQuery("span#outlineMsg");
+                    outlineMsg.html(m_i18nUtils.getProperty("modeler.outline.modelUpgrade.message"));
+                    setTimeout(function() {
+                      outlineMsgDiv.hide();
+                      }, 7000);
+                  }
         		  }
         	  }
         	  catch(err){
@@ -333,7 +354,13 @@ define(
         		  newOutlineTreeDomBuilder(model).buildErroredModelNode(outlineRoot);
         	  }
             });
-
+        
+            if (!modelupgradeRequired) {
+              m_utils.jQuerySelect("#upgradeAllModels").addClass("toolDisabled");
+            } else {
+              m_utils.jQuerySelect("#upgradeAllModels").removeClass("toolDisabled");
+            }
+        
         // Errored models
         jQuery.each(m_utils.convertToSortedArray(m_model.getErroredModels(), "name",
             true), function(index, model) {
@@ -370,7 +397,7 @@ define(
 				}
 			}
 
-			var deployModel = function(modelUUID) {
+			var deployModel = function(modelUUID, overwrite) {
 				var model = m_model.findModelByUuid(modelUUID);
 				var modeleDeployerLink = m_utils.jQuerySelect(
 						"a[id $= 'model_deployer_link']",
@@ -381,7 +408,7 @@ define(
 
 				if (model.fileName && model.filePath) {
 					m_jsfViewManagerHelper.openModelDeploymentDialog(
-							modeleDeployerLinkId, model.fileName,
+							modeleDeployerLinkId, overwrite ? model.id : undefined, model.fileName,
 							model.filePath, formId);
 				} else {
 					alert("Cannot deploy: Model file name / path not available");
@@ -411,6 +438,32 @@ define(
 							});
 				}
 			};
+			
+			var upgradeModel = function(modelUUID) {
+        if (parent.iPopupDialog) {
+          parent.iPopupDialog
+              .openPopup({
+                attributes : {
+                  width : "400px",
+                  height : "250px",
+                  src : m_urlUtils.getPlugsInRoot()
+                      + "bpm-modeler/popups/confirmationPopupDialogContent.html"
+                },
+                payload : {
+                  title : m_i18nUtils
+                      .getProperty("modeler.messages.confirm"),
+                  message : m_i18nUtils
+                      .getProperty("modeler.messages.confirm.modelUpgrade"),
+                  acceptButtonText : m_i18nUtils
+                      .getProperty("modeler.messages.confirm.yes"),
+                  cancelButtonText : m_i18nUtils
+                      .getProperty("modeler.messages.confirm.no"),
+                  acceptFunction : upgradeModels_,
+                  data: {modelUUID: modelUUID}
+                }
+              });
+        }
+      };
 			
 			var versionizeModel2 = function(popupPayload) {
 				var model = m_model.findModelByUuid(popupPayload.modelUUID);				
@@ -558,6 +611,9 @@ define(
 				} else if (type == "interactive") {
 					renameView("uiMashupApplicationView", uuid,
 							"applicationName", name)
+            } else if (type == "decoratorApp") {
+	               renameView("decoratorApplicationView", uuid,
+	                     "applicationName", name)
 				} else if (m_elementConfiguration.isUnSupportedAppType(type)) {
 					renameView("genericApplicationView", uuid,
 							"applicationName", name)
@@ -786,6 +842,43 @@ define(
 								});
 			}
 
+			function upgradeModels_(data) {
+			  var modelId = "All";
+			  
+			  if(data && data.modelUUID) {
+          var model = m_model.findModelByUuid(data.modelUUID)
+          modelId = model.id; 
+        }
+			  
+        m_communicationController
+            .syncGetData(
+                {
+                  url : require("bpm-modeler/js/m_urlUtils")
+                      .getModelerEndpointUrl()
+                      + "/models/upgrade/" + modelId 
+                },
+                new function() {
+                  return {
+                    success : function(data) {
+                      m_messageDisplay.markSaved();
+                      m_modelsSaveStatus.setModelsSaved();
+                      reloadOutlineTree();
+                    },
+                    failure : function(data) {
+                      if (parent.iPopupDialog) {
+                        parent.iPopupDialog
+                            .openPopup(prepareErrorDialogPoupupData(m_i18nUtils
+                                    .getProperty("modeler.messages.confirm.modelUpgradeError"),
+                                "OK"));
+                      } else {
+                        alert("Error upgrading models.");
+                      }
+                    }
+                  }
+                });
+      }
+
+			
 			// TODO - delete
 			// var getTreeNodeId = function (modelId, nodeType, nodeId) {
 			// return modelId + "__" + nodeType + "__" + nodeId;
@@ -809,7 +902,8 @@ define(
 								"items" : function(node) {
 									if ('model' == node.attr('rel')
 											|| 'lockedModel' == node.attr('rel')
-											|| 'lockedModelForEdit' == node.attr('rel')) {
+											|| 'lockedModelForEdit' == node.attr('rel')
+											|| 'model-upgrade' == node.attr('rel') ) {
 										var ctxMenu =  {
 											"ccp" : false,
 											"create" : false,
@@ -847,12 +941,20 @@ define(
 															.attr("elementId"));
 												}
 											},
-											"deploy" : {
+											"deployNewVersion" : {
 												"label" : m_i18nUtils
-														.getProperty("modeler.outline.model.contextMenu.deploy"),
+												.getProperty("modeler.outline.model.contextMenu.deploy.createNewVersion"),
 												"action" : function(obj) {
 													deployModel(obj
 															.attr("id"));
+												}
+											},
+											"deployOverwriteLast" : {
+												"label" : m_i18nUtils
+												.getProperty("modeler.outline.model.contextMenu.deploy.overwriteLastVersion"),
+												"action" : function(obj) {
+													deployModel(obj
+															.attr("id"), true);
 												}
 											},
 											"download" : {
@@ -870,8 +972,15 @@ define(
 													versionizeModel(obj
 															.attr("id"));
 												}
-											}
-
+											},
+											"upgradeModel" : {
+                        "label" : m_i18nUtils
+                            .getProperty("modeler.outline.model.contextMenu.upgrade"),
+                        "action" : function(obj) {
+                          upgradeModel(obj
+                              .attr("id"));
+                        }
+											} 
 										// openModelReport options is
 										// Commented out as,
 										// this will not be supported in
@@ -891,13 +1000,19 @@ define(
 										addMenuOptions(ctxMenu, "model");
 
 										var mod = m_model.findModelByUuid(node.attr('id'))
+										
+                    if (!mod.isUpgradeNeeded) {
+                      ctxMenu.upgradeModel = false;
+                    } 
+										
 										if (mod.isReadonly()) {
 											ctxMenu.rename = false;
 											ctxMenu.deleteModel = false;
 											ctxMenu.deleteModel = false;
 											ctxMenu.createProcess = false;
+											ctxMenu.upgradeModel = false;
 										}
-
+										
 										return ctxMenu;
 									} else if ('erroredModel' == node.attr('rel')) {
 										var ctxMenu =  {
@@ -960,7 +1075,13 @@ define(
 																				.attr("modelUUID"));
 															});
 												}
-											}
+											},
+											"cloneProcess" : {
+                        "label" : m_i18nUtils.getProperty("modeler.outline.contextMenu.clone"),
+                          "action" : function(obj) {
+                          cloneProcess(obj.attr("elementId"), obj.attr("modelUUID"));
+                        }
+                      }
 										};
 
 										addMenuOptions(options,
@@ -1003,7 +1124,15 @@ define(
 													createUiMashupApplication(obj
 															.attr("modelUUID"));
 												}
-											}
+											},
+											"createDecoratorApplication" : {
+                                    "label" : m_i18nUtils
+                                          .getProperty("modeler.outline.applications.contextMenu.createDecorator"),
+                                    "action" : function(obj) {
+                                       createDecoratorApplication(obj
+                                             .attr("modelUUID"));
+                                    }
+                                 }
 										};
 
 										addCamelOverlayMenuOptions(options);
@@ -1406,6 +1535,19 @@ define(
 												"structuredTypes",
 												"data" ]
 									},
+									"model-upgrade" : {
+                    "icon" : {
+                      "image" : m_urlUtils
+                          .getPlugsInRoot()
+                          + "bpm-modeler/images/icons/model-upgrade.png"
+                    },
+                    "valid_children" : [
+                        "participants",
+                        "process",
+                        "applications",
+                        "structuredTypes",
+                        "data" ]
+                  },
 									"lockedModel" : {
 										"icon" : {
 											"image" : m_urlUtils
@@ -1552,6 +1694,13 @@ define(
 													+ "bpm-modeler/images/icons/application-web-service.png"
 										}
 									},
+									"decoratorApp" : {
+                              "icon" : {
+                                 "image" : m_urlUtils
+                                       .getPlugsInRoot()
+                                       + "bpm-modeler/images/icons/applications-blue.png"
+                              }
+                           },
 									"dmsOperation" : {
 										"icon" : {
 											"image" : m_urlUtils
@@ -1726,7 +1875,8 @@ define(
 								function(event, data) {
 									if (data.rslt.obj.attr('rel') == 'model'
 											|| data.rslt.obj.attr('rel') == 'lockedModel'
-											|| data.rslt.obj.attr('rel') == 'lockedModelForEdit') {
+											|| data.rslt.obj.attr('rel') == 'lockedModelForEdit'
+											|| data.rslt.obj.attr('rel') == 'model-upgrade'  ) {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("id"));
@@ -1969,6 +2119,30 @@ define(
 														+ "&modelUUID="
 														+ model.uuid,
 												application.uuid);
+                           } else if (data.rslt.obj.attr('rel') == "decoratorApp") {
+                              var model = m_model
+                                    .findModelByUuid(data.rslt.obj
+                                          .attr("modelUUID"));
+                              var application = model
+                                    .findModelElementByUuid(data.rslt.obj
+                                          .attr("id"));
+
+                              viewManager.openView(
+                                    "decoratorApplicationView",
+                                    "modelId="
+                                          + encodeURIComponent(model.id)
+                                          + "&applicationId="
+                                          + encodeURIComponent(application.id)
+                                          + "&applicationName="
+                                          + encodeURIComponent(application.name)
+                                          + "&fullId="
+                                          + encodeURIComponent(application
+                                                .getFullId())
+                                          + "&uuid="
+                                          + application.uuid
+                                          + "&modelUUID="
+                                          + model.uuid,
+                                    application.uuid);
 									} else if (m_elementConfiguration
 											.isUnSupportedAppType(data.rslt.obj
 													.attr('rel'))) {
@@ -2240,6 +2414,17 @@ define(
 							"id" : processId
 						}));
 			};
+			
+			/**
+			 * 
+			 */
+	    function cloneProcess(processId, modelUUID) {
+        var model = m_model.findModelByUuid(modelUUID);
+        m_commandsController.submitCommand(m_command
+            .createCloneProcessCommand(model.id, model.id, {
+              "id" : processId
+            }));
+      };
 
 			/**
 			 */
@@ -2528,6 +2713,23 @@ define(
 								}));
 				isElementCreatedViaOutline = true;
 			};
+			
+         /**
+         *
+         */
+        function createDecoratorApplication(modelUUId) {
+           var model = m_model.findModelByUuid(modelUUId);
+           var titledata = m_i18nUtils
+                 .getProperty("modeler.outline.newDecorator.namePrefix");
+           var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+
+           m_commandsController.submitCommand(m_command
+                 .createCreateDecoratorAppCommand(model.id, model.id,
+                       {
+                          "name" : name
+                       }));
+           isElementCreatedViaOutline = true;
+        };
 
 			/**
 			 *
@@ -2662,8 +2864,7 @@ define(
 					}
 
 					options[applicationIntegrationOverlayExtension.id] = {
-						label : createTxt + " " +
-								m_i18nUtils.getProperty("modeler.integrationoverlays.application." +
+						label : m_i18nUtils.getProperty("modeler.integrationoverlays.application." +
 								applicationIntegrationOverlayExtension.id),
 
 						// This code requires the following patch in
@@ -2740,7 +2941,9 @@ define(
 						redoLastUndo();
 					} else if ("saveAllModels" == data.id) {
 						saveAllModels();
-					} else if ("refreshModels" == data.id) {
+					} else if ("upgradeAllModels" == data.id) {
+					  upgradeModel();
+          } else if ("refreshModels" == data.id) {
 						refresh();
 					}
 				};
@@ -2837,14 +3040,14 @@ define(
 					url : m_urlUtils.getContextName() + "/services/rest/common/html5/api/themes/current/custom",
 					async : true
 				}).done(function(json){
-					var head = document.getElementsByTagName('head')[0];
+					var body = document.getElementsByTagName('body')[0];
 					
 					for(var i in json.stylesheets) {
 						var link = document.createElement('link');
 						link.href = m_urlUtils.getContextName() + "/" + json.stylesheets[i];
 						link.rel = 'stylesheet';
 						link.type = 'text/css';
-						head.appendChild(link);
+						body.appendChild(link);
 					}
 				}).fail(function(err){
 					m_utils.debug("Failed in loading custom theme");
@@ -2877,6 +3080,11 @@ define(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.saveAllModel"));
+				m_utils.jQuerySelect("#upgradeAllModels")
+        .attr(
+            "title",
+            m_i18nUtils
+                .getProperty("modeler.outline.toolbar.tooltip.upgradeModels"));
 				m_utils.jQuerySelect("#refreshModels")
 						.attr(
 								"title",
@@ -2990,6 +3198,7 @@ define(
 							.parseJSON(command) : command;
 
 					if (null != command && null != command.changes) {
+						var sessionRef = m_session.initialize();
 						for ( var i = 0; i < command.changes.added.length; i++) {
 							// Create Process
 							if (m_constants.PROCESS == command.changes.added[i].type) {
@@ -3047,58 +3256,77 @@ define(
 								node.attr("fullId", modelElement.getFullId());
 								node.attr("name", modelElement.name);
 
-								var textElem = m_utils.jQuerySelect(link.childNodes[1])[0];
-
-								textElem.nodeValue = modelElement.name;
-								m_utils.inheritFields(modelElement,
-										command.changes.modified[i]);
-								if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.modified[i].type
-										|| m_constants.TEAM_LEADER_TYPE == command.changes.modified[i].type) {
-									node.attr("rel",
-											command.changes.modified[i].type);
+								// Delete node if it's found to be a simplemodel node
+								// and "showSimpleModels" configuration flag is set to false
+								var deleted = false;
+								if (link) {
+									if (modelElement.type === "model"
+											&& !sessionRef.showSimpleModels
+											&& modelElement.attributes && modelElement.attributes["stardust:model:simpleModel"]) {
+										m_utils.jQuerySelect(displayScope + "#outline").jstree("remove", "#" + uuid);
+										deleted = true;
+									}
 								}
-
-								// Change icon in case the date type changes
-								if (m_constants.DATA === modelElement.type) {
-									if (modelElement.structuredDataTypeFullId) {
-										var typeDeclaration = m_model.findModel(m_model
-												.stripModelId(modelElement.structuredDataTypeFullId)).typeDeclarations[m_model
-												.stripElementId(modelElement.structuredDataTypeFullId)];
-										if(typeDeclaration.isEnumeration()){
-											node.attr("rel", m_constants.PRIMITIVE_DATA_TYPE);
-										}else{
+								
+								if (link && ! deleted) {
+									var textElem = m_utils.jQuerySelect(link.childNodes[1])[0];
+	
+									textElem.nodeValue = modelElement.name;
+									m_utils.inheritFields(modelElement,
+											command.changes.modified[i]);
+									if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.modified[i].type
+											|| m_constants.TEAM_LEADER_TYPE == command.changes.modified[i].type) {
+										node.attr("rel",
+												command.changes.modified[i].type);
+									}
+	
+									// Change icon in case the date type changes
+									if (m_constants.DATA === modelElement.type) {
+										if (modelElement.structuredDataTypeFullId) {
+											var typeDeclaration = m_model.findModel(m_model
+													.stripModelId(modelElement.structuredDataTypeFullId)).typeDeclarations[m_model
+													.stripElementId(modelElement.structuredDataTypeFullId)];
+											if(typeDeclaration.isEnumeration()){
+												node.attr("rel", m_constants.PRIMITIVE_DATA_TYPE);
+											}else{
+												node.attr("rel",
+														command.changes.modified[i].dataType);
+											}
+										} else {
 											node.attr("rel",
 													command.changes.modified[i].dataType);
 										}
-									} else {
-										node.attr("rel",
-												command.changes.modified[i].dataType);
 									}
-								}
-
-								// Change struct type icon in case the type
-								// changes
-								if (m_constants.TYPE_DECLARATION_PROPERTY === modelElement.type) {
-									node.attr("rel", modelElement.getType());
-								}
-
-								// Change model icon in case the read-only factor has changed.
-								if (m_constants.MODEL === modelElement.type) {
-									modelTreeType="model";
-									if(modelElement.isReadonly()){
-										modelTreeType="lockedModel";
-										if(modelElement.editLock && modelElement.editLock.lockStatus=="lockedByOther"){
-											modelTreeType="lockedModelForEdit";
+	
+									// Change struct type icon in case the type
+									// changes
+									if (m_constants.TYPE_DECLARATION_PROPERTY === modelElement.type) {
+										node.attr("rel", modelElement.getType());
+									}
+	
+									// Change model icon in case the read-only factor has changed.
+									if (m_constants.MODEL === modelElement.type) {
+										modelTreeType="model";
+                    
+                    if (modelElement.isUpgradeNeeded) {
+                      modelTreeType = "model-upgrade";
+                    }
+										
+										if(modelElement.isReadonly()){
+											modelTreeType="lockedModel";
+											if(modelElement.editLock && modelElement.editLock.lockStatus=="lockedByOther"){
+												modelTreeType="lockedModelForEdit";
+											}
+										}
+										node.attr("rel", modelTreeType);
+										if (command.commandId === "modelLockStatus.update" && modelElement.isReadonly()) {
+											var isModelLockCommand = true;
 										}
 									}
-									node.attr("rel", modelTreeType);
-									if (command.commandId === "modelLockStatus.update" && modelElement.isReadonly()) {
-										var isModelLockCommand = true;
-									}
+	
+									renameElementViewLabel(node.attr("rel"), node
+											.attr("id"), node.attr("name"));
 								}
-
-								renameElementViewLabel(node.attr("rel"), node
-										.attr("id"), node.attr("name"));
 							}
 						}
 						for ( var i = 0; i < command.changes.removed.length; i++) {

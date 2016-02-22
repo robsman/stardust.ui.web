@@ -5,5 +5,25 @@
 
 	"scripts" : [],
 
-	"styles" : []
+	"styles" : [],
+	
+	"skip" : {
+		"libs" : [
+			"ckeditor/lang/",
+			"ckeditor/plugins/",
+			"ckeditor/skins/",
+			"ckeditor/build-config.js",
+			"ckeditor/config.js",
+			"ckeditor/styles.js"
+		]
+	},
+
+	"concat-skip" : {
+		"libs" : [
+			"ckeditor/ckeditor.js"
+		],
+		"styles" : [
+			"3rd-party/bootstrap/3.3.2/css/bootstrap-theme.min.css"
+		]
+	}
 }

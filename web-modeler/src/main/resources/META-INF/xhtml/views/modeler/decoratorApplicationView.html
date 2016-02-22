@@ -1,0 +1,242 @@
+<link rel="stylesheet" type="text/css"
+   href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="plugins/bpm-modeler/css/bpm-modeler.custom.jquery.ui.css" rel="stylesheet"
+   type="text/css" />
+
+<script type="text/javascript" src="plugins/bpm-modeler/js/commonRequire.js"></script>
+
+   <div id="decoratorApplicationView"  class="lightdust nativeHtmlViewPanel"
+      style="visibility: hidden">
+      <table cellpadding="0" cellspacing="0" class="layoutTable" style="width: 800px;">
+         <tr>
+            <td>
+               <div class="errorMessagesPanel">
+                  <ul id="errorMessagesList">
+                  </ul>
+               </div>
+            </td>
+         </tr>
+      </table>
+      <div id="hideGeneralProperties">
+         <div class="clplPanelHeading">
+            <img src="./plugins/common/images/panelHeader-triggerExpand.png"
+               title="Show General Properties" styleClass="headerImg"></img> <label>General
+               Properties</label>
+         </div>
+      </div>
+      <div id="showAllProperties">
+         <div id="showGeneralProperties">
+            <div class="clplPanelHeading">
+               <img src="./plugins/common/images/panelHeader-triggerCollapse.png"
+                  title="Hide General Properties" styleClass="headerImg"></img> <label>General
+                  Properties</label>
+            </div>
+         </div>
+         <table cellpadding="0" cellspacing="0" class="layoutTable" style="width: 800px;">
+            <tr>
+               <td>
+                  <table cellpadding="0" cellspacing="0" class="fieldSetTable"
+                     style="margin-bottom: 10px;">
+                     <tr id="guidOutputRow">
+                        <td><label for="guidOutput">UUID</label></td>
+                        <td><div id="guidOutput" class="output">168999</div></td>
+                     </tr>
+                     <tr id="idOutputRow">
+                        <td><label for="idOutput">ID</label></td>
+                        <td><div id="idOutput" class="output"></div></td>
+                     </tr>
+                     <tr>
+                        <td><label for="nameInput" id="application">Application
+                              Name</label></td>
+                        <td><input id="nameInput" type="text"></input></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+            <tr>
+               <td><label for="descriptionTextarea" id="description">Description</label>
+               </td>
+            </tr>
+            <tr>
+               <td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
+               </td>
+            </tr>
+            <tr>
+               <td>
+                  <table cellpadding="0" cellspacing="0" class="fieldSetTable"
+                     style="margin-bottom: 10px;">
+                     <tr>
+                        <td><input id="publicVisibilityCheckbox" type="checkbox"></input>
+                        </td>
+                        <td><label for="publicVisibilityCheckbox"
+                           id="publicVisibility">Public Visibility</label></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <table cellpadding="0" cellspacing="0" class="layoutTable" style="width: 800px;">
+         <tr>
+            <td>
+               <div id="propertiesTabs" class="minimalTabs" style="margin-top: 10px;">
+                  <ul id="propertiesTabsList">
+                     <li><a href="#configurationTab"><img
+                           src="plugins/bpm-modeler/images/icons/application_edit.png"></img><span
+                           class="tabLabel" id="configuration">Configuration</span> </a></li>
+                     <li><a href="#mappingTab"><img
+                           src="plugins/bpm-modeler/images/icons/application_edit.png"></img><span
+                           class="tabLabel" id="mapping"
+                           title="Input Access Points with a default value will not be exposed as Access Points for the Decorator Application">Default
+                              Values</span> </a></li>
+                  </ul>
+                  <div id="configurationTab">
+                     <table>
+                        <tr>
+                           <td style="width: 50%;"><label for="availableModelsInput">Model</label></td>
+                           <td><select id="availableModelsInput"
+                              ng-model="overlayPanel.modelId"
+                              ng-change="overlayPanel.modelIdChanged()">
+                                 <option value=null ng-selected="(overlayPanel.modelId=='' || overlayPanel.modelId==null)?true:false">{{overlayPanel.i18nLabels('none.title')}}</option>
+                                 <option ng-repeat="model in overlayPanel.getAvailableModels()" value="{{model.id}}">{{model.name}}</option>
+                           </select></td>
+                        </tr>
+                        <tr ng-show="overlayPanel.modelId != null ? true : false">
+                           <td><label for="availableElements">Applications /
+                                 Process Interface</label></td>
+                           <td><select id="availableElements"
+                              ng-model="overlayPanel.eltId"
+                              ng-change="overlayPanel.elementChanged()">
+                                 <option value=null
+                                    ng-selected="(overlayPanel.eltId=='' || overlayPanel.eltId==null)?true:false">{{overlayPanel.i18nLabels('none.title')}}</option>
+                                 <optgroup label="Applications"
+                                    ng-show="overlayPanel.getAvailableElements().applications.length > 0?true:false">
+                                    <option
+                                       ng-selected="overlayPanel.eltId == app.getFullId()"
+                                       ng-repeat="app in overlayPanel.getAvailableElements().applications"
+                                       value="{{app.getFullId()}}">{{app.name}}</option>
+                                 </optgroup>
+                                 <optgroup label="Process Definitions"
+                                    ng-show="overlayPanel.getAvailableElements().processes.length > 0?true:false">
+                                    <option
+                                       ng-selected="overlayPanel.eltId == pd.getFullId()"
+                                       ng-repeat="pd in overlayPanel.getAvailableElements().processes"
+                                       value="{{pd.getFullId()}}">{{pd.name}}</option>
+                                 </optgroup>
+                           </select></td>
+                        </tr>
+                     </table>
+                  </div>
+                  <div id="mappingTab">
+                     <div id="applicationView"
+                        ng-show="(overlayPanel.elementType != null && (overlayPanel.elementType=='application' || overlayPanel.elementType=='process'))? true : false">
+                        <div class="heading" style="margin-top: 10px;">
+                           {{overlayPanel.i18nLabels('inputs.title')}}</div>
+                        <table cellpadding="0" cellspacing="0" class="fieldSetTable">
+                           <tr>
+                              <th>{{overlayPanel.i18nLabels('header.name.title')}}</th>
+                              <th>Predefined Values</th>
+                           </tr>
+                           <tr ng-form="subForm"
+                              ng-repeat="ap in overlayPanel.accessPoints | filter : {direction:'IN'}">
+                              <td style="width: 50%;">{{ ap.name }}</td>
+                              <td style="width: 50%;"
+                                 ng-show="ap.dataType =='struct'? true : false"><select
+                                 disabled="true" ng-model="ap.structuredDataTypeFullId"
+                                 ng-options="structuredType.getFullId() as structuredType.name group by structuredType.modelId for structuredType in overlayPanel.getAllStructuredTypes()">
+                              </select></td>
+                              <td ng-show="ap.dataType =='dmsDocument'? true : false">
+                                 <select disabled="true"
+                                 ng-model="ap.structuredDataTypeFullId"
+                                 ng-options="structuredType.getFullId() as structuredType.name group by structuredType.modelId for structuredType in overlayPanel.getAllStructuredTypes()">
+                              </select>
+                              </td>
+                              <td ng-show="ap.dataType == 'primitive'? true : false">
+                                  <div
+                                    ng-show="ap.primitiveDataType =='boolean'? true : false">
+                                    <input type="checkbox"
+                                       ng-init="ap.attributes = ap.attributes || {};"
+                                       ng-model="ap.attributes['carnot:engine:defaultValue']"
+                                       ng-change="overlayPanel.valueChanged(ap)" />
+                                 </div>
+                                 <div ng-show="ap.primitiveDataType =='int'? true : false">
+                                    <input name="intField" class="rightAligned"
+                                       type="text" sd-validate="integer" ng-model-onblur
+                                       ng-pattern="/^(\+|-)?([\d]{0,9})$/"
+                                       ng-init="ap.attributes = ap.attributes || {};"
+                                       ng-model="ap.attributes['carnot:engine:defaultValue']"
+                                       ng-change="overlayPanel.valueChanged(ap)"
+                                       maxlength="10" />
+                                    <div
+                                       ng-show="subForm.intField.$error.number || subForm.intField.$error.validate"
+                                       class="msg-error">{{i18n('html5-common.converter-number-error')}}
+                                    </div>
+                                 </div>
+                                 <div
+                                    ng-show="ap.primitiveDataType =='double'? true : false">
+                                    <input name="doubleField" class="rightAligned"
+                                       type="text" ng-model-onblur
+                                       ng-init="ap.attributes = ap.attributes || {};"
+                                       ng-model="ap.attributes['carnot:engine:defaultValue']"
+                                       maxlength="620"
+                                       ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
+                                       ng-change="overlayPanel.valueChanged(ap)" />
+                                    <div
+                                       ng-show="subForm.doubleField.$error.number || subForm.doubleField.$error.validate"
+                                       class="msg-error">{{i18n('html5-common.converter-number-error')}}
+                                    </div>
+                                 </div>
+                                 <div
+                                    ng-show=" ap.primitiveDataType =='long'? true : false">
+                                    <input name="longField" class="rightAligned"
+                                       type="text" sd-validate="long" ng-model-onblur
+                                       ng-init="ap.attributes = ap.attributes || {};"
+                                       ng-model="ap.attributes['carnot:engine:defaultValue']"
+                                       maxlength="19"
+                                       ng-change="overlayPanel.valueChanged(ap)" />
+                                    <div
+                                       ng-show="subForm.longField.$error.number || subForm.longField.$error.validate"
+                                       class="msg-error">{{i18n('html5-common.converter-number-error')}}
+                                    </div>
+                                 </div>
+                                 <div
+                                    ng-show="ap.primitiveDataType =='String'? true : false">
+                                    <input type="text" ng-model-onblur
+                                       ng-init="ap.attributes = ap.attributes || {};"
+                                       ng-model="ap.attributes['carnot:engine:defaultValue']"
+                                       ng-change="overlayPanel.valueChanged(ap)"
+                                      />
+                                 </div>
+                                 <div
+                                    ng-show="ap.primitiveDataType =='Timestamp'? true : false">
+
+									<input type="text" name="dateField" sd-date-picker
+                                       ng-init="ap.attributes = ap.attributes || {};"
+                                       ng-model="ap.attributes['carnot:engine:defaultValue']"
+                                       ng-change="overlayPanel.valueChanged(ap)"
+										sda-date-format="yy/mm/dd"/>
+									<div ng-show="subForm.dateField.$error.validate" class="msg-error">{{i18n('html5-common.date-error')}}
+									</div>
+                                 </div>
+                              </td>
+                           </tr>
+                        </table>
+                     </div>
+                     <div id="errorView"
+                        ng-show="overlayPanel.elementType == null ? true : false">
+                        <label id="noSelectionErrorMessage"></label>
+                     </div>
+                  </div>
+                  <div ng-repeat="ext in decoratorApplicationView.extensions"
+                     id="{{ext.id}}">
+                     <sd-include src="ext.pageHtmlUrl"
+                        onload="decoratorApplicationViewOnload(ext)"
+                        onfail="decoratorApplicationViewOnfail(ext)" />
+                  </div>
+               </div>
+            </td>
+         </tr>
+      </table>
+   </div>
+   <script type="text/javascript"
+      src="plugins/bpm-modeler/js/decoratorApplicationViewMain.js"></script>

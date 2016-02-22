@@ -1,0 +1,83 @@
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true"
+	ng-controller="sdPostponedActivitiesCtrl as ctrl">
+	<div class="toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="BCC-PostponedActvities-Refresh"></span>
+		</div>
+	</div>
+
+	<div class="view-panel-content">
+		<div class="view-panel-toolbar">{{i18n('business-control-center-messages.views-postponedActivities-title')}}</div>
+
+		<table sd-data-table="ctrl.dataTable" sda-no-pagination="true" aid="BCC-PostponedActvities-DataTbl"
+			sd-data="ctrl.fetchData(params)" sda-ready="ctrl.ready"
+			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sda-sortable="true" sda-sort-by="{name : 'teamMember', dir : 'desc'}"
+			sda-mode="local" sda-no-pagination="true" sda-sortable="false"
+			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}"
+			sda-column-selector="{{ctrl.columnSelector}}">
+			<thead>
+				<tr>
+					<th sda-name="teamMember.displayName" sda-sortable="true" sda-visible="true"
+						sda-fixed="true"
+						sda-label="{{i18n('business-control-center-messages.views-common-column-teamMember')}}">
+						<div sda-filter-template>
+							<div sd-text-search-table-filter></div>
+						</div>
+					</th>
+					<th ng-repeat="col in ctrl.columns" sda-name="p{{$index}}"
+						sda-visible="{{$index < 5}}" sda-label="{{col.label}}"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td sda-exporter="rowData.teamMember.displayName" sda-data-type="string">
+					<a href="#" aid="BCC-PostponedActvities-OpenUserMngrDetails"
+						ng-click="ctrl.openUserManagerDetails(rowData.teamMember);"
+						title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
+						class="button-link tbl-tool-link">
+							{{rowData.teamMember.displayName}} </a></td>
+					<td ng-repeat="col in ctrl.columns" sda-exporter="ctrl.getExportValue(rowData.statsByParticipant[colData.title])"
+						sda-visible="{{$index < 5}}">
+						<div>
+							<b>{{i18n("business-control-center-messages.views-common-column-totalCount")}}:
+							</b>
+							<span ng-if="rowData.statsByParticipant[colData.title].totalCount == 0"
+								ng-bind="rowData.statsByParticipant[colData.title].totalCount"></span>
+							<a ng-if="rowData.statsByParticipant[colData.title].totalCount > 0"  aid="BCC-PostponedActvities-ShowAllActivities"
+								href="#" ng-click="bpmCommon.stopEvent($event); ctrl.showAllActivities(rowData.statsByParticipant[colData.title])">
+								{{rowData.statsByParticipant[colData.title].totalCount}}</a>
+						</div>
+						<div>
+							<b>{{i18n("business-control-center-messages.views-postponedActivities-column-duration")}}
+								: </b> 
+								<span
+								ng-bind="rowData.statsByParticipant[colData.title].avgDuration"></span>
+						</div>
+						<div>
+							<b>{{i18n("business-control-center-messages.views-postponedActivities-column-durationExceed")}}
+								: </b> 
+								<span ng-if="rowData.statsByParticipant[colData.title].exceededDurationCount == 0"
+								ng-bind="rowData.statsByParticipant[colData.title].exceededDurationCount"></span>
+								<a ng-if="rowData.statsByParticipant[colData.title].exceededDurationCount > 0" aid="BCC-PostponedActvities-ShowExceededDurationActivities"
+								href="#" ng-click="bpmCommon.stopEvent($event); ctrl.showExceededActivities(rowData.statsByParticipant[colData.title])">
+								{{rowData.statsByParticipant[colData.title].exceededDurationCount}}</a>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<br>
+	<div class="view-panel-content" ng-if="ctrl.activities.isTableVisible">
+		<div class="view-panel-toolbar">{{i18n('business-control-center-messages.views-postponedActivities-selectedActivitiesTable-title')}}</div>
+
+		<div sd-activity-table="ctrl.activityTable" sda-mode="activityTable" aid="BCC-PostponedActvities-Activity-DataTable"
+			sd-data="ctrl.getActivitiesByOids(params);" sda-extra-columns='["resubmissionTime"]'
+			sda-preference-module="ipp-views-common"
+			sda-preference-id="preference"
+			sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>
+	</div>
+</div>
+</div>

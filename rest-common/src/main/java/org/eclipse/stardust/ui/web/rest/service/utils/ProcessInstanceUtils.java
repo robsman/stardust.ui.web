@@ -10,10 +10,14 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils.isAuxiliaryProcess;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,8 +29,11 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
+import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsLevel;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsOptions;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.Participant;
@@ -38,10 +45,12 @@ import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.query.Query;
+import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
@@ -58,33 +67,53 @@ import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType
 import org.eclipse.stardust.ui.web.rest.FilterDTO.BooleanDTO;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.RangeDTO;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.TextSearchDTO;
+import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbortNotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO.DescriptorFilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.RelatedProcessesDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils.ParticipantType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessContextCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * @author Anoop.Nair
@@ -95,12 +124,12 @@ public class ProcessInstanceUtils
 {
 
    private static final Logger trace = LogManager.getLogger(ProcessInstanceUtils.class);
-   
+
    private static final String COL_PROCESS_NAME = "processName";
 
-   private static final String COL_PROCESS_INSTANCE_OID = "oid";
-   
-   private static final String PROCESS_INSTANCE_ROOT_OID = "processInstanceRootOID";
+   private static final String COL_PROCESS_INSTANCE_OID = "processOID";
+
+   private static final String PROCESS_INSTANCE_ROOT_OID = "rootPOID";
 
    private static final String COL_START_TIME = "startTime";
 
@@ -109,8 +138,10 @@ public class ProcessInstanceUtils
    private static final String COL_STATUS = "status";
 
    private static final String COL_PRIOIRTY = "priority";
-   
+
    private static final String STARTING_USER = "startingUser";
+
+   private static final String COL_BENCHMARK = "benchmark";
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
@@ -120,22 +151,33 @@ public class ProcessInstanceUtils
 
    @Resource
    private ProcessDefinitionUtils processDefinitionUtils;
-   
-   @Resource
-   private ProcessDefinitionUtils processDefUtils;
 
    /**
     * @param oid
     * @return
     */
-   public ProcessInstance getProcessInstance(long oid)
+   public ProcessInstance getProcessInstance(long oid, boolean fetchDescriptors, boolean withHierarchyInfo)
    {
       ProcessInstance pi = null;
       ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
       query.where(ProcessInstanceQuery.OID.isEqual(oid));
-      ProcessInstances pis = serviceFactoryUtils.getQueryService()
-            .getAllProcessInstances(query);
+      
+      if(fetchDescriptors){
+         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      }else{
+         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+      }
+    
+      if (withHierarchyInfo)
+      {
+         ProcessInstanceDetailsPolicy processInstanceDetailsPolicy = new ProcessInstanceDetailsPolicy(
+               ProcessInstanceDetailsLevel.Default);
+         processInstanceDetailsPolicy.getOptions().add(ProcessInstanceDetailsOptions.WITH_HIERARCHY_INFO);
+         query.setPolicy(processInstanceDetailsPolicy);
+      }
 
+      ProcessInstances pis = serviceFactoryUtils.getQueryService().getAllProcessInstances(query);
+      
       if (!pis.isEmpty())
       {
          pi = pis.get(0);
@@ -144,6 +186,21 @@ public class ProcessInstanceUtils
       return pi;
    }
    
+   /**
+    * 
+    * @param oid
+    * @return
+    */
+   public ProcessInstance getProcessInstance(long oid)
+   {
+      return getProcessInstance( oid, false, false);
+   }
+
+   public User getCurrentUser()
+   {
+      return serviceFactoryUtils.getUserService().getUser();
+   }
+
    /**
     * @param instance
     * @return localized process name with OID appended
@@ -159,7 +216,7 @@ public class ProcessInstanceUtils
       }
       return "";
    }
-   
+
    /**
     * 
     * @param processInstance
@@ -169,7 +226,7 @@ public class ProcessInstanceUtils
    {
       return processInstance.getRootProcessInstanceOID() == processInstance.getOID() ? true : false;
    }
-   
+
    /**
     * 
     * @param processInstance
@@ -183,19 +240,19 @@ public class ProcessInstanceUtils
       }
       return true;
    }
-   
+
    private boolean hasManageCasePermission(List<ProcessInstance> sourceProcessInstances)
    {
       for (ProcessInstance pi : sourceProcessInstances)
       {
-         if(!AuthorizationUtils.hasManageCasePermission(pi))
+         if (!AuthorizationUtils.hasManageCasePermission(pi))
          {
-           return false; 
+            return false;
          }
       }
       return true;
    }
-   
+
    /**
     * 
     * @param processInstances
@@ -207,12 +264,12 @@ public class ProcessInstanceUtils
       {
          if (processInstance.getRootProcessInstanceOID() != processInstance.getOID())
          {
-           return false;
+            return false;
          }
       }
       return true;
    }
-   
+
    /**
     * @param oids
     * @return
@@ -221,7 +278,7 @@ public class ProcessInstanceUtils
    {
       return getProcessInstances(oids, false, false);
    }
-   
+
    /**
     * 
     * @param oids
@@ -230,8 +287,8 @@ public class ProcessInstanceUtils
     * @return list of ProcessInstance
     */
    public List<ProcessInstance> getProcessInstances(List<Long> oids, boolean forceReload, boolean withDescriptors)
-   {      
-      
+   {
+
       List<ProcessInstance> processInstances = ProcessContextCacheManager.getInstance().getProcessInstances(oids,
             forceReload, withDescriptors);
 
@@ -241,17 +298,17 @@ public class ProcessInstanceUtils
          if (!oids.isEmpty())
          {
             ProcessInstanceQuery piQuery = ProcessInstanceQuery.findAll();
-            FilterOrTerm orTerm =  piQuery.getFilter().addOrTerm();
-   
+            FilterOrTerm orTerm = piQuery.getFilter().addOrTerm();
+
             if (withDescriptors)
             {
                piQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
             }
-            
+
             // Prepare Data to fetch
             for (Long oid : oids)
             {
-               orTerm.add(new ProcessInstanceFilter(oid,false));
+               orTerm.add(new ProcessInstanceFilter(oid, false));
             }
 
             // Fetch the Data from Engine
@@ -269,7 +326,7 @@ public class ProcessInstanceUtils
 
       return processInstances;
    }
-   
+
    /**
     * 
     * @param processInstance
@@ -314,7 +371,7 @@ public class ProcessInstanceUtils
       return caseOwnerLabel;
 
    }
-   
+
    /**
     * method to find root process of given process without descriptor If checkCaseInstance
     * is true check for caseInstance , and return sourcePI/ParentPI rather than rootPI
@@ -356,7 +413,7 @@ public class ProcessInstanceUtils
       }
       return sourceProcessInstance;
    }
-   
+
    /**
     * @param processInstance
     * @return
@@ -366,7 +423,7 @@ public class ProcessInstanceUtils
       boolean abortable = isAbortableState(processInstance) && AuthorizationUtils.hasAbortPermission(processInstance);
       return abortable;
    }
-   
+
    /**
     * @param processInstance
     * @return
@@ -377,7 +434,7 @@ public class ProcessInstanceUtils
             .getState()) && !ProcessInstanceState.Completed.equals(processInstance.getState());
       return abortable;
    }
-   
+
    /**
     * 
     * @param processInstances
@@ -410,7 +467,7 @@ public class ProcessInstanceUtils
       return false;
 
    }
-   
+
    /**
     * 
     * @param processInstances
@@ -427,7 +484,7 @@ public class ProcessInstanceUtils
       }
       return true;
    }
-   
+
    /**
     * 
     * @param processInstances
@@ -462,7 +519,7 @@ public class ProcessInstanceUtils
       }
       return false;
    }
-   
+
    /**
     * 
     * @param processInstances
@@ -479,44 +536,6 @@ public class ProcessInstanceUtils
       }
       return true;
    }
-   
-   /**
-    * To check that all given ProcessInstance are in same model version for Non-Case
-    * processes,return null if different modelOID else return the common ModelOID
-    * If there is only 1 process i.e Case Process, return Case ModelOID.
-    * 
-    * @return
-    */
-   public Integer getProcessModelOID(List<ProcessInstance> processInstances)
-   {
-      Integer modelOID = null;
-      for (ProcessInstance pi : processInstances)
-      {
-         if (null == modelOID)
-         {
-            if (!pi.isCaseProcessInstance())
-            {
-               modelOID = pi.getModelOID();
-            }
-            else if (processInstances.size() == 1)
-            {
-               modelOID = pi.getModelOID();
-            }
-
-         }
-         else
-         {
-            if (!pi.isCaseProcessInstance())
-            {
-               if (modelOID != pi.getModelOID())
-               {
-                  return null;
-               }
-            }
-         }
-      }
-      return modelOID;
-   }
 
    /**
     * @param oid
@@ -526,17 +545,15 @@ public class ProcessInstanceUtils
    {
       List<Document> processAttachments = CollectionUtils.newArrayList();
 
-      boolean supportsProcessAttachments = supportsProcessAttachments(oid);
+      ProcessInstance processInstance = getProcessInstance(oid);
+      boolean supportsProcessAttachments = supportsProcessAttachments(processInstance);
       if (supportsProcessAttachments)
       {
-         ProcessInstance processInstance = getProcessInstance(oid);
-
          WorkflowService ws = serviceFactoryUtils.getWorkflowService();
-         Object o = ws.getInDataPath(processInstance.getOID(),
-               DmsConstants.PATH_ID_ATTACHMENTS);
+         Object o = ws.getInDataPath(processInstance.getOID(), DmsConstants.PATH_ID_ATTACHMENTS);
 
-         DataDetails data = (DataDetails) modelUtils.getModel(
-               processInstance.getModelOID()).getData(DmsConstants.PATH_ID_ATTACHMENTS);
+         DataDetails data = (DataDetails) modelUtils.getModel(processInstance.getModelOID()).getData(
+               DmsConstants.PATH_ID_ATTACHMENTS);
          if (DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST.equals(data.getTypeId()))
          {
             processAttachments = (List<Document>) o;
@@ -547,6 +564,21 @@ public class ProcessInstanceUtils
    }
 
    /**
+    * @param oid
+    * @return
+    */
+   public List<Document> getProcessInstanceDocumentsForDataPath(ProcessInstance processInstance, String dataPathId)
+   {
+      List<Document> docList = new ArrayList<Document>();
+      Object objectDocument = serviceFactoryUtils.getWorkflowService().getInDataPath(processInstance.getOID(), dataPathId);
+      if (objectDocument != null && objectDocument instanceof Document) {
+         docList.add((Document) objectDocument);
+      }
+
+      return docList;
+   }
+
+   /**
     * return true if the provided Process Instance supports Process Attachments
     *
     * @param oid
@@ -554,23 +586,30 @@ public class ProcessInstanceUtils
     */
    public boolean supportsProcessAttachments(long oid)
    {
-      boolean supportsProcessAttachments = false;
+      return supportsProcessAttachments(getProcessInstance(oid));
+   }
 
-      ProcessInstance processInstance = getProcessInstance(oid);
+   /**
+    * return true if the provided Process Instance supports Process Attachments
+    *
+    * @param oid
+    * @return
+    */
+   public boolean supportsProcessAttachments(ProcessInstance processInstance)
+   {
+      boolean supportsProcessAttachments = false;
 
       if (processInstance != null)
       {
          Model model = modelUtils.getModel(processInstance.getModelOID());
-         ProcessDefinition pd = model != null ? model
-               .getProcessDefinition(processInstance.getProcessID()) : null;
+         ProcessDefinition pd = model != null ? model.getProcessDefinition(processInstance.getProcessID()) : null;
 
-         supportsProcessAttachments = processDefinitionUtils
-               .supportsProcessAttachments(pd);
+         supportsProcessAttachments = processDefinitionUtils.supportsProcessAttachments(pd);
       }
 
       return supportsProcessAttachments;
    }
-   
+
    /**
     * Get all process instances count
     * 
@@ -586,21 +625,21 @@ public class ProcessInstanceUtils
          countDTO.aborted = getAbortedProcessInstancesCount();
          countDTO.active = getActiveProcessInstancesCount();
          countDTO.total = getTotalProcessInstancesCount();
-         countDTO.waiting = getInterruptedProcessInstancesCount();
+         countDTO.interrupted = getInterruptedProcessInstancesCount();
          countDTO.completed = getCompletedProcessInstancesCount();
       }
       catch (PortalException e)
       {
          trace.error("Error occurred.", e);
       }
-      
+
       return countDTO;
 
    }
-   
+
    public void recoverProcesses(List<Long> processOids)
    {
-      if(processOids != null && !CollectionUtils.isEmpty(processOids))
+      if (processOids != null && !CollectionUtils.isEmpty(processOids))
       {
          AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
          if (adminService != null)
@@ -609,98 +648,77 @@ public class ProcessInstanceUtils
          }
       }
    }
-   
-   public List<ProcessDefinition> spawnableProcesses(List<Long> processInstOIDs) throws Exception
+
+   public List<ProcessDefinition> getTargetProcessesForSpawnSwitch() throws Exception
    {
-      List<ProcessInstance> processInstances = new ArrayList<ProcessInstance>();
-      for (Long processInstOID : processInstOIDs) {
-          ProcessInstance processInstance = getProcessInstance(processInstOID);
-          processInstances.add(processInstance);
-      }
-      
-      if (CollectionUtils.isNotEmpty(processInstances)) {
-         
-         Integer modelOID = getProcessModelOID(processInstances);
+      ProcessDefinitions pds = serviceFactoryUtils.getQueryService().getProcessDefinitions(
+            ProcessDefinitionQuery.findStartable());
 
-           if (null == modelOID)
-           {
-              MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
-              String mesg = propsBean.getString("views.switchProcessDialog.pisInDiffModels");
-              trace.info(mesg);
-              
-              throw new Exception(mesg);
-           }
-         
-          ProcessDefinitions pds = serviceFactoryUtils.getQueryService().getProcessDefinitions(
-          ProcessDefinitionQuery.findStartable(modelOID));
-          
-          List<ProcessDefinition> filteredPds = new ArrayList<ProcessDefinition>(pds);
-          processDefinitionUtils.sort(filteredPds);
+      List<ProcessDefinition> filteredPds = new ArrayList<ProcessDefinition>(pds);
+      processDefinitionUtils.sort(filteredPds);
 
-          return filteredPds;
-      }
-      return null;
+      return filteredPds;
    }
-   
+
    public List<AbortNotificationDTO> checkIfProcessesAbortable(List<Long> processInstOIDs, String abortType)
    {
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
-     List<AbortNotificationDTO> notAbortableProcesses = new ArrayList<AbortNotificationDTO>();
-   
-     for (Long processInstOID : processInstOIDs)
-     {
-        ProcessInstance processInstance = getProcessInstance(processInstOID);
-        processInstance = getRootProcessInstance(processInstance, true);
-   
-        ProcessInstanceDTO processInstanceDTO = new ProcessInstanceDTO();
-        processInstanceDTO.processName = getProcessLabel(processInstance);
-        processInstanceDTO.oid = processInstance.getOID();
-   
-        AbortNotificationDTO switchNotificationDTO = null;
-   
-        if ("abortandstart".equals(abortType))
-        {
-           if (!AuthorizationUtils.hasAbortPermission(processInstance))
-           {
-              switchNotificationDTO = new AbortNotificationDTO();
-              switchNotificationDTO.statusMessage = propsBean.getString("common.authorization.msg");
-           }
-           else if (!isAbortable(processInstance))
-           {
-              switchNotificationDTO = new AbortNotificationDTO();
-              switchNotificationDTO.statusMessage = propsBean.getString("common.notifyProcessAlreadyAborted");
-           }
-           else if (processInstance.isCaseProcessInstance())
-           {
-              switchNotificationDTO = new AbortNotificationDTO();
-              switchNotificationDTO.statusMessage = propsBean.getString("views.switchProcessDialog.caseAbort.message");
-           }
-        }
-        else if ("abortandjoin".equals(abortType))
-        {
-           if (processInstance.isCaseProcessInstance() && !AuthorizationUtils.hasManageCasePermission(processInstance))
-           {
-              switchNotificationDTO = new AbortNotificationDTO();
-              switchNotificationDTO.statusMessage = propsBean.getString("common.authorization.msg");
-           }
-           else if (!isAbortableState(processInstance))
-           {
-              switchNotificationDTO = new AbortNotificationDTO();
-              switchNotificationDTO.statusMessage = propsBean.getString("common.notifyProcessAlreadyAborted");
-           }
-        }
-   
-        if (switchNotificationDTO != null)
-        {
-           switchNotificationDTO.abortedProcess = processInstanceDTO;
-   
-           notAbortableProcesses.add(switchNotificationDTO);
-        }
-     }
-     
-     return notAbortableProcesses;
+      List<AbortNotificationDTO> notAbortableProcesses = new ArrayList<AbortNotificationDTO>();
+
+      for (Long processInstOID : processInstOIDs)
+      {
+         ProcessInstance processInstance = getProcessInstance(processInstOID);
+         processInstance = getRootProcessInstance(processInstance, true);
+
+         ProcessInstanceDTO processInstanceDTO = new ProcessInstanceDTO();
+         processInstanceDTO.processName = getProcessLabel(processInstance);
+         processInstanceDTO.oid = processInstance.getOID();
+
+         AbortNotificationDTO switchNotificationDTO = null;
+
+         if ("abortandstart".equals(abortType))
+         {
+            if (!AuthorizationUtils.hasAbortPermission(processInstance))
+            {
+               switchNotificationDTO = new AbortNotificationDTO();
+               switchNotificationDTO.statusMessage = propsBean.getString("common.authorization.msg");
+            }
+            else if (!isAbortable(processInstance))
+            {
+               switchNotificationDTO = new AbortNotificationDTO();
+               switchNotificationDTO.statusMessage = propsBean.getString("common.notifyProcessAlreadyAborted");
+            }
+            else if (processInstance.isCaseProcessInstance())
+            {
+               switchNotificationDTO = new AbortNotificationDTO();
+               switchNotificationDTO.statusMessage = propsBean.getString("views.switchProcessDialog.caseAbort.message");
+            }
+         }
+         else if ("abortandjoin".equals(abortType))
+         {
+            if (processInstance.isCaseProcessInstance() && !AuthorizationUtils.hasManageCasePermission(processInstance))
+            {
+               switchNotificationDTO = new AbortNotificationDTO();
+               switchNotificationDTO.statusMessage = propsBean.getString("common.authorization.msg");
+            }
+            else if (!isAbortableState(processInstance))
+            {
+               switchNotificationDTO = new AbortNotificationDTO();
+               switchNotificationDTO.statusMessage = propsBean.getString("common.notifyProcessAlreadyAborted");
+            }
+         }
+
+         if (switchNotificationDTO != null)
+         {
+            switchNotificationDTO.abortedProcess = processInstanceDTO;
+
+            notAbortableProcesses.add(switchNotificationDTO);
+         }
+      }
+
+      return notAbortableProcesses;
    }
-   
+
    public List<AbortNotificationDTO> switchProcess(List<Long> processInstOIDs, String processId, String linkComment)
    {
       List<AbortNotificationDTO> newProcessInstances = new ArrayList<AbortNotificationDTO>();
@@ -729,8 +747,8 @@ public class ProcessInstanceUtils
 
          try
          {
-            ProcessInstance pi = serviceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(processInstOID, processId,
-                  true, null, true, linkComment);
+            ProcessInstance pi = serviceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(processInstOID,
+                  processId, true, null, true, linkComment);
 
             if (pi != null)
             {
@@ -744,7 +762,8 @@ public class ProcessInstanceUtils
          }
          catch (Exception e)
          {
-            trace.error("Unable to abort the process with oid: " + processInstOID + " and target process id: " + processId);
+            trace.error("Unable to abort the process with oid: " + processInstOID + " and target process id: "
+                  + processId);
             trace.error(e, e);
 
             switchNotificationDTO.statusMessage = propsBean.getString("common.fail");
@@ -755,106 +774,120 @@ public class ProcessInstanceUtils
 
       return newProcessInstances;
    }
-   
-   public AbortNotificationDTO abortAndJoinProcess(Long sourceProcessInstanceOid, Long targetProcessInstanceOid, String linkComment)
+
+   public AbortNotificationDTO abortAndJoinProcess(Long sourceProcessInstanceOid, Long targetProcessInstanceOid,
+         String linkComment)
    {
       boolean caseScope = false;
-      if (sourceProcessInstanceOid != null) {
+      if (sourceProcessInstanceOid != null)
+      {
          ProcessInstance processInstance = getProcessInstance(sourceProcessInstanceOid);
          caseScope = processInstance.isCaseProcessInstance();
       }
-      
+
       ProcessInstance srcProcessInstance = getProcessInstance(sourceProcessInstanceOid);
-      
+
       AbortNotificationDTO joinNotificationDTO = new AbortNotificationDTO();
-      
+
       ProcessInstanceDTO source = new ProcessInstanceDTO();
       source.processName = getProcessLabel(srcProcessInstance);
       source.oid = srcProcessInstance.getOID();
       joinNotificationDTO.abortedProcess = source;
-      
+
       // Validation cases
-      NotificationMessageDTO validationMessage = validateAbortAndJoin(caseScope, sourceProcessInstanceOid, targetProcessInstanceOid);
-      if (validationMessage != null) {
+      NotificationMessageDTO validationMessage = validateAbortAndJoin(caseScope, sourceProcessInstanceOid,
+            targetProcessInstanceOid);
+      if (validationMessage != null)
+      {
          // Validation fails
          joinNotificationDTO.statusMessage = validationMessage.message;
-         
+
          return joinNotificationDTO;
       }
-      
+
       ProcessInstance targetProcessInstance = null;
-      
-      if (!srcProcessInstance.isCaseProcessInstance()) {
-          targetProcessInstance = serviceFactoryUtils.getWorkflowService().joinProcessInstance(
-                  sourceProcessInstanceOid, targetProcessInstanceOid, linkComment);
-      } else {
-            targetProcessInstance = serviceFactoryUtils.getWorkflowService().mergeCases(
-                    sourceProcessInstanceOid, new long[] {sourceProcessInstanceOid}, linkComment);
-            
-            CommonDescriptorUtils.reCalculateCaseDescriptors(srcProcessInstance);
-            CommonDescriptorUtils.reCalculateCaseDescriptors(targetProcessInstance);
+
+      if (!srcProcessInstance.isCaseProcessInstance())
+      {
+         targetProcessInstance = serviceFactoryUtils.getWorkflowService().joinProcessInstance(sourceProcessInstanceOid,
+               targetProcessInstanceOid, linkComment);
       }
-      
+      else
+      {
+         targetProcessInstance = serviceFactoryUtils.getWorkflowService().mergeCases(targetProcessInstanceOid,
+               new long[] {sourceProcessInstanceOid}, linkComment);
+
+         CommonDescriptorUtils.reCalculateCaseDescriptors(srcProcessInstance);
+         CommonDescriptorUtils.reCalculateCaseDescriptors(targetProcessInstance);
+      }
+
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
-      
-      if (targetProcessInstance != null) {
-          ProcessInstanceDTO target = new ProcessInstanceDTO();
-          target.processName = getProcessLabel(targetProcessInstance);
-          target.oid = targetProcessInstance.getOID();
-          joinNotificationDTO.targetProcess = target;
+
+      if (targetProcessInstance != null)
+      {
+         ProcessInstanceDTO target = new ProcessInstanceDTO();
+         target.processName = getProcessLabel(targetProcessInstance);
+         target.oid = targetProcessInstance.getOID();
+         joinNotificationDTO.targetProcess = target;
       }
-              
+
       joinNotificationDTO.abortedProcess = source;
-      
+
       joinNotificationDTO.statusMessage = propsBean.getString("common.success");
-      
+
       return joinNotificationDTO;
    }
-   
-   public List<RelatedProcessesDTO> getRelatedProcesses(List<Long> processInstOIDs, boolean matchAny, boolean searchCases)
+
+   public List<RelatedProcessesDTO> getRelatedProcesses(List<Long> processInstOIDs, boolean matchAny,
+         boolean searchCases)
    {
       List<ProcessInstance> sourceProcessInstances = new ArrayList<ProcessInstance>();
-      for (Long processInstOID : processInstOIDs) {
-        ProcessInstance srcProcessInstance = getProcessInstance(processInstOID);
-        sourceProcessInstances.add(srcProcessInstance);
+      for (Long processInstOID : processInstOIDs)
+      {
+         ProcessInstance srcProcessInstance = getProcessInstance(processInstOID);
+         sourceProcessInstances.add(srcProcessInstance);
       }
-      
-      List<ProcessInstance> result = RelatedProcessSearchUtils.getProcessInstances(sourceProcessInstances, matchAny, searchCases);
-      
+
+      List<ProcessInstance> result = RelatedProcessSearchUtils.getProcessInstances(sourceProcessInstances, matchAny,
+            searchCases);
+
       List<RelatedProcessesDTO> relatedProcesses = new ArrayList<RelatedProcessesDTO>();
-      
-      for (ProcessInstance pi : result) {
-          relatedProcesses.add(getRelatedProcessesDTO(pi));
+
+      for (ProcessInstance pi : result)
+      {
+         relatedProcesses.add(getRelatedProcessesDTO(pi));
       }
-      
+
       return relatedProcesses;
    }
-   
+
    public NotificationMessageDTO attachToCase(List<Long> sourceProcessInstanceOids, Long targetOid)
    {
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
-      
+
       if (null == sourceProcessInstanceOids || CollectionUtils.isEmpty(sourceProcessInstanceOids))
       {
          NotificationMessageDTO exception = new NotificationMessageDTO();
          exception.success = false;
          exception.message = propsBean.getString("views.attachToCase.selectProcessToAttachToCase");
-         
+
          return exception;
       }
-      
+
       boolean caseScope = false;
-      if (sourceProcessInstanceOids.size() == 1) {
+      if (sourceProcessInstanceOids.size() == 1)
+      {
          ProcessInstance processInstance = getProcessInstance(sourceProcessInstanceOids.get(0));
          caseScope = processInstance.isCaseProcessInstance();
       }
-      
+
       // Validation cases
       NotificationMessageDTO validationMessage = validateAttachToCase(caseScope, sourceProcessInstanceOids, targetOid);
-      if (validationMessage != null) {
+      if (validationMessage != null)
+      {
          return validationMessage;
       }
-      
+
       long[] members;
       Long caseOID = null;
       if (!caseScope)
@@ -871,17 +904,17 @@ public class ProcessInstanceUtils
          caseOID = sourceProcessInstanceOids.get(0);
          members = new long[] {targetOid};
       }
-      
+
       ProcessInstance caseInstance = getProcessInstance(caseOID);
       if (AuthorizationUtils.hasManageCasePermission(caseInstance))
       {
          serviceFactoryUtils.getWorkflowService().joinCase(caseOID, members);
          CommonDescriptorUtils.reCalculateCaseDescriptors(caseInstance);
-         
+
          String message = "";
          if (caseScope)
          {
-            
+
             message = propsBean.getParamString("views.attachToCase.successProcessAttachToCase.message",
                   getProcessLabel(getProcessInstance(sourceProcessInstanceOids.get(0))), getProcessLabel(caseInstance));
          }
@@ -890,11 +923,11 @@ public class ProcessInstanceUtils
             message = propsBean.getParamString("views.attachToCase.successProcessesAttachToCase.message",
                   getProcessLabel(caseInstance));
          }
-         
+
          NotificationMessageDTO success = new NotificationMessageDTO();
          success.success = true;
          success.message = message;
-         
+
          return success;
       }
       else
@@ -902,28 +935,32 @@ public class ProcessInstanceUtils
          NotificationMessageDTO exception = new NotificationMessageDTO();
          exception.success = false;
          exception.message = propsBean.getString("views.attachToCase.caseAttach.notAuthorizedToManageCase");
-         
+
          return exception;
       }
    }
-   
-   public NotificationMessageDTO createCase(List<Long> sourceProcessInstanceOids, String caseName, String description, String note) {
+
+   public NotificationMessageDTO createCase(List<Long> sourceProcessInstanceOids, String caseName, String description,
+         String note)
+   {
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
       try
       {
          // Validation cases
          NotificationMessageDTO validationMessage = validateCreateCase(sourceProcessInstanceOids, caseName);
-         if (validationMessage != null) {
+         if (validationMessage != null)
+         {
             return validationMessage;
          }
-         
+
          // create Case
          long[] processOIDs = new long[sourceProcessInstanceOids.size()];
          for (int i = 0; i < processOIDs.length; i++)
          {
             processOIDs[i] = sourceProcessInstanceOids.get(i);
          }
-         ProcessInstance caseProcessInstance = serviceFactoryUtils.getWorkflowService().createCase(caseName,description, processOIDs);
+         ProcessInstance caseProcessInstance = serviceFactoryUtils.getWorkflowService().createCase(caseName,
+               description, processOIDs);
          CommonDescriptorUtils.reCalculateCaseDescriptors(caseProcessInstance);
 
          // add notes
@@ -933,61 +970,67 @@ public class ProcessInstanceUtils
             attributes.addNote(note, ContextKind.ProcessInstance, caseProcessInstance.getOID());
             serviceFactoryUtils.getWorkflowService().setProcessInstanceAttributes(attributes);
          }
-         
+
          NotificationMessageDTO success = new NotificationMessageDTO();
          success.success = true;
          success.message = String.valueOf(caseProcessInstance.getOID());
-         
+
          return success;
       }
       catch (Exception e)
       {
          NotificationMessageDTO exception = new NotificationMessageDTO();
          exception.success = false;
-         exception.message = propsBean.getString("views.createCase.caseException") + " : "
-               + e.getLocalizedMessage();
-         
+         exception.message = propsBean.getString("views.createCase.caseException") + " : " + e.getLocalizedMessage();
+
          return exception;
       }
    }
-   
+
    /**
     * 
     * @param pi
     * @return
     */
-   private RelatedProcessesDTO getRelatedProcessesDTO(ProcessInstance pi) {
-       RelatedProcessesDTO dto = new RelatedProcessesDTO();
-       MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
-       ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(pi.getModelOID(),
-               pi.getProcessID());
-       
-       dto.processName = I18nUtils.getProcessName(processDefinition);;
-       dto.oid = pi.getOID();
-       if (pi.getPriority() == 1) {
-           dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.high");
-       } else if (pi.getPriority() == -1) {
-           dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.low");
-       } else {
-           dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.normal");
-       }
-       
-       dto.descriptorValues = ((ProcessInstanceDetails) pi).getDescriptors();
-       dto.startTime = pi.getStartTime();
-       
-       dto.caseInstance = pi.isCaseProcessInstance();
-     if (pi.isCaseProcessInstance())
-     {
-        dto.caseOwner = getCaseOwnerName(pi);
-     }
-     else
-     {
-        dto.caseOwner = null;
-     }
-       
-       return dto;
+   private RelatedProcessesDTO getRelatedProcessesDTO(ProcessInstance pi)
+   {
+      RelatedProcessesDTO dto = new RelatedProcessesDTO();
+      MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
+      ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(pi.getModelOID(),
+            pi.getProcessID());
+
+      dto.processName = I18nUtils.getProcessName(processDefinition);
+      ;
+      dto.oid = pi.getOID();
+      if (pi.getPriority() == 1)
+      {
+         dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.high");
+      }
+      else if (pi.getPriority() == -1)
+      {
+         dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.low");
+      }
+      else
+      {
+         dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.normal");
+      }
+
+      dto.descriptorValues = ((ProcessInstanceDetails) pi).getDescriptors();
+      dto.startTime = pi.getStartTime();
+
+      dto.caseInstance = pi.isCaseProcessInstance();
+      if (pi.isCaseProcessInstance())
+      {
+         dto.caseOwner = getCaseOwnerName(pi);
+      }
+      else
+      {
+         dto.caseOwner = null;
+      }
+
+      return dto;
    }
-   
+
    private NotificationMessageDTO validateAbortAndJoin(boolean caseScope, Long sourceProcessInstanceOid,
          Long targetProcessInstanceOid)
    {
@@ -1124,16 +1167,17 @@ public class ProcessInstanceUtils
       }
       return null;
    }
-   
-   private NotificationMessageDTO validateAttachToCase(boolean caseScope, List<Long> sourceProcessInstanceOids, Long targetOid)
+
+   private NotificationMessageDTO validateAttachToCase(boolean caseScope, List<Long> sourceProcessInstanceOids,
+         Long targetOid)
    {
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
       NotificationMessageDTO validationMessage = new NotificationMessageDTO();
       validationMessage.success = false;
       ProcessInstance targetInstance;
-      
+
       List<ProcessInstance> sourceProcessInstances = getProcessInstances(sourceProcessInstanceOids);
-      
+
       boolean isRootProcessInstances = isRootProcessInstances(sourceProcessInstances);
 
       if (isRootProcessInstances)
@@ -1172,14 +1216,14 @@ public class ProcessInstanceUtils
          validationMessage.message = propsBean.getString("views.attachToCase.nonRootProcessSelectedToCreateCase");
          return validationMessage;
       }
-      
+
       if (caseScope && !hasManageCasePermission(sourceProcessInstances))
       {
          validationMessage.message = propsBean.getString("views.attachToCase.caseAttach.notAuthorizedToManageCase");
          return validationMessage;
       }
-      
-      if(null == targetOid)
+
+      if (null == targetOid)
       {
          validationMessage.success = false;
          if (caseScope)
@@ -1192,9 +1236,9 @@ public class ProcessInstanceUtils
          }
          return validationMessage;
       }
-      
+
       targetInstance = getProcessInstance(targetOid);
-     
+
       if (null == targetInstance)
       {
          validationMessage.success = false;
@@ -1208,20 +1252,20 @@ public class ProcessInstanceUtils
          }
          return validationMessage;
       }
-      
+
       boolean isTargetCase = targetInstance.isCaseProcessInstance();
-      
+
       if (!caseScope && !isTargetCase)
       {
          validationMessage.message = propsBean.getString("views.attachToCase.inputIsProcess.message");
          return validationMessage;
       }
-      else if (!caseScope && isTargetCase && ! AuthorizationUtils.hasManageCasePermission(targetInstance))
+      else if (!caseScope && isTargetCase && !AuthorizationUtils.hasManageCasePermission(targetInstance))
       {
          validationMessage.message = propsBean.getString("views.attachToCase.caseAttach.notAuthorizedToManageCase");
          return validationMessage;
       }
-      else if(!caseScope && !isRootProcessInstance(targetInstance))
+      else if (!caseScope && !isRootProcessInstance(targetInstance))
       {
          validationMessage.message = propsBean.getString("views.attachToCase.nonRootProcessSelectedToCreateCase");
          return validationMessage;
@@ -1258,32 +1302,28 @@ public class ProcessInstanceUtils
             if (null != processInstanceOid)
             {
                processInstance = this.getProcessInstance(processInstanceOid.longValue());
-               if (processInstance != null
-                     && isAbortable(processInstance))
+               if (processInstance != null && isAbortable(processInstance))
                {
                   try
                   {
                      if (processInstance.isCaseProcessInstance())
                      {
-                        notificationMap
-                              .addFailure(new NotificationDTO(processInstanceOid,
-                                    org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                                          .getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance()
-                                          .getParamString(
-                                                "views.switchProcessDialog.caseAbort.message",
-                                                org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                                                      .getProcessStateLabel(processInstance))));
+                        notificationMap.addFailure(new NotificationDTO(processInstanceOid,
+                              org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                                    .getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance()
+                                    .getParamString(
+                                          "views.switchProcessDialog.caseAbort.message",
+                                          org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                                                .getProcessStateLabel(processInstance))));
                      }
                      else
                      {
-                        abortProcess(processInstance,
-                              abortScope);
-                        notificationMap
-                              .addSuccess(new NotificationDTO(processInstanceOid,
-                                    org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                                          .getProcessLabel(processInstance),
-                                    org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                                          .getProcessStateLabel(processInstance)));
+                        abortProcess(processInstance, abortScope);
+                        notificationMap.addSuccess(new NotificationDTO(processInstanceOid,
+                              org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                                    .getProcessLabel(processInstance),
+                              org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                                    .getProcessStateLabel(processInstance)));
                      }
                   }
                   catch (Exception e)
@@ -1292,8 +1332,8 @@ public class ProcessInstanceUtils
                      // here
                      trace.error(e);
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
-                           getProcessLabel(processInstance),
-                           MessagesViewsCommonBean.getInstance().getParamString("views.common.process.abortProcess.failureMsg2",
+                           getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getParamString(
+                                 "views.common.process.abortProcess.failureMsg2",
                                  ExceptionHandler.getExceptionMessage(e))));
                   }
                }
@@ -1303,8 +1343,7 @@ public class ProcessInstanceUtils
                         || ProcessInstanceState.Completed.equals(processInstance.getState()))
                   {
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
-                           getProcessLabel(processInstance),
-                           MessagesViewsCommonBean.getInstance().getParamString(
+                           getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getParamString(
                                  "views.common.process.abortProcess.failureMsg3",
                                  org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
                                        .getProcessStateLabel(processInstance))));
@@ -1312,8 +1351,8 @@ public class ProcessInstanceUtils
                   else
                   {
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
-                           getProcessLabel(processInstance),
-                           MessagesViewsCommonBean.getInstance().getString("views.common.process.abortProcess.failureMsg1")));
+                           getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getString(
+                                 "views.common.process.abortProcess.failureMsg1")));
                   }
                }
             }
@@ -1321,7 +1360,7 @@ public class ProcessInstanceUtils
       }
       return notificationMap;
    }
-   
+
    /**
     * abort process
     * 
@@ -1340,40 +1379,42 @@ public class ProcessInstanceUtils
       else
       {
          // startingActivityInstanceOid = 0 means you don't have AI reference, and through
-         // PI will be aborted(sub hierarchy or root process hierarchy) as per abort scope         
+         // PI will be aborted(sub hierarchy or root process hierarchy) as per abort scope
          workflowService.abortProcessInstance(processInstanceDetails.getOID(), abortScope);
       }
    }
-   
-   
+
    /**
     * 
+    * @param query
     * @param options
     * @return
     */
-   public ProcessInstances getProcessInstances(Options options)
+   public ProcessInstances getProcessInstances(ProcessInstanceQuery query, Options options)
    {
-      ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
-      
+      if (query == null)
+      {
+         query = ProcessInstanceQuery.findAll();
+      }
+
       addDescriptorPolicy(options, query);
 
       addSortCriteria(query, options);
 
       addFilterCriteria(query, options);
-      
-      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip,
-            true);
+
+      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
       query.setPolicy(subsetPolicy);
-      
-      return serviceFactoryUtils.getQueryService().getAllProcessInstances(query);      
+
+      return serviceFactoryUtils.getQueryService().getAllProcessInstances(query);
    }
-   
+
    private Long getProcessInstancesCount(ProcessInstanceQuery query)
    {
       QueryService service = serviceFactoryUtils.getQueryService();
       return new Long(service.getProcessInstancesCount(query));
    }
-   
+
    private long getTotalProcessInstancesCount() throws PortalException
    {
       return getProcessInstancesCount(ProcessInstanceQuery.findAll());
@@ -1398,7 +1439,7 @@ public class ProcessInstanceUtils
    {
       return getProcessInstancesCount(ProcessInstanceQuery.findInState(ProcessInstanceState.Aborted));
    }
-   
+
    /**
     * Adds filter criteria to the query
     *
@@ -1420,28 +1461,28 @@ public class ProcessInstanceUtils
       FilterAndTerm filter = query.getFilter().addAndTerm();
 
       // Root process instance OID
-      if (null != filterDTO.processInstanceRootOID)
+      if (null != filterDTO.rootPOID)
       {
 
-         if (null != filterDTO.processInstanceRootOID.from)
+         if (null != filterDTO.rootPOID.from)
          {
-            filter.and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.greaterOrEqual(filterDTO.processInstanceRootOID.from));
+            filter.and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.greaterOrEqual(filterDTO.rootPOID.from));
          }
-         if (null != filterDTO.processInstanceRootOID.to)
+         if (null != filterDTO.rootPOID.to)
          {
-            filter.and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.lessOrEqual(filterDTO.processInstanceRootOID.to));
+            filter.and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.lessOrEqual(filterDTO.rootPOID.to));
          }
       }
       // process instance OID
-      if (null != filterDTO.oid)
+      if (null != filterDTO.processOID)
       {
-         if (null != filterDTO.oid.from)
+         if (null != filterDTO.processOID.from)
          {
-            filter.and(ProcessInstanceQuery.OID.greaterOrEqual(filterDTO.oid.from));
+            filter.and(ProcessInstanceQuery.OID.greaterOrEqual(filterDTO.processOID.from));
          }
-         if (null != filterDTO.oid.to)
+         if (null != filterDTO.processOID.to)
          {
-            filter.and(ProcessInstanceQuery.OID.lessOrEqual(filterDTO.oid.to));
+            filter.and(ProcessInstanceQuery.OID.lessOrEqual(filterDTO.processOID.to));
          }
       }
 
@@ -1520,7 +1561,7 @@ public class ProcessInstanceUtils
       if (null != filterDTO.startingUser)
       {
          FilterOrTerm or = filter.addOrTerm();
-         for (ParticipantSearchResponseDTO user : filterDTO.startingUser.participants)
+         for (ParticipantDTO user : filterDTO.startingUser.participants)
          {
             or.add(new org.eclipse.stardust.engine.api.query.StartingUserFilter(user.OID));
          }
@@ -1530,53 +1571,58 @@ public class ProcessInstanceUtils
       addDescriptorFilters(query, filterDTO);
 
    }
+
    /**
     * Add descriptor policy
+    * 
     * @param options
     * @param query
     */
 
    private void addDescriptorPolicy(Options options, Query query)
    {
-      
-      if(options.allDescriptorsVisible){
+
+      if (options.allDescriptorsVisible)
+      {
          query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-      }else if(CollectionUtils.isNotEmpty(options.visibleDescriptorColumns)){          
+      }
+      else if (CollectionUtils.isNotEmpty(options.visibleDescriptorColumns))
+      {
          query.setPolicy(DescriptorPolicy.withIds(new HashSet<String>(options.visibleDescriptorColumns)));
-      }else{
+      }
+      else
+      {
          query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
       }
    }
 
    /**
     * Add filter on descriptor columns .
+    * 
     * @param query
     * @param processListFilterDTO
     */
-   private void addDescriptorFilters(Query query, ProcessTableFilterDTO processListFilterDTO)
+   public static void addDescriptorFilters(Query query, ProcessTableFilterDTO processListFilterDTO)
    {
 
       Map<String, DescriptorFilterDTO> descFilterMap = processListFilterDTO.descriptorFilterMap;
 
       if (null != descFilterMap)
       {
-        
-         Map<String, DataPath> descriptors = processDefUtils.getAllDescriptors(false);
-         GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel
-               .create(descriptors.values());
+
+         Map<String, DataPath> descriptors = ProcessDefinitionUtils.getAllDescriptors(false);
+         GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel.create(descriptors.values());
          filterModel.setFilterEnabled(true);
 
-         for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap
-               .entrySet())
+         for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap.entrySet())
          {
             Object value = null;
-            String key = StringUtils.substringAfter(descriptor.getKey(),
-                  "descriptorValues.");
+            String key = descriptor.getKey();
 
             // Boolean type desc
             if (descriptor.getValue().type.equals(ColumnDataType.BOOLEAN.toString()))
             {
-               value = ((BooleanDTO)descriptor.getValue().value).equals;
+               value = ((BooleanDTO) descriptor.getValue().value).equals;
             }
             // String type desc
             else if (descriptor.getValue().type.equals(ColumnDataType.STRING.toString()))
@@ -1620,7 +1666,7 @@ public class ProcessInstanceUtils
       }
 
    }
-   
+
    /**
     * @param query
     * @param options
@@ -1632,20 +1678,18 @@ public class ProcessInstanceUtils
          trace.debug("options.orderBy = " + options.orderBy);
       }
 
-      if (options.orderBy.startsWith("descriptorValues."))
+      if (options.visibleDescriptorColumns.contains(options.orderBy))
       {
-         Map<String, DataPath> allDescriptors = processDefUtils.getAllDescriptors(false);
-         String[] descriptorNames = options.orderBy.split("\\.");
-         String descriptorName = descriptorNames[1];
-
+         Map<String, DataPath> allDescriptors = ProcessDefinitionUtils.getAllDescriptors(false);
+         String descriptorName = options.orderBy;
          if (allDescriptors.containsKey(descriptorName))
          {
-            applyDescriptorPolicy(query, options);
-            String columnName = getDescriptorColumnName(descriptorName, allDescriptors);
+            DescriptorUtils.applyDescriptorPolicy(query, options);
+            String columnName = DescriptorUtils.getDescriptorColumnName(descriptorName, allDescriptors);
             if (CommonDescriptorUtils.isStructuredData(allDescriptors.get(descriptorName)))
             {
-               query.orderBy(new DataOrder(columnName,
-                     getXpathName(descriptorName, allDescriptors), options.asc));
+               query.orderBy(new DataOrder(columnName, DescriptorUtils.getXpathName(descriptorName, allDescriptors),
+                     options.asc));
             }
             else
             {
@@ -1686,55 +1730,365 @@ public class ProcessInstanceUtils
          CustomOrderCriterion o = ProcessInstanceQuery.USER_ACCOUNT.ascendig(options.asc);
          query.orderBy(o);
       }
+      else if (COL_BENCHMARK.equals(options.orderBy))
+      {
+         query.orderBy(ProcessInstanceQuery.BENCHMARK_VALUE, options.asc);
+      }
       else
       {
          if (trace.isDebugEnabled())
          {
-            trace.debug("ProcessInstanceUtils.addSortCriteria(Query, Options): Sorting not implemented for " + options.asc);
+            trace.debug("ProcessInstanceUtils.addSortCriteria(Query, Options): Sorting not implemented for "
+                  + options.asc);
          }
       }
    }
+
+   /**
+    * @param queryResult
+    * @return
+    */
+   public QueryResultDTO buildProcessListResult(QueryResult< ? > queryResult)
+   {
+      List<ProcessInstanceDTO> list = new ArrayList<ProcessInstanceDTO>();
+
+      for (Object object : queryResult)
+      {
+         if (object instanceof ProcessInstance)
+         {
+
+            ProcessInstanceDTO dto = buildProcessInstanceDTO((ProcessInstance) object);
+
+            list.add(dto);
+         }
+      }
+
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = list;
+      resultDTO.totalCount = queryResult.getTotalCount();
+
+      return resultDTO;
+   }
+
    
    /**
-    * @param query
+    * 
+    * @param processInstance
+    * @return 
     */
-   private void applyDescriptorPolicy(Query query, Options options)
-   {
-      if (options.allDescriptorsVisible)
+   public ProcessInstanceDTO buildProcessInstanceDTO(ProcessInstance pi ){
+
+      ProcessInstanceDTO dto = new ProcessInstanceDTO();
+
+      ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(
+            pi.getModelOID(), pi.getProcessID());
+
+      dto.auxillary = isAuxiliaryProcess(processDefinition);
+      dto.processInstanceRootOID = pi.getRootProcessInstanceOID();
+      dto.parentProcessInstanceOID = pi.getParentProcessInstanceOid();
+      dto.oid = pi.getOID();
+      dto.qualifiedId = processDefinition.getQualifiedId();
+
+      PriorityDTO priority = new PriorityDTO();
+      priority.value = pi.getPriority();
+      priority.setLabel(pi.getPriority());
+      priority.setName(pi.getPriority());
+      dto.priority = priority;
+      
+      dto.startTime = pi.getStartTime().getTime();
+      dto.duration = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+            .getDuration(pi);
+      dto.processName = I18nUtils.getProcessName(processDefinition);
+      String startingUserLabel = UserUtils.getUserDisplayLabel(pi.getStartingUser());
+      dto.createUser = startingUserLabel;
+
+      // Update Document Descriptors for process
+      dto.descriptorValues = getDescriptorValues(pi, processDefinition);
+      dto.processDescriptorsList = getProcessDescriptor(pi, processDefinition);
+      dto.supportsProcessAttachments = processDefinitionUtils.supportsProcessAttachments(processDefinition);
+
+      CommonDescriptorUtils.updateProcessDocumentDescriptors(
+            ((ProcessInstanceDetails) pi).getDescriptors(), pi, processDefinition);
+
+      if (null != pi.getTerminationTime())
       {
-         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+         dto.endTime = pi.getTerminationTime().getTime();
       }
-      else if (CollectionUtils.isEmpty(options.visibleDescriptorColumns))
+      dto.startingUser = startingUserLabel;
+      dto.status = new StatusDTO(pi.getState().getValue(),  org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+            .getProcessStateLabel(pi));
+      
+      dto.enableTerminate = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+            .isAbortable(pi);
+      dto.enableRecover = true;
+      dto.checkSelection = false;
+      dto.modifyProcessInstance = AuthorizationUtils.hasPIModifyPermission(pi);
+
+      List<Note> notes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+            .getNotes(pi);
+      if (null != notes)
       {
-         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+         dto.notesCount = notes.size();
       }
-      else
+      dto.caseInstance = pi.isCaseProcessInstance();
+      if (dto.caseInstance)
       {
-         query.setPolicy(DescriptorPolicy.withIds(new HashSet<String>(options.visibleDescriptorColumns)));
+         dto.caseOwner = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+               .getCaseOwnerName(pi);
       }
+
+      dto.oldPriority = dto.priority;
+      dto.benchmark = getProcessBenchmark(pi);
+
+      return dto;
    }
-   
-   private static String getXpathName(String descriptorName, Map<String, DataPath> descriptorNameAndDataPathMap)
-   {
-      if (descriptorNameAndDataPathMap.containsKey(descriptorName))
-      {
-         DataPath columnNameDataPath = (DataPath) descriptorNameAndDataPathMap.get(descriptorName);
 
-         return columnNameDataPath.getAccessPath();
+   /**
+    * 
+    * @param processInstance
+    * @return
+    */
+   private BenchmarkDTO getProcessBenchmark(ProcessInstance processInstance)
+   {
+      BenchmarkDTO dto = new BenchmarkDTO();
+      if (null != processInstance.getBenchmarkResult())
+      {
+         dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+               .getBenchmarkColor(processInstance);
+         dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+               .getBenchmarkLabel(processInstance);
+         dto.value = processInstance.getBenchmarkResult().getCategory();
+         dto.oid =  processInstance.getBenchmark();
       }
-      else
-         return null;
+      return dto;
    }
 
-   private static String getDescriptorColumnName(String descriptorName, Map<String, DataPath> descriptorNameAndDataPathMap)
+   /*
+    * 
+    */
+   private Map<String, DescriptorDTO> getDescriptorValues(ProcessInstance processInstance,
+         ProcessDefinition processDefinition)
    {
-      if (descriptorNameAndDataPathMap.containsKey(descriptorName))
+      if (processInstance != null && processDefinition != null)
       {
-         DataPath columnNameDataPath = (DataPath) descriptorNameAndDataPathMap.get(descriptorName);
+         List<ProcessDescriptor> processDescriptorsList = CollectionUtils.newList();
 
-         return columnNameDataPath.getData();
+         ModelCache modelCache = ModelCache.findModelCache();
+         Model model = modelCache.getModel(processInstance.getModelOID());
+         ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) processInstance;
+         Map<String, Object> descriptorValues = processInstanceDetails.getDescriptors();
+         CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, processInstance, processDefinition);
+         if (processInstanceDetails.isCaseProcessInstance())
+         {
+            processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(
+                  processInstanceDetails.getDescriptorDefinitions(), descriptorValues, processDefinition, true);
+         }
+         else
+         {
+            processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(descriptorValues,
+                  processDefinition, true, true);
+
+         }
+
+         if (!processDescriptorsList.isEmpty())
+         {
+            return getProcessDescriptors(processDescriptorsList);
+         }
+      }
+
+      return new LinkedHashMap<String, DescriptorDTO>();
+   }
+
+   /*
+    * 
+    */
+   private List<ProcessDescriptor> getProcessDescriptor(ProcessInstance processInstance,
+         ProcessDefinition processDefinition)
+   {
+      List<ProcessDescriptor> processDescriptorsList = null;
+      if (processDefinition != null)
+      {
+         ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) processInstance;
+
+         if (processInstance.isCaseProcessInstance())
+         {
+            processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(
+                  processInstanceDetails.getDescriptorDefinitions(), processInstanceDetails.getDescriptors(),
+                  processDefinition, true);
+         }
+         else
+         {
+            processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(
+                  processInstanceDetails.getDescriptors(), processDefinition, true);
+         }
       }
       else
-         return null;
-   }   
+      {
+         processDescriptorsList = CollectionUtils.newArrayList();
+      }
+      return processDescriptorsList;
+   }
+
+   /**
+    * 
+    */
+   private Map<String, DescriptorDTO> getProcessDescriptors(List<ProcessDescriptor> processDescriptorsList)
+   {
+      Map<String, DescriptorDTO> descriptors = new LinkedHashMap<String, DescriptorDTO>();
+      for (Object descriptor : processDescriptorsList)
+      {
+         if (descriptor instanceof ProcessDocumentDescriptor)
+         {
+            ProcessDocumentDescriptor desc = (ProcessDocumentDescriptor) descriptor;
+
+            List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
+
+            for (DocumentInfo documentInfo : desc.getDocuments())
+            {
+               DocumentDTO documentDTO = new DocumentDTO();
+               documentDTO.name = documentInfo.getName();
+               documentDTO.uuid = documentInfo.getId();
+               documentDTO.contentType = (MimeTypesHelper.detectMimeType(documentInfo.getName(), null).getType());
+               documents.add(documentDTO);
+            }
+
+            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), true, documents);
+            descriptors.put(desc.getId(), descriptorDto);
+         }
+         else
+         {
+
+            ProcessDescriptor desc = (ProcessDescriptor) descriptor;
+            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null);
+            descriptors.put(desc.getId(), descriptorDto);
+         }
+      }
+      return descriptors;
+   }
+
+   /**
+    * Populate the options with the post data.
+    * 
+    * @param options
+    * @param postData
+    * @return
+    */
+   public static Options populatePostData(Options options, String postData,
+         List<DescriptorColumnDTO> availableDescriptors)
+   {
+
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+      // For filter
+      JsonObject filters = postJSON.getAsJsonObject("filters");
+      if (null != filters)
+      {
+         options.filter = getFilters(filters.toString(), availableDescriptors);
+      }
+
+      JsonArray visbleColumns = postJSON.getAsJsonObject("descriptors").get("visibleColumns").getAsJsonArray();
+      List<String> columnsList = new ArrayList<String>();
+      for (JsonElement jsonElement : visbleColumns)
+      {
+         columnsList.add(jsonElement.getAsString());
+      }
+      options.visibleDescriptorColumns = columnsList;
+      options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();
+
+      return options;
+   }
+
+   /**
+    * Get the filters from the JSON string
+    * 
+    * @param jsonFilterString
+    * @return
+    */
+   public static ProcessTableFilterDTO getFilters(String jsonFilterString,
+         List<DescriptorColumnDTO> availableDescriptors)
+   {
+      ProcessTableFilterDTO processListFilterDTO = null;
+      if (StringUtils.isNotEmpty(jsonFilterString))
+      {
+         try
+         {
+            JsonMarshaller jsonIo = new JsonMarshaller();
+            JsonObject json = jsonIo.readJsonObject(jsonFilterString);
+            processListFilterDTO = DTOBuilder.buildFromJSON(json, ProcessTableFilterDTO.class,
+                  ProcessTableFilterDTO.getCustomTokens());
+            populateDescriptorFilters(processListFilterDTO, json, availableDescriptors);
+         }
+         catch (Exception e)
+         {
+            trace.error("Error in Deserializing filter JSON", e);
+         }
+      }
+
+      return processListFilterDTO;
+   }
+
+   /**
+    * Populates the descriptor filter values.
+    * 
+    * @param worklistFilter
+    * @param descriptorColumnsFilterJson
+    */
+   public static void populateDescriptorFilters(ProcessTableFilterDTO processListFilterDTO,
+         JsonObject descriptorColumnsFilterJson, List<DescriptorColumnDTO> descriptorColumns)
+   {
+
+      Map<String, DescriptorFilterDTO> descriptorColumnMap = new HashMap<String, DescriptorFilterDTO>();
+
+      for (DescriptorColumnDTO descriptorColumnDTO : descriptorColumns)
+      {
+         Object filterDTO = null;
+         String id = descriptorColumnDTO.id;
+         if (null != descriptorColumnsFilterJson.get(id))
+         {
+            // String TYPE
+            if (ColumnDataType.STRING.toString().equals(descriptorColumnDTO.type))
+            {
+               filterDTO = new Gson().fromJson(descriptorColumnsFilterJson.get(id),
+                     ProcessTableFilterDTO.TextSearchDTO.class);
+
+            }
+            else if (ColumnDataType.DATE.toString().equals(descriptorColumnDTO.type)
+                  || ColumnDataType.NUMBER.toString().equals(descriptorColumnDTO.type))
+            {
+               filterDTO = new Gson().fromJson(descriptorColumnsFilterJson.get(id),
+                     ProcessTableFilterDTO.RangeDTO.class);
+            }
+            else if (ColumnDataType.BOOLEAN.toString().equals(descriptorColumnDTO.type))
+            {
+               filterDTO = new Gson().fromJson(descriptorColumnsFilterJson.get(id),
+                     ProcessTableFilterDTO.BooleanDTO.class);
+            }
+            descriptorColumnMap.put(id, new DescriptorFilterDTO(descriptorColumnDTO.type, filterDTO));
+         }
+      }
+
+      processListFilterDTO.descriptorFilterMap = descriptorColumnMap;
+   }
+
+   /**
+    * 
+    * @param aOid
+    * @return
+    */
+   public ProcessInstance findByStartingActivityOid(Long aOid)
+   {
+      ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
+      query.getFilter().add(ProcessInstanceQuery.STARTING_ACTIVITY_INSTANCE_OID.isEqual(aOid));
+      query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+    
+      ProcessInstances pis = serviceFactoryUtils.getQueryService().getAllProcessInstances(query);
+      ProcessInstance pi = null;
+      if (!pis.isEmpty())
+      {
+         pi = pis.get(0);
+      }
+      return pi;
+   }
+
 }

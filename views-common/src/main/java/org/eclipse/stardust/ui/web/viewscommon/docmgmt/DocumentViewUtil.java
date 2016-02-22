@@ -28,6 +28,7 @@ import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemDocument
 import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemJCRDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRVersionTracker;
 
 import com.icesoft.util.encoding.Base64;
 
@@ -179,6 +180,52 @@ public class DocumentViewUtil
       return null;
    }
 
+   public static View openJCRVersionDocument(String viewKey, Document document,  Map<String, Object> viewParams, JCRVersionTracker versionTracker, Integer versionNumber)
+   {
+      if (!DMSHelper.hasPrivilege(document.getId(), DmsPrivilege.READ_PRIVILEGE))
+      {
+         RepositoryUtility.showErrorPopup("common.authorization.msg", null, null);
+         return null;
+      }
+      
+      JCRDocument documentContentInfo;
+      if(null != versionTracker && (null!= versionNumber && versionNumber > 0))
+      {
+         documentContentInfo = (JCRDocument) versionTracker.shiftToVersion(versionNumber);
+      }
+      else
+      {
+         documentContentInfo = new JCRDocument(document);   
+      }
+
+
+      // create viewKey
+      if (StringUtils.isEmpty(viewKey))
+      {
+         try
+         {
+            String docId = null;
+            if(StringUtils.isNotEmpty(document.getRevisionId()))
+            {
+               docId = document.getRevisionId();
+            }
+            else
+            {
+               docId = document.getId();
+            }
+            // TODO review by portal team
+            // documentId can contain ':' or other special characters that need to be encoded. e.g. {urn:repositoryId:<repositoryId}<id>
+            viewKey = "documentOID=" + URLEncoder.encode(docId, "UTF-8");
+         }
+         catch (UnsupportedEncodingException e)
+         {
+            // if encoding fails, fallback to old ID format
+            viewKey = "documentOID=" + RepositoryIdUtils.stripRepositoryId(document.getId());
+         }
+      }
+
+      return openDocument(viewKey, documentContentInfo, viewParams);
+   }
    /**
     * @param viewKey
     * @param document

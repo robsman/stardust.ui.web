@@ -20,9 +20,9 @@
 				rendered="#{filterToolbarItem.visible}"
 				style="vertical-align: middle;">
 				<pc:automationTag value="auto-COM-ACTHistoryTable-#{filterToolbarItem.name}" standAlone="false"/>
-				<h:graphicImage value="#{filterToolbarItem.image}"
+				<h:outputText
 					style="border: none; padding-right: 10px;"
-					styleClass="#{filterToolbarItem.styleClass}"
+					styleClass="#{filterToolbarItem.styleClass} #{filterToolbarItem.image}"
 					title="#{views_common_msgPropsBean[filterToolbarItem.messsageKey]}" />
 			</h:commandLink>
 
@@ -37,17 +37,17 @@
 			actionListener="#{processHistoryTable.activityTreeTable.treeTable.expandAll}"
 			style="vertical-align: middle;">
 			<pc:automationTag value="auto-COM-ACTHistoryTable-ToolbarExpandAll" standAlone="false"/>
-			<h:graphicImage value="/plugins/views-common/images/icons/toggle-expand.png"
-				style="border: none;"
+			<h:outputText
+				styleClass="pi pi-expand-all pi-lg"
 				title="#{views_common_msgPropsBean['processHistoryTable.expandAllLabel']}" />
 		</ice:commandLink>
 
 		<ice:commandLink name="collapseAll"
 			actionListener="#{processHistoryTable.activityTreeTable.treeTable.collapseAll}"
-			style="vertical-align: middle;">
+			style="vertical-align: middle; padding-left: 5px;">
 			<pc:automationTag value="auto-COM-ACTHistoryTable-ToolbarCollapseAll" standAlone="false"/>
-			<h:graphicImage value="/plugins/views-common/images/icons/toggle.png"
-				style="border: none; padding-left: 10px;"
+			<h:outputText
+				styleClass="pi pi-collapse-all pi-lg"
 				title="#{views_common_msgPropsBean['processHistoryTable.collapseAllLabel']}" />
 		</ice:commandLink>
 	</h:panelGroup>

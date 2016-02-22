@@ -1,0 +1,77 @@
+<div ng-controller="sdActivityResubmissionController as ctrl" ng-cloak>
+	<div>
+		<div class="heading">{{ctrl.i18n('modeler.activity.propertyPages.resubmission.title')}}</div>
+		<div ng-hide="ctrl.isInteractive">
+			<label>{{ctrl.i18n('modeler.activity.propertyPages.resubmission.taskNotInteractiveMsg')}}</label>
+		</div>
+		<div ng-show="ctrl.isInteractive">
+			<table>
+				<tr>
+					<td><input type="checkbox" ng-model="ctrl.enableResubmission"
+						ng-change="ctrl.updateEnableResubmissionOption()"
+						aid="activity-prop-resubmission-enable" /></td>
+					<td><label>{{ctrl.i18n('modeler.activity.propertyPages.resubmission.enableResubmission')}}</label></td>
+				</tr>
+			</table>
+			<div ng-show="ctrl.enableResubmission === true">
+				<label>{{ctrl.i18n('modeler.activity.propertyPages.resubmission.timer')}}</label>
+				<table>
+					<tr>
+						<td><input type="radio" value="data"
+							ng-model="ctrl.useDataOrConstant"
+							ng-change="ctrl.updateUseDataOrConstantOption()"
+							aid="activity-prop-resubmission-dataOrConstant-data" /></td>
+						<td><label>{{ctrl.i18n('modeler.activity.propertyPages.resubmission.useData')}}</label></td>
+						<td><input type="radio" value="constant"
+							ng-model="ctrl.useDataOrConstant"
+							ng-change="ctrl.updateUseDataOrConstantOption()"
+							aid="activity-prop-resubmission-dataOrConstant-constant" /></td>
+						<td><label>{{ctrl.i18n('modeler.activity.propertyPages.resubmission.useConstant')}}</label></td>
+					</tr>
+				</table>
+				<table
+					ng-show="ctrl.useDataOrConstant === ctrl.constants.RESUBMISSION_TIMER_DATA">
+					<tr>
+						<td><label>{{ctrl.i18n('modeler.activity.propertyPages.resubmission.data')}}</label></td>
+						<td><select ng-change="ctrl.updateData()"
+							ng-model="ctrl.selectedData"
+							ng-options="data.fullId as data.name for data in ctrl.dataItems"
+							aid="activity-prop-resubmission-selectData"></select></td>
+					</tr>
+					<tr>
+						<td><label>{{ctrl.i18n('modeler.activity.propertyPages.resubmission.path')}}</label></td>
+						<td><input type="text" ng-model="ctrl.dataPath"
+							ng-blur="ctrl.updateData()" aid="activity-prop-resubmission-dataPath" /></td>
+					</tr>
+				</table>
+				<table
+					ng-show="ctrl.useDataOrConstant === ctrl.constants.RESUBMISSION_TIMER_CONSTANT">
+					<tr>
+						<td><label>{{ctrl.i18n('modeler.activity.propertyPages.resubmission.delayTimer')}}</label></td>
+						<td><input type="number" min="0" ng-model="ctrl.delayValue"
+							ng-blur="ctrl.updateConstant()" aid="activity-prop-resubmission-delayValue" /></td>
+						<td><select ng-model="ctrl.delayUnit"
+							ng-change="ctrl.updateConstant()" aid="activity-prop-resubmission-delayUnit">
+								<options>
+								<option value="s">Seconds</option>
+								<option value="m">Minutes</option>
+								<option value="h">Hours</option>
+								<option value="D">Days</option>
+								<option value="M">Months</option>
+								<option value="Y">Years</option>
+								</options>
+						</select></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+					<td><input type="checkbox" ng-model="ctrl.delegateToDefaultPerformer"
+						ng-change="ctrl.updateDelegateOption()"
+						aid="activity-prop-resubmission-delegateToDefaultPerformer" /></td>
+					<td><label>{{ctrl.i18n('modeler.activity.propertyPages.resubmission.delegateToDefaultPerformer')}}</label></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

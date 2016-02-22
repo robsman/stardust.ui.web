@@ -54,6 +54,29 @@
 		<f:selectItems
 			value="#{ippWorkflowExecutionConfigurationBean.abortActivityScopes}" />
 	</ice:selectOneMenu>
+
+	<ice:panelGroup styleClass="heading" style="width: 100%">
+		<ice:outputText value="Spawn Process" />
+	</ice:panelGroup>
+	<ice:panelGroup>
+		<ice:selectBooleanCheckbox
+			value="#{ippWorkflowExecutionConfigurationBean.showSpawnedWorkItems}"
+			partialSubmit="true">
+			<pc:automationTag value="auto-COM-SpawnProcDlg-SelShowWorkItems"
+				standAlone="false" />
+		</ice:selectBooleanCheckbox>
+		<ice:outputText value="#{views_common_msgPropsBean['views.spawnProcessDialog.showWorkItems']}"/>
+	</ice:panelGroup>
+	<ice:panelGroup>
+		<ice:selectBooleanCheckbox
+			value="#{ippWorkflowExecutionConfigurationBean.activateSpawnedWorkItems}"
+			partialSubmit="true">
+			<pc:automationTag value="auto-COM-SpawnProcDlg-SelActivateWorkItems"
+				standAlone="false" />
+		</ice:selectBooleanCheckbox>
+		<ice:outputText value="#{views_common_msgPropsBean['views.spawnProcessDialog.activateWorkItems']}" />
+	</ice:panelGroup>
+	
 	<ice:panelGroup styleClass="clearing" />
 	<ice:panelGroup styleClass="clearing" />
 	<ice:panelGroup styleClass="clearing" />

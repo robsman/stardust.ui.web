@@ -21,9 +21,9 @@
 					<h:commandLink name="#{processFilterItem.name}"
 						actionListener="#{filter.toggleProcessFilter}"
 						style="vertical-align: middle;">
-						<h:graphicImage value="#{processFilterItem.image}"
+						<h:outputText 
 							style="border: none; padding-right: 10px;"
-							styleClass="#{processFilterItem.styleClass}"
+							styleClass="#{processFilterItem.styleClass} #{processFilterItem.image}"
 							title="#{views_common_msgPropsBean[processFilterItem.messsageKey]}" />
 						<f:param value="#{processFilterItem.name}" name="name" />
 					</h:commandLink>
@@ -49,9 +49,9 @@
 					<h:commandLink name="#{activityFilterItem.name}"
 						actionListener="#{filter.toggleActivityFilter}"
 						style="vertical-align: middle;">
-						<h:graphicImage value="#{activityFilterItem.image}"
+						<h:outputText
 							style="border: none; padding-right: 10px;"
-							styleClass="#{activityFilterItem.styleClass}"
+							styleClass="#{activityFilterItem.styleClass} #{activityFilterItem.image}"
 							title="#{views_common_msgPropsBean[activityFilterItem.messsageKey]}" />
 						<f:param value="#{activityFilterItem.name}" name="name" />
 					</h:commandLink>

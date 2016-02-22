@@ -18,7 +18,7 @@
 			scope : {
 				msg : '=sdaMessage'
 			},
-			template : '<div id="messagePanel" style="border: 1px solid #CCCCCC" ng-cloak>'
+			template : '<div id="messagePanel" style="border: 1px solid #CCCCCC" ng-cloak ng-show="messagePanelCtrl.msg">'
 					+ '<table style="width: 100%; height: 100%;" cellpadding="0" cellspacing="0">'
 					+ '<tr valign="middle">'
 					+ '<td align="center">'
@@ -40,13 +40,13 @@
 				var msgType = attr.sdaMessageType;
 				if(msgType == 'info'){
 					angular.element('#messageIcon').parent().attr("class",
-					"infoSeverityIssueItem");	
+					"pi pi-information pi-lg");	
 				} else if(msgType == 'error'){
 					angular.element('#messageIcon').parent().attr("class",
-					"errorSeverityIssueItem");	
+					"pi pi-information pi-lg msg-error");	
 				} else {
 					angular.element('#messageIcon').parent().attr("class",
-					"warningSeverityIssueItem");
+					"pi pi-information pi-lg msg-warn");
 				}
 				
 				angular.element('#messagePanel').attr("class",

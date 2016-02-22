@@ -1,0 +1,36 @@
+<div style="margin-top: 10px;">
+	<label>{{ctrl.i18n('authorization.roleSelector.title')}}</label>
+	<div style="float: right; margin-bottom: 10px; margin-right: 10px;">
+		<input type="button"
+			value="{{ctrl.i18n('authorization.participants.addSelected')}}"
+			ng-click="ctrl.addParticipantsToPermissions()" /> <input
+			type="button"
+			value="{{ctrl.i18n('authorization.participants.addAll')}}"
+			ng-click="ctrl.addAllParticipantsToPermissions()" /> <input
+			type="button"
+			ng-if="ctrl.supportsOwner"
+			value="{{ctrl.i18n('authorization.participants.addOwner')}}"
+			ng-click="ctrl.addOwnerToPermissions()" /> <input
+			type="button"
+			value="{{ctrl.i18n('authorization.participants.restoreDefaults')}}"
+			ng-click="ctrl.restorePermissionDefaults()" />
+	</div>
+	<div style="height: 250px; width: 100%; overflow: auto;">
+		<table style="width: 100%; padding: 5px;" class="dataTable">
+			<thead>
+				<tr>
+					<th>{{ctrl.i18n('authorization.roleSelector.participantColumn.heading')}}</th>
+					<th>{{ctrl.i18n('authorization.roleSelector.typeColumn.heading')}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="participant in ctrl.allParticipants"
+					class="{{(participant.selected ? 'selected' : '')}}"
+					ng-click="ctrl.toggleSelection(participant)" ng-class-even="'rowEven'">
+					<td>{{participant.displayName}}</td>
+					<td>{{ctrl.i18n('authorization.participantType.' + participant.type)}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

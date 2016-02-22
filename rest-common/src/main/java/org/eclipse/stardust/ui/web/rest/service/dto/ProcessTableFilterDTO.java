@@ -7,16 +7,16 @@ import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.FilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.ProcessActivityDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 
 import com.google.gson.reflect.TypeToken;
 
 public class ProcessTableFilterDTO implements FilterDTO
 {
 
-   public RangeDTO oid;
+   public RangeDTO processOID;
    
-   public RangeDTO processInstanceRootOID;
+   public RangeDTO rootPOID;
 
    public RangeDTO startTime;
 
@@ -59,7 +59,7 @@ public class ProcessTableFilterDTO implements FilterDTO
    
    public static class ParticipantFilterDTO
    {
-      public List<ParticipantSearchResponseDTO> participants;
+      public List<ParticipantDTO> participants;
    }
    
 }

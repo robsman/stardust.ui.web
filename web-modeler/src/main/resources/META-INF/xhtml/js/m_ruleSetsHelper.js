@@ -34,9 +34,7 @@ define(
 				if (!m_globalVariables.get("ruleSets")) {
 					var ruleSetProvider = getRuleSetProvider();					
 					if (ruleSetProvider) {
-						// getRuleSets call set the global variable (window.top.ruleSets)
-						// with available rule-sets
-						ruleSetProvider.getRuleSets();	
+						m_globalVariables.set("ruleSets",ruleSetProvider.getRuleSets());	
 					}
 				} 
 			};

@@ -1,0 +1,1736 @@
+/*
+Wrapper CSS class to provide implementations of our font based portal icons.
+As we utilize three separate font libraries in our icon set this wrapper abstracts
+this complexity away from the developer and provides one common base class to 
+reference for all our icons.
+*/
+
+/*
+Supported fonts we wrap for our portal icon (pi-) classes
+-------------------------------------------------------------
+*/
+@font-face{
+	font-family: starclipse;
+	src: url(./starclipse/fonts/starclipse.woff?x=1)  format('woff');
+}
+
+@font-face{
+	font-family: 'Glyphicons Halflings';
+	src: url(./3rd-party/glyphicons/3.3.2/fonts/glyphicons-halflings-regular.woff)  format('woff');
+}
+
+@font-face{
+	font-family: FontAwesome;
+	src: url(./3rd-party/font-awesome/4.4.0/fonts/fontawesome-webfont.woff)  format('woff');
+}
+
+
+/*Copied from html5-common.css to be used in iframes*/
+.msg-error {
+	color: red !important;
+	padding-left: 2px;
+}
+
+.msg-success {
+	color: green !important;
+	padding-left: 2px;
+}
+
+.msg-warn {
+	color: #D7AD01 !important;
+	padding-left: 2px;
+}
+
+/*base class for all portal icons*/
+.pi{
+	display: inline-block;
+	font-style: normal;
+	font-weight: normal;
+	line-height: 1;
+	color: #A69A88;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale; 
+}
+
+
+/* Sizing */
+.pi-lg {
+	font-size: 1.33333333em !important
+}
+
+.pi-md {
+	font-size: 1.15em !important
+}
+
+.pi-sm {
+	font-size: 0.7777em;
+	line-height: 0.75em;
+}
+
+.pi-0-5x {
+	font-size: 0.5em;
+}
+
+.pi-1-5x {
+	font-size: 1.5em;
+}
+
+.pi-2x {
+	font-size: 2em;
+}
+
+.pi-2-5x {
+	font-size: 2.5em;
+}
+
+.pi-3x {
+	font-size: 3em;
+}
+
+.pi-3-5x {
+	font-size: 3.5em;
+}
+
+.pi-4x {
+	font-size: 4em;
+}
+
+.pi-4-5x {
+	font-size: 4.5em;
+}
+
+.pi-5x {
+	font-size: 5em;
+}
+
+.pi-10x {
+	font-size: 10em;
+}
+
+.pi-12x {
+	font-size: 12em;
+}
+
+/*
+portal icon badging stem, duped from starclipse
+------------------------------------------------
+*/
+
+/*base badging classes*/
+.pi-badge{
+    position:relative;
+    display:inline-table;
+}
+
+.pi-badge-portrait{
+    position:relative;
+    display:inline-table;
+    z-index:1;
+}
+
+.pi-badge-bg{
+    position:absolute;
+    z-index:2;
+}
+
+.pi-badge-icon{
+    position:absolute;
+    z-index:3;
+    top:0;
+}
+
+.pi-left *{
+    left:0;
+}
+
+.pi-right *{
+    right:0;
+}
+
+.pi-top *{
+    line-height:0;
+}
+
+/*badge backgrounds*/
+.pi-badge-bg-square:before{
+	font-family:starclipse;
+    content:'\F084'; /* sc-badge-bg-square */
+}
+.pi-badge-bg-circle:before{
+	font-family:starclipse;
+    content:'\F085'; /* sc-badge-bg-circle */
+}
+
+/*badge icons*/
+.pi-badge-icon-plus:before{
+	font-family:starclipse;
+    content:'\F086'; /* sc-badge-icon-plus */
+}
+
+.pi-badge-icon-minus:before{
+	font-family:starclipse;
+    content:'\F087'; /* sc-badge-icon-plus */
+}
+
+.pi-badge-icon-arrow-r:before{
+	font-family:starclipse;
+    content:'\F08E'; /* sc-badge-icon-arrow-r */
+}
+
+.pi-badge-icon-arrow-l:before{
+	font-family:starclipse;
+    content:'\F090'; /* sc-badge-icon-arrow-l */
+}
+
+.pi-badge-icon-tag:before{
+	font-family:starclipse;
+	content: '\F096'; /* sc-badge-icon-tag */
+}
+
+/*Elements (other than i) designed to incorporate pi*/
+button.pi, .pi a{
+	background:transparent;
+	border:none;
+	cursor:pointer;
+	color:#A69A88;
+	padding:3px;
+}
+
+button.pi:hover, button .pi:hover, .pi a{
+	color:#906C37;
+}
+
+button.pi[disabled='disabled']:hover, button[disabled='disabled'] .pi:hover, .pi a{
+	color:#A69A88;
+}
+
+button.pi:focus {
+	outline:0;
+}
+
+button.pi:disabled {
+	opacity:0.4;
+	cursor:not-allowed;
+}
+
+/* For ICEfaces */
+.pi-cmdLnk, .pi-cmdLnk .pi, .iceCmdLnk .pi, .iceCmdLnk-dis .pi, .iceMnuBarItem .pi {
+	color: #A69A88 !important;
+}
+
+/* For ICEfaces */
+.pi-cmdLnk:hover, .pi-cmdLnk:hover .pi, .iceCmdLnk:hover .pi, .iceCmdLnk-dis .pi:hover, .iceMnuBarItem .pi:hover {
+	color: #906C37 !important;
+}
+
+/*
+Utility classes for portal icons
+-----------------------------------------------------------
+*/
+
+/*fixed-width*/
+.pi-fw:before{
+    width:1.3em;
+    text-align:center;
+    display:inline-block;
+}
+
+/*Standardized font size classes*/
+.pi-1x{
+    font-size:16px;
+}
+.pi-1-5x{
+    font-size:24px;
+}
+.pi-2x{
+    font-size:32px;
+}
+.pi-2-5x{
+    font-size:40px;
+}
+.pi-3x{
+    font-size:48px;
+}
+.pi-3-5x{
+    font-size:56px;
+}
+.pi-4x{
+    font-size:64px;
+}
+.pi-4-5x{
+    font-size:72px;
+}
+.pi-5x{
+    font-size:80px;
+}
+
+
+/* Rotation */
+.pi-rotate-90 {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+	-webkit-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+
+.pi-rotate-180{
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+/* To bridge gap (especially with ICEfaces) where images are used */
+
+/* Add this class where background image already exists and needs to be overridden */
+.pi-img {
+	background: none !important;
+}
+
+.iceOutTxt.pi {
+	color: #A69A88;
+} 
+
+/* Add this class where iceOutput class exists and needs to be overridden */
+.pi-outTxt {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+/* Add this class where iceCmdLnk is used */
+.pi-cmdLnk:hover, span.pi:hover {
+	text-decoration: none !important;
+}
+
+/* Perspective Icons */
+.perspective-icon {
+	font-size: 18px !important; /* Using fixed size in px and not em purposefully */
+} 
+
+.pi-perspective-default:before {
+	font-family: "FontAwesome";
+	content: "\f111"; /* fa-circle */
+}
+
+.pi-perspective-admin:before {
+	font-family: "FontAwesome";
+	content: "\f0ad"; /* fa-wrench */
+}
+
+.pi-perspective-calendar:before {
+	font-family: "FontAwesome";
+	content: "\f073"; /* fa-calendar */
+}
+
+.pi-perspective-reporting:before {
+	font-family: "FontAwesome";
+	content: "\f201"; /* fa-line-chart */
+}
+
+.pi-perspective-control-center:before {
+	font-family: "FontAwesome";
+	content: "\f200"; /* fa-pie-chart */
+}
+
+.pi-perspective-modeler:before {
+	font-family: "starclipse";
+	content: "\F09E"; /* sc-spiral */
+}
+
+.pi-perspective-workflow:before {
+	font-family: "FontAwesome";
+	content: "\f013"; /* fa-cog */
+}
+
+.pi-perspective-simple-modeler:before {
+	font-family: "starclipse";
+	content: "\F0B3"; /* sc-spiral-arrow-alt */
+}
+
+.pi-perspective-rules-manager:before{
+	font-family:"starclipse";
+	font-size:18px;
+	content: '\F0B5'; /*sc-scroll-cog-o*/
+}
+
+/** The will be removed when new traffic light view replace old TLV */
+.pi-tlv-status-circle:before {
+	font-family: "starclipse";
+    content: '\F050'; /* sc-circle*/
+}
+
+.pi-tlv-color-green{
+	color: green;
+}
+
+.pi-tlv-color-red{
+	color: red;
+}
+
+.pi-tlv-color-amber{
+	color: #FFBF00;
+}
+
+/** End of color classes for old tlv */
+
+
+
+/*
+Icon implementations
+-----------------------------------------------------------
+*/
+.pi-activate:before{
+	font-family:FontAwesome;
+    content:'\F0E7'; /* fa-bolt */
+}
+
+.pi-refresh:before{
+	font-family:FontAwesome;
+	content: "\f021"; /* fa-refresh */
+}
+
+.pi-arrow-d:before{
+	font-family: starclipse;
+    content:'\F004'; /* sc-arrow-d */
+}
+
+.pi-arrow-r:before{
+	font-family: starclipse;
+    content:'\F006'; /* sc-arrow-r */
+}
+
+.pi-menu-dropdown:before{
+	font-family: FontAwesome;
+	content: "\f078"; /* fa-chevron-down */
+}
+
+.pi-clear:before{
+	font-family: FontAwesome;
+	content: "\f1f8"; /* fa-trash */
+}
+
+.pi-criticalty-flag:before{
+	font-family:"FontAwesome";
+	content:'\f024'; /* fa-flag */
+}
+
+.pi-exclamation-triangle:before{
+	font-family: starclipse;
+    content:'\F029'; /* sc-exclamation-triangle */
+}
+
+.pi-download:before{
+	font-family: 'Glyphicons Halflings';
+	content: "\e026"; /* glyphicon-download */
+}
+
+.pi-plus-sign:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e081"; /* glyphicon-plus-sign */
+}
+
+.pi-minus-sign:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e082"; /* glyphicon-minus-sign */
+}
+
+.pi-copy:before {
+	font-family: FontAwesome;
+  	content: "\f0ea"; /* fa-clipboard */
+}
+
+.pi-cloud-upload:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e198"; /* glyphicon-cloud-upload */
+}
+
+.pi-floppy-disk:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e172"; /* glyphicon-floppy-disk */
+}
+
+.pi-globe:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e135"; /* glyphicon-globe */
+}
+
+.pi-eye-open:before {
+	font-family: 'FontAwesome';
+  	content: "\f06e"; /* fa-eye */
+}
+
+.pi-eye-close:before,
+.pi-eye-slash:before {
+	font-family: 'FontAwesome';
+	content: "\f070"; /* fa-eye-slash */
+}
+
+/*Data Table Directive*/
+.pi-step-back-one:after{
+	font-family: FontAwesome;
+	content: "\f04b"; /* fa-play */
+}
+
+.pi-step-back:before{
+	font-family: FontAwesome;
+	content: "\f048"; /* fa-step-backward */
+}
+
+.pi-step-forward-one:before{
+	font-family: FontAwesome;
+	content: "\f04b"; /* fa-play */
+}
+
+.pi-step-forward:before{
+	font-family: FontAwesome;
+	content: "\f051"; /* fa-step-forward */
+}
+
+.pi-column-selector:before{
+	font-family: FontAwesome;
+	content: "\f00a"; /* fa-th */
+}
+
+.pi-saved:before{
+	font-family: 'Glyphicons Halflings';
+	content: "\e173"; /* glyphicon-floppy-saved */
+}
+
+.pi-filter:before{
+	font-family: FontAwesome;
+	content: "\f0b0"; /* fa-filter */
+}
+
+.pi-lock:before,
+.pi-param-disable:before{
+	font-family: FontAwesome;
+	content: "\f023"; /* fa-lock */
+}
+
+.pi-unlock:before,
+.pi-param-enable:before,
+.pi-authorization-manager:before{
+	font-family: FontAwesome;
+	content: "\f09c" /* fa-unlock */
+}
+
+
+
+/*Activity Overview Table*/
+.pi-parameters:before,
+.pi-activity:before,
+.pi-activity-overview:before,
+.pi-process-interface:before{
+	font-family:FontAwesome;
+	content:"\f013"; /* fa-cog */
+}
+
+.pi-notes-empty:before{
+	font-family:FontAwesome;
+	content:"\f0e6"; /* fa-comments-o */
+}
+
+.pi-quick-complete:before{
+	font-family:FontAwesome;
+	content:"\f14a"; /* fa-check-square */
+}
+
+.pi-notes:before{
+	font-family:FontAwesome;
+	content:"\f086"; /* fa-comments*/
+}
+
+.pi-activity-abort:before{
+	font-family: 'FontAwesome';
+	content: "\f00d"; /* fa-times */
+}
+
+.pi-user:before,
+.pi-participant:before,
+.pi-activity-delegate:before{
+	font-family: "FontAwesome";
+	content: "\f007"; /* fa-user */
+}
+
+.pi-redo:before,
+.pi-rotate-right:before {
+	font-family: "FontAwesome";
+	content: "\f01e" /* fa-repeat */
+}
+
+
+/*Process Overview Table*/
+.pi-process-abort:before,
+.pi-abort:before,
+.pi-close:before{
+	font-family: 'FontAwesome';
+	content: "\f00d"; /* fa-times */
+}
+
+.pi-save:before{
+	font-family: 'FontAwesome';
+	content: "\f0c7"; /* fa-floppy-o */
+}
+
+.pi-exit-edit-mode:before{
+	font-family: 'FontAwesome';
+	content: "\f00c"; /* fa-check */
+}
+
+.pi-permission:before{
+	font-family:'FontAwesome';
+	content: "\f084"; /* fa-key */
+}
+
+.pi-process:before,
+.pi-root-process:before,
+.pi-process-details:before,
+.pi-process-overview:before{
+	font-family: 'FontAwesome';
+	content: "\f085"; /* fa-cogs */
+}
+
+.pi-recover:before{
+	font-family: 'FontAwesome';
+	content: "\f112"; /* fa-reply */
+}
+
+.pi-process-documents:before{
+	font-family: "FontAwesome";
+	content: "\f114"; /* fa-folder-o */
+}
+
+.pi-search:before{
+	font-family: "FontAwesome";
+	content: "\f002"; /* fa-search */
+}
+
+.pi-sort:before{
+	font-family: "FontAwesome";
+	content: "\f0dc"; /* fa-sort */
+}
+
+.pi-link:before,
+.pi-linked-processes:before{
+	font-family: "FontAwesome";
+	content: "\f0c1"; /* fa-link */
+}
+
+i.pi-case:before,
+.pi-email:before,
+span.pi-case:before{
+	font-family: "FontAwesome";
+	content: "\f003"; /* fa-envelope-o */
+}
+
+.pi-version:before,
+.pi-document-versions:before{
+	font-family: "FontAwesome";
+	content: "\f02d"; /* fa-book */
+}
+
+.pi-import:before,
+.pi-upload:before{
+	font-family: "FontAwesome";
+	content: "\f093"; /* fa-upload */
+}
+
+.pi-download:before,
+.pi-export:before,
+.pi-download-document:before{
+	font-family: "FontAwesome";
+	content: "\f019"; /* fa-download */
+}
+
+.pi-pop-out:before,
+.pi-report-pop-out:before{
+	font-family: "FontAwesome";
+	content: "\f08e"; /* fa-external-link */
+}
+
+.pi-delete:before,
+.pi-delete-model:before{
+	font-family: "FontAwesome";
+	content: "\f056"; /* fa-minus-circle */
+}
+
+.pi-edit:before,
+.pi-edit-qa-probability:before{
+	font-family: "FontAwesome";
+	content: "\f040"; /* fa-pencil */
+}
+
+.pi-rename:before{
+	font-family: "FontAwesome";
+	content: "\f044"; /* fa-pencil-square-o */
+}
+
+.pi-clone:before,
+.pi-clone-permissions:before{
+	font-family: "FontAwesome";
+	content: "\f24d"; /* fa-clone */
+}
+
+.pi-view-tab:before,
+.pi-worklist-view:before{
+	font-family: "FontAwesome";
+	content: "\f0ea"; /* fa-clipboard */
+}
+
+.pi-undo:before,
+.pi-reset:before,
+.pi-rotate-left:before{
+	font-family: "FontAwesome";
+	content: "\f0e2"; /* fa-undo */
+}
+
+.pi-cut:before{
+	font-family: "FontAwesome";
+	content: "\f0c4"; /* fa-scissors */
+}
+
+.pi-page-up:before{
+	font-family: "FontAwesome";
+	content: "\f062"; /* fa-arrow-up */
+}
+
+.pi-page-down:before{
+	font-family: "FontAwesome";
+	content: "\f063"; /* fa-arrow-down */
+}
+
+.pi-resubmit:before{
+	font-family: "FontAwesome";
+	content: "\f079"; /* fa-retweet */
+}
+
+.pi-bookmark:before{
+	font-family: "FontAwesome";
+	content: "\f097"; /* fa-bookmark-o */
+}
+
+.pi-extract-pages:before{
+	font-family: "FontAwesome";
+	content: "\f0f6"; /* fa-file-text-o */
+}
+
+.pi-add-row:before,
+.pi-add:before,
+.pi-create:before,
+.pi-spawn-process:before,
+.pi-create-user:before,
+.pi-create-user-group:before{
+	font-family: "FontAwesome";
+	content: "\f055"; /* fa-plus-circle */
+}
+
+.pi-invalidate-user:before,
+.pi-invalidate-user-group:before{
+	font-family: "FontAwesome";
+	content: "\f05e"; /* fa-ban */
+}
+
+.pi-prev-page:before{
+	font-family: "FontAwesome";
+	content: "\f104"; /* fa-angle-left */
+}
+
+.pi-fast-rewind:before{
+	font-family: "FontAwesome";
+	content: "\f100"; /* fa-angle-double-left */
+}
+
+.pi-next-page:before{
+	font-family: "FontAwesome";
+	content: "\f105"; /* fa-angle-right */
+}
+
+.pi-fast-forward:before{
+	font-family: "FontAwesome";
+	content: "\f101"; /* fa-angle-double-right */
+}
+
+.pi-first-page:before{
+	font-family: "starclipse";
+	content: "\f0AD"; /* fa-step-backward */
+	font-size: 11px;  /*Following rules are required to match up with ice-faces icons*/
+    position: relative;
+    top: 1px;
+}
+
+.pi-last-page:before{
+	font-family: "starclipse";
+	content: "\f0AE"; /* fa-step-forward */
+	font-size: 11px; /*Following rules are required to match up with ice-faces icons*/
+    position: relative;
+    top: 1px;
+}
+
+.pi-deputy:before,
+.pi-deputy-management:before{
+	font-family: "FontAwesome";
+	content: "\f21b"; /* fa-user-secret */
+}
+
+.pi-information:before,
+.pi-dialog-info:before{
+	font-family: "FontAwesome";
+	content: "\f05a"; /* fa-info-circle */
+}
+
+.pi-expand-all:before{
+	font-family: "FontAwesome";
+	content: "\f196"; /* fa-plus-square-o */
+}
+
+.pi-collapse-all:before{
+	font-family: "FontAwesome";
+	content: "\f147"; /* fa-minus-square-o */
+}
+
+.pi-deploy-model:before{
+	font-family: "FontAwesome";
+	content: "\f0ac"; /* fa-globe */
+}
+
+.pi-attach-document:before{
+	font-family: "FontAwesome";
+	content: "\f0c6"; /* fa-paperclip */
+}
+
+.pi-export-excel:before{
+	font-family: "FontAwesome";
+	content: "\f1c3"; /* fa-file-excel-o */
+}
+
+.pi-print:before{
+	font-family: "FontAwesome";
+	content: "\f02f"; /* fa-print */
+}
+
+.pi-chat:before{
+	font-family: "FontAwesome";
+	content: "\f0e5"; /* fa-comment-o */
+}
+
+.pi-qa-passed:before{
+	font-family: "FontAwesome";
+	content: "\f087"; /* fa-thumbs-o-up */
+}
+
+.pi-qa-failed:before{
+	font-family: "FontAwesome";
+	content: "\f088"; /* fa-thumbs-o-down */
+}
+
+.pi-qa-waiting:before{
+	font-family: "FontAwesome";
+	content: "\f251"; /* fa-hourglass-start */
+}
+
+.pi-activity-complete:before,
+.pi-terminated-events:before,
+.pi-check-box-checked:before{
+	font-family:FontAwesome;
+	content:"\f046"; /* fa-check-square-o */
+}
+
+.pi-user-status:before{
+	font-family:FontAwesome;
+	content:"\f111"; /* fa-circle */
+}
+
+.pi-org:before{
+	font-family:FontAwesome;
+	content:"\f0e8"; /* fa-sitemap */
+}
+
+.pi-role:before{
+	font-family:starclipse;
+	content:"\f0AA"; /* sc-user-check */
+}
+
+.pi-department:before{
+	font-family:FontAwesome;
+	content:"\f02b"; /* fa-tag */
+}
+
+.pi-scope-role:before{
+	font-family:starclipse;
+	content:"\f0AA"; /* sc-user-check */
+}
+
+.pi-process-manager:before{
+	font-family:FontAwesome;
+	content:"\f0ad"; /* fa-wrench */
+}
+
+.pi-activity-pending:before{
+	font-family:FontAwesome;
+	content:"\f21e"; /* fa-heartbeat */
+}
+
+.pi-activity-stranded:before{
+	font-family:FontAwesome;
+	content:"\f071"; /* fa-exclamation-triangle */
+}
+
+.pi-html:before{
+	font-family:FontAwesome;
+	content:"\f13b"; /* fa-html5 */
+}
+
+.pi-image:before{
+	font-family:FontAwesome;
+	content:"\f1c5"; /* fa-file-picture-o, fa-file-image-o */
+}
+
+.pi-text:before{
+	font-family:FontAwesome;
+	content:"\f0f6"; /* fa-file-text-o */
+}
+
+.pi-css:before{
+	font-family:FontAwesome;
+	content:"\f13c"; /* fa-css3 */
+}
+
+.pi-xml-json:before{
+	font-family:FontAwesome;
+	content:"\f1c9"; /* fa-file-code-o */
+}
+
+.pi-csv-excel:before{
+	font-family:FontAwesome;
+	content:"\f1c3"; /* fa-file-excel-o */
+}
+
+.pi-pdf:before{
+	font-family:FontAwesome;
+	content:"\f1c1"; /* fa-file-pdf-o */
+}
+
+.pi-word:before{
+	font-family:FontAwesome;
+	content:"\f1c2"; /* fa-file-word-o */
+}
+
+.pi-ppt:before{
+	font-family:FontAwesome;
+	content:"\f1c4"; /* fa-file-powerpoint-o */
+}
+
+.pi-zip:before{
+	font-family:FontAwesome;
+	content:"\f1c6"; /* fa-file-archive-o */
+}
+
+.pi-audio:before{
+	font-family:FontAwesome;
+	content:"\f1c7"; /* fa-file-audio-o */
+}
+
+.pi-video:before{
+	font-family:FontAwesome;
+	content:"\f1c8"; /* fa-file-video-o */
+}
+
+.pi-page-white:before,
+.pi-other:before{
+	font-family:FontAwesome;
+	content:"\f016"; /* fa-file-o */
+}
+
+.pi-report:before{
+	font-family:FontAwesome;
+	content:"\f0ce"; /* fa-table */
+}
+
+.pi-groups:before,
+.pi-user-group:before,
+.pi-user-group-manager:before{
+	font-family:FontAwesome;
+	content:"\f0c0"; /* fa-users */
+}
+
+.pi-ban:before{
+	font-family:FontAwesome;
+	content: "\f05e"; /* fa-ban */
+}
+
+.pi-torch:before{
+	font-family:starclipse;
+	content: '\F09F'; /* sc-torch */
+}
+
+.pi-organization:before{
+	font-family:FontAwesome;
+	content:"\f0e8"; /* fa-sitemap */
+}
+
+.pi-scope-organization:before{
+	font-family:FontAwesome;
+	content:"\f0e8"; /* fa-sitemap */
+}
+
+.pi-check-box-unchecked:before{
+	font-family:FontAwesome;
+	content:"\f096"; /* fa-square-o */
+}
+
+.pi-document-repository:before{
+	font-family:FontAwesome;
+	content:"\f115"; /* fa-folder-open-o */
+}
+
+.pi-folder:before{
+	font-family:FontAwesome;
+	content:"\f07b"; /* fa-folder */
+}
+
+.pi-rule-set:before{
+	font-family:FontAwesome;
+	content:"\f01c"; /* fa-inbox */
+}
+
+.pi-folder-open:before{
+	font-family:FontAwesome;
+	content:"\f07c"; /* fa-folder-open */
+}
+
+.pi-move-pages:before,
+.pi-process-attachments:before{
+	font-family: "starclipse";
+	content:'\F04E'; /* sc-documents-text-o */
+}
+
+.pi-process-attachments-empty:before{
+	font-family: "starclipse";
+	content:'\F04C'; /* sc-documents-o */
+}
+
+.pi-correspondence-email:before{
+	font-family:FontAwesome;
+	content:"\f003"; /*fa-envelope-o */
+}
+
+.pi-favorite:before{
+	font-family:"FontAwesome";
+	content:"\f005"; /* fa-star */
+}
+
+.pi-favorite-not:before{
+	font-family:"FontAwesome";
+	content:"\f006"; /* fa-star-o */
+}
+
+.pi-zoom-in:before{
+	font-family:"FontAwesome";
+	content:"\f00e"; /* fa-search-plus */
+}
+
+.pi-zoom-out:before{
+	font-family:"FontAwesome";
+	content:"\f010"; /* fa-search-minus */
+}
+
+.pi-fit-to-window:before{
+	font-family:"FontAwesome";
+	content:"\f047"; /* fa-arrows */
+}
+
+.pi-fit-to-height:before{
+	font-family:"FontAwesome";
+	content:"\f07d"; /* fa-arrows-v */
+}
+
+.pi-fit-to-width:before{
+	font-family:"FontAwesome";
+	content:"\f07e"; /* fa-arrows-h */
+}
+
+.pi-grayscale:before{
+	font-family:"FontAwesome";
+	content:"\f042"; /* fa-adjust */
+}
+
+.pi-invert:before{
+	font-family:"FontAwesome";
+	content:"\f15c"; /* fa-file-text */
+}
+
+.pi-note:before{
+	font-family:"FontAwesome";
+	content:"\f24a"; /* fa-sticky-note-o */
+}
+
+.pi-highlighter:before{
+	font-family:"FontAwesome";
+	content:"\f1fc"; /* fa-paint-brush */
+}
+
+.pi-model:before{
+	font-family:"starclipse";
+	content:'\F09E'; /* sc-spiral */
+}
+
+.pi-pie-chart:before,
+.pi-report-management:before{
+	font-family:"FontAwesome";
+	content:'\f200'; /* fa-pie-chart */
+}
+
+.pi-resource-performance:before,
+.pi-performance-team-lead:before{
+	font-family:"FontAwesome";
+	content:'\f201'; /* fa-line-chart */
+}
+
+.pi-flag:before,
+.pi-traffic-light:before,
+.pi-criticality_manager:before{
+	font-family:"FontAwesome";
+	content:'\f024'; /* fa-flag */
+}
+
+.pi-process-auxiliary:before{
+	font-family:"starclipse";
+	content:'\F0AC'; /*.sc-cogs-border*/
+}
+
+.pi-gantt-chart:before{
+	font-family:"starclipse";
+	content:'\F049'; /* sc-task */
+}
+
+.pi-stamp:before{
+	font-family:"FontAwesome";
+	content:'\f249'; /* fa-sticky-note */
+}
+.pi-page-white:before{
+	font-family:"FontAwesome";
+	content:'\f249'; /* fa-sticky-note */
+}
+
+.pi-add-column:before,
+.pi-process-diagram:before{
+	font-family:"FontAwesome";
+	content:'\f039'; /* fa-align-justify */
+}
+
+.pi-data:before,
+.pi-database:before {
+	font-family: "FontAwesome";
+	content: "\f1c0"; /* fa-database */
+}
+
+.pi-dataset:before {
+	font-family: "FontAwesome";
+	content: "\f0ce"; /* fa-table */
+}
+
+.pi-layout:before {
+	font-family: "FontAwesome";
+	content: "\f1ec"; /* fa-calculator */
+}
+
+.pi-bar-chart:before {
+	font-family: "FontAwesome";
+	content: "\f080"; /* fa-bar-chart */
+}
+
+.pi-storage:before {
+	font-family: "FontAwesome";
+	content: "\f233"; /* fa-server */
+}
+
+.pi-calendar:before{
+	font-family: "FontAwesome";
+	content: "\f073"; /* fa-calendar */
+}
+.pi-scheduling:before {
+	font-family: "FontAwesome";
+	content: "\f274"; /* fa-calendar-check-o */
+}
+
+.pi-error:before {
+	font-family: "FontAwesome";
+	content: "\f071"; /* fa-exclamation-triangle */
+}
+
+.pi-trigger-expanded:before {
+	font-family: "FontAwesome";
+	content: "\f0d7"; /* fa-caret-down */
+}
+
+.pi-trigger-collapsed:before {
+	font-family: "FontAwesome";
+	content: "\f0da"; /* fa-caret-right */
+}
+
+.pi-folder:before,
+.pi-rule:before {
+	font-family: FontAwesome;
+	content: "\f07b"; /* fa-folder */
+}
+
+.pi-technical-rule:before{
+	font-family: FontAwesome;
+	content: "\f1ea"; /* fa-newspaper-o */
+}
+
+.pi-decision-table:before{
+	font-family: FontAwesome;
+	content: "\f0ce"; /* fa-table */
+}
+
+.pi-column-attributes:before{
+	font-family: FontAwesome;
+	content: "\f0ce"; /* fa-table */
+}
+
+.pi-column-actions:before{
+	font-family: FontAwesome;
+	content: "\f0ce"; /* fa-table */
+}
+
+.pi-column-conditions:before{
+	font-family: FontAwesome;
+	content: "\f0ce"; /* fa-table */
+}
+
+.pi-column-attribute:before{
+	font-family: FontAwesome;
+	content: "\f02b"; /* fa-tag */
+}
+
+.pi-column-primitive:before{
+	font-family: FontAwesome;
+	content: "\f1c0"; /* fa-database */
+}
+
+.pi-column-sequence:before{
+	font-family: FontAwesome;
+	content: "\f1b3"; /* fa-cubes */
+}
+
+.pi-palette:before{
+	font-family: FontAwesome;
+	content: "\f044"; /* fa-pencil-square-o */
+}
+
+.pi-font:before{
+	font-family: FontAwesome;
+	content: "\f031"; /* fa-font */
+}
+
+.pi-replace:before{
+	font-family: FontAwesome;
+	content: "\f0ea"; /* fa-clipboard */
+}
+
+.pi-process-diagram:before{
+	font-family:"FontAwesome";
+	content:'\f039'; /* fa-align-justify */
+}
+
+.pi-panel-expand:before{
+	font-family:"FontAwesome";
+	content:'\f061'; /* fa-arrow-right */
+}
+
+.pi-panel-collapse:before{
+	font-family:"FontAwesome";
+	content:'\f063'; /* fa-arrow-down */
+}
+
+.pi-information-circle:before,
+.pi-exception-circle:before,
+.pi-dialog-warning:before{
+	font-family:"FontAwesome";
+	content:'\f06a'; /* fa-exclamation-circle */
+}
+
+.pi-activity-state:before{
+	font-family:"FontAwesome";
+	content: "\f0AB"; /* sc-cog-border */
+}
+
+.pi-activity-auxiliary:before{
+	font-family:"starclipse";
+	content:'\F05F'; /* sc-gear-close */
+}
+
+.pi-font:before{
+	font-family:"FontAwesome";
+	content:'\f031'; /* fa-font */
+}
+
+.pi-start-daemon:before{
+	font-family:"FontAwesome";
+	content:'\f04b'; /* fa-play */
+}
+
+.pi-stop:before,
+.pi-stop-daemon:before{
+	font-family:"FontAwesome";
+	content:'\f04d'; /* fa-stop */
+	color: 'red'
+}
+
+.pi-dialog-close:before {
+	font-family: "FontAwesome";
+	content: "\f00d"; /* fa-times */
+}
+
+.pi-fax:before {
+	font-family: "FontAwesome";
+	content: "\f1ac"; /* fa-fax */
+}
+
+.pi-check:before{
+	font-family:"FontAwesome";
+	content:'\f00c'; /* fa-check */
+}
+
+.pi-email-go:before{
+	font-family:"FontAwesome";
+	content:'\f045'; /* fa-share-square-o */
+}
+
+.pi-allow:before{
+	font-family:"FontAwesome";
+	content:'\f05d'; /* fa-check-circle-o */
+}
+
+.pi-deny:before{
+	font-family:"FontAwesome";
+	content:'\f05e'; /* fa-ban */
+}
+
+.pi-reverse:before{
+	font-family:"FontAwesome";
+	content:'\f074'; /* fa-reverse */
+}
+
+.pi-deploy-failure:before,
+.pi-dialog-error:before{
+	font-family:"FontAwesome";
+	content:'\f057'; /* fa-times-circle */
+	color: 'red';
+}
+
+.pi-bold:before{
+	font-family:"FontAwesome";
+	content:'\f032'; /* fa-bold */
+}
+
+.pi-italic:before{
+	font-family:"FontAwesome";
+	content:'\f033'; /* fa-italic */
+}
+
+.pi-viewer-outline:before{
+	font-family:"FontAwesome";
+	content:'\f0db'; /* fa-columns */
+}
+
+.pi-arrow-down-square:before{
+	font-family:"FontAwesome";
+	content:'\f150'; /* fa-caret-square-o-down */
+}
+
+.pi-arrow-up-square:before{
+	font-family:"FontAwesome";
+	content:'\f151'; /* fa-caret-square-o-up */
+}
+
+.pi-revised:before{
+	font-family:"FontAwesome";
+	content:'\f05c'; /* fa-times-circle-o  */
+	color: red !important;
+}
+
+.pi-clock:before,
+.pi-activity-postponed:before { 
+	font-family: "FontAwesome";
+	content: '\f017'; /* fa-clock-o  */
+}
+
+.pi-disabled:before{
+	opacity : 0.4;
+}
+
+.tbl-hdr-col.sorting .pi-tbl-sort, .tbl-hdr-col.sorting_desc .pi-tbl-sort, .tbl-hdr-col.sorting_asc .pi-tbl-sort {
+	float: right;
+    margin-right: -15px;
+}
+
+.tbl-hdr-col.sorting .pi-tbl-sort:before {
+	font-family: "FontAwesome";
+    content: "\f0dc"; /* fa-sort */
+}
+	
+.tbl-hdr-col.sorting_desc .pi-tbl-sort:before {
+	font-family: "FontAwesome";
+	content: "\f0dd"; /* fa-sort-desc */
+}
+
+.tbl-hdr-col.sorting_asc .pi-tbl-sort:before {
+	font-family: "FontAwesome";
+    content: "\f0de"; /* fa-sort-asc */
+}
+
+.pi-assembly-line:before {
+	font-family: "FontAwesome";
+	content: "\f0e7"; /* fa-bolt */
+}
+
+.pi-assembly-line-push-on:before {
+	font-family: "FontAwesome";
+	content: "\f0e7"; /* fa-bolt */
+}
+
+.pi-assembly-line-push-off:before {
+	font-family: "FontAwesome";
+	content: "\f056"; /* fa-minus-circle */
+}
+
+.pi-qa-codes:before {
+	font-family: "FontAwesome";
+	content: "\f0ad"; /* fa-wrench */
+}
+
+.pi-loading:before,
+.pi-spinner:before{
+	font-family: "FontAwesome";
+	content: '\f110'; /* fa-spinner  */
+}
+
+.pi-spin {
+  -webkit-animation: spin 2s infinite linear;
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+}
+
+.pi-legend:before,
+.pi-square:before{
+	font-family:starclipse;
+    content:'\F03E';/* sc-square  */
+}
+
+.pi-resource-manager:before { 
+	font-family: "FontAwesome";
+	content: '\f13c'; /* fa-css3 */
+}
+
+.pi-resource-availability:before { 
+	font-family: "FontAwesome";
+	content:"\f0f4"; /* fa-coffee */
+}
+
+.pi-role-assignment:before{ 
+	font-family: "FontAwesome";
+	content: "\f234"; /* fa-user-plus */
+}
+
+.pi-costs:before {
+	font-family:"FontAwesome";
+	content:'\f0d6'; /* fa-money */
+}
+
+.pi-resource-login:before {
+	font-family:"FontAwesome";
+	content:'\f090'; /* fa-sign-in */
+}
+
+.pi-performance-team-lead:before{
+	font-family:"FontAwesome";
+	content:'\f1fe'; /* fa-area-chart */
+}
+
+span.pi-abort-menu-open:before {
+	font-family:"FontAwesome";
+	content: '\f078'; /* arrow-circle-down */
+}
+
+span.pi-case-menu-open:after {
+	font-family:"FontAwesome";
+	content: '\f078'; /* arrow-circle-down */
+}
+
+.pi-provider-model:before{
+	font-family:"starclipse";
+	content:'\F0A1';/* sc-hand */
+}
+
+.pi-consumer-model:before{
+	font-family:"starclipse";
+	content:'\F09E'; /* sc-spiral */
+}
+
+.pi-non-interactive-activity:before{
+	font-family:"starclipse";
+	content:'\F05B'; /* sc-gear-ban */
+}
+
+.pi-manual-activity:before{
+	font-family:"starclipse";
+	content:'\F05D'; /* sc-gear-user */
+}
+
+.pi-modify-implementation:before{
+	font-family:"starclipse";
+	content:'\F05E'; /* sc-gear-minus */
+}
+
+.pi-tree-collapse:before,
+.pi-minus:before{
+	font-family:"FontAwesome";
+	content:'\f068'; /* fa-minus */
+}
+
+.pi-tree-expand:before,
+.pi-plus:before{
+	font-family:"FontAwesome";
+	content:'\f067'; /* fa-plus */
+}
+
+.pi-user-status-away:before{
+	color:orange;
+}
+
+.pi-user-status-offline:before{
+	color:grey;
+}
+
+.pi-move-sub-process-up-light:before{
+	font-family:"FontAwesome";
+	content:'\f106';/*  fa-angle-up */
+}
+
+.pi-move-sub-process-down-light:before{
+	font-family:"FontAwesome";
+	content:'\f107';/* fa-angle-down */
+}
+
+.pi-move-sub-process-up-grey:before{
+	font-family:"FontAwesome";
+	content:'\f077';/*  fa-chevron-up */
+}
+
+.pi-move-sub-process-down-grey:before{
+	font-family:"FontAwesome";
+	content:'\f078';/* fa-chevron-downn */
+}
+
+.pi-bell:before{
+	font-family:FontAwesome;
+	content:"\f0f3"; /* fa-bell */
+}
+
+.pi-rocket:before{
+	font-family:FontAwesome;
+	content:"\f135"; /* fa-rocket */
+}
+
+.pi-resultset-previous:before{
+	font-family:FontAwesome;
+	content:"\f191"; /* fa-toggle-left */
+}
+
+.pi-resultset-next:before{
+	font-family:FontAwesome;
+	content: "\f152"; /* fa-toggle-right */
+}
+
+/* These classes are copied from html5-process-portal.css for the purpose of getting load in ice-faces views */
+.criticality-flag-RED{
+  color :#F75339 !important;
+}
+
+.criticality-flag-YELLOW{
+  color :#EDCB47 !important;
+}
+
+.criticality-flag-BLUE{
+  color :#43B1FF !important;
+}
+
+.criticality-flag-GREEN{
+  color:#6CC14F !important;
+}
+
+.criticality-flag-PURPLE{
+  color:#C748F2 !important;
+}
+
+.criticality-flag-ORANGE{
+  color:#FFAE3E !important;
+}
+
+.criticality-flag-PINK{
+  color:#FF59E5 !important;
+}
+
+.criticality-flag-WHITE-WARNING{
+  color:black !important;
+}
+
+.criticality-flag-WHITE{
+  color:black !important;
+}
+
+.criticality-flag-NO-COLOR{
+  color:#CFCFCF !important;
+}
+
+/* End criticality Classes */
+
+.pi-user-avatar:before{
+	font-family: "FontAwesome";
+	content: "\f007"; /* fa-user */
+}
+
+.pi-row-selected:before{
+	font-family: "FontAwesome";
+	content: "\f192"; /* fa-dot-circle-o */
+}
+
+.pi-row-unselected:before{
+	font-family: "FontAwesome";
+	content: "\f10c"; /* fa-circle-o */
+}
+
+.pi-document-error:before {
+	font-family: "FontAwesome";
+	content: "\f071"; /* fa-exclamation-triangle */
+}
+
+.pi-document-add:before{
+	font-family: "FontAwesome";
+	content: "\f055"; /* fa-plus-circle */
+}
+
+.pi-document-delete:before{
+	font-family: "FontAwesome";
+	content: "\f056"; /* fa-minus-circle */
+}
+
+.pi-collapse-camel-context:before{
+	font-family:"FontAwesome";
+	content:'\f077';/*  fa-chevron-up */
+}
+
+.pi-expand-camel-context:before{
+	font-family:"FontAwesome";
+	content:'\f078';/* fa-chevron-downn */
+}
+
+.pi-start-camel-routes:before{
+	font-family:"FontAwesome";
+	content:'\f04b'; /* fa-play */
+}
+
+.pi-stop-camel-routes:before{
+	font-family:"FontAwesome";
+	content:'\f04d'; /* fa-stop */
+}
+/** The actual font based icon will be replaced once available*/
+.pi-attach-process-to-case:before {
+	font-family:"FontAwesome";
+    content: "\f055"; /* fa-plus-circle */
+}
+
+.pi-detach-process-from-case:before {
+	font-family:"FontAwesome";
+    content: "\f056"; /* fa-minus-circle */
+}
+
+/** Simple modeler icons **/
+
+a span.pi:hover {
+	color: #906C37 !important;
+}
+
+.pi-import-model:before {
+	font-family:"FontAwesome";
+	content: "\f176"; /* fa-long-arrow-up */
+}
+
+.pi-simple-modeler-process:before {
+	font-family: "FontAwesome";
+	content: "\f013"; /* fa-cog */
+}
+
+.pi-expand-south:before{
+	font-family:"FontAwesome";
+	content:'\f077';/*  fa-chevron-up */
+}
+
+.pi-collapse-north:before{
+	font-family:"FontAwesome";
+	content:'\f078';/* fa-chevron-downn */
+}
+
+.pi-user-task:before {
+	font-family: "FontAwesome";
+	content: "\f007"; /* fa-user */
+}
+
+.pi-service-task:before {
+	font-family: "FontAwesome";
+	content: "\f013"; /* fa-gear */
+}
+
+.pi-event-task:before {
+	font-family: "FontAwesome";
+	content: "\f0e7"; /* fa-bolt */
+}
+
+.pi-activity-group:before {
+	font-family: "FontAwesome";
+	content: "\f085"; /* fa-gears */
+}
+
+.pi-error-task:before {
+	font-family: "FontAwesome";
+	content: "\f12a"; /* fa fa-exclamation */
+}
+
+.pi-delete-task-bin:before{
+	font-family: FontAwesome;
+	content: "\f014"; /* fa-trash-o */
+}
+
+.pi-collapse-west:before {
+	font-family:"FontAwesome";
+	content: "\f053"; /* fa-chevron-left */
+}
+
+.pi-expand-east:before {
+	font-family:"FontAwesome";
+	content: "\f054"; /* fa-chevron-right */
+}
+
+.pi-add-attachments:before{
+	font-family:"FontAwesome";
+	content:'\f067'; /* fa-plus */
+}
+
+/** Simple modeler icons End **/
+
+.pi-traffic-light:before{
+	font-family: starclipse;
+	content: '\f0B6';
+}
+
+.pi-deploy-success:before{
+	font-family:"FontAwesome";
+	content:'\f058'; /*  fa-check-circle */
+}

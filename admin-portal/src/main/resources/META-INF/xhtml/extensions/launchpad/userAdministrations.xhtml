@@ -1,0 +1,42 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{ippAdmUserAdministrations}" />
+			<ui:param name="title" value="#{ippAdmUserAdministrations.messages['title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="false" />
+			<ui:param name="automationTag" value="auto-ADM-userAdministrationsPanel" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGrid columns="1" rendered="#{ippAdmUserAdministrations.expanded}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'participantMgmt')}">
+			<pc:automationTag value="auto-ADM-participantMgmt" standAlone="false"/>
+			<f:param name="viewId" value="participantMgmt" />
+			<ice:outputText value="#{messages_admin['views.participantMgmt.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>		
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'authorizationManagerView')}">		
+			<pc:automationTag value="auto-ADM-LP-AuthMgrView" standAlone="false"/>
+			<f:param name="viewId" value="authorizationManagerView" />
+			<ice:outputText value="#{views_common_msgPropsBean['views.authorizationManagerView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'userGroupMgmt')}">
+			<pc:automationTag value="auto-ADM-userGroupMgmt" standAlone="false"/>
+			<f:param name="viewId" value="userGroupMgmt" />
+			<ice:outputText value="#{messages_admin['views.userGroupMgmt.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+	</ice:panelGrid>
+</f:view>

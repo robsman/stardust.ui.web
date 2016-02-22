@@ -40,7 +40,7 @@ public class DocumentVersionDTO extends AbstractDTO
 
    public String modifiedDate;
 
-   public String documentOwner;
+   public Long userOID;
 
    /**
     * @param version
@@ -54,9 +54,10 @@ public class DocumentVersionDTO extends AbstractDTO
       this.documentName = document.getName();
 
       User user = DocumentMgmtUtility.getOwnerOfDocument(document);
-      this.documentOwner = document.getOwner();
+
       if (null != user)
       {
+         userOID = user.getOID();
          this.author = FormatterUtils.getUserLabel(user);
       }
       else if (StringUtils.isNotEmpty(document.getOwner()))

@@ -56,7 +56,39 @@ define(
                   imageUrl: "plugins/bpm-modeler/images/icons/user-invalidated.png",
                   title: m_i18nUtils.getProperty("modeler.propertiesPage.activity.excludedUsers.title"),
                   html5: true
-                }, {
+                },
+                {
+                  panelId: "activityPropertiesPanel",
+                  id: "qualityAssuranceCodesPage",
+                  provider: m_propertiesPageProvider,
+                  visibility: "always",
+                  pageHtmlUrl: "plugins/bpm-modeler/views/modeler/activityQualityAssuranceCodesPage.html",
+                  imageUrl: "plugins/bpm-modeler/images/icons/quality-assurance-code.png",
+                  title: m_i18nUtils.getProperty("modeler.propertyView.modelView.qualityAssuranceCodes.title"),
+                  html5: true
+                },
+                {
+                  panelId: "activityPropertiesPanel",
+                  id: "resubmissionPage",
+                  provider: m_propertiesPageProvider,
+                  visibility: "always",
+                  pageHtmlUrl: "plugins/bpm-modeler/views/modeler/activityResubmissionPage.html",
+                  imageUrl: "plugins/views-common/images/icons/activity_postponed.png",
+                  title: m_i18nUtils.getProperty("modeler.activity.propertyPages.resubmission.title"),
+                  html5: true
+                },
+				{
+					panelId : "activityPropertiesPanel",
+					id : "activityAuthorizationsPropertiesPage",
+					provider : m_propertiesPageProvider,
+					visibility : "always",
+					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/authorizationsPropertiesPage.html",
+					imageUrl : "plugins/views-common/images/icons/key.png",
+					title : m_i18nUtils
+							.getProperty("modeler.common.authorization"),
+					html5 : true
+				},
+                {
                   panelId: "activityPropertiesPanel",
                   id: "commentsPropertiesPage",
                   pageHtmlUrl: "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",

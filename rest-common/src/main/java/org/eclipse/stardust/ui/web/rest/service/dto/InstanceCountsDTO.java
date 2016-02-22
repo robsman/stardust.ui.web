@@ -8,12 +8,13 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-/**
- * @author Johnson.Quadras
- */
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-
+/**
+ * 
+ * @author Johnson.Quadras
+ *
+ */
 public class InstanceCountsDTO extends AbstractDTO {
 
 	public long total;
@@ -25,5 +26,6 @@ public class InstanceCountsDTO extends AbstractDTO {
 	public long waiting;
 	
 	public long aborted;
-
+	
+	public long interrupted;
 }

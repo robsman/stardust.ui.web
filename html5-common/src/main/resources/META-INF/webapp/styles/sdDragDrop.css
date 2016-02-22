@@ -1,0 +1,25 @@
+.sd-drag-elem{
+  position:absolute;
+  top:0;
+  left:0;
+  z-index : -2;
+}
+
+.sd-clone-elem {
+ color : #fff;
+ color : rgba(0, 0, 0, 0);
+ background-color : #fff;
+ background-color: rgba(0, 0, 0, 0);
+ background-image:  none;
+ border-color : #fff;
+ border-color:rgba(0, 0, 0, 0);
+ background : #fff;
+ position:absolute;
+ top:0;
+ left:0;
+ z-index : -1;
+}
+
+.sd-clone-elem a{
+  opacity:0;
+}

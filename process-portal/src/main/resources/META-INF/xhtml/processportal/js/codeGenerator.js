@@ -171,15 +171,15 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
 				elemAddButton.attributes["href"] = "";
 				elemAddButton.attributes["ng-click"] = "addToList(" + listBinding + ", '" + path.fullXPath + "')";
-				htmlElement.create("img", {parent: elemAddButton, 
-					attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/add.png", class: "panel-image"}});
+				htmlElement.create("i", {parent: elemAddButton, 
+					attributes: {"class": "pi pi-document-add pi-lg"}});
 				
 				var elemRemoveButton = htmlElement.create("a", {parent: htmlElement.create("td", 
 						{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
 				elemRemoveButton.attributes["href"] = "";
 				elemRemoveButton.attributes["ng-click"] = "removeFromList(" + listBinding + ", '" + path.fullXPath + "')";
-				htmlElement.create("img", {parent: elemRemoveButton, 
-					attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/delete.png", class: "panel-image"}});
+				htmlElement.create("i", {parent: elemRemoveButton, 
+					attributes: {"class": "pi pi-document-delete pi-lg"}});
 			}
 
 			// Table
@@ -633,6 +633,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				return "sdFilterDateTime";
 			} else if (path.typeName == "time") {
 				return "sdFilterTime";
+			}else if(path.typeName == "float" || path.typeName == "double" || path.typeName == "long" ||  path.typeName == "decimal" || path.typeName == "integer") {
+				return "number : 2";
 			}
 		}
 
@@ -674,16 +676,16 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				var menuTable = htmlElement.create("table", {parent: docMenu, attributes: {cellpadding: 2, cellspacing: 0}});
 				var menuTableTr = htmlElement.create("tr", {parent: htmlElement.create("tbody", {parent: menuTable})});
 				var menuTableTd1 = htmlElement.create("td", {parent: menuTableTr, attributes: {class: "panel-primitive-container-cell"}});
-				htmlElement.create("img", {parent: menuTableTd1, attributes: {
-					"src": preferences.pluginsUrl + "/views-common/images/icons/page_white_delete.png", class: "panel-image"}});
+				htmlElement.create("i ", {parent: menuTableTd1, attributes: {
+				"class": "pi pi-document-delete pi-lg"}});
 				var menuTableTd2 = htmlElement.create("td", {parent: menuTableTr, attributes: {class: "panel-primitive-container-cell"}});
 				htmlElement.create("span", {parent: menuTableTd2, value:"Delete", attributes: {class: "panel-label"}});
 			}
 			
 			elemWrapper.attributes["ng-mouseleave"] = "hideAllDocumentMenus()";
 			
-			htmlElement.create("img", {parent: docLink, 
-				attributes: {"ng-src": "{{" + binding + ".docIcon}}", class: "panel-image"}});
+			htmlElement.create("i", {parent: docLink, 
+				attributes: {"class": "{{" + binding + ".docIcon}}", }});
 			
 			docLink.attributes["ng-disabled"] = "isDocumentLinkDisabled('" + path.fullXPath + "', " + this.isReadonly(path) + ")";
 			docLink.attributes["ng-class"] = "getDocumentLinkClass('" + path.fullXPath + "', " + this.isReadonly(path) + ")";

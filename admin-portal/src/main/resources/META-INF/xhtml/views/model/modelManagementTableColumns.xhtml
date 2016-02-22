@@ -63,10 +63,10 @@
 		<ice:menuBar displayOnClick="true" style="text-align: center;"
 			styleClass="modelMenuBar" immediate="false"
 			rendered="#{row.type=='MODEL_VERSION' and row.actionAllowed }">
-			<ice:menuItem id="menuPopup" styleClass=""
+			<ice:menuItem id="menuPopup" styleClass="modelSettingsMnuItem"
 				icon="/plugins/views-common/images/icons/wrench_closed.png"
 				 value="">
-				<ice:menuItem icon="/plugins/views-common/images/icons/cross.png" styleClass="modelMnuItm"
+				<ice:menuItem styleClass="pi pi-delete-model pi-md " icon="" style="display: flex; align-items: center; margin-left: 5px;"
 					value="#{modelManagementBean.messages['actions.delete']}"
 					actionListener="#{modelManagementBean.popUpActionListener}">
 					 <pc:automationTag
@@ -75,7 +75,7 @@
 					<f:attribute name="type" value="DELETE" />
 				</ice:menuItem>
 				<ice:menuItem
-					icon="/plugins/views-common/images/icons/server_go.png" styleClass="modelMnuItm"
+					 styleClass="pi pi-upload pi-md" icon="" style="display: flex; align-items: center; margin-left: 5px;"
 					value="#{modelManagementBean.messages['actions.overwrite']}"
 					actionListener="#{modelManagementBean.popUpActionListener}">
 					<pc:automationTag
@@ -84,8 +84,7 @@
 					<f:attribute name="row" value="#{row}" />
 					<f:attribute name="type" value="OVERWRITE" />
 				</ice:menuItem>
-				<ice:menuItem
-					icon="/plugins/views-common/images/icons/page_white_put.png" styleClass="modelMnuItm"
+				<ice:menuItem styleClass="pi pi-export pi-md " icon="" style="display: flex; align-items: center; margin-left: 5px;"
 					value="#{modelManagementBean.messages['actions.export']}"
 					actionListener="#{modelManagementBean.popUpActionListener}">
 					<pc:automationTag
@@ -103,8 +102,8 @@
 			style="vertical-align: middle;">
 				<pc:automationTag value="auto-ADM-ModelMgmt-ModelTreeTbl-EditImpl"
 					standAlone="false" />
-			<h:graphicImage
-				value="/plugins/views-common/images/icons/cog_edit.png"
+			<ice:outputText
+				styleClass="pi pi-modify-implementation pi-lg "
 				style="border: none;"
 				title="#{modelManagementBean.messages['primaryinterface.modify']}" />
 			<f:attribute name="row" value="#{row}" />

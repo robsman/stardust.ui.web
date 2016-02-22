@@ -88,6 +88,13 @@ public class WorklistTableEntry extends DefaultRowModel
    private String priorityIcon;
    
    private boolean showResubmissionLink;
+   
+   private Date resubmissionTime;
+
+   private String benchmark;
+   
+   private String benchmarkColor;
+   
 
    public WorklistTableEntry()
    {
@@ -110,10 +117,11 @@ public class WorklistTableEntry extends DefaultRowModel
     * @param processInstanceOid
     * @param activityInstance
     */
-   public WorklistTableEntry(String processName, List<ProcessDescriptor> processDescriptorsList,
-         boolean activatable, String lastPerformer, int processPriority, Date startDate,
-         Date lastModificationTime, long oid, String duration, int notesCount, Map<String, Object> descriptorValues,
-         long processInstanceOid, ActivityInstance activityInstance, long currentPerformerOID, boolean showResubmissionLink)
+   public WorklistTableEntry(String processName, List<ProcessDescriptor> processDescriptorsList, boolean activatable,
+         String lastPerformer, int processPriority, Date startDate, Date lastModificationTime, long oid,
+         String duration, int notesCount, Map<String, Object> descriptorValues, long processInstanceOid,
+         ActivityInstance activityInstance, long currentPerformerOID, boolean showResubmissionLink,
+         boolean showResubmissionTime)
    {
       super();
       defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(activityInstance);
@@ -136,7 +144,9 @@ public class WorklistTableEntry extends DefaultRowModel
       ProcessDefinition pd=ProcessDefinitionUtils.getProcessDefinition(activityInstance.getModelOID(), activityInstance.getProcessDefinitionId());
       this.processDefinition = I18nUtils.getProcessName(pd);
       this.showResubmissionLink = showResubmissionLink;
-
+      this.benchmark = ActivityInstanceUtils.getBenchmarkLabel(activityInstance);
+      this.benchmarkColor = ActivityInstanceUtils.getBenchmarkColor(activityInstance);
+      
       if (!defaultCaseActivity)
       {
          this.abortActivity = ActivityInstanceUtils.isAbortable(activityInstance);
@@ -168,6 +178,12 @@ public class WorklistTableEntry extends DefaultRowModel
          renderIcon = true;
          iconPath = Constants.WORKLIST_QA_FAILED_STATE_IMAGE;
       }
+      
+      if(showResubmissionTime)
+      {
+         Date resubmissionTime = ActivityInstanceUtils.getResubmissionDate(activityInstance);
+         this.setResubmissionTime(resubmissionTime);
+   }
    }
 
    public String getStatus()
@@ -407,6 +423,36 @@ public class WorklistTableEntry extends DefaultRowModel
    public void setShowResubmissionLink(boolean showResubmissionLink)
    {
       this.showResubmissionLink = showResubmissionLink;
+   }
+
+   public Date getResubmissionTime()
+   {
+      return resubmissionTime;
+   }
+
+   public void setResubmissionTime(Date resubmissionTime)
+   {
+      this.resubmissionTime = resubmissionTime;
+   }
+
+   public String getBenchmark()
+   {
+      return benchmark;
+   }
+
+   public void setBenchmark(String benchmark)
+   {
+      this.benchmark = benchmark;
+   }
+
+   public String getBenchmarkColor()
+   {
+      return benchmarkColor;
+   }
+
+   public void setBenchmarkColor(String benchmarkColor)
+   {
+      this.benchmarkColor = benchmarkColor;
    }
 
 }

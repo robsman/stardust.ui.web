@@ -1,9 +1,15 @@
 package org.eclipse.stardust.ui.web.modeler.xpdl.edit.postprocessing;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import javax.annotation.Resource;
+
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.change.FeatureChange;
 import org.eclipse.emf.ecore.change.impl.ChangeDescriptionImpl;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDNamedComponent;
@@ -12,21 +18,27 @@ import org.eclipse.xsd.XSDTypeDefinition;
 import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
+import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationsType;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 
 @Component
 public class StructuredTypeChangeTracker implements ChangePostprocessor
 {
+   @Resource
+   private ModelService modelService;
+
    @Override
    public int getInspectionPhase()
    {
@@ -53,6 +65,39 @@ public class StructuredTypeChangeTracker implements ChangePostprocessor
                   {
                      TypeDeclarationType decl = (TypeDeclarationType) removedElement;
                      removeReferingAccessPoints(decl);
+                  }
+               }
+            }
+         }
+         if (candidate instanceof TypeDeclarationType)
+         {
+            EList<FeatureChange> featureChanges = change.getChangeDescription()
+                  .getObjectChanges().get(candidate);
+            if (featureChanges != null)
+            {
+               for (Iterator<FeatureChange> i = featureChanges.iterator(); i.hasNext();)
+               {
+                  FeatureChange featureChange = i.next();
+                  if (featureChange.getFeature().getName().equals("id"))
+                  {
+                     Map<String, ModelType> models = modelService
+                           .getModelManagementStrategy().getModels(false);
+                     ModelType model = ModelUtils.findContainingModel(candidate);
+                     List<ModelType> referingModels = ExternalReferenceUtils
+                           .getReferingModels(model.getId(), models.values());
+                     for (Iterator<ModelType> k = referingModels.iterator(); k.hasNext();)
+                     {
+                        ModelType referingModel = k.next();
+                        List<EObject> changedObjects = ExternalReferenceUtils
+                              .fixExternalReferences(models, referingModel, candidate);
+                        for (Iterator<EObject> m = changedObjects.iterator(); m.hasNext();)
+                        {
+                           EObject changedObject = m.next();
+                           change.markAlsoModified(changedObject);
+                           change.markUnmodified(referingModel);
+                        }
+                     }
+
                   }
                }
             }

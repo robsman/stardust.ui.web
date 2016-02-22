@@ -23,7 +23,6 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
-import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.DynamicParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -49,7 +48,6 @@ import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.TaskAssignmentConstants;
-import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
 
@@ -60,7 +58,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 public class ParticipantUtils
 {
    public static enum ParticipantType {
-      ORGANIZATION, ROLE, SCOPED_ROLE, SCOPED_ORGANIZATION, USER, USERGROUP;
+      ORGANIZATION, ROLE, SCOPED_ROLE, SCOPED_ORGANIZATION, USER, USERGROUP, DEPARTMENT;
    }
 
    /**
@@ -244,28 +242,7 @@ public class ParticipantUtils
          case ROLE:
          case SCOPED_ORGANIZATION:
          case SCOPED_ROLE:
-            String modelId = ModelUtils.extractModelId(partcipantQID);
-            String participantId = ModelUtils.extractParticipantId(partcipantQID);
-            if (null == participantId)
-            {
-               participantId = partcipantQID;
-            }
-   
-            if (null == modelId)
-            {
-               modelId = PredefinedConstants.PREDEFINED_MODEL_ID;
-            }
-            for (DeployedModel model : ModelUtils.getAllModelsActiveFirst())
-            {
-               if (model.getId().equals(modelId))
-               {
-                  participant = model.getParticipant(participantId);
-                  if (null != participant)
-                  {
-                     break;
-                  }
-               }
-            }
+            participant = getModelParticipant(partcipantQID);
             break;
 
          case USER:
@@ -278,6 +255,39 @@ public class ParticipantUtils
          }
 
          return participant;
+   }
+   
+   /**
+    * @param partcipantQID
+    * @return
+    */
+   public static ModelParticipant getModelParticipant(String partcipantQID)
+   {
+      String modelId = ModelUtils.extractModelId(partcipantQID);
+      String participantId = ModelUtils.extractParticipantId(partcipantQID);
+      ModelParticipant participant = null;
+
+      if (null == participantId)
+      {
+         participantId = partcipantQID;
+      }
+
+      if (null == modelId)
+      {
+         modelId = PredefinedConstants.PREDEFINED_MODEL_ID;
+      }
+      for (DeployedModel model : ModelUtils.getAllModelsActiveFirst())
+      {
+         if (model.getId().equals(modelId))
+         {
+            participant = (ModelParticipant) model.getParticipant(participantId);
+            if (null != participant)
+            {
+               break;
+            }
+         }
+      }
+      return participant;
    }
 
    /**
@@ -867,6 +877,10 @@ public class ParticipantUtils
          {
             return ((Organization) participant).getRuntimeElementOID();
          }
+         else if (participant instanceof DynamicParticipantInfo)
+         {
+            return ((DynamicParticipantInfo) participant).getOID();
+         }
          else
          {
             return -1l;
@@ -884,7 +898,6 @@ public class ParticipantUtils
     */
    public static String getParticipantLabel(Participant participant)
    {
-      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
       if (participant != null)
       {
          if (participant instanceof User)
@@ -892,16 +905,7 @@ public class ParticipantUtils
             User user = (User) participant;
             return I18nUtils.getUserLabel(user);
          }
-         if (participant instanceof Role)
-         {
-            return I18nUtils.getParticipantName(participant) + " ("
-                  + propsBean.getString("delegation.search.roleNamePostFix") + ")";
-         }
-         if (participant instanceof Organization)
-         {
-            return I18nUtils.getParticipantName(participant) + " ("
-                  + propsBean.getString("delegation.search.organizationNamePostFix") + ")";
-         }
+         return I18nUtils.getParticipantName(participant);
       }
       return "";
    }
@@ -915,7 +919,8 @@ public class ParticipantUtils
     */
    public static String getDepartmentLabel(DepartmentInfo department)
    {
-      StringBuilder departmentName = new StringBuilder().append(department.getName()).append(" (")
+      return department.getName();
+      /*      StringBuilder departmentName = new StringBuilder().append(department.getName()).append(" (")
             .append(MessagesViewsCommonBean.getInstance().getString("delegation.search.departmentNamePostFix"))
             .append(")");
 
@@ -929,6 +934,6 @@ public class ParticipantUtils
          }
       }
 
-      return departmentName.toString();
+      return departmentName.toString();*/
    }
 }

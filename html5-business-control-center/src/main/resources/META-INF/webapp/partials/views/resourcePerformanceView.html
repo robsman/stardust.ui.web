@@ -1,0 +1,94 @@
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true"
+	ng-controller="sdResourcePerformanceCtrl as ctrl" >
+	<div class="toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
+
+	<div>
+		<span>{{i18n("business-control-center-messages.views-resourcePerformance-roleOrOrg-label")}}:</span>
+		<select size="1" style="white-space: nowrap; margin: 3px;"
+			ng-model="ctrl.selectedRole" ng-change="ctrl.roleChanged()"
+			ng-options="opt.value as opt.label for opt in ctrl.roles"></select>
+	</div>
+	<div sda-toolbar>
+		<div class="tbl-toolbar-section">
+			<button
+				ng-click="bpmCommon.stopEvent($event); ctrl.openAddCustomColumnDlg();"
+				title="{{i18n('business-control-center-messages.views-toolbar-addColumn')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link">
+				<i class="pi pi-create pi-lg"></i>
+			</button>
+		</div>
+	</div>
+	<div class="view-panel-content" ng-if="ctrl.ready">
+		<table sd-data-table="ctrl.dataTable"
+			sd-data="ctrl.getResourcePerformanceData(params)"
+			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sda-sortable="true"
+			sda-ready="ctrl.ready"
+			sda-sort-by="{name : 'processDefinitionId', dir : 'desc'}"
+			sda-mode="remote" sda-sortable="false" sda-exports="true"
+			sda-exports-file-name="{{ctrl.exportFileName}}"
+			sda-column-selector="{{ctrl.columnSelector}}">
+			<thead>
+				<tr>
+					<th sda-name="processDefinitionId" sda-sortable="true"
+						sda-visible="true" sda-fixed="true"
+						sda-label="{{i18n('business-control-center-messages.views-resourcePerformance-column-processDefinition')}}">
+					</th>
+					<th ng-repeat="col in ctrl.columns" sda-name="{{col}}"
+						sda-label="{{ctrl.columnsDefinition[col]}}"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td sda-exporter="rowData.processDefinitionId">{{rowData.processDefinitionId}}
+					</td>
+					<td ng-repeat="col in ctrl.columns"
+						sda-exporter="ctrl.getExportValue(rowData.statisticsByColumns[colData.title])">
+						<div>
+							<b>{{i18n("business-control-center-messages.views-resourcePerformance-column-waitingTime")}}
+								: </b> <span
+								ng-bind="rowData.statisticsByColumns[colData.title].averageTime">
+							</span>
+						</div>
+						<div>
+							<b>{{i18n("business-control-center-messages.views-resourcePerformance-column-processingTime")}}
+								: </b> <span
+								ng-bind="rowData.statisticsByColumns[colData.title].averageWaitingTime">
+							</span>
+						</div>
+						<div>
+							<b>{{i18n("business-control-center-messages.views-common-column-status")}}
+								: </b> <span
+								ng-if="rowData.statisticsByColumns[colData.title].state == 1"
+								title="{{i18n('business-control-center-messages.views-trafficLightView-critical')}}">
+								<i class="pi pi-user-status pi-2x msg-error" ></i>
+							</span> <span
+								ng-if="rowData.statisticsByColumns[colData.title].state == 2"
+								title="{{i18n('business-control-center-messages.views-trafficLightView-warning')}}">
+								<i class="pi pi-user-status pi-2x msg-warn" ></i>
+							</span> <span
+								ng-if="rowData.statisticsByColumns[colData.title].state == 3"
+								title="{{i18n('business-control-center-messages.views-trafficLightView-normal')}}">
+								<i class="pi pi-user-status pi-2x msg-success" ></i>
+							</span>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div sd-dialog="ctrl.addCustomColumnDlg" sda-modal="true"
+		sda-show="ctrl.showOpenAddCustomColumnDlg" sda-type="confirm"
+		sda-title="{{i18n('business-control-center-messages.views-toolbar-addColumn')}}"
+		sda-scope="this"
+		sda-template="plugins/html5-business-control-center/partials/views/addCustomColumnDlg.html"
+		sda-on-confirm="ctrl.onConfirmFromAddColumn(res)"
+		sda-width="450px">
+	</div>
+</div>
+</div>

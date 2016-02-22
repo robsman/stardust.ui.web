@@ -200,15 +200,13 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
             processFilterToolbarItems = new ArrayList<FilterToolbarItem>();
             FilterToolbarItem auxiliaryProcess = new FilterToolbarItem("" + 0, "auxiliaryProcess",
                   "processHistory.processTable.showAuxiliaryProcess",
-                  "processHistory.processTable.hideAuxiliaryProcess", "process_auxiliary.png",
-                  Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+                  "processHistory.processTable.hideAuxiliaryProcess", "pi pi-process-auxiliary pi-lg");
             auxiliaryProcess.setActive(false);
             processFilterToolbarItems.add(auxiliaryProcess);
 
             FilterToolbarItem auxiliaryActivity = new FilterToolbarItem("" + 1, "auxiliaryActivity",
                   "processHistory.processTable.showAuxiliaryActivities",
-                  "processHistory.processTable.hideAuxiliaryActivities", "activity_auxiliary.png",
-                  Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+                  "processHistory.processTable.hideAuxiliaryActivities", "pi pi-activity-auxiliary pi-lg");
             auxiliaryActivity.setActive(false);
             processFilterToolbarItems.add(auxiliaryActivity);
 
@@ -377,13 +375,13 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
       fixedCols.add(nameCol);
       
       List<ColumnPreference> selectableColumns = new ArrayList<ColumnPreference>();
-      ColumnPreference statusCol = new ColumnPreference("Status", "", this.getMessages()
+      ColumnPreference statusCol = new ColumnPreference("Status", "thresholdState", this.getMessages()
             .getString("priorityTable.column.status"), V_processOverviewViewColumns,
             true, false);
       statusCol.setColumnAlignment(ColumnAlignment.CENTER);
       selectableColumns.add(statusCol);
 
-      ColumnPreference colInterupted = new ColumnPreference("Interrupted", "", this.getMessages()
+      ColumnPreference colInterupted = new ColumnPreference("Interrupted", "interruptedCount", this.getMessages()
             .getString("priorityTable.column.interrupted"), V_processOverviewViewColumns,
             true, false);
       colInterupted.setColumnAlignment(ColumnAlignment.CENTER);
@@ -391,12 +389,12 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
       
       ColumnPreference colHighPrio = new ColumnPreference("HighPriority", this
             .getMessages().getString("priorityTable.column.highPrio"));
-      ColumnPreference hTotalCountCol = new ColumnPreference("highPriority", "", this
+      ColumnPreference hTotalCountCol = new ColumnPreference("highPriority", "highPriority", this
             .getMessages().getString("priorityTable.column.totalCount"),
             V_processOverviewViewColumns, true, false);
       hTotalCountCol.setColumnAlignment(ColumnAlignment.CENTER);
       ColumnPreference hCriticalCountCol = new ColumnPreference("criticalHighPriority",
-            "", this.getMessages().getString("priorityTable.column.criticalCount"),
+            "criticalHighPriority", this.getMessages().getString("priorityTable.column.criticalCount"),
             V_processOverviewViewColumns, true, false);
       hCriticalCountCol.setColumnAlignment(ColumnAlignment.CENTER);
 
@@ -406,12 +404,12 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
 
       ColumnPreference colNormPrio = new ColumnPreference("NormPrio", this.getMessages()
             .getString("priorityTable.column.normalPrio"));
-      ColumnPreference nTotalCountCol = new ColumnPreference("normalPriority", "", this
+      ColumnPreference nTotalCountCol = new ColumnPreference("normalPriority", "normalPriority", this
             .getMessages().getString("priorityTable.column.totalCount"),
             V_processOverviewViewColumns, true, false);
       nTotalCountCol.setColumnAlignment(ColumnAlignment.CENTER);
       ColumnPreference nCriticalCountCol = new ColumnPreference("criticalNormalPriority",
-            "", this.getMessages().getString("priorityTable.column.criticalCount"),
+            "criticalNormalPriority", this.getMessages().getString("priorityTable.column.criticalCount"),
             V_processOverviewViewColumns, true, false);
       nCriticalCountCol.setColumnAlignment(ColumnAlignment.CENTER);
 
@@ -421,12 +419,12 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
 
       ColumnPreference colLowPrio = new ColumnPreference("LowPrio", this.getMessages()
             .getString("priorityTable.column.lowPrio"));
-      ColumnPreference lTotalCountCol = new ColumnPreference("lowPriority", "", this
+      ColumnPreference lTotalCountCol = new ColumnPreference("lowPriority", "lowPriority", this
             .getMessages().getString("priorityTable.column.totalCount"),
             V_processOverviewViewColumns, true, false);
       lTotalCountCol.setColumnAlignment(ColumnAlignment.CENTER);
       ColumnPreference lCriticalCountCol = new ColumnPreference("criticalLowPriority",
-            "", this.getMessages().getString("priorityTable.column.criticalCount"),
+            "criticalLowPriority", this.getMessages().getString("priorityTable.column.criticalCount"),
             V_processOverviewViewColumns, true, false);
       lCriticalCountCol.setColumnAlignment(ColumnAlignment.CENTER);
 
@@ -436,12 +434,12 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
 
       ColumnPreference colTotalPrio = new ColumnPreference("TotalPrio", this
             .getMessages().getString("priorityTable.column.total"));
-      ColumnPreference totalCol = new ColumnPreference("totalPriority", "", this
+      ColumnPreference totalCol = new ColumnPreference("totalPriority", "totalPriority", this
             .getMessages().getString("priorityTable.column.totalCount"),
             V_processOverviewViewColumns, true, false);
       totalCol.setColumnAlignment(ColumnAlignment.CENTER);
       ColumnPreference criticalTotalCol = new ColumnPreference("criticalTotalPriority",
-            "", this.getMessages().getString("priorityTable.column.criticalCount"),
+            "criticalTotalPriority", this.getMessages().getString("priorityTable.column.criticalCount"),
             V_processOverviewViewColumns, true, false);
       criticalTotalCol.setColumnAlignment(ColumnAlignment.CENTER);
 
@@ -449,7 +447,7 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
       colTotalPrio.addChildren(criticalTotalCol);
       selectableColumns.add(colTotalPrio);
 
-      ColumnPreference performerCol = new ColumnPreference("PerformerName", "", this
+      ColumnPreference performerCol = new ColumnPreference("PerformerName", "defaultPerformerName", this
             .getMessages().getString("priorityTable.column.role"),
             V_processOverviewViewColumns, true, false);
       performerCol.setColumnAlignment(ColumnAlignment.CENTER);
@@ -612,6 +610,10 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
          else if ("PerformerName".equals(column.getColumnName()))
          {
             return thisRow.getDefaultPerformerName();
+        
+         }else if ("Interrupted".equals(column.getColumnName())){
+        	 
+        	 return String.valueOf(thisRow.getInterruptedCount());
          }
          else
          {

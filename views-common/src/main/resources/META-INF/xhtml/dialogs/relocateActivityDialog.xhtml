@@ -1,0 +1,73 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		activateOnRelocation = true / false /* Indicates if the activityShould be activated on relocation
+											 	provided the activity is activatable by the current user*/ 
+	-->
+
+	<ui:composition>
+		<ice:panelPopup id="#{relocateActivityDialogBean.beanId}" modal="true"
+			rendered="#{relocateActivityDialogBean.visible}" draggable="true"
+			autoPosition="manual" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-relocation-dialog-header" />
+					<ice:outputText styleClass="headerText"
+						value="#{views_common_msgPropsBean['activity.relocation.dialog.title']}" />
+					<ice:commandLink title="#{common_msgPropsBean['common.close']}"
+						action="#{relocateActivityDialogBean.closePopup}" immediate="true"
+						styleClass="windowClose pi-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+					</ice:commandLink>
+				</ice:panelGroup>
+			</f:facet>
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="2"
+					cellspacing="2" renderNorth="false" renderEast="true"
+					renderSouth="true" renderWest="true" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:outputText styleClass="label"
+								value="#{views_common_msgPropsBean['activity.relocation.dialog.newActivity']}" />
+							<ice:selectOneMenu partialSubmit="true"
+								style="min-width: 150px; margin-left: 10px;"
+								value="#{relocateActivityDialogBean.selectedTarget}">
+								<pc:automationTag value="auto-relocation-dialog-selectTarget"
+									standAlone="false" />
+								<f:selectItems
+									value="#{relocateActivityDialogBean.relocationTargets}" />
+							</ice:selectOneMenu>
+							<ice:panelGroup styleClass="clearing" />
+							<ice:panelGroup styleClass="clearing" />
+						</ice:panelGroup>
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGroup>
+							<ice:panelGroup>
+								<pc:automationTag value="auto-relocation-dialog-relocateAction" />
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['activity.relocation.dialog.actionButton.text']}"
+									actionListener="#{relocateActivityDialogBean.relocateActivity}"
+									disabled="#{!relocateActivityDialogBean.relocationEligible}"
+									styleClass="button">
+									<f:attribute name="activateOnRelocation" value="#{activateOnRelocation}" />
+								</ice:commandButton>
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['common.cancel']}"
+									action="#{relocateActivityDialogBean.closePopup}"
+									immediate="true" styleClass="button secondary" />
+							</ice:panelGroup>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

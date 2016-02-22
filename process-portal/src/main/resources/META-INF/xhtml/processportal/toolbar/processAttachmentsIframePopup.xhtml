@@ -21,6 +21,8 @@
 		<ice:outputStyle href="/plugins/common/css/nirvanaRime-override.css" />
 		<ice:outputStyle href="/plugins/common/css/nirvanaPortal.css" />
 		<ice:outputStyle href="/plugins/common/css/portalComponentStyle.css" />
+		<link rel="stylesheet" href="../../html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css"></link>
+		<link rel="stylesheet" href="../../html5-common/styles/portal-icons.css" > </link>
 	
 		<c:forEach items="#{ippPortalApp.skinFiles}" var="skinFile">
 			<ice:outputStyle href="#{skinFile}" />
@@ -56,13 +58,13 @@
 	</head>
 	<body style="width: 100%; height:100%; background-color: #F7F7F7;" onLoad="if(windowLoaded){windowLoaded()}">
 		<ice:form>
-			<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments}" style="background-color: #EAEAEA;">
+			<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments}" styleClass="iframePopover">
 				<ice:panelGrid columns="1" > <!-- Added to give same spacing -->
 					<ice:commandLink styleClass="action-link"
 						action="#{ippActivityPanelController.uploadProcessAttachment}" immediate="true" onclick="closeIframe();">
 						<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarUpload" />
 						<ice:panelGrid columns="2">
-							<ice:graphicImage value="/plugins/views-common/images/icons/page_white_get.png" />
+							<ice:outputText styleClass="pi pi-upload pi-lg" />
 							<ice:outputText style="white-space: nowrap;"
 								value="#{processportal_msgPropsBean['toolbars.workflowActions.upload.document']}" />
 						</ice:panelGrid>
@@ -73,7 +75,7 @@
 						<f:param name="folderId"
 							value="#{ippActivityPanelController.processAttachmentsFolderId}" />
 						<ice:panelGrid columns="2">
-							<ice:graphicImage value="/plugins/views-common/images/icons/page_white_add.png" />
+							<ice:outputText styleClass="pi pi-create pi-lg" />
 							<ice:outputText style="white-space: nowrap;"
 								value="#{processportal_msgPropsBean['toolbars.workflowActions.create.new.file']}" />
 						</ice:panelGrid>
@@ -90,7 +92,7 @@
 							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
 							<f:attribute name="documentInfo" value="#{processDocument}" />
 							<ice:panelGrid columns="2">
-								<ice:graphicImage value="#{processDocument.documentIcon}" />
+								<i class="#{processDocument.documentIcon}"></i>
 								<ice:outputText value="#{processDocument.name}" style="white-space: nowrap;" />
 							</ice:panelGrid>
 						</ice:commandLink>
@@ -99,9 +101,9 @@
 							actionListener="#{ippActivityPanelController.detachDocument}" rendered="#{processDocument.id!=''}" onclick="closeIframe();">
 							<pc:automationTag
 								value="auto-PP-ProcAttachDlg-ToolbarDeleteDocument" standAlone="false" />
-							<h:graphicImage
-								value="/plugins/views-common/images/icons/delete.png"
-								style="border: none;padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']}"/>
+							<h:outputText
+								style="padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']}"
+								styleClass="pi pi-delete pi-lg"/>
 							<f:attribute name="documentInfo" value="#{processDocument}" />
 						</ice:commandLink>
 					</ice:panelGrid>
@@ -115,7 +117,7 @@
 							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenAttachment" />
 							<f:attribute name="documentInfo" value="#{processAttachment}" />
 							<ice:panelGrid columns="2">
-								<ice:graphicImage value="#{processAttachment.documentIcon}" />
+								<i class="#{processAttachment.documentIcon}"></i>
 								<ice:outputText value="#{processAttachment.name}" style="white-space: nowrap;" />
 							</ice:panelGrid>
 						</ice:commandLink>
@@ -123,10 +125,24 @@
 							actionListener="#{ippActivityPanelController.detachDocument}" rendered="#{processAttachment!=null}" onclick="closeIframe();">
 							<pc:automationTag
 								value="auto-PP-ProcAttachDlg-ToolbarDeleteDocument" standAlone="false" />
-							<h:graphicImage
-								value="/plugins/views-common/images/icons/delete.png"
-								style="border: none;padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']}"/>
+							<h:outputText
+								style="padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']}"
+								styleClass="pi pi-delete pi-lg"/>
 							<f:attribute name="documentInfo" value="#{processAttachment}"/>
+						</ice:commandLink>
+					</ice:panelGrid>
+				</ice:panelSeries>
+				<ice:panelSeries rendered="#{ippActivityPanelController.hasCorrespondenceOutFolders}"
+					value="#{ippActivityPanelController.correspondenceFolders}" var="correspondenceFolder">
+					<ice:panelGrid columns="2"> <!-- Added to give same spacing -->
+						<ice:commandLink styleClass="action-link"
+							actionListener="#{ippActivityPanelController.openCorrespondenceView}" immediate="true" onclick="closeIframe();">
+							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenCorrespondence" />
+							<f:attribute name="documentInfo" value="#{correspondenceFolder}" />
+							<ice:panelGrid columns="2">
+								<i class="#{correspondenceFolder.documentIcon}"></i>
+								<ice:outputText value="#{correspondenceFolder.name}" style="white-space: nowrap;" />
+							</ice:panelGrid>
 						</ice:commandLink>
 					</ice:panelGrid>
 				</ice:panelSeries>

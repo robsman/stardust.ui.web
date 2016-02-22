@@ -970,7 +970,11 @@ if (!window.bpm.portal.AngularAdapter) {
 							dateFormat = attrs.dateFormat;
 						}
 						
-
+						var datePickerProperties
+						if (attrs.datePickerProperties) {
+							datePickerProperties = scope.$eval(attrs.datePickerProperties); 
+						}
+						
 						var baseUrl = window.location.href.substring(0, location.href.indexOf("/plugins"));
 						var url = baseUrl
 								+ "/plugins/bpm-reporting/js/libs/jquery/plugins/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.js";
@@ -985,6 +989,20 @@ if (!window.bpm.portal.AngularAdapter) {
 												inline : true,
 												timeFormat : timeFormat,
 												dateFormat : dateFormat,
+												closeText: datePickerProperties.closeText,
+												prevText: datePickerProperties.prevText,
+												nextText: datePickerProperties.nextText,
+												currentText: datePickerProperties.currentText,
+												monthNames: datePickerProperties.monthNames,
+												monthNamesShort: datePickerProperties.monthNamesShort,
+												dayNames: datePickerProperties.dayNames,
+												dayNamesShort: datePickerProperties.dayNamesShort,
+												dayNamesMin: datePickerProperties.dayNamesMin,
+												weekHeader: datePickerProperties.weekHeader,
+												firstDay: datePickerProperties.firstDay,
+												isRTL: false,
+												showMonthAfterYear: datePickerProperties.showMonthAfterYear,
+												yearSuffix: datePickerProperties.yearSuffix,
 												onSelect : function(date) {
 													scope.$apply(function () {
 													   controller.$setViewValue(date);
@@ -999,6 +1017,20 @@ if (!window.bpm.portal.AngularAdapter) {
 					    	element.datepicker({
 								inline : true,
 								dateFormat : 'yy/mm/dd', // I18N
+								closeText: datePickerProperties.closeText,
+								prevText: datePickerProperties.prevText,
+								nextText: datePickerProperties.nextText,
+								currentText: datePickerProperties.currentText,
+								monthNames: datePickerProperties.monthNames,
+								monthNamesShort: datePickerProperties.monthNamesShort,
+								dayNames: datePickerProperties.dayNames,
+								dayNamesShort: datePickerProperties.dayNamesShort,
+								dayNamesMin: datePickerProperties.dayNamesMin,
+								weekHeader: datePickerProperties.weekHeader,
+								firstDay: datePickerProperties.firstDay,
+								isRTL: false,
+								showMonthAfterYear: datePickerProperties.showMonthAfterYear,
+								yearSuffix: datePickerProperties.yearSuffix,
 								onSelect : function(datetext) {
 									var d = new Date(); // for now
 							        datetext = datetext + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ":000";

@@ -4140,9 +4140,12 @@
 				 */
 				var fnInnerSorting = function () {
 					var iColumn, iNextSort;
+
+					/* Support added for single column sort */ 
+					var bSingleColumnSort = oSettings.oFeatures.bSingleColumnSort;
 					
 					/* If the shift key is pressed then we are multiple column sorting */
-					if ( e.shiftKey )
+					if ( !bSingleColumnSort && e.shiftKey )
 					{
 						/* Are we already doing some kind of sort on this column? */
 						var bFound = false;
@@ -6455,6 +6458,7 @@
 			_fnMap( oSettings.oFeatures, oInit, "bLengthChange" );
 			_fnMap( oSettings.oFeatures, oInit, "bFilter" );
 			_fnMap( oSettings.oFeatures, oInit, "bSort" );
+			_fnMap( oSettings.oFeatures, oInit, "bSingleColumnSort" ); // Support added for single column sort
 			_fnMap( oSettings.oFeatures, oInit, "bInfo" );
 			_fnMap( oSettings.oFeatures, oInit, "bProcessing" );
 			_fnMap( oSettings.oFeatures, oInit, "bAutoWidth" );

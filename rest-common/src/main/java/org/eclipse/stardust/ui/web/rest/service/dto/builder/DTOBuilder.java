@@ -27,6 +27,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 import org.springframework.util.StringUtils;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
@@ -170,7 +171,7 @@ public class DTOBuilder
 
       for (Field field : toClass.getDeclaredFields())
       {
-         if (null != json.get(field.getName()))
+         if (json.get(field.getName()) != null && !json.get(field.getName()).isJsonNull())
          {
             if (String.class.equals(field.getType()))
             {
@@ -179,21 +180,21 @@ public class DTOBuilder
             else if (int.class.equals(field.getType())
                   || Integer.class.equals(field.getType()))
             {
-               setFieldValue(toInstance, field, json.get(field.getName()).getAsInt());
+               setFieldValue(toInstance, field, getValue(json.get(field.getName()), Integer.class));
             }
             else if (Long.class.equals(field.getType())
                   || long.class.equals(field.getType()))
             {
-               setFieldValue(toInstance, field, json.get(field.getName()).getAsLong());
+               setFieldValue(toInstance, field, getValue(json.get(field.getName()), Long.class));
             }
             else if (Float.class.equals(field.getType()))
             {
-               setFieldValue(toInstance, field, json.get(field.getName()).getAsFloat());
+               setFieldValue(toInstance, field, getValue(json.get(field.getName()), Float.class));
             }
             else if (Boolean.class.equals(field.getType())
                   || boolean.class.equals(field.getType()))
             {
-               setFieldValue(toInstance, field, json.get(field.getName()).getAsBoolean());
+               setFieldValue(toInstance, field, getValue(json.get(field.getName()), Boolean.class));
             }
             else if (Date.class.equals(field.getType()))
             {
@@ -333,5 +334,36 @@ public class DTOBuilder
          }
          field.set(instance, value);
       }
+   }
+   
+   /**
+    * @param jsonElement
+    * @param class1
+    * @return
+    */
+   private static Object getValue(JsonElement jsonElement, Class< ? > class1)
+   {
+      if (jsonElement == null || StringUtils.isEmpty(jsonElement.getAsString()))
+      {
+         return null;
+      }
+
+      if (class1.equals(Integer.class))
+      {
+         return jsonElement.getAsInt();
+      }
+      else if (class1.equals(Long.class))
+      {
+         return jsonElement.getAsLong();
+      }
+      else if (class1.equals(Float.class))
+      {
+         return jsonElement.getAsFloat();
+      }
+      else if (class1.equals(Boolean.class))
+      {
+         return jsonElement.getAsBoolean();
+      }
+      return jsonElement;
    }
 }

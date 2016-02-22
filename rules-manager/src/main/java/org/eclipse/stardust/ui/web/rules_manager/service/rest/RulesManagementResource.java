@@ -12,13 +12,14 @@
 package org.eclipse.stardust.ui.web.rules_manager.service.rest;
 
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -29,16 +30,22 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rules_manager.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.rules_manager.service.RulesManagementService;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpRequest;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.google.gson.JsonObject;
 
 @Path("/rules/{randomPostFix}")
 public class RulesManagementResource
 {
+   private static final Logger trace = LogManager.getLogger(RulesManagementResource.class);
+   private static final String UTF_ENCODING = "utf-8";
+   
    @Context
    private ServletContext servletContext;
    
@@ -46,15 +53,16 @@ public class RulesManagementResource
    private HttpServletRequest httpRequest;
 
    /**
-    * @return
+    * @return design time rule sets
     */
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("rule-sets")
-   public Response getAllRuleSets()
+   @Path("rule-sets/design-time")
+   public Response getAllDesignTimeRuleSets()
    {
       try
       {
+
          String result = getRulesManagementService().getAllRuleSets().toString();
          
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
@@ -70,7 +78,7 @@ public class RulesManagementResource
     * @return
     */
    @POST
-   @Path("save")
+   @Path("rule-sets/design-time/save")
    public Response saveRuleSets(String ruleSets)
    {
       if (StringUtils.isEmpty(ruleSets))
@@ -90,7 +98,7 @@ public class RulesManagementResource
 
    @GET
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-   @Path("ruleSet/{ruleSetId}/download")
+   @Path("rule-sets/design-time/{ruleSetId}/download")
    public Response downloadRuleSet(@PathParam("ruleSetId") String ruleSetId)
    {
       byte[] ruleSetNameAndContent = getRulesManagementService().getRuleSet(ruleSetId);
@@ -107,6 +115,109 @@ public class RulesManagementResource
             .build();
    }
    
+   /**
+    * @return all published rule sets
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("rule-sets/run-time")
+   public Response getAllRunTimeRuleSets()
+   
+   {
+      try
+      {
+         String result = getRulesManagementService().getAllRuntimeRuleSets().toString();
+         
+         return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("Exception while fetching all rule sets", e);
+
+         return Response.serverError().build();
+      }
+   }
+   
+   /**
+    * @return published rule set
+    */
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("rule-sets/run-time")
+   public Response publishRuleSet(String ruleSetId)
+   {
+      try
+      {
+         String result = getRulesManagementService().publishRuleSet(ruleSetId).toString();
+         
+         return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("Exception while publishing rule set", e);
+
+         return Response.serverError().build();
+      }
+   }
+   
+   /**
+	* @param ruleSetId
+	* @return
+	*/
+   @GET
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
+   @Path("rule-sets/run-time/{ruleSetId}/download")
+   public Response downloadRuntimeRuleSet(@PathParam("ruleSetId") String ruleSetId)
+   {
+      try
+      {
+      JsonObject ruleSetNameAndContent = getRulesManagementService().getRuntimeRuleSet(ruleSetId);
+
+      String fileName = ruleSetId;
+      if (!fileName.endsWith(".json"))
+      {
+         fileName = fileName + ".json";
+      }
+      
+      
+         byte[] contents = ruleSetNameAndContent.toString().getBytes(UTF_ENCODING);
+      
+      
+      return Response.ok(contents, MediaType.APPLICATION_OCTET_STREAM)
+            .header("content-disposition",
+                  "attachment; filename = \"" + fileName  + "\"")
+            .build();
+      }
+      catch (Exception e)
+      {
+            trace.error("Exception while downloading rule set", e);
+
+            return Response.serverError().build();
+      }
+   }
+   
+   /**
+    * @param ruleSets
+    * @return
+    */
+   @DELETE
+   @Path("rule-sets/run-time/{ruleSetId}")
+   public Response deleteRuntimeRuleSet(@PathParam("ruleSetId") String ruleSetId)
+   {
+      try
+      {
+         // TODO: @Sidharth
+         String result = getRulesManagementService().deleteRuntimeRuleSet(ruleSetId).toString();         
+         return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("Exception while deleting rule set", e);
+
+         return Response.serverError().build();
+      }
+   }   
+
    /**
     * @param bundleName
     * @param locale

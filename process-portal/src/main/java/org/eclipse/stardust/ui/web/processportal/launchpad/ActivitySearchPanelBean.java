@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.eclipse.stardust.ui.web.processportal.launchpad;
 
@@ -27,6 +27,7 @@ import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -35,7 +36,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 /**
  * @author roland.stamm
- * 
+ *
  */
 public class ActivitySearchPanelBean extends AbstractLaunchPanel
       implements InitializingBean, DisposableBean, IActivitySearchUserSearchHandler
@@ -46,18 +47,16 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
    private static final String ID_USER_WORKLIST_SEARCH = "userWorklistSearch";
 
    private static final String ID_ALL_ACTIVITY_INSTANCES = "allActivityInstances";
-   
-   private static final String ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES = "allResubmissionInstances";
 
    private static final int SEARCH_RESULT_MAP_SIZE = 3;
 
    private AllAvailableActivityQueryBuilder allActivityQueryBuilder;
-   
+
    private AllResubmissionActivity allResubmissionActivity;
-   
+
    private Map<String, ActivitySearchModel> lastSearchItems;
 
-   private List<ActivitySearchUserModel> users;   
+   private List<ActivitySearchUserModel> users;
 
    private boolean userWorklistSearchPanelVisible;
 
@@ -73,7 +72,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
     */
    public void afterPropertiesSet() throws Exception
@@ -92,13 +91,13 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.springframework.beans.factory.DisposableBean#destroy()
     */
    public void destroy() throws Exception
    {
    }
-   
+
    /**
     * @return
     */
@@ -118,32 +117,33 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
    }
 
    /**
-    * 
+    *
     */
    private void clear()
    {
       lastSearchItems.clear();
    }
-   
+
    public String searchAllResubmissionActivityInstancesAction()
    {
       searchAllResubmissionActivityInstances();
       return null;
    }
-   
+
    private void searchAllResubmissionActivityInstances()
    {
-      
+
       allResubmissionActivity.executeCountQuery();
       if (allResubmissionActivity.getCountQueryResult() != null)
       {
          Map<String, Object> params = CollectionUtils.newTreeMap();
          params.put(Query.class.getName(), allResubmissionActivity.createQuery());
          String name = this.getMessages().getString("resubmission");
-         String id = ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES;
+         String id = ProcessPortalConstants.ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES;
          params.put("id", id);
          params.put("name", name);
          params.put("showResubmitLink", true);
+         params.put("showResubmissionTime", true);
          PPUtils.openWorklistView("id=" + id, params);
 
          PPUtils.selectWorklist(null);
@@ -157,7 +157,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
    }
 
    /**
-    * 
+    *
     */
    private void searchAllActivityInstances()
    {
@@ -183,7 +183,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
    }
 
    /**
-    * 
+    *
     */
    public void update()
    {
@@ -224,10 +224,10 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          return countQueryResult;
       }
    }
-   
+
    private class AllResubmissionActivity implements IQueryBuilder
    {
-      private ActivityInstances countQueryResult;  
+      private ActivityInstances countQueryResult;
       public Query createQuery()
       {
          executeCountQuery();
@@ -244,7 +244,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
       {
          return countQueryResult;
       }
-      
+
    }
 
    // ************************ Worklist Search ********************************
@@ -282,12 +282,12 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
    private void filterUsers()
    {
       users.clear();
-     
+
       Users qusers = PPUtils.getUsers_anyLike(getFirstNameFilter(), getLastNameFilter());
       for (Iterator<User> iterator = qusers.iterator(); iterator.hasNext();)
       {
          User user = iterator.next();
-         users.add(new ActivitySearchUserModel(user, this));         
+         users.add(new ActivitySearchUserModel(user, this));
       }
    }
 
@@ -348,6 +348,73 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
 
          // add to SearchResult Map
          lastSearchItems.put(id, new ActivitySearchModel(id, name, userWorklistQueryBuilder));
+      }
+   }
+
+   public void searchAllActivityInstancesActionHTML5()
+   {
+      allActivityQueryBuilder.executeCountQuery();
+      if (allActivityQueryBuilder.getCountQueryResult() != null)
+      {
+         Map<String, Object> params = CollectionUtils.newTreeMap();
+         String name = this.getMessages().getString("allActivities");
+         String id = ID_ALL_ACTIVITY_INSTANCES;
+         params.put("id", id);
+         params.put("name", name);
+         params.put("url", "services/rest/portal/worklist/allActivable");
+         PPUtils.openWorklistViewHTML5("id=" + id, params);
+         PPUtils.selectWorklist(null);
+         if (lastSearchItems.containsKey(id))
+            lastSearchItems.remove(id);
+         // add to SearchResult Map
+         lastSearchItems.put(id, new ActivitySearchModel(id, name, allActivityQueryBuilder, params));
+      }
+   }
+
+   public void searchAllResubmissionActivityInstancesActionHTML5()
+   {
+      allResubmissionActivity.executeCountQuery();
+      if (allResubmissionActivity.getCountQueryResult() != null)
+      {
+         Map<String, Object> params = CollectionUtils.newTreeMap();
+         String name = this.getMessages().getString("resubmission");
+         String id = ProcessPortalConstants.ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES;
+         params.put("id", id);
+         params.put("name", name);
+         params.put("url", "services/rest/portal/worklist/resubmissionActivities");
+         PPUtils.openWorklistViewHTML5("id=" + id, params);
+         PPUtils.selectWorklist(null);
+         // add to SearchResult Map
+         if (lastSearchItems != null)
+         {
+            lastSearchItems.put(id, new ActivitySearchModel(id, name, allResubmissionActivity, params));
+         }
+      }
+
+   }
+
+   public void searchWorklistHTML5For(User user)
+   {
+      userWorklistSearchPanelVisible = false;
+      UserWorklistQueryBuilder userWorklistQueryBuilder = new UserWorklistQueryBuilder(user);
+      userWorklistQueryBuilder.executeCountQuery();
+      if (userWorklistQueryBuilder.getCountQueryResult() != null)
+      {
+         Map<String, Object> params = CollectionUtils.newTreeMap();
+         String name = I18nUtils.getUserLabel(user);
+         String id = ID_USER_WORKLIST_SEARCH + user.getOID();
+         params.put("id", id);
+         params.put("name", name);
+         params.put("userId", user.getId());
+         params.put("queryParams", "fetchAllStates=true");
+         PPUtils.openWorklistViewHTML5("id=" + id, params);
+         PPUtils.selectWorklist(null);
+         if (lastSearchItems.containsKey(id))
+         {
+            lastSearchItems.remove(id);
+         }
+         // add to SearchResult Map
+         lastSearchItems.put(id, new ActivitySearchModel(id, name, userWorklistQueryBuilder, params));
       }
    }
 

@@ -1,0 +1,366 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+ /*
+* Modern.css represents a superset of nirvanaRime.css, nirvanaPortal.css
+* and nirvanaOverride.css
+*
+*
+*/
+
+/************************************************************************/
+/**************************FONT IMPORTS START****************************/
+/************************************************************************/
+
+.tbl-tool-bar-style,
+.tbl-tool-bar-style-dis {
+    margin-right: 6px;
+    padding: 0px;
+    cursor: pointer;
+}
+
+img[src *='dummy.png']{
+	background-image:none !important;
+	width:16px;
+	padding: 16px 0 0 0 !important;
+	height:0px;
+	background-repeat: no-repeat !important;
+	opacity: 0.7;
+}
+img[src *='dummy.png']:hover{
+	opacity:1.0;
+}
+
+/** Icefaces DataExporter tag   **/
+.export a,
+.exportAsExcel a,
+.exportAsCsv a,
+.caseMenu a,
+.renameVrtItem span,
+.renameVrtItem-dis span,
+.exportMnuItemVrtItem a {
+      text-decoration: initial;
+}
+
+.deleteModel a,
+.overwriteModel a, 
+.exportModel a,
+.deleteModel a:hover,
+.overwriteModel a:hover, 
+.exportModel a:hover {
+	text-decoration: initial;
+	margin-left: 5px;
+}
+
+.export a img,
+.exportAsExcel a img,
+.exportAsCsv a img,
+.deleteModel a img,
+.overwriteModel a img,
+.exportModel a img,
+.caseMenu a img,
+.renameVrtItem a img,
+.renameVrtItem-dis span img,
+.uploadVrtItem a img,
+.uploadVrtItem-dis span img,
+.exportMnuItemVrtItem a img,
+.exportMnuItemVrtItem-dis span img,
+.refreshVrtItem a img,
+.refreshVrtItem-dis span img,
+.versionHistoryVrtItem a img,
+.deleteFileVrtItem a img,
+.deleteFileVrtItem-dis span img,
+.createFileVrtItem a img,
+.createFileVrtItem-dis span img,
+.dropDownMnuItemItem a img,
+.settingsMnuItemVrtItem a img,
+.settingsMnuItemVrtItem-dis span img,
+.createFolderVrtItem a img,
+.createFolderVrtItem-dis span img,
+.deleteFolderVrtItem a img,
+.deleteFolderVrtItem-dis span img,
+.createNoteVrtItem a img,
+.createNoteVrtItem-dis span img,
+.defaultRepoVrtItem a img,
+.defaultRepoVrtItem-dis span img,
+.bindRepoVrtItem a img,
+.bindRepoVrtItem-dis span img,
+.unbindRepoVrtItem a img,
+.unbindRepoVrtItem-dis span img,
+.propertiesVrtItem a img,
+.propertiesVrtItem-dis span img,
+.detachFileVrtItem a img,
+.detachFileVrtItem-dis span img,
+.cutVrtItem a img,
+.cutVrtItem span img,
+.pasteVrtItem a img,
+.pasteVrtItem-dis span img,
+.pageUpVrtItem a img,
+.pageUpVrtItem-dis span img,
+.pageDownVrtItem a img,
+.pageDownVrtItem-dis span img,
+.reversePageVrtItem a img,
+.reversePageVrtItem-dis span img,
+.addBookmarkVrtItem a img,
+.addBookmarkVrtItem-dis span img,
+.modelSettingsMnuItemItem a img {
+    background-image: none !important;
+    position: absolute;
+    margin-left: -15px;
+    margin-top: 2px;
+}
+
+.export a:before {
+      font-family: FontAwesome;
+      font-size: 16px;
+      content: '\f019';
+}
+
+.exportAsExcel a:before {
+      font-family: FontAwesome;
+      font-size: 16px;
+      content: '\f1c3'; /* fa-file-excel */
+}
+
+.exportAsCsv a:before {
+      font-family: FontAwesome;
+      font-size: 16px;
+      content: '\f0f6'; /* fa-file-text */
+}
+
+.deleteModel a:before {
+      font-family: FontAwesome;
+      font-size: 16px;
+      content: '\f056';
+}
+
+.overwriteModel a:before {
+      font-family: FontAwesome;
+      font-size: 16px;
+      content: "\f093";
+}
+
+.exportModel a:before {
+      font-family: FontAwesome;
+      font-size: 16px;
+      content: "\f019";
+}
+
+.caseMenu a:before {
+      font-family: FontAwesome;
+      font-size: 16px;
+      content: "\f078";
+}
+
+.renameVrtItem a:before {
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f044";
+}
+
+.renameVrtItem-dis > span:before {
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f044";
+}
+
+.uploadVrtItem a:before,
+.uploadVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f093";
+}
+
+.exportMnuItemVrtItem a:before,
+.exportMnuItemVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f019";
+}
+
+.refreshVrtItem a:before,
+.refreshVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f021";
+}
+
+.versionHistoryVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f02d";
+}
+
+.deleteFileVrtItem a:before,
+.deleteFileVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f056";
+}
+
+.createFileVrtItem a:before,
+.createFileVrtItem-dis > span:before{	
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f055";
+}
+
+.dropDownMnuItemItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f078";
+}
+
+.settingsMnuItemVrtItem a:before,
+.settingsMnuItemVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f0ad";
+}
+
+.createFolderVrtItem a:before,
+.createFolderVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f0fe";
+}
+
+.deleteFolderVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f146";
+}
+
+.deleteFolderVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f146";
+}
+
+.createNoteVrtItem a:before,
+.createNoteVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f055";
+}
+
+.defaultRepoVrtItem a:before,
+.defaultRepoVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f0fe";
+}
+
+.bindRepoVrtItem a:before,
+.bindRepoVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f055";
+}
+
+.unbindRepoVrtItem a:before,
+.unbindRepoVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f056";
+}
+
+.propertiesVrtItem a:before,
+.propertiesVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f1e8";
+}
+
+.detachFileVrtItem a:before,
+.detachFileVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f180";
+}
+
+.cutVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f0c4";
+}
+
+.cutVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f0c4";
+}		
+
+.pasteVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f0ea";
+}
+
+.pasteVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f0ea";
+}
+
+.pageUpVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f062";
+}
+
+.pageUpVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f062";
+}
+
+.pageDownVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f063";
+}
+
+.pageDownVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f063";
+}
+
+.reversePageVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f021";
+}
+
+.reversePageVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f021";
+}
+
+.addBookmarkVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f097";
+}
+
+.addBookmarkVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f097";
+}
+
+.modelSettingsMnuItemItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f0ad"; /* fa-wrench */
+}
+

@@ -4,6 +4,9 @@
 <link type="text/css" rel="stylesheet"
 	href="../../common/css/iPopupDialogStyle.css">
 </link>
+ <link  rel="stylesheet"
+	href="../../html5-common/styles/portal-icons.css" > </link>
+ <link rel="stylesheet" type="text/css" href="../../modern-skin/modern.css"></link>
 <script>
 	function init() {
 		document.getElementById('titleText').innerHTML = payloadObj.title;
@@ -27,16 +30,14 @@
 <body onload="init();"
 	style="height: 100%; width: 100%; overflow: hidden; margin: 0px;">
 	<div id="titleBar" class="iPopupDialogTitleBar">
-		<span id="titleText" class="iPopupDialogTitleText"></span> <input
-			id="dialogCloseIcon" type="button" title="Close"
-			class="iPopupDialogCloseControl" />
+		<span id="titleText" class="iPopupDialogTitleText"></span> 
+		<span id="dialogCloseIcon" class="iPopupDialogCloseButton"> <i class="pi pi-dialog-close pi-lg"  title="Close"></i></span>
 	</div>
 	<div id="contentArea" class="iPopupDialogContentArea">
 		<div class="iPopupDialogSpacerDiv"></div>
 		<table border="0">
 			<tr>
-				<td class="iPopupDialogContentTabCol1"><img
-					src="../images/icons/dialog-icon-warning.jpg" /></td>
+				<td class="iPopupDialogContentTabCol1"><i class="pi pi-dialog-warning pi-2x"></i></td>
 				<td class="iPopupDialogContentTabCol2">
 					<div>
 						<span id="contentText" class="iPopupDialogContentText"></span>

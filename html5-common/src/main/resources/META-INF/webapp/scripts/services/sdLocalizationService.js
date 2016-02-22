@@ -11,37 +11,36 @@
  * @author Johnson.Quadras
  */
 (function() {
-    'use strict';
-
-    /**
-     * 
-     */
-    angular.module('bpm-common.services').provider('sdLocalizationService', function() {
-	this.$get = [ 'sdUtilService', function(sdUtilService) {
-	    var service = new LocalizationService(sdUtilService);
-	    return service;
-	} ];
-    });
-
-    var REST_BASE_URL = "services/rest/portal/localization";
-    var localizationInfo = null;
-    /**
-     * 
-     */
-    function LocalizationService(sdUtilService) {
+	'use strict';
 
 	/**
 	 * 
 	 */
-	LocalizationService.prototype.getInfo = function() {
-	    var restUrl = REST_BASE_URL + "/info";
-	    var self = this;
+	angular.module('bpm-common.services').provider('sdLocalizationService', function() {
+		this.$get = [ 'sdUtilService', function(sdUtilService) {
+			var service = new LocalizationService(sdUtilService);
+			return service;
+		} ];
+	});
 
-	    if (!localizationInfo) {
-		localizationInfo = sdUtilService.syncAjax(restUrl);
-	    }
-	    return localizationInfo;
-	};
+	var localizationInfo = null;
+	/**
+	 * 
+	 */
+	function LocalizationService(sdUtilService) {
 
-    }
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/localization";
+		/**
+		 * 
+		 */
+		LocalizationService.prototype.getInfo = function() {
+			var restUrl = REST_BASE_URL + "/info";
+			var self = this;
+
+			if (!localizationInfo) {
+				localizationInfo = sdUtilService.syncAjax(restUrl);
+			}
+			return localizationInfo;
+		};
+	}
 })();

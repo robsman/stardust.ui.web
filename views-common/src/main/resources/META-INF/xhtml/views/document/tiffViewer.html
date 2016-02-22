@@ -3,6 +3,10 @@
   <title>Pharmacy Canvas</title>
   <link type="text/css" rel="stylesheet" href="../../../graphics-common/css/thirdparty/smoothness/jquery-ui-1.10.2.custom.css"></link>
   <link type="text/css" rel="stylesheet" href="../../../graphics-common/css/jquery-ui-custom_nirvana.css"></link>
+  <link rel="stylesheet" type="text/css" href="../../../html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../../html5-common/styles/portal-icons.css" />
+  <link rel="stylesheet" type="text/css" href="../../../modern-skin/modern.css"></link>
+  <link rel="stylesheet" type="text/css"  href="../../../modern-skin/modern.font.icons.css"></link>
   <script type="text/javascript" src="../../../common/InfinityBPMI18N.js"></script>
   <script type="text/javascript" src="../../../graphics-common/js/thirdparty/json2.js"></script>
   <script type="text/javascript" src="../../../graphics-common/js/thirdparty/raphael.js"></script>
@@ -13,7 +17,7 @@
   <script type="text/javascript" src="../../../graphics-common/js/thirdparty/jquery-ui-1.10.2.min.js"></script>
   <script type="text/javascript" src="../../../graphics-common/js/thirdparty/jquery.mousewheel.js"></script>
   <script type="text/javascript" src="../../../graphics-common/js/thirdparty/jquery.jeditable.js"></script>
-  <script type="text/javascript" data-main="../../../graphics-common/js/main" src="../../../graphics-common/js/thirdparty/require.js"></script>
+  <script type="text/javascript" data-main="../../../graphics-common/js/main" src="../../../views-common/js/libs/require/2.1.15/require.min.js"></script>
   <script type="text/javascript" src="../../js/pharmacy_page_script.js"></script>
   
   <style>
@@ -71,10 +75,10 @@
 		<table cellspacing="3">
 		 <tr height="22px">
 		 	<td class="buttonHolder">
-		 		<img id="firstPage" src="../../images/icons/resultset_first.png" title="First Page" i18nPropKey="tiffViewer.toolBar.tool.firstPage" class="toolBarCtrl" />
+		 		<i id="firstPage" class="pi pi-fast-rewind pi-lg" title="First Page" i18nPropKey="tiffViewer.toolBar.tool.firstPage" class="toolBarCtrl"></i>
 			</td>
 			<td class="buttonHolder">
-				<img id="previousPage" src="../../images/icons/resultset_previous.png" title="Previous Page" i18nPropKey="tiffViewer.toolBar.tool.previousPage" class="toolBarCtrl" />
+				<i id="previousPage" class="pi pi-prev-page" title="Previous Page" i18nPropKey="tiffViewer.toolBar.tool.previousPage" class="toolBarCtrl" />
 			</td>
 			<td cellpadding-bottom="5">
 				<input id="currentPageNumTextBox" type="text" style="width: 25px; height: 19px;" class="toolbarText" />
@@ -83,10 +87,10 @@
 				<label id="numOfPagesLabel" ></label>
 			</td>
 			<td class="buttonHolder">
-				<img id="nextPage" src="../../images/icons/resultset_next.png" title="Next Page" i18nPropKey="tiffViewer.toolBar.tool.nextPage" class="toolBarCtrl" />
+				<i id="nextPage" class="pi pi-next-page" title="Next Page" i18nPropKey="tiffViewer.toolBar.tool.nextPage" class="toolBarCtrl" />
 			</td>
 			<td class="buttonHolder">
-				<img id="lastPage" src="../../images/icons/resultset_last.png" title="Last Page" i18nPropKey="tiffViewer.toolBar.tool.lastPage" class="toolBarCtrl" />
+				<i id="lastPage" class="pi pi-fast-forward pi-lg" title="Last Page" i18nPropKey="tiffViewer.toolBar.tool.lastPage" class="toolBarCtrl" />
 			</td>
 			<td>
 				<img src="../../images/icons/toolbar-separator.png" />
@@ -97,71 +101,71 @@
 				</div>
 			</td>
 			<td class="buttonHolder">			
-				<img id="zoomOut" src="../../images/icons/zoom_out.png" title="Zoom Out" i18nPropKey="tiffViewer.toolBar.tool.zoomOut" class="toolBarCtrl" />
+				<i class="pi pi-zoom-out" id="zoomOut" title="Zoom Out" i18nPropKey="tiffViewer.toolBar.tool.zoomOut" class="toolBarCtrl" />
 			</td>
 			<td>
 				<div id="slider" title="Zoom" style='width : 100px' >
 				</div>
 			</td>
 			<td class="buttonHolder">
-				<img id="zoomIn" src="../../images/icons/zoom_in.png" title="Zoom In" i18nPropKey="tiffViewer.toolBar.tool.zoomIn" class="toolBarCtrl" />
+				<i class="pi pi-zoom-in" id="zoomIn" title="Zoom In" i18nPropKey="tiffViewer.toolBar.tool.zoomIn" class="toolBarCtrl" />
 			</td>
 			<td>
 				<img src="../../images/icons/toolbar-separator.png" />
 			</td>
 			<td class="buttonHolder">
-				<img id="fitToWindow" src="../../images/icons/document-resize-actual.png" title="Fit To Window" i18nPropKey="tiffViewer.toolBar.tool.fitToWindow" class="toolBarCtrl" />
+				<i class="pi pi-fit-to-window" id="fitToWindow" title="Fit To Window" i18nPropKey="tiffViewer.toolBar.tool.fitToWindow" class="toolBarCtrl" />
 			</td>
 			<td class="buttonHolder">
-				<img id="fitToHeight" src="../../images/icons/fit-to-height.png" title="Fit To Height" i18nPropKey="tiffViewer.toolBar.tool.fitToHeight" class="toolBarCtrl" />
+				<i class="pi pi-fit-to-height" id="fitToHeight" title="Fit To Height" i18nPropKey="tiffViewer.toolBar.tool.fitToHeight" class="toolBarCtrl" />
 			</td>
 			<td class="buttonHolder">
-				<img id="fitToWidth" src="../../images/icons/fit-to-width.png" title="Fit To Width" i18nPropKey="tiffViewer.toolBar.tool.fitToWidth" class="toolBarCtrl" />
+				<i class="pi pi-fit-to-width" id="fitToWidth" title="Fit To Width" i18nPropKey="tiffViewer.toolBar.tool.fitToWidth" class="toolBarCtrl" />
 			</td>
 			<td>
 				<img src="../../images/icons/toolbar-separator.png" />
 			</td>
 			<td class="buttonHolder">
-				<img id="rotateRight" src="../../images/icons/arrow_rotate_clockwise.png" title="Rotate Right" i18nPropKey="tiffViewer.toolBar.tool.rotateRight" class="toolBarCtrl" />
+				<i class="pi pi-rotate-right" id="rotateRight" title="Rotate Right" i18nPropKey="tiffViewer.toolBar.tool.rotateRight" class="toolBarCtrl" />
 			</td>
 			<td class="buttonHolder">
-				<img id="rotateLeft" src="../../images/icons/arrow_rotate_anticlockwise.png" title="Rotate Left" i18nPropKey="tiffViewer.toolBar.tool.rotateLeft" class="toolBarCtrl" />
+				<i class="pi pi-rotate-left" id="rotateLeft" title="Rotate Left" i18nPropKey="tiffViewer.toolBar.tool.rotateLeft" class="toolBarCtrl" />
 			</td>
 			<td>
 				<img src="../../images/icons/toolbar-separator.png" />
 			</td>
 			<td class="buttonHolder">
-				<img id="grayScale" src="../../images/icons/gradient.png" title="Grayscale" i18nPropKey="tiffViewer.toolBar.tool.grayscale" class="toolBarCtrl" />
+				<i class="pi pi-grayscale" id="grayScale" title="Grayscale" i18nPropKey="tiffViewer.toolBar.tool.grayscale" class="toolBarCtrl" />
 			</td>
 			<td class="buttonHolder">
-				<img id="invert" src="../../images/icons/ui-color-picker-switch.png" title="Invert" i18nPropKey="tiffViewer.toolBar.tool.invert" class="toolBarCtrl" />
+				<i class="pi pi-invert" id="invert" title="Invert" i18nPropKey="tiffViewer.toolBar.tool.invert" class="toolBarCtrl" />
 			</td>
 			<td>
 				<img src="../../images/icons/toolbar-separator.png" />
 			</td>
 			<td class="buttonHolder">
-				<img id="stickyNote" src="../../images/icons/note.png" title="Note" i18nPropKey="tiffViewer.toolBar.tool.note" class="toolBarCtrl" /> <!-- style="opacity: 0.3; filter:alpha(opacity=30);"  -->
+				<i class="pi pi-note" id="stickyNote" title="Note" i18nPropKey="tiffViewer.toolBar.tool.note" class="toolBarCtrl" /> <!-- style="opacity: 0.3; filter:alpha(opacity=30);"  -->
 			</td>
 			<td class="buttonHolder">
-				<img id="highlighter" src="../../images/icons/paintbrush.png" title="Highlighter" i18nPropKey="tiffViewer.toolBar.tool.highlighter" class="toolBarCtrl" /> <!-- style="opacity: 0.3; filter:alpha(opacity=30);" -->
+				<i class="pi pi-highlighter" id="highlighter" title="Highlighter" i18nPropKey="tiffViewer.toolBar.tool.highlighter" class="toolBarCtrl" /> <!-- style="opacity: 0.3; filter:alpha(opacity=30);" -->
 			</td>
 			<td class="buttonHolder">
-				<img id="stamp" src="../../images/icons/stamp.png" title="Stamps" i18nPropKey="tiffViewer.toolBar.tool.stamps" class="toolBarCtrl" />
+				<i class="pi pi-stamp" id="stamp" title="Stamps" i18nPropKey="tiffViewer.toolBar.tool.stamps" class="toolBarCtrl" />
 			</td>
 			<td>
-				<table cellpadding="0" cellspacing="0" style="margin:0px; padding-left: 1px;">
+				<table cellpadding="0" cellspacing="0" style="margin:0px;">
 					<tr class="stampSelector" height="20px">
 						<td style="padding-left: 1px;" class="stampButtonHolder">
 							<img id="selectedStamp" i18nPropKey="tiffViewer.toolBar.tool.selectStamp" title="Selected Stamps" width="70px" height="18px" />
 						</td>
 						<td class="stampButtonHolder">
-							<img id="stampsDialog" src="../../images/icons/downArrow.png" title="Select Stamps" i18nPropKey="tiffViewer.toolBar.tool.selectStamps" style="margin: 0px;" />
+							<i id="stampsDialog" class="pi pi-menu-dropdown" title="Select Stamps" i18nPropKey="tiffViewer.toolBar.tool.selectStamps" style="margin: 0px;" />
 						</td>
 					</tr>
 				</table>
 			</td>
 			<td class="buttonHolder">
-				<img id="showHideAnnotations" src="../../images/icons/eye.png" title="Show Hide Annotations" i18nPropKey="tiffViewer.toolBar.tool.showHideAnnotations" class="toolBarCtrl" />
+				<i class="pi pi-eye-slash" id="showHideAnnotations" title="Show Hide Annotations" i18nPropKey="tiffViewer.toolBar.tool.showHideAnnotations" class="toolBarCtrl" />
 			</td>
 		 </tr>
 		</table>			
@@ -174,7 +178,7 @@
     	<table width="150px" height="50px">
 			<tr>
 				<td align="right" width='20' height='20'>
-					<img id="closeMenuDialogHighlighter" height='12' width='12' src='../../images/icons/menuClose.png' style="border: 1px solid #333333;" />
+					<i id="closeMenuDialogHighlighter" class="pi pi-close pi-lg" height='12' width='12' style="border: 1px solid #333333;" />
 				</td>
 			</tr>
 			<tr>
@@ -206,7 +210,7 @@
 		<table>
 			<tr>
 				<td align="right" width='20' height='20'>
-					<img id="closeMenuDialogStickyNote" height='12' width='12' src='../../images/icons/menuClose.png' style="border: 1px solid #333333;" />
+					<i id="closeMenuDialogStickyNote" class="pi pi-close pi-lg" height='12' width='12' style="border: 1px solid #333333;" />
 				</td>
 			</tr>
 			<tr>
@@ -234,13 +238,13 @@
 						<tr>
 							<td width='40' class="settingsText settingsMenuTD"><span i18nPropKey="tiffViewer.annotation.settingsMenu.text"></span>:</td>
 							<td width='20' height='30' class="settingsMenuTD">
-							<div><img height='16' width='16'
-								src='../../images/icons/text_bold.png' class="stickyTextBold"
+							<div><i height='16' width='16'
+								class="stickyTextBold pi pi-bold pi-lg"
 								style="border: 1px solid #333333;" /></div>
 							</td>
 							<td width='20' height='30' class="settingsMenuTD">
-							<div><img height='16' width='16'
-								src='../../images/icons/text_italic.png' class="stickyTextItalic"
+							<div><i height='16' width='16'
+								class="stickyTextItalic pi pi-italic pi-lg"
 								style="border: 1px solid #333333;" /></div>
 							</td>
 							<td width='20' height='30'>
@@ -280,7 +284,7 @@
     	<table width="170px" height="70px">
 			<tr>
 				<td align="right" width='20' height='20'>
-					<img id="closeMenuDialogInfo" height='12' width='12' src='../../images/icons/menuClose.png' style="border: 1px solid #333333;" />
+					<i id="closeMenuDialogInfo" class="pi pi-close pi-lg" height='12' width='12' style="border: 1px solid #333333;" />
 				</td>
 			</tr>
 			<tr>

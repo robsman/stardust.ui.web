@@ -33,7 +33,7 @@ public class WorkflowTimerHandler implements TimerEventHandler
    private static final Logger trace = LogManager.getLogger(WorkflowTimerHandler.class);
 
    public static final String WORKLIST_BEAN = "worklistsBean";
-   public static final String WORKLIST_PANEL = "worklistPanel";
+   public static final String WORKLIST_PANEL = "worklistPanelIceFaces";
 
    public static final String BEAN_NAME = "workflowTimer";
 

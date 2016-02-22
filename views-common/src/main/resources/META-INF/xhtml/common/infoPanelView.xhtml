@@ -11,17 +11,19 @@
 			<ice:panelGrid columns="2"
 				styleClass="form-panel-summary-bar">
 				<ice:column>
-				<ice:graphicImage
-					url="/plugins/views-common/images/icons/information-gray.png"
-					style="margin-left:7px;margin-top:-2px;" />
+				<ice:outputText
+					style="margin-left:7px;margin-top:-2px;" 
+					styCLass="pi pi-information pi-lg"/>
 					</ice:column>
 				<ice:column>
 					<ice:outputText value="#{infoPanelBean.notificationMsg}"
 						styleClass="form-panel-summary-bar-text">
 					</ice:outputText>
-					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+					<ice:commandLink title="#{common_msgPropsBean['common.close']}"
 						action="#{infoPanelBean.reset}" immediate="true"
-						styleClass="windowClose" />
+						styleClass="windowClose pi-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+					</ice:commandLink>
 				</ice:column>
 			</ice:panelGrid>
 		</c:if>

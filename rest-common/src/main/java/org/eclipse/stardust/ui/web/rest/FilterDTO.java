@@ -31,4 +31,12 @@ public interface FilterDTO
 
       public Long to;
    }
+   
+   public static class NameDTO
+   {
+      public String firstName;
+
+      public String lastName;
+   }
+   
 }

@@ -315,7 +315,7 @@ public class FileUtils
             ZipEntry zipEntry = new ZipEntry(fileName);
 
             zipEntry.setSize(content.length());
-            zipEntry.setTime(System.currentTimeMillis());
+            zipEntry.setTime(PortalTimestampProvider.getTimeStampValue());
             zipEntry.setComment(MIME_TEXT_XML);
             out.putNextEntry(zipEntry);
             out.write(content.getBytes());

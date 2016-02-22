@@ -15,46 +15,97 @@
 (function() {
 	'use strict';
 
-	angular.module('admin-ui').controller('sdDaemonCtrl',
-			[ 'sdDaemonService', controller ]);
+	angular.module('admin-ui').controller(
+			'sdDaemonCtrl',
+			['sdDaemonService', 'sdLoggedInUserService', 'sgI18nService', '$filter', '$q', 'sdDataTableHelperService',
+					'sdLoggerService', controller]);
 
 	var _sdDaemonService;
+	var _sdLoggedInUserService;
+	var _sgI18nService;
+	var _filter;
+	var _q;
+	var _sdDataTableHelperService;
+	var trace;
 
 	/*
 	 * 
 	 */
-	function controller(sdDaemonService) {
+	function controller(sdDaemonService, sdLoggedInUserService, sgI18nService, $filter, $q, sdDataTableHelperService,
+			sdLoggerService) {
+		
 		_sdDaemonService = sdDaemonService;
+		_sdLoggedInUserService = sdLoggedInUserService;
+		_sgI18nService = sgI18nService;
+		_filter = $filter;
+		_q = $q;
+		_sdDataTableHelperService = sdDataTableHelperService;
+		trace = sdLoggerService.getLogger('admin-ui.sdDaemonCtrl');
 
 		this.initialize();
 
-		this.data = {};
-		this.title = "Daemons";
-
-		this.columnSelector = "admin"; // TODO
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
+		
+		this.fetchDaemonsData();
 	}
 
 	/*
 	 * 
 	 */
 	controller.prototype.getDaemonTypeLabel = function(key) {
-		return _sdDaemonService.getDaemonTypeLabel(key);
+		var keyPrefix = "admin-portal-messages.views-daemons";
+		var keySuffix = "label";
+		var hyphen = "-";
+		// Replace charcter '.' and '_' with nothing
+		key = key.replace(/\.|_/g, "");
+		var words = ["calendar", "daemon", "trigger"];
+		for ( var i in words) { // Capitalize first character of above words if
+			// found.
+			key = key.replace(words[i], words[i].charAt(0).toUpperCase() + words[i].slice(1));
+		}
+		key = keyPrefix + hyphen + key + hyphen + keySuffix;
+		return _sgI18nService.translate(key, key);
 	}
 
 	/*
 	 * 
 	 */
 	controller.prototype.getDaemonStatus = function(daemon) {
-		return _sdDaemonService.getDaemonStatus(daemon);
+		return (daemon.running) ? _sgI18nService.translate('admin-portal-messages.views-daemons-status-column-running',
+				'Running') : _sgI18nService.translate('admin-portal-messages.views-daemons-status-column-stopped',
+				'Stopped');
 	}
 
 	/*
 	 * 
 	 */
-	controller.prototype.fetchDaemons = function() {
-		this.data = _sdDaemonService.fetchDaemons();
-		return this.data;
-	}
+	controller.prototype.fetchDaemonsData = function() {
+		var self = this;
+		_sdDaemonService.fetchDaemons().then(function(data) {
+			self.data = data;
+			if (self.daemonDataTable != null) {
+				self.daemonDataTable.refresh();
+			} else {
+				self.showDaemonTable = true;
+			}
+
+		}, function(error) {
+			trace.log("Error in fetching Daemons",error);
+		});
+	};
+
+	/*
+	 * 
+	 */
+	controller.prototype.fetchDaemons = function(options) {
+		var self = this;
+		var result = {
+			list : self.data.list,
+			totalCount : self.data.totalCount
+		}
+
+		return result;
+	};
 
 	/*
 	 * 
@@ -68,17 +119,51 @@
 	 * 
 	 */
 	controller.prototype.refresh = function() {
-		this.daemonDataTable.refresh(true);
+		//this.showDaemonTable = false;
+		this.fetchDaemonsData();
 	};
 
 	/*
 	 * 
 	 */
-	controller.prototype.toggleDaemonAction = function(daemonItem) {
+	controller.prototype.startDaemon = function(daemonItem) {
+		var self = this;
+		if (!(daemonItem.running)) {
+			_sdDaemonService.startDaemon(daemonItem.type).then(function(result) {
+				self.updateDaemonStatus(result);
+			});
+		}
+	};
+
+	/*
+	 * 
+	 */
+	controller.prototype.stopDaemon = function(daemonItem) {
+		var self = this;
 		if (daemonItem.running) {
-			return _sdDaemonService.stopDaemon(daemonItem.type);
-		} else {
-			return _sdDaemonService.startDaemon(daemonItem.type);
+			_sdDaemonService.stopDaemon(daemonItem.type).then(function(result) {
+				self.updateDaemonStatus(result);
+			});
+		}
+	};
+
+	/*
+	 * 
+	 */
+	controller.prototype.updateDaemonStatus = function(resultDaemon) {
+		var targetRow = null;
+		
+		for (var i = 0, len = this.daemonDataTable.getData().length; i < len; i++) {
+			if(this.daemonDataTable.getData()[i].type == resultDaemon.type) {
+				targetRow = this.daemonDataTable.getData()[i];
+				break;
+			}
+		}
+		if(targetRow) {
+			targetRow.running = resultDaemon.running;
+			targetRow.startTime = resultDaemon.startTime;
+			targetRow.lastExecutionTime = resultDaemon.lastExecutionTime;
+			targetRow.daemonExecutionState = resultDaemon.daemonExecutionState;
 		}
 	};
 

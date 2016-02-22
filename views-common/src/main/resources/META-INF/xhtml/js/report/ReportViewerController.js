@@ -48,6 +48,8 @@ define(
 					controller.initialize(renderingController, name, path,
 							viewMode);
 
+					controller.loadCustomTheme();
+
 					return controller;
 				}
 			};
@@ -101,6 +103,8 @@ define(
 									function() {
 										// For ReportViewer always retrieve all records
 										self.renderingController.previewRetrieveAll = true;
+										//Do not show Retrieve All link.
+										self.renderingController.isPreviewMode = false;
 										// fetch and render report-data
 										self.renderingController.refreshPreview(self, self.report, self.parameters).done(function(){
 											self.updateView();
@@ -388,6 +392,38 @@ define(
 					}
 					return false;
 				};
+
+				/*
+				 * 
+				 */
+				ReportViewerController.prototype.loadCustomTheme = function() {
+		        	var self = this;
+
+					jQuery.ajax({
+						type : 'GET',
+						url : this.getContextName() + "/services/rest/common/html5/api/themes/current/custom",
+						async : true
+					}).done(function(json){
+						var head = document.getElementsByTagName('head')[0];
+						
+						for(var i in json.stylesheets) {
+							var link = document.createElement('link');
+							link.href = self.getContextName() + "/" + json.stylesheets[i];
+							link.rel = 'stylesheet';
+							link.type = 'text/css';
+							head.appendChild(link);
+						}
+					}).fail(function(err){
+						console.debug("Failed in loading custom theme");
+					});
+				};
+
+				/**
+				 *
+				 */
+				ReportViewerController.prototype.getContextName = function() {
+					return location.pathname.substring(0, location.pathname.indexOf('/plugins', 1));
+				}
 			};
 
 		});

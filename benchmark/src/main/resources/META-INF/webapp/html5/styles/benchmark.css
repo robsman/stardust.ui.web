@@ -1,0 +1,151 @@
+/*override for tree icons which have a current benchmark associated with it.*/
+.has-benchmark:before {
+  color: rgb(36, 65, 94) !important;
+}
+
+/*dirty class for rows in the benchmark definition table*/
+span.dirty:before{
+	content:'*'
+}
+
+/*Arrow Tabs*/
+/**************************/
+.tab-container{
+	width:100%;
+	border-bottom:solid 1px silver;
+	position:relative;
+	height:30px;
+}
+
+.tab {
+	display: inline;
+  	position: relative;
+  	cursor: pointer;
+  	margin:1em;
+}
+
+.tab .tab-label {
+	opacity:0.5;
+}
+
+.tab.selected .tab-label{
+	opacity:1;
+}
+
+.tab-label{
+	font-size:11px;
+	color: #A69A88;
+	text-transform: uppercase;
+}
+
+.tab-arrow {
+	position: absolute;
+	left: calc(50% - 5px);
+	bottom:-10px;
+	background: #fff;
+	border: 1px solid transparent;
+}
+
+.tab-arrow:after, .tab-arrow:before {
+	bottom: -6px;
+	left: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.tab-arrow:after {
+	border-bottom-color: #fff;
+	border-width: 7px;
+	margin-left: -7px;
+}
+
+.tab-arrow:before {
+	border-bottom-color: #818181;
+	border-width: 8px;
+	margin-left: -8px;
+}
+/*Arrow Tabs End*/
+/**************************/
+
+/*starclipse font icon adjustments*/
+/**********************************/
+.sc {
+	color:rgb(166, 154, 136)
+}
+
+.sc:hover {
+	color:rgb(146, 134, 116)
+}
+
+/*sd-Tree adjustments*/
+/**************************/
+ul.sd-tree {
+	margin:0;
+	border:none;
+}
+
+/*Miscellaneous*/
+.container{
+	margin:1em;
+}
+
+input[type='number'],
+input[type='time']{
+	text-align:right;
+}
+
+/*Benchmark table styles*/
+#benchmarkTable th {
+	text-align:left;	
+}
+
+#benchmarkTable th input[type='text']{
+	width:auto;
+	border:none !important;
+}
+
+#benchmarkTable input[type='color']{
+	border:none !important;
+	width:45px;
+	height:25px;
+}
+
+#benchmarkTable input[type='number']{
+	width:40px;
+}
+
+#benchmarkTable input[type='number'] + select {
+	width:calc(100% - 55px);
+}
+
+.benchmarkDefinitionMain input[type='radio'],
+.benchmarkDefinitionMain input[type='checkbox']{
+	border:none !important;
+}
+
+.benchmarkDefinitionMain input,
+.benchmarkDefinitionMain select,
+#benchmarkTable input,
+#benchmarkTable select
+{
+	padding:0px;
+	min-height:20px;
+	margin:2px;
+	width: initial;
+}
+
+#benchmarkTable textarea{
+	width: calc(100% - 20px)
+}
+
+#benchmarkTable td {
+  vertical-align: top;
+}
+
+#benchmarkTable tr:nth-child(even) td {
+  background: #F4F4F4;
+}

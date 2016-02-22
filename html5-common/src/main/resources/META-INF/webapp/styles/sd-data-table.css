@@ -1,4 +1,14 @@
-.tbl {
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+ .tbl {
    width: 100%;
    color: #708090;
 }
@@ -29,17 +39,17 @@
 
 .tbl-hdr-col.sorting {
 	cursor: pointer;
-	background: transparent url("../images/icons/arrows-ud-10X16.png") no-repeat scroll 100% 90%;
+	background: none;
 }
 
 .tbl-hdr-col.sorting_asc {
 	cursor: pointer;
-	background: transparent url("../images/icons/arrows-ud-d10X16.png") no-repeat scroll 100% 90%;
+	background: none;
 }
 
 .tbl-hdr-col.sorting_desc {
 	cursor: pointer;
-	background: transparent url("../images/icons/arrows-ud-u10X16.png") no-repeat scroll 100% 90%;
+	background: none;
 }
 
 .tbl-hdr-col-label {
@@ -54,7 +64,6 @@
 
 .tbl-col-flt {
 	margin-right: 5px;
-	color: gray;
 }
 
 .tbl-col-flt-set {
@@ -82,14 +91,18 @@
 	float: left;
 }
 
-.tbl-toolbar-item {
-}
-
 .tbl-tool-link {
 	margin-right: 6px;
 	padding: 0px;
 	cursor: pointer;
 }
+
+
+.tbl-tool-joined-link {
+	margin-right: -2px;
+	padding: 0px;
+}
+
 
 .tbl-row {
    border-bottom: solid 1px #ddd;
@@ -128,6 +141,22 @@
    margin-bottom: 10px;
 }
 
+.tbl-col-align-left {
+	text-align: left;
+}
+
+.tbl-col-align-center {
+	text-align: center;
+}
+
+.tbl-col-align-right {
+	text-align: right;
+}
+
+.tbl-col-no-wrap {
+	white-space: nowrap;	
+}
+
 /* ********** Table Column Selector ********** */
 
 .tbl-col-sel-row {
@@ -157,14 +186,6 @@
    color: #333333;
 }
 
-.tbl-hdr-col .tbl-col-flt {
-	opacity: 0.7;
-}
-
-.tbl-hdr-col .tbl-col-flt:hover {
-	opacity: 1.0;
-}
-
 .tbl-hdr-col .tbl-col-flt-title:hover {
 	color: #2B2865;
 }
@@ -173,16 +194,17 @@
 	color: #2B2865;
 }
 
-.tbl-toolbar-item {
-	opacity: 0.7;
+.tbl-tree-controls {
+	float: left;
 }
 
-.button-link[disabled='disabled']:hover {
-	opacity: 0.7 !important;
+.tbl-tree-indent {
+	display: inline-block;
+	width: 10px;
 }
 
-.tbl-toolbar-item:hover {
-	opacity: 1.0;
+.tbl-tree-action {
+	margin-right: 5px;
 }
 
 /* ********** dataTables Overridden classes ********** */
@@ -192,8 +214,7 @@
 }
 
 .dataTables_info {
-   font-size: 9px;
-   color: #999999 !important
+   font-size: .82em;
 }
 
 .paging_full_numbers a.paginate_button, .paging_full_numbers a.paginate_active {
@@ -232,4 +253,9 @@
     float: none !important;
     text-align: left !important;
     margin-top: 4px !important;
+}
+
+.dataTables_paginate_icon {
+	top: 0px;
+	font-size:15px;
 }

@@ -296,6 +296,7 @@ public class RoleManagerDetailBean extends UIComponentBean
       if (null == activityHelper)
       {
          activityHelper = new ActivityTableHelper();
+         activityHelper.setShowResubmissionTime(true);
          activityHelper.setCallbackHandler(this);
          activityHelper.initActivityTable();
          activityHelper.setStrandedActivityView(false);

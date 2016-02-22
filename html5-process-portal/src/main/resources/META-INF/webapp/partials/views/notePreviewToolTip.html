@@ -1,0 +1,24 @@
+
+<table style="color: brown; font-size: x-small">
+	<tr>
+		<td><span ng-bind="i18n('processportal.views-notesPanel-user')">
+		</span></td>
+		<td><span style="color: black; font-size: x-small"
+			ng-bind="rowData.creatorName"></span></td>
+	</tr>
+	<tr>
+		<td><span ng-bind="i18n('processportal.views-notesPanel-time')"></span>
+		</td>
+		<td><span style="color: black; font-size: x-small">{{rowData.created
+				| sdDateTimeFilter}}</span></td>
+	</tr>
+	<tr>
+		<td><span
+			ng-bind="i18n('processportal.views-notesPanel-scope')"></span>
+		</td>
+		<td><span style="color: black; font-size: x-small">{{rowData.scopeType}}</span></td>
+	</tr>
+</table>
+<div style="border-top: 1px solid #CCCCCC;" ng-bind="rowData.note">
+</div>
+

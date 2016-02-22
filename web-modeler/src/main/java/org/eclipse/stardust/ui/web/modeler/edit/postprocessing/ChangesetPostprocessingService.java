@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
+import org.eclipse.stardust.ui.web.modeler.xpdl.edit.postprocessing.LaneParticipantChangeTracker;
 
 @Service
 public class ChangesetPostprocessingService
@@ -36,6 +37,9 @@ public class ChangesetPostprocessingService
    {
       for (ChangePostprocessor postprocessor : processorsInExecutionOrder)
       {
+         if (postprocessor instanceof LaneParticipantChangeTracker) {
+            //System.out.println();
+         }
          postprocessor.inspectChange(change);
       }
    }

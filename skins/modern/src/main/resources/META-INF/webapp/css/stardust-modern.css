@@ -6,7 +6,7 @@ body {
 }
 
 p,a,li,label {
-	font-size: 11px;
+	font-size: 1em;
 }
 
 label {
@@ -27,27 +27,27 @@ table {
 h1 {
 	width: 100%;
 	font-weight: normal;
-	font-size: 20px;
+	font-size: 1.82em;
 	color: #906C37;
 	text-transform: uppercase;
 }
 
 h2 {
 	font-weight: normal;
-	font-size: 14px;
+	font-size: 1.27em;
 	color: #A69A88;
 	text-transform: uppercase;
 }
 
 h2 i {
 	font-weight: normal;
-	font-size: 14px;
+	font-size: 1.27em;
 	color: darkgrey;
 }
 
 h3 {
 	font-weight: bold;
-	font-size: 11px;
+	font-size: 1em;
 	color: darkslategray;
 }
 
@@ -99,7 +99,7 @@ input[type=button] {
 	line-height: 15px;
 	text-align: center;
 	vertical-align: middle;
-	font-size: 12px;
+	font-size: 1.1em;
 	text-shadow: none;
 	box-shadow: none;
 	background-image: none;
@@ -143,7 +143,7 @@ img {
 }
 
 .iconLink {
-	font-size: 14px;
+	font-size: 1.27em;
 	color: #A69A88 !important;
 }
 
@@ -207,7 +207,7 @@ img {
 }
 
 .smallLink {
-	font-size: 9px;
+	font-size: .82em;
 	text-decoration: none;
 	color: #AFD7ED;
 }
@@ -215,7 +215,7 @@ img {
 /* jQuery UI Overwrites */
 .ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button
 	{
-	font-size: 12px !important;
+	font-size: 1.1em !important;
 	font-weight: normal !important;
 	font-family: 'Lato', sans-serif !important;
 }
@@ -468,7 +468,6 @@ table.display tr.even.gradeA td.sorting_1 {
 }
 
 table.dataTable {
-	font-family: 'Lato', sans-serif;
 	color: #004169;
 	width: 100%;
 	margin: 0px;
@@ -483,7 +482,7 @@ table.dataTable thead {
 table.dataTable thead th {
 	border-bottom: 1px solid #111;
 	font-weight: bold;
-	font-size: 12px;
+	font-size: 1.1em;
 	color: #24415E;
 }
 
@@ -574,8 +573,7 @@ table.dataTable tbody tr.odd {
 
 #vakata-contextmenu.jstree-custom-context a {
 	color: #00629A !important;
-	font-family: 'Lato', sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 #vakata-contextmenu.jstree-custom-context,#vakata-contextmenu.jstree-custom-context li ul

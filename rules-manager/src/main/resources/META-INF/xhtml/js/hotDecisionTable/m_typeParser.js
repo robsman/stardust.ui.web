@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 define(["require",
         "bpm-modeler/js/m_model",
         "rules-manager/js/hotDecisionTable/m_drlAttributes",
@@ -24,12 +34,12 @@ define(["require",
    * 		 be titled with the parameter definitions name.
    *************************************************/
   var contextName=m_urlUtils.getContextName();
-  var attributeImage="plugins/rules-manager/images/icons/tag_blue.png",
-  	  attributeRootImage="plugins/rules-manager/images/icons/table-insert-column-gray.png",
-	  seqImage="plugins/rules-manager/images/icons/bricks.png",
-	  elementImage="plugins/rules-manager/images/icons/data-primitive.png",
-	  conditionImage="plugins/rules-manager/images/icons/table-insert-column-blue.png",
-	  actionImage="plugins/rules-manager/images/icons/table-insert-column-green.png",
+  var attributeImage="pi pi-column-attribute",
+  	  attributeRootImage="pi pi-column-attributes pi-lg pi-img",
+	  seqImage="pi pi-column-attributes pi-lg pi-img",
+	  elementImage="pi pi-primitiv pi-lg pi-img",
+	  conditionImage="pi pi-column-conditions pi-lg pi-img",
+	  actionImage="pi pi-column-actions pi-lg pi-img",
   	  actionTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.actions","Actions"),
   	  conditionTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.conditions","Conditions"),
   	  attributeTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.attributes","Attributes");

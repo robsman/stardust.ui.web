@@ -1,13 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2014 SunGard CSA LLC and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    SunGard CSA LLC - initial API and implementation and/or initial documentation
- *******************************************************************************/
+ * Copyright (c) 2014 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
 
 /*
  * @author Subodh.Godbole
@@ -17,8 +16,8 @@
 	'use strict';
 
 	angular.module('bpm-common.services').provider('sdPreferenceService', function () {
-		this.$get = ['sdUtilService', 'sdLoggerService', function (sdUtilService, sdLoggerService) {
-			var service = new PreferenceService(sdUtilService, sdLoggerService);
+		this.$get = ['sdUtilService', 'sdLoggerService' ,'$resource', function (sdUtilService, sdLoggerService, $resource) {
+			var service = new PreferenceService(sdUtilService, sdLoggerService, $resource);
 			return service;
 		}];
 	});
@@ -26,7 +25,7 @@
 	/*
 	 * 
 	 */
-	function PreferenceService(sdUtilService, sdLoggerService) {
+	function PreferenceService(sdUtilService, sdLoggerService, $resource) {
 		var trace = sdLoggerService.getLogger('bpm-common.sdPreferenceService');
 
 		/*
@@ -40,12 +39,31 @@
 		/*
 		 * 
 		 */
+		PreferenceService.prototype.getTenantPreferences = function() {
+		    var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/preference/partition";
+		    return $resource(restUrl).query().$promise;
+		};
+		
+		/*
+		 * 
+		 */
+		PreferenceService.prototype.getUserPreferences = function(realmId,userId) {
+		    var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/preference/user";
+		    if (realmId && userId) {
+			restUrl =restUrl + "?realmId="+realmId +"&userId="+ userId;
+		    }
+		    return $resource(restUrl).query().$promise;
+		};
+		
+		/*
+		 * 
+		 */
 		function PreferenceStorage(scope, module, preferenceId) {
 			this.scope = scope;
 			this.module = module;
 			this.preferenceId = preferenceId;
 
-			this.url = "services/rest/portal/preference/:scope/:moduleId/:preferenceId";
+			this.url = sdUtilService.getBaseUrl() + "services/rest/portal/preference/:scope/:moduleId/:preferenceId";
 			this.url = this.url.replace(':scope', this.scope);
 			this.url = this.url.replace(':moduleId', this.module);
 			this.url = this.url.replace(':preferenceId', this.preferenceId);

@@ -18,15 +18,15 @@ import javax.faces.event.ActionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
 import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
 import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantLabel;
@@ -104,6 +104,60 @@ public class WorklistsTreeUserObject extends IceUserObject
       params.put("showAllWorklist", !leafNode);
       params.put("refreshWorklistTable", refreshWorklistTable);
       PPUtils.openWorklistView("id=" + viewKey, params);
+      PPUtils.selectWorklist(participantInfo);
+      refreshWorklistTable = false;
+   }
+   
+   /**
+    * @param event
+    */
+   public void selectHTML5(ActionEvent event)
+   {
+      String viewKey = ParticipantUtils.getWorklistViewKey(participantInfo);
+      Map<String, Object> params = CollectionUtils.newTreeMap();
+      boolean leafNode = Boolean.valueOf((FacesUtils.getRequestParameter("leafNode")));
+      ParticipantLabel label = ModelHelper.getParticipantLabel(participantInfo);
+      String labelName = null;
+
+      if (!leafNode)
+      {
+         params.put("url", "services/rest/portal/worklist/unified/");
+         params.put("userId", userParticipantId);
+         viewKey = viewKey + participantInfo.getQualifiedId();
+         String unifiedLabel = MessagePropertiesBean.getInstance().getParamString(
+               "views.worklistPanel.label.unifiedWorklist");
+         params.put("userId", userParticipantId);
+         labelName = unifiedLabel + " - " + label.getLabel();
+      }
+      else
+      {
+         if (userParticipantId.equals(participantInfo.getQualifiedId()))
+         {
+
+            String personalLabel = MessagePropertiesBean.getInstance().getParamString(
+                  "views.worklistPanel.label.personalWorklist");
+            params.put("userId", userParticipantId);
+            labelName = personalLabel + " - " + label.getLabel();
+         }
+         else
+         {
+            if (participantInfo instanceof OrganizationInfo  && null != ((OrganizationInfo) participantInfo).getDepartment())
+            {
+               OrganizationInfo organization = (OrganizationInfo) participantInfo;
+               params.put("participantQId", participantInfo.getQualifiedId() + organization.getDepartment().getId());
+            }
+            else
+            {
+               params.put("participantQId", participantInfo.getQualifiedId());
+            }
+            params.put("userId", userParticipantId);
+            labelName = label.getLabel();
+         }
+      }
+      params.put("id", participantInfo.getQualifiedId());
+      // TODO revisit the label name
+      params.put("name", labelName);
+      PPUtils.openWorklistViewHTML5("id=" + viewKey, params);
       PPUtils.selectWorklist(participantInfo);
       refreshWorklistTable = false;
    }

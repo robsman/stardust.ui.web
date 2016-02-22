@@ -75,7 +75,6 @@ public class AbstractAdapterView implements ViewEventHandler {
 		switch (event.getType())
 		{		
 		case TO_BE_ACTIVATED:
-		    //PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath + event.getView().getParams() + "', {anchorId:'" + anchorId + "', anchorYAdjustment:10, zIndex:200});");
             break;
             
 		case ACTIVATED:
@@ -83,14 +82,10 @@ public class AbstractAdapterView implements ViewEventHandler {
             break;
 
 		case TO_BE_DEACTIVATED:
-			//PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.deactivateContentFrame('" + iframeId + "');");
-			// fireResizeIframeEvent();
 			break;
 
 		case CLOSED:
 		   PortalApplicationEventScript.getInstance().addEventScript("parent.EventHub.events.publish('PEPPER_VIEW_CLOSED', '" + event.getView().getParamValue("uuid") + "');");
-			//PortalApplication.getInstance().addEventScript(
-			//		"InfinityBpm.ProcessPortal.closeContentFrame('" + iframeId + "');");
 			break;
 
 		case LAUNCH_PANELS_ACTIVATED:
@@ -99,7 +94,6 @@ public class AbstractAdapterView implements ViewEventHandler {
 		case RESTORED_TO_NORMAL:
         case PINNED:
 		case PERSPECTIVE_CHANGED:
-		   //fireResizeIframeEvent();
 			break;
 		}
 	}

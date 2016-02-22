@@ -146,4 +146,11 @@ public class JCRVersionTracker implements IVersionTracker
    {
       return new JCRDocument(versions.get(latestVersion), this);
    }
+
+   @Override
+   public IDocumentContentInfo shiftToVersion(int version)
+   {
+      currentVersionNo = version;
+      return new JCRDocument(versions.get(currentVersionNo), this);
+   }
 }

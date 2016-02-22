@@ -1,0 +1,65 @@
+<div class="section">
+	<table cellpadding="0" cellspacing="0">
+		<tbody>
+			<tr>
+				<td colspan="2"><span
+					style="float: left;">{{userDetailsCtrl.userDetails.displayName}}</span></td>
+			</tr>
+			<tr>
+				<td colspan="1"><div
+						style="width: 128px; height: 128px; border: 1px solid #CCCCCC; margin-top: 5px;">
+						<img alt="" ng-if="userDetailsCtrl.userDetails.userImageURI.indexOf('/') > -1" style="height:128px; width :128px ; padding:0 !important" 
+							ng-src="{{userDetailsCtrl.userDetails.userImageURI}}">
+						<i class="{{userDetailsCtrl.userDetails.userImageURI}} pi-12x" ng-if="!(userDetailsCtrl.userDetails.userImageURI.indexOf('/') > -1)"
+							style="padding-left: 10px;">
+					</div></td>
+				<td colspan="1"><div style="padding-left: 5px;">
+						<table>
+							<tbody>
+								<tr>
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-descr-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
+									<td><span class="value-item">{{userDetailsCtrl.userDetails.description}}</span></td>
+								</tr>
+								<tr>
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-account-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
+									<td><span class="value-item">{{userDetailsCtrl.userDetails.id}}</span></td>
+								</tr>
+								<tr>
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-realm-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
+									<td><span class="value-item">{{userDetailsCtrl.userDetails.realmId}}</span></td>
+								</tr>
+								<tr>
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-validFrom-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
+									<td><span class="value-item">{{userDetailsCtrl.userDetails.validFrom |
+											date:'short'}}</span></td>
+								</tr>
+								<tr>
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-validTo-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
+									<td><span class="value-item">{{userDetailsCtrl.userDetails.validTo |
+											date:'short'}}</span></td>
+								</tr>
+								<tr>
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-email-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
+									<td><a href="mailto:" aid="{{autoIdPrefix}}-email"><span
+											class="action-link">{{userDetailsCtrl.userDetails.eMail}}</span></a></td>
+								</tr>
+							</tbody>
+						</table>
+						<div></div>
+					</div></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

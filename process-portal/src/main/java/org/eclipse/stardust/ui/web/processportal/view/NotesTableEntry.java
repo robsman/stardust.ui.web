@@ -14,6 +14,7 @@ import java.util.Date;
 
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 
 
 /**

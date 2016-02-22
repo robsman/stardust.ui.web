@@ -1,0 +1,26 @@
+<div>
+	<div ng-if="ctrl.notificationMap.success.length > 0">
+	  <span class="label-item">{{i18n('admin-portal-messages.views-participantMgmt-notifySuccessMsg') + i18n('admin-portal-messages.common-colon')}}</span>
+	  <div class="clearing"></div>
+	  <table cellspacing="0" border="1">
+
+				<tr ng-repeat="obj in ctrl.notificationMap.success">
+					<td style="padding-left: 10px;padding-right: 10px;"><span>{{obj.name}}</span></td>
+					<td style="padding-left: 10px;padding-right: 10px;"><span>{{obj.message}}</span></td>
+				</tr>
+		</table>
+	</div>
+	 <div class="clearing"></div>
+	 <div class="clearing"></div>
+	<div ng-if="ctrl.notificationMap.failure.length > 0">
+	  <span class="label-item">{{i18n('admin-portal-messages.views-participantMgmt-notifyNonValidateMsg') + i18n('admin-portal-messages.common-colon')}}</span>
+	  <div class="clearing"></div>
+	  <table cellspacing="0" border="1">
+
+				<tr ng-repeat="obj in ctrl.notificationMap.failure">
+					<td style="padding-left: 10px;padding-right: 10px;"><span>{{obj.name}}</span></td>
+					<td style="padding-left: 10px;padding-right: 10px;"><span>{{obj.message}}</span></td>
+				</tr>
+		</table>
+	</div>
+</div>

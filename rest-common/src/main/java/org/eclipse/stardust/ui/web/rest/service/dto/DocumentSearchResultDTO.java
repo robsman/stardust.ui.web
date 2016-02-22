@@ -13,7 +13,6 @@
  */
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.stardust.common.Pair;
@@ -31,9 +30,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 @DTOClass
 public class DocumentSearchResultDTO extends AbstractDTO
 {
-   public Date createDate;
+   public Long createDate = null;
 
-   public Date modificationDate;
+   public Long modificationDate = null;
 
    public String author = "";
 
@@ -53,7 +52,7 @@ public class DocumentSearchResultDTO extends AbstractDTO
 
    public String repositoryId;
 
-   public String documentOwner = "";
+   public Long userOID;
 
    public long fileSize;
 
@@ -68,17 +67,16 @@ public class DocumentSearchResultDTO extends AbstractDTO
       this.documentName = doc.getName();
       this.fileType = doc.getContentType();
       this.documentType = TypedDocumentsUtil.getDocumentTypeLabel(doc.getDocumentType());
-      this.createDate = doc.getDateCreated();
-      this.modificationDate = doc.getDateLastModified();
+      this.createDate = doc.getDateCreated().getTime();
+      this.modificationDate = doc.getDateLastModified().getTime();
       this.fileSize = doc.getSize();
       this.documentPath = getFolderFromFullPath(doc.getPath());
       this.repositoryId = RepositoryIdUtils.extractRepositoryId(doc);
-
-      this.documentOwner = doc.getOwner();
-
+      
       User user = DocumentMgmtUtility.getOwnerOfDocument(doc);
+      
       if (null != user)
-      {
+      {  userOID = user.getOID();
          author = FormatterUtils.getUserLabel(user);
       }
       else if (StringUtils.isNotEmpty(doc.getOwner()))
@@ -94,6 +92,11 @@ public class DocumentSearchResultDTO extends AbstractDTO
          metadata = metadata.subList(0, 5);
       }
 
+   }
+
+   public DocumentSearchResultDTO()
+   {
+      // TODO Auto-generated constructor stub
    }
 
    /**

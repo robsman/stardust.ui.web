@@ -419,6 +419,11 @@
 		scope="portalTab">
 	</bean>
 
+	<bean name="relocateActivityDialogBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.RelocateActivityDialogBean"
+		scope="portalTab">
+	</bean>
+
 	<bean name="switchProcessDialogBean"
 		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean"
 		scope="portalTab">
@@ -505,6 +510,11 @@
 	</bean>
 
 	<bean name="createOrModifyDeputyPopupBean" class="org.eclipse.stardust.ui.web.viewscommon.common.deputy.CreateOrModifyDeputyPopupBean"
+		scope="portalTab">
+	</bean>
+	
+	<bean name="correspondencePanelBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.correspondence.CorrespondencePanelBean"
 		scope="portalTab">
 	</bean>
 

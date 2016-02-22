@@ -1,4 +1,14 @@
-.panelView{
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+ .panelView{
  margin-left: 20px; 
  margin-right: 20px;
 }
@@ -75,7 +85,7 @@
   font-weight:bold;
 }
 .inset-text {
-          font-size: 32px;
+          font-size: 2.91em;
           color: #344251;
           text-shadow: 1px 1px 0px #bad3ed;
           font-weight: bold;
@@ -84,7 +94,7 @@
   display: inline-block;
   min-width: 10px;
   padding: 3px 7px;
-  font-size: 12px;
+  font-size: 1.1em;
   font-weight: normal;
   line-height: 1;
   color: #fff;
@@ -105,13 +115,12 @@
   background-color:#85b791;
 }
 .cursive{
-  font-family:Times New Roman, Times New Roman, Times, serif;
   font-style:italic;
   font-weight:bold;
 }
 .btn-ipp{
  margin-right:2px;
- border:1px solid #e3e3e3; -webkit-border-radius: 3px; -moz-border-radius: 3px;border-radius: 3px;font-size:12px;font-family:arial, helvetica, sans-serif; padding: 2px 2px 2px 2px; text-decoration:none; display:inline-block;font-weight:normal; color: #333;
+ border:1px solid #e3e3e3; -webkit-border-radius: 3px; -moz-border-radius: 3px;border-radius: 3px;font-size:1.1em;padding: 2px 2px 2px 2px; text-decoration:none; display:inline-block;font-weight:normal; color: #333;
  background-color: #FFFFFF; background-image: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#DFDDDD));
  background-image: -webkit-linear-gradient(top, #FFFFFF, #DFDDDD);
  background-image: -moz-linear-gradient(top, #FFFFFF, #DFDDDD);
@@ -131,10 +140,9 @@
  background-image: linear-gradient(to bottom, #e6e6e6, #c6c3c3);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#e6e6e6, endColorstr=#c6c3c3);
 }
 .hot-splithdr-label{
-    font-family:Arial;
     font-style:normal;
     font-weight:bold;
-    font-size:11px;
+    font-size:1em;
     color:#808080;
     height:25px;
     border-bottom:inset 1px #DDD;
@@ -162,12 +170,12 @@
 }
 span.btn-ipp{
   color:black;
-  font-size:7pt;
+  font-size:.64em;
 }
 .ipp-menuitem{
   cursor:pointer;
   font-weight:normal;
-  font-size:9pt;
+  font-size:.82em;
   padding:2px 2px 2px 2px;
 }
 .ipp-menuitem:hover{
@@ -176,7 +184,7 @@ span.btn-ipp{
 }     
 .ipp-bullet{
   padding-right:10px;
-  font-size:10pt;
+  font-size:.91em;
 }
 .ipp-menulabel:hover{
   font-style:italic;
@@ -222,8 +230,7 @@ a.jstree-search.ipp-disabled-text:hover{
 	background : #ffcc33;
 	height: 20px;
 	color: #b25900;
-	font-family: Arial;
-	font-size: 11px;
+	font-size: 1em;
 }
 .alert-caution:after{
 	content: "X";
@@ -239,4 +246,11 @@ a.jstree-search.ipp-disabled-text:hover{
 }
 .handsontable-pass{
 	background: #dddddd;
+}
+
+.tool-section{
+	margin-right: 8px;
+	padding-right: 8px;
+	border-right: 1px dotted gray;
+	float: left;
 }

@@ -15,36 +15,40 @@
    'use strict';
 
    angular.module('workflow-ui.services').provider('sdPriorityService', function() {
-      this.$get = [ '$q', 'sgI18nService', '$resource', function($q, sgI18nService, $resource) {
-         var service = new PriorityService( $q, sgI18nService, $resource);
+      this.$get = [ '$q', 'sgI18nService', '$resource', 'sdUtilService', function($q, sgI18nService, $resource, sdUtilService) {
+         var service = new PriorityService( $q, sgI18nService, $resource, sdUtilService);
          return service;
       } ];
    });
    
-	var REST_BASE_URL = "services/rest/portal/process-instances/";
    /**
     * 
     */
-   function PriorityService( $q, sgI18nService,  $resource) {
+   function PriorityService( $q, sgI18nService,  $resource, sdUtilService) {
+	   
+	   var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/";
 
       this.priorities = [
                {
                   "value" : -1,
                   "label" : sgI18nService
                            .translate('views-common-messages.common-priorities-low'),
-                  "name" : "low"
+                  "name" : "low",
+                  "order": 3,
                },
                {
                   "value" : 0,
                   "label" : sgI18nService
                            .translate('views-common-messages.common-priorities-normal'),
-                  "name" : "normal"
+                  "name" : "normal",
+                  "order": 2,
                },
                {
                   "value" : 1,
                   "label" : sgI18nService
                            .translate('views-common-messages.common-priorities-high'),
-                  "name" : "high"
+                  "name" : "high",
+                  "order": 1,
                } ];
       
       /**

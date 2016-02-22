@@ -23,13 +23,13 @@
 		<ice:panelGrid columns="1">
 
 			<ice:commandLink styleClass="action-link"
-				action="#{activitySearchPanel.searchAllResubmissionActivityInstancesAction}"
+				action="#{activitySearchPanel.searchAllResubmissionActivityInstancesActionHTML5}"
 				value="#{activitySearchPanel.messages['resubmission']}">
 				<pc:automationTag value="auto-PP-LP-ActReSubmission"/>
 			</ice:commandLink>	
 
 			<ice:commandLink styleClass="action-link"
-				action="#{activitySearchPanel.searchAllActivityInstancesAction}"
+				action="#{activitySearchPanel.searchAllActivityInstancesActionHTML5}"
 				value="#{activitySearchPanel.messages['allActivities']}">
 				<pc:automationTag value="auto-PP-LP-AllAvailActivity"/>
 			</ice:commandLink>	
@@ -64,8 +64,8 @@
 						action="#{activitySearchPanel.queryForUsersAction}">
 						<pc:automationTag value="auto-PP-LP-UserWorklist-SrchBtn"/>
 						<ice:panelGrid columns="2">
-							<ice:graphicImage style="margin-left:4px;"
-								value="/plugins/views-common/images/icons/magnifier-left.png" />
+							<ice:outputText style="margin-left:4px;"
+								 styleClass="pi pi-search"/>
 							<ice:outputText styleClass="action-link" style="margin-left:4px;"
 								value="#{activitySearchPanel.messages['search']}" />
 						</ice:panelGrid>
@@ -74,8 +74,8 @@
 						action="#{activitySearchPanel.clearUsersAction}">
 						<pc:automationTag value="auto-PP-LP-UserWorklist-ClearBtn"/>
 						<ice:panelGrid columns="2">
-							<ice:graphicImage style="margin-left:4px;margin-top:2px;"
-								value="/plugins/views-common/images/icons/dialog-close-button.gif" />
+							<ice:outputText style="margin-left:4px;margin-top:2px;"
+								styleClass="pi pi-close pi-lg" />
 							<ice:outputText styleClass="action-link" style="margin-left:4px;"
 								value="#{activitySearchPanel.messages['clear']}" />
 						</ice:panelGrid>
@@ -89,7 +89,7 @@
 						<ice:outputText value="#{activitySearchPanel.messages['user']}: " />
 						<ice:commandLink styleClass="action-link"
 							value="#{item.userDisplayLabel}"
-							action="#{item.selectAction}">
+							action="#{item.selectActionHTML5}">
 							<pc:automationTag value="auto-PP-LP-UserWorklist-UserLink"/>
 							<!--<ice:outputText value="#{item.firstName} #{item.lastName}" />
 						-->
@@ -112,7 +112,7 @@
 			<ice:panelSeries var="item" value="#{activitySearchPanel.items}">
 				<ice:panelGrid columns="2">
 					<ice:outputText value="#{item.name}:" styleClass="label-form" />
-					<ice:commandLink styleClass="action-link" action="#{item.select}">
+					<ice:commandLink styleClass="action-link" action="#{item.selectHTML5}">
 						<pc:automationTag value="auto-PP-LP-ActForResubCountLink"/>
 						<ice:outputFormat value="#{worklistsBean.messages['items']}">
 							<f:param value="#{item.totalCount}" />

@@ -191,7 +191,7 @@ public class QualityAssuranceCodesBean
    public String getQualityAssuranceCodesIframePopupArgs()
    {
       String advanceArgs = "{anchorId:'ippQualityAssuranceCodesAnchor', width:100, height:30, maxWidth:500, maxHeight:550, "
-            + "openOnRight:false, anchorXAdjustment:130, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+            + "openOnRight:false, anchorXAdjustment:130, anchorYAdjustment:5, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 

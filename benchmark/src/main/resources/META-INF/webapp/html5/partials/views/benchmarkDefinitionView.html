@@ -1,0 +1,559 @@
+<style>
+	a.tbl-toolbar-item > i {
+		font-size:13.333px;
+	}
+</style>
+
+<!-- BenchMark Definitions CRUD View -->
+<div class="view-panel benchmarkDefinitionMain"
+     ng-controller="benchmarkCtrl as ctrl"
+	 sg-stretch-to-bottom>
+	 
+	<!-- Markup for our sdDialog Directives -->
+	
+	<!-- Delete Confirmation -->
+	<div sd-dialog="ctrl.deleteDialog"
+		 sda-title="{{ctrl.textMap.dialogTitleConfirm}}"
+	     sda-type="confirm"
+	     sda-template="plugins/benchmark/html5/partials/dialogs/deleteConfirmation.html"
+	     sda-on-open="ctrl.onOpenDeleteDialog(res)"
+	     sda-scope="this"> 
+	</div>
+	
+	<!-- Publish Confirmation -->
+	<div sd-dialog="ctrl.publishDialog"
+		 sda-title="{{ctrl.textMap.dialogTitlePublish}}"
+		 sda-confirm-action-label="Publish"
+		 sda-cancel-action-label="{{ctrl.textMap.dialogButtonCancel}}"
+	     sda-type="confirm"
+	     sda-template="plugins/benchmark/html5/partials/dialogs/publishConfirmation.html"
+	     sda-on-open="ctrl.onOpenPublishDialog(res)"
+	     sda-scope="this"> 
+	</div>
+	
+	<!-- Publish Success-->
+	<div sd-dialog="ctrl.publishSuccessDialog"
+		 sda-title="{{ctrl.textMap.dialogTitleSuccess}}"
+		 sda-cancel-action-label="{{ctrl.textMap.dialogButtonCancelOk}}"
+	     sda-type="alert"
+	     sda-template="plugins/benchmark/html5/partials/dialogs/publishSuccess.html"
+	     sda-scope="this"> 
+	</div>
+	
+	<div sd-dialog="ctrl.errorDialog"
+		 sda-title="{{ctrl.textMap.dialogTitleError}}"
+	     sda-type="alert"
+	     sda-template="plugins/benchmark/html5/partials/dialogs/error.html"
+	     sda-cancel-action-label="{{ctrl.textMap.dialogButtonCancelClose}}"
+	     sda-scope="this"> 
+	</div>
+	
+	<div sd-dialog="ctrl.categoryDeleteDeny"
+		 sda-title="{{ctrl.textMap.dialogTitleError}}"
+	     sda-type="alert"
+	     sda-template="plugins/benchmark/html5/partials/dialogs/categoryDeleteDeny.html"
+	     sda-cancel-action-label="{{ctrl.textMap.dialogButtonCancelClose}}"
+	     sda-scope="this"> 
+	</div>
+	
+	<!-- Save Success-->
+	<div sd-dialog="ctrl.saveSuccessDialog"
+		 sda-title="{{ctrl.textMap.dialogTitleSuccess}}"
+		 sda-cancel-action-label="{{ctrl.textMap.dialogButtonCancelOk}}"
+	     sda-type="alert"
+	     sda-template="plugins/benchmark/html5/partials/dialogs/saveSuccess.html"
+	     sda-scope="this"> 
+	</div>
+	
+	<!-- sdDialog Directives End -->
+	
+	<i style="position:absolute;font-size:1.5em;cursor:pointer;" 
+	   ng-click="ctrl.showBenchmarks = !ctrl.showBenchmarks" 
+	   ng-class="{'pi-arrow-d': ctrl.showBenchmarks,'pi-arrow-r': !ctrl.showBenchmarks}"
+	   class="pi pi-fw pi-arrow-d">
+	</i>
+	
+	<span style="margin:2em;" class="header">
+		{{ctrl.textMap.benchmarkDefinitions}}
+	</span>
+
+	<div sd-file-upload-dialog 
+	     sda-on-init="ctrl.onUploadDialogInit(api)"
+	     sda-file-key="file"
+	     sda-url="{{ctrl.fileUploadUrl}}">
+	 </div>
+	 
+	<!-- Design Mode Data Table for Benchmarks -->
+	<div ng-show="ctrl.showBenchmarks">
+	
+		<select style="margin-bottom:1em;"
+		        ng-model="ctrl.benchmarkFilter" 
+		        ng-change="ctrl.onStatusChange(ctrl.benchmarkFilter)">
+			<option selected value="Design">{{ctrl.textMap.design}}</option>
+			<option ng-if="ctrl.readRuntimeArtifact" value="Published">{{ctrl.textMap.published}}</option>
+		</select>
+		
+		<div ng-show="ctrl.benchmarkFilter==='Published'">
+		
+			<button 
+		       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
+		       ng-disabled="!ctrl.selectedBenchmark"
+		       title="{{ctrl.textMap.downloadBenchmark}}" 
+		       class="pi pi-1x pi-download">
+		    </button>
+		    
+		    <button 
+		       ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" 
+		       ng-disabled="!ctrl.selectedBenchmark"
+		       title="{{ctrl.textMap.deleteBenchmark}}" 
+		       class="pi pi-1x pi-minus-sign">
+		    </button>	
+		    
+		</div>
+		
+		<div ng-show="ctrl.benchmarkFilter==='Design'">
+		
+			<div sda-toolbar>
+			
+				<div class="tbl-toolbar-section">
+				
+				    <button
+				       ng-click="ctrl.createBenchmark()" 
+				       title="{{ctrl.textMap.addBenchmark}}" 
+				       class="pi pi-1x pi-plus-sign">
+				    </button>
+	
+				    <button 
+				       ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" 
+				       ng-disabled="!ctrl.selectedBenchmark"
+				       title="{{ctrl.textMap.deleteBenchmark}}" 
+				       class="pi pi-1x pi-minus-sign">
+				    </button>
+			    
+			    </div>
+			    
+			    <div class="tbl-toolbar-section">
+			    
+				    <button
+				       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
+				       ng-disabled="!ctrl.selectedBenchmark"
+				       title="{{ctrl.textMap.downloadBenchmark}}" 
+				       class="pi pi-1x pi-download">
+				    </button>
+				    
+				    <button 
+				       ng-click="ctrl.uploadBenchmarkFromFile()" 
+				       title="{{ctrl.textMap.upload}}" 
+				       class="pi pi-1x pi-upload">
+				    </button>
+
+			    </div>
+			    
+			    <div class="tbl-toolbar-section">
+			    
+				    <button 
+				       ng-click="ctrl.cloneBenchmark(ctrl.selectedBenchmark.id)" 
+				       ng-disabled="!ctrl.selectedBenchmark"
+				       title="{{ctrl.textMap.cloneBenchmark}}" 
+				       class="pi pi-1x pi-copy">
+				    </button>
+	
+				    <button 
+				       ng-click="ctrl.saveBenchmark(ctrl.selectedBenchmark)" 
+				       ng-disabled="!ctrl.selectedBenchmark"
+				       title="{{ctrl.textMap.saveBenchmark}}" 
+				       class="pi pi-1x pi-floppy-disk">
+				    </button>
+				    
+			    </div>
+			    
+			    <div class="tbl-toolbar-section">
+			    
+				    <button 
+				       ng-if="ctrl.deployRuntimeArtifact"
+				       ng-disabled="!ctrl.selectedBenchmark"
+				       ng-click="ctrl.publishBenchmark(ctrl.selectedBenchmark.id)" 
+				       title="{{ctrl.textMap.publishBenchmark}}"
+				       class="pi pi-1x pi-globe">
+				    </button>	    
+			    
+			    </div>
+			    
+			</div>
+			
+			<table sd-data-table="ctrl.dataTableApi"
+				   sda-mode="local"
+				   sda-selectable="row"
+				   sda-exports="true"
+				   sda-page-size = "5"
+				   sda-on-select="ctrl.benchmarkSelected(d)"
+				   sd-data ="ctrl.benchmarks">
+				   <thead>
+					   	<tr>
+					   		<th sda-name="name" sda-label="{{ctrl.textMap.name}}"></th>
+					   		<th sda-name="description" sda-label="{{ctrl.textMap.description}}"></th>
+					   		<th sda-name="modifiedBy" sda-label="{{ctrl.textMap.modifiedBy}}"></th>
+					   		<th sda-name="lastModified" sda-label="{{ctrl.textMap.lastModified}}"></th>
+					   	</tr>
+				   </thead>
+				   <tbody>
+				   		<tr>
+				   			<td sda-field="content.name">
+					   			<span ng-class="{'dirty':ctrl.isBenchmarkDirty(rowData.content.id)}">
+					   			{{rowData.content.name}}
+					   			</span>
+				   			</td>
+				   			<td sda-field="content.description"></td>
+				   			<td sda-field="metadata.author"></td>
+				   			<td sda-field="metadata.lastModifiedDate"
+				   				sda-data-type="DateTime">
+				   				<span>
+				   				{{rowData.metadata.lastModifiedDate | date:'short'}}
+				   				</span>
+				   			</td>
+				   		</tr>
+				   </tbody>
+			</table>
+			
+		</div>
+		<!-- Design Mode Data Table End -->
+		
+		<!-- Published Mode Data Table for Benchmarks -->
+		<div ng-show="ctrl.benchmarkFilter==='Published'">
+			<table sd-data-table="ctrl.dataTableApiPublished"
+				   sda-mode="local"
+				   sda-selectable="row"
+				   sda-page-size = "5"
+				   sda-on-select="ctrl.benchmarkSelected(d)"
+				   sd-data ="ctrl.publishedBenchmarks">
+				   <thead>
+					   	<tr>
+					   		<th sda-name="name" sda-label="Name"></th>
+					   		<th sda-name="runtimeOid" sda-label="OID"></th>
+					   		<th sda-name="description" sda-label="Description"></th>
+					   		<th sda-name="lastModifiedDate" sda-label="Last Modified"></th>
+					   	</tr>
+				   </thead>
+				   <tbody>
+				   		<tr>
+				   			<td sda-field="content.name"></td>
+				   			<td sda-field="metadata.runtimeOid"></td>
+				   			<td sda-field="content.description"></td>
+				   			<td sda-field="metadata.lastModifiedDate">
+				   				<span>
+				   				{{rowData.metadata.lastModifiedDate | date:'short'}}
+				   				</span>
+				   			</td>
+				   		</tr>
+				   </tbody>
+			</table>
+		</div>
+		<!-- Published Mode Data Table for Benchmarks End-->
+	</div>
+	
+
+	<!-- Display for currently selected benchmark -->
+	<div ng-show="ctrl.selectedBenchmark">
+		<div style="margin-top:1em;">
+			<span class="header">{{ctrl.selectedBenchmark.name}}</span>
+		</div>
+	</div>
+	
+	<!--Bottom Container - Tabs - > Model Tree and Categories  -->
+	<div style="width:100%;position:relative;margin-top:1em;">
+		
+	    <!-- Tabs -->
+	    <div class="tab-container">
+	    
+		    <div class="tab"
+		    	 ng-class="{selected: ctrl.selectedTab==='General'}"
+		    	 ng-click="ctrl.selectedTab = 'General'">
+		    	 <span class="tab-label">{{ctrl.textMap.general}}</span>
+		    	 <div class="tab-arrow" ng-show="ctrl.selectedTab === 'General'"></div>
+		    </div>
+		    
+		    <div class="tab"
+		    	 ng-class="{selected: ctrl.selectedTab === 'Categories'}"
+		    	 ng-click="ctrl.selectedTab ='Categories'">
+		    	 <span class="tab-label">{{ctrl.textMap.categories}}</span>
+		    	 <div class="tab-arrow" ng-show="ctrl.selectedTab === 'Categories'"></div>
+		    </div>
+		    
+	    </div>
+	    
+	    <div ng-show="ctrl.selectedTab ==='Categories'">
+	    
+	    	<div ng-show="ctrl.selectedBenchmark">
+	    		<a ng-click="ctrl.showAllTreeNodes = !ctrl.showAllTreeNodes"
+	    		   ng-attr-title = "{{ctrl.showAllTreeNodes ? ctrl.textMap.filterTreeNodes : ctrl.textMap.showAllTreeNodes}}" 
+	    		   class="tbl-toolbar-item tbl-tool-link">
+	    		   <i class="pi " 
+	    		      ng-class="{'pi-eye-open' : ctrl.showAllTreeNodes,'pi-eye-close' : !ctrl.showAllTreeNodes}"></i>
+	    		</a>
+	    	</div>
+	    	
+		    <!-- Model Tree Container -->
+			<div ng-show="ctrl.selectedBenchmark" 
+			     style="width:225px;display:inline-table;">
+				
+				<!-- sdTree Implementation of Model Tree -->
+			    <ul sd-tree="ctrl.onTreeInit(api)"
+			       	sda-event-callback="ctrl.treeCallback(data,e)"
+			       	sda-icon-callback="ctrl.iconCallback(item)"
+			       	sda-menu-callback="ctrl.menuCallback(item)">
+			      <li sd-tree-node 
+			          sda-is-leaf = "model.processDefinitions.length == 0"
+			          sda-label="model.name" 
+			          sda-node-id="model.nodeId" 
+			          ng-repeat="model in ctrl.models">
+			        <ul>
+			          <li sd-tree-node
+			          	  ng-show="ctrl.showAllTreeNodes===true || process.auxillary===false"
+			              sda-is-leaf="process.activities.length==0"
+			              sda-label="process.name"
+			              sda-node-id="process.nodeId"
+			              ng-repeat="process in model.processDefinitions">
+			            <ul>
+			              <li sd-tree-node
+			                  ng-show="ctrl.showAllTreeNodes === true || (activity.interactive === true && activity.auxillary === false)"
+			                  sda-is-leaf="true"
+			                  sda-draggable="true"
+			                  sda-label="activity.name"
+			                  sda-node-id="activity.nodeId"
+			                  ng-repeat="activity in process.activities">
+			              </li><!-- activity structure ends -->
+			            </ul>
+			          </li><!-- process structure ends -->
+			        </ul>
+			      </li><!-- model structure ends -->
+			    </ul>
+			    
+		    </div>
+		    
+		    <div class="container" ng-show="!ctrl.selectedBenchmark"  style="width:calc(100% - 230px);display:inline-table;"> No Benchmark Selected</div>
+		    
+		    <!-- Categories Table-->
+		    <div ng-show="ctrl.selectedBenchmark" style="width:calc(100% - 230px);display:inline-table;">
+		    
+		    	<table class="tbl ng-scope dataTable" id="benchmarkTable" style="width:100%;">
+		    	
+			    	<colgroup>
+				       <col span="1" style="width: 10%;">
+				       <col span="1" style="width: 20%;">
+				    </colgroup>
+				    
+		    		<thead>
+		    			<th class="tbl-hdr-col">
+		    				<span class="tbl-hdr-col-label">{{ctrl.textMap.element}}</span>
+		    			</th>
+		    			<th class="tbl-hdr-col">
+		    				<span class="tbl-hdr-col-label">{{ctrl.textMap.options}}</span>
+		    			</th>
+		    			<th class="tbl-hdr-col" ng-repeat="category in ctrl.selectedBenchmark.categories | orderBy:'index'">
+		    			
+		    				<div ng-if="ctrl.benchmarkFilter==='Design'"
+		    				     sd-drop-down-menu 
+		    				     sda-menu-callback="ctrl.categoryMenuCallback(menuItem,e)"
+		    					 sda-menu-items="ctrl.categoryMenu"
+		    					 style="display:inline-table;">
+		    				     <i class="pi pi-flag"></i>
+		    				     <i class="pi pi-arrow-d"></i>
+		    				</div>
+		    				<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+		    					   ng-disabled="ctrl.benchmarkFilter==='Published'"
+		    				       type="text" 
+		    				       size="{{category.name.length}}" 
+		    				       ng-model="category.name" 
+		    				       class="tbl-hdr-col-label"/>
+		    				<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+		    					   ng-disabled="ctrl.benchmarkFilter==='Published'"
+		    				       type="color" 
+		    				       ng-model="category.color"/>
+		    			</th>
+		    		</thead>
+		    		<tbody>
+		    			<tr ng-class-even="even" class="tbl-row" ng-repeat="data in ctrl.benchmarkDataRows">
+		    				
+		    				<td style="vertical-align:top;">
+			    				<span  title="{{data.breadCrumbs.join('&#x2F;')}}">
+			    					{{data.breadCrumbs[data.breadCrumbs.length-1]}}
+			    				</span>
+		    				</td>
+		    				
+		    				<td style="vertical-align:top;">
+		    					<form>
+			    					<label>
+			    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+			    						       ng-model="data.elementRef.enableBenchmark" 
+			    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+			    						       type="checkbox"/>
+			    						       {{ctrl.textMap.enableBenchmark}}
+			    					</label>
+			    					
+			    					<label>
+			    						{{ctrl.textMap.expectedDuration}}
+			    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+			    						       ng-model="data.elementRef.expectedDuration"
+			    						       style="width:30px;"
+			    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+			    						       type="text"/>
+			    						       {{ctrl.textMap.hour}}
+			    					</label>
+		    					</form>
+
+		    				</td>
+		    				
+		    				<td ng-repeat="catInst in data.categoryConditions | orderBy:'categoryRef.index'">
+	
+		    					<div ng-show="data.elementRef.enableBenchmark">
+		    						<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+		    								ie-select-fix
+		    						        ng-disabled="ctrl.benchmarkFilter==='Published'"
+		    						        ng-model="catInst.type">
+	    						        <option value="freeform">{{ctrl.textMap.freeForm}}</option>
+			    						<option value="dataExpression">{{ctrl.textMap.dataExpression}}</option>
+		    						</select>
+		    						
+		    						<div ng-show="catInst.type==='freeform'">
+			    						<textarea ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+			    						          ng-disabled="ctrl.benchmarkFilter==='Published'"
+			    						          ng-model="catInst.freeformExpression" 
+			    						          rows="" 
+			    						          cols="">
+	   						          	</textarea>
+			    					</div>
+			    					
+		    						<div ng-show="catInst.type==='dataExpression'">
+		    						
+			    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+			    							ie-select-fix
+			    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
+			    					        ng-options="operand.name for operand in ctrl.attributeOperands track by operand.id"
+			    					        ng-model="catInst.details.condition.lhs">
+			    					</select>
+
+		    						<div>
+				    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+				    							ie-select-fix
+				    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
+				    					        ng-model="catInst.details.condition.operator">
+				    						<option value=">">{{ctrl.textMap.laterThan}}</option>
+				    						<option value="<">{{ctrl.textMap.before}}</option>
+				    					</select>
+			    					</div>
+				    					
+			    					<div>
+				    					
+				    					<select ng-model="catInst.details.condition.rhs"
+				    							ie-select-fix
+				    							ng-disabled="ctrl.benchmarkFilter==='Published'"
+				    					 		ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+				    					        ng-options="item.name group by item.groupName for item in data.modelData track by item.id">
+				    					</select>
+
+				    					<label ng-show="catInst.details.condition.rhs.dataType =='struct'" 
+				    					       style="display:inline-table;">
+				    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+				    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+				    						       ng-model="catInst.details.condition.rhs.deref"
+				    						       placeHolder="Data Path"
+				    						       type="text"/>
+				    					</label>
+				    					
+			  							<i ng-show="ctrl.isDataRefValid(catInst.details.condition.rhs.id)===false"
+			  							   title="{{ctrl.textMap.invalidDataReference.replace('{0}',catInst.details.condition.rhs.id)}}" 
+			  							   class="pi pi-fw pi-1x pi-exclamation-triangle msg-warning">
+			  							</i>
+				
+			    					</div>
+				    					
+				    				<label style="display:inline-table;">
+				    					<input ng-model="catInst.details.condition.offset.useBusinessDays" 
+				    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+				    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
+						    				   ng-value="true" 
+						    				   name="{{data.nodePath}}{{$index}}ubd"
+						    				   type="radio"/>
+						    				   {{ctrl.textMap.businessDays}}
+				    				</label>
+					    				
+				    				<label style="display:inline-table;">
+				    					<input ng-model ="catInst.details.condition.offset.useBusinessDays" 
+				    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+				    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
+				    					       name="{{data.nodePath}}{{$index}}ubd" 
+				    					       ng-value="false" 
+				    					       type="radio"/>
+				    					       {{ctrl.textMap.calendarDays}}
+				    				</label>
+					    				
+			    					<label>
+			    						<input ng-model="catInst.details.condition.offset.applyOffset" 
+			    							   ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+			    							   ng-disabled="ctrl.benchmarkFilter==='Published'"
+			    						       type="checkbox"/>
+		    								   {{ctrl.textMap.applyOffset}}
+			    					</label>
+				    					
+			    					<div ng-show="catInst.details.condition.offset.applyOffset===true">
+			    					
+				    					<input  ng-model="catInst.details.condition.offset.amount"
+				    					        ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+				    					        ng-disabled="ctrl.benchmarkFilter==='Published'" 
+				    					        type="number"/>
+				    					
+				    					<label style="display:inline-table;">
+				    						{{ctrl.textMap.daysAt}} 
+				    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+				    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+				    							   type="time" 
+				    							   ng-model="catInst.details.condition.offset.time"/>
+				    					</label>
+				    					
+		    						</div>
+		    						
+								</div>
+							</div>
+	    				</td>
+	    			</tr>
+	    		</tbody>
+	    	</table>
+    	</div>
+	</div>
+	
+	<!-- General Elements of the Benchmark -->
+	<div ng-show="ctrl.selectedTab ==='General'">
+	
+		<div sd-drop-down-menu sda-menu-items="[{value:'insert'},{value:'delete'},{value:'create'}]"></div>
+		
+		<div class="container">
+	    	<label style="display:inline-block;width:100px;">{{ctrl.textMap.name}}</label> 
+	    	<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
+	    	       ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'"
+	    	       ng-model="ctrl.selectedBenchmark.name" 
+	    	       type="text">
+    	</div>
+    	
+    	<div class="container">
+	    	<label style="display:inline-block;width:100px;">{{ctrl.textMap.description}}</label>
+	    	<textarea ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'" 
+	    			  ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
+	    			  ng-model="ctrl.selectedBenchmark.description"></textarea>
+    	</div>
+    	
+    	<div class="container">
+	    	<label style="display:inline-block;width:100px;">{{ctrl.textMap.businessCalendar}}</label>
+	    	<select ng-options="item.path as item.name for item in ctrl.calendars | orderBy:'name'" 
+	    			ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+	    			ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'"
+	    	        ng-model="ctrl.selectedBenchmark.businessCalendar">
+	    	</select>
+    	</div>
+    	
+    </div>
+	
+</div><!-- Bottom Container End -->
+
+<pre ng-if="ctrl.debug===true">{{ctrl.selectedBenchmark | json}}</pre>
+
+</div><!-- OuterMost Div end, controller scope ends -->

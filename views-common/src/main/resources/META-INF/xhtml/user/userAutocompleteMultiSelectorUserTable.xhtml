@@ -38,9 +38,11 @@
 									<tr class="${loopStatus.index % 2 == 0 ? 'evenTabRow' : 'oddTabRow'}">
 										<td>
 											<ice:graphicImage value="#{user.imageURL}" width="24px"
-												height="24px" />
-										</td>
-										<td>
+												height="24px" rendered="#{pc:contains(user.imageURL, '/')}" />
+											<ice:outputText styleClass="#{user.imageURL} pi-1x"
+												rendered="#{!pc:contains(user.imageURL, '/')}"></ice:outputText>
+									</td>
+										<td style="font-weight: 400;">
 											<ice:outputText value="#{user.displayLabel}" />
 										</td>
 										<td class="autoCompTableRemoveCol">
@@ -48,9 +50,8 @@
 												action="#{user.removeUser}" disabled="#{not user.removeable}">
 											<pc:automationTag value="auto-COM-UserMultiSel-ActionsRemove"
 												standAlone="false" />
-											<ice:graphicImage
-												value="/plugins/views-common/images/icons/dialog-windowbttn-close.png"
-												styleClass="#{(not user.removeable) ? 'iceCmdBtn-dis' : 'icon-style'}" />
+											<ice:outputText
+												styleClass="#{(not user.removeable) ? 'iceCmdBtn-dis' : 'icon-style'} pi pi-dialog-close pi-lg" />
 											</ice:commandLink>
 										</td>
 								</tr>

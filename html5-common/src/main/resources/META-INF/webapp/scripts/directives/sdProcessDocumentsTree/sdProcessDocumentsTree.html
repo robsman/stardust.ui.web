@@ -1,0 +1,17 @@
+<ul sd-tree 
+    sda-icon-callback = "treeCtrl.iconCallback(item)"
+    sda-event-callback = "treeCtrl.eventCallback(data,e)">
+  <li sd-tree-node
+      sda-label="item.name"
+      sda-node-id="item.name"
+      ng-repeat="item in treeCtrl.processDocuments">
+    <ul>
+      <li sd-tree-node
+          ng-repeat = "item in item.items"
+          sda-label="item.name"
+          sda-is-leaf="true"
+          sda-node-id="item.uuid">
+      </li>
+    </ul>
+  </li>
+</ul>

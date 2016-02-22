@@ -1,0 +1,28 @@
+<div class="dataTableFrame" style="margin-bottom: 10px;">
+	<table cellpadding="0" cellspacing="0" class="dataTable"
+		style="width: 100%;">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Activity</th>
+				<th>Process</th>
+				<th>State</th>
+				<th>Performer</th>
+				<th>Start Time</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="activityInstance in activityInstances">
+				<td align="right"><span ng-show="activityInstance.oid != 0">{{activityInstance.oid}}</span></td>
+				<td>{{activityInstance.activity.name}}</td>
+				<td>{{activityInstance.processInstance.processDefinition.name}} (#{{activityInstance.processInstance.oid}})</td>
+				<td>{{activityInstance.state}}</td>
+				<td><span ng-show="activityInstance.performedBy">{{activityInstance.performedBy.name}}</span><span ng-show="activityInstance.userPerformer"><a href="email:{{activityInstance.userPerformer.eMail}}">{{activityInstance.userPerformer.firstName}} {{activityInstance.userPerformer.lastName}} ({{activityInstance.userPerformer.account}})</a></span><span ng-hide="activityInstance.userPerformer">{{activityInstance.participantPerformer.name}}</span></td>
+				<td>{{formatTimeStamp(activityInstance.start)}}</td>
+				<td align="right"><a class="iconLink" ng-click="openGanttChartView(activityInstance)"><i
+						class="fa fa-tasks"></i></a></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

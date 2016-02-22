@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -38,7 +39,6 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
-import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
@@ -49,6 +49,7 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.benchmark.BenchmarkResult;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
@@ -334,6 +335,28 @@ public class ProcessInstanceUtils
       }
 
       return processInstances;
+   }
+   
+   /**
+    * @param oid
+    * @return
+    */
+   public static ProcessInstance getProcessInstanceWithHierarchy(long oid)
+   {
+      ProcessInstance pi = null;
+      ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
+      query.where(ProcessInstanceQuery.OID.isEqual(oid));
+      ProcessInstanceDetailsPolicy processInstanceDetailsPolicy = new ProcessInstanceDetailsPolicy(
+            ProcessInstanceDetailsLevel.Default);
+      processInstanceDetailsPolicy.getOptions().add(ProcessInstanceDetailsOptions.WITH_HIERARCHY_INFO);
+      query.setPolicy(processInstanceDetailsPolicy);
+      ProcessInstances pis = ServiceFactoryUtils.getQueryService().getAllProcessInstances(query);
+      
+      if (!pis.isEmpty())
+      {
+         pi = pis.get(0);
+      }
+      return pi;
    }
    
    
@@ -1177,5 +1200,73 @@ public class ProcessInstanceUtils
          return true;
       }
       return false;
+   }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static String getBenchmarkLabel(ProcessInstance pi)
+   {
+      return getPropertyFromBenchmarkResult(pi.getBenchmarkResult(), "name");
+   }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static String getBenchmarkColor(ProcessInstance pi)
+   { 
+      return getPropertyFromBenchmarkResult(pi.getBenchmarkResult(), "color");
+   }
+   
+   
+   /**
+    * 
+    * @param result
+    * @param property
+    * @return
+    */
+   private static String getPropertyFromBenchmarkResult(BenchmarkResult result, String property)
+   {
+      String value = null;
+      if (null != result)
+      {
+         Map<String, Serializable> properties = result.getProperties();
+         if ((properties != null) && properties.containsKey(property))
+         {
+            return (String) properties.get(property);
+         }
+      }
+      return value;
+   }
+   
+   /**
+    * @param oid
+    * @return
+    */
+   public static ProcessInstance getCorrespondenceProcessInstance(Long oid)
+   {
+      ProcessInstance process = getProcessInstanceWithHierarchy(oid);
+      
+      // Identify if the correspondence process is spawned
+      if (process.getParentProcessInstanceOid() != -1)
+      {
+         // make sure it is not subprocess
+         if (process.getScopeProcessInstanceOID() != process.getRootProcessInstanceOID())
+         {
+            // it is spawned process, return its parent process, TODO: this is not accurate, need to be revisited!
+            process = getProcessInstance(process.getParentProcessInstanceOid(), false, false);
+         }
+         else
+         {
+            // it is subprocess, return the process and not parent process
+         }
+      }
+      else
+      {
+         // return current process
+      }
+      return process;
    }
 }

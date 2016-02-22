@@ -20,6 +20,7 @@ public interface ProcessPortalConstants
    String PROCESSPORTAL_PREFIX = "Carnot.ProcessPortal.";
    String ASSEMBLY_LINE_MODE_ENABLED = "Carnot.BpmClient.Features.AssemblyLineTaskAssignment";
    String ASSEMBLY_LINE_PUSH_SERVICE = "Carnot.BpmClient.Features.AssemblyLinePushService";   
+   String ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES = "allResubmissionInstances";
 
    String DESCRIPTOR_FILTER_PREFIX = PROCESSPORTAL_PREFIX + "DescriptorFilter.";
   // String CONSIDER_ONLY_ACTIVE_MODEL = DESCRIPTOR_FILTER_PREFIX + "ConsiderOnlyActiveModel";
@@ -33,6 +34,7 @@ public interface ProcessPortalConstants
    public final static String TIMESTAMP_TYPE = "TimeStamp";
    public final static String LONG_TYPE = "Long";
    public final static String DOUBLE_TYPE = "Double";
+   public final static String BIG_DECIMAL_TYPE = "BigDecimal";
    public final static String STRUCTURED_TYPE = "Structured";
    public final static String PRIORITY_TYPE = "Priority";
    public final static String TIME_TYPE = "Time";

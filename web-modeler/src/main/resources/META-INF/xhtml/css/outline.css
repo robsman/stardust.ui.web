@@ -10,8 +10,7 @@
 
 .jstree a,.modelLinks a {
 	color: #00629A !important;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	cursor: pointer;
 }
 
@@ -20,17 +19,27 @@
 }
 
 input {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 /*adds a magnifying glass to an input element and pads the text entry to the left so text does not overlap it.*/
+/*************/
 input.search {
-	padding-left:20px;
 	background-repeat: no-repeat;
 	background-position-y: 2px;
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAYAAABb0P4QAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADbSURBVDhP5ZI9C4MwEIb7//+BEDgICA6C4OQgBJy6dRIEB6EgCNkEJ4e3iT2oHzH9wHbpAwfyJvfkJDnhYH4kHDVKlSAigSAQoCiBKjVGXvaxFXZnxBQYkSlBICII+22K4jM63rbHSthCSdsskVX9Y6KxR5XJSSpVy6GbpbBKp6aw0BzM0ShCe1iKihMXC6EuQtMQwukzPFu3fFd4+C+/cimUNxy6WQkNnmdzL3NYPfDmLVuhZf2wZYz80qDkKX1St3CXAfVMqq4cz3hTaGEpmctxDPmB0M/fCYEbAwZYyVKYcroAAAAASUVORK5CYII=);
 }
+
+input.search:valid,
+input.search:focus{
+	background-image:none;
+}
+
+input.search:invalid{
+	box-shadow: none !important;
+	color:#000;
+}
+/*************/
 
 div#outline {
 	overflow: auto;
@@ -39,7 +48,7 @@ div#outline {
 
 td#toolbar div.toolDiv {
 	margin: 2px 4px 5px;
-	padding: 3px;
+	padding: 0px;
 	cursor: pointer;
 	float: left;
 }

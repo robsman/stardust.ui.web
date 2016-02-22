@@ -17,8 +17,8 @@
 
 	angular.module('admin-ui.services').provider('sdUserGroupService',
 			function() {
-				this.$get = [ '$resource', function($resource) {
-					var service = new UserGroupService($resource);
+				this.$get = [ '$resource', 'sdUtilService', function($resource, sdUtilService) {
+					var service = new UserGroupService($resource, sdUtilService);
 					return service;
 				} ];
 			});
@@ -26,8 +26,8 @@
 	/*
 	 * 
 	 */
-	function UserGroupService($resource) {
-		var BASE_URL = 'services/rest/portal/user-group';
+	function UserGroupService($resource, sdUtilService) {
+		var BASE_URL = sdUtilService.getBaseUrl() + 'services/rest/portal/user-group';
 
 		UserGroupService.prototype.fetchUserGroups = function(query) {
 			var restUrl = BASE_URL + '/all';

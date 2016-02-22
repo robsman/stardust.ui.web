@@ -57,6 +57,15 @@ public class WorklistsTreeAssemblyLineUserObject extends WorklistsTreeUserObject
       worklistsBean.openNextAssemblyLineActivity();
       calculateActivityCount();
    }
+   
+   /**
+    * There is no worklist view here so calling the existing code.
+    * @param event
+    */
+   public void selectHTML5(ActionEvent event)
+   {
+      select(event);
+   }
 
    /**
     * 

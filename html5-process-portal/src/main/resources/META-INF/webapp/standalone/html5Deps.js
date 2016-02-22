@@ -15,15 +15,18 @@ var html5Deps = function() {
 		        "html5-common/styles/starclipse/starclipse.css",          
 				"html5-common/styles/3rd-party/jquery-plugins/jquery-ui/1.10.2/jquery-ui-custom.css",
 				"html5-common/styles/3rd-party/glyphicons/3.3.2/glyphicons.css",
+				"html5-common/styles/portal-icons.css",
 				"html5-common/styles/3rd-party/datatables/1.9.4/jquery.dataTables.css",
 				"html5-common/styles/3rd-party/bootstrap/3.3.2/css/bootstrap-theme.min.css",
-				"html5-common/styles/3rd-party/bootstrap/3.3.2/css/bootstrap-theme.css",
 				"html5-common/styles/3rd-party/bootstrap/3.3.2/css/bootstrap-modal.css",
 				"html5-common/styles/sd-data-table.css",
 				"html5-common/styles/sd-autoComplete.css",
 				"html5-common/styles/html5-common.css",
-				"html5-common/styles/glyphicons-ext.css",
-				"html5-process-portal/styles/html5-process-portal.css" ];
+				"html5-common/styles/sdTree.css",
+				"html5-process-portal/styles/html5-process-portal.css",
+				"html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css"
+				];
+		
 
 		for ( var i in styleSheets) {
 			injectCSS(head, pluginBaseUrl + styleSheets[i]);
@@ -39,7 +42,9 @@ var html5Deps = function() {
 				'jquery' : ['../portal-shell/js/libs/jquery/1.9.1/jquery'],
 				'jquery.dataTables' : [ "html5-common/libs/datatables/1.9.4/jquery.dataTables" ],
 				'angularjs' : ['../portal-shell/js/libs/angular/1.2.11/angular'],
+				'angularResource' : ['../portal-shell/js/libs/angular/1.2.11/angular-resource'],
 				'bootstrap' : [ 'html5-common/libs/bootstrap/bootstrap' ],
+				'ckeditor':['html5-common/libs/ckeditor/ckeditor'],
 				'portalApplication' : [ 'common/html5/portalApplication' ],
 				'html5CommonMain' : [ 'html5-common/scripts/main' ],
 				'sdEventBusService' : [ 'html5-common/scripts/services/sdEventBusService' ],
@@ -52,7 +57,16 @@ var html5Deps = function() {
 				'sdPreferenceService' : [ 'html5-common/scripts/services/sdPreferenceService' ],
 				'sdDialog' : [ 'html5-common/scripts/directives/dialogs/sdDialog' ],
 				'sdDialogService' : [ 'html5-common/scripts/services/sdDialogService' ],
-				'sdPortalConfigurationService' : [ 'html5-common/scripts/services/sdPortalConfigurationService' ]
+				'sdPortalConfigurationService' : [ 'html5-common/scripts/services/sdPortalConfigurationService' ],
+			    'sdLocalizationService' : [ 'html5-common/scripts/services/sdLocalizationService' ],
+			    'sdDatePicker': ['html5-common/scripts/directives/sdDatePicker'],
+			    'sdPopover': ['html5-common/scripts/directives/sdPopover'],
+			    'sdAutoComplete': ['html5-common/scripts/directives/sdAutoComplete'],
+			    'sdRichTextEditor':['html5-common/scripts/directives/sdRichTextEditor'],
+			    'sdTree' : ['html5-common/scripts/directives/sdTree'],
+			    'sdFolderTree' : ['html5-common/scripts/directives/sdFolderTree/sdFolderTree'],
+			    'sdProcessDocumentTree': ['html5-common/scripts/directives/sdProcessDocumentsTree/sdProcessDocumentsTree']
+			    
 			},
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
@@ -60,24 +74,34 @@ var html5Deps = function() {
 					deps : ["jquery"],
 					exports : "angular"
 				},
+				'angularResource' : ['angularjs'],
 				'bootstrap' : ['jquery'],
 				'html5CommonMain' : [ 'angularjs', 'portalApplication'],
 				'sdEventBusService' : [ 'html5CommonMain' ],
 				'httpInterceptorProvider' : [ 'html5CommonMain' ],
 				'sdLoggerService' : [ 'html5CommonMain' ],
 				'sdData' : [ 'html5CommonMain' ],
-				'sdDataTable' : [ 'html5CommonMain', 'sdLoggerService' ],
+				'sdDataTable' : [ 'html5CommonMain', 'sdLoggerService', 'sdDialogService' ,'sdPopover'],
 				'sdUtilService' : [ 'html5CommonMain' ],
 				'sdViewUtilService' : [ 'html5CommonMain' ],
-				'sdPreferenceService' : [ 'html5CommonMain' ],
+				'sdPreferenceService' : [ 'html5CommonMain','angularResource'],
 				'sdDialog' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
 				'sdDialogService' : [ 'sdDialog' ],
-				'sdPortalConfigurationService' : [ 'html5CommonMain' ]
+				'sdPortalConfigurationService' : [ 'html5CommonMain' ],
+			    'sdLocalizationService' : [ 'html5CommonMain' ],
+			    'sdDatePicker' : [ 'html5CommonMain', 'sdLocalizationService' ],
+			    'sdPopover' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
+			    'sdAutoComplete' :['html5CommonMain'],
+			    'sdRichTextEditor':['html5CommonMain','ckeditor'],
+			    'sdTree' :['html5CommonMain','ckeditor'] ,
+			    'sdFolderTree' : ['html5CommonMain','sdUtilService','sdTree'],
+			    'sdProcessDocumentTree':['html5CommonMain','sdUtilService','sdTree']
 			},
-			deps : [ "jquery.dataTables", "angularjs", "bootstrap", "portalApplication",
+			deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap","ckeditor","portalApplication",
 					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
 					"sdLoggerService", "sdData", "sdDataTable",
-					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' ]
+					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover', 
+					'sdAutoComplete','sdRichTextEditor','sdTree','sdFolderTree','sdProcessDocumentTree']
 
 		};
 
@@ -88,7 +112,7 @@ var html5Deps = function() {
 	}
 
 	function bootstrapAngular(applicationModules) {
-		var module = angular.module("dummyBootstrapModule", []);
+		var module = angular.module("dummyBootstrapModule", ['ngResource']);
 		
 		module.provider('sgViewPanelService', function () {
 		      this.$get = ['$rootScope', function ($rootScope) {
@@ -161,6 +185,7 @@ var html5Deps = function() {
 		          var parentScope = parent.window.angular.element(parent.document.body).scope();
 		          // use parent i18n implementation
 		          if (parentScope && parentScope.sdI18n) {
+		        	  service.translate = parentScope.sdI18n;
 		        	  $rootScope.i18n = parentScope.sdI18n;
 		          } else {
 		        	  // provide dummy implementation if i18n not

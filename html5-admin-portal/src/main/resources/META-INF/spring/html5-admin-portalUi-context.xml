@@ -7,35 +7,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 
 	<ippui:perspectiveExtension
-		targetPerspective="*" id="ippHtml5AdminPortalPerspective" messageBundles="html5-admin-portal">
-
+		targetPerspective="*" id="ippHtml5AdminPortalPerspective"
+		messageBundles="html5-admin-portal">
 		<ippui:viewsExtension>
-			<ippui:view name="participantManagementViewHtml5" include="/plugins/html5-admin-portal/partials/views/participantManagementView.html" />
-		</ippui:viewsExtension>
-		
-		<ippui:viewsExtension>
-			<ippui:view name="daemonViewHtml5" include="/plugins/html5-admin-portal/partials/views/daemonView.html" />
-		</ippui:viewsExtension>
-
-		<ippui:viewsExtension>
-			<ippui:view name="userGroupViewHtml5"
-				include="/plugins/html5-admin-portal/partials/views/userGroupView.html" />
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
-			<ippui:view name="activityViewHtml5"
-				include="/plugins/html5-admin-portal/partials/views/activityView.html" />
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
-			<ippui:view name="processViewHtml5" include="/plugins/html5-admin-portal/partials/views/processOverview.html" />
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
-			<ippui:view name="qaManagementViewHTML5" include="/plugins/html5-admin-portal/partials/views/qaManagementView.html" />
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
-			<ippui:view name="criticalityConfigHtml5" include="/plugins/html5-admin-portal/partials/views/criticalityConfig.html" />
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
-			<ippui:view name="passwordManagementViewHTML5" include="/plugins/html5-admin-portal/partials/views/passwordManagementView.html" />
 		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>

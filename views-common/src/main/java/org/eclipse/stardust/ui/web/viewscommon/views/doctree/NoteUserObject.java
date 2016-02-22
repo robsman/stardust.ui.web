@@ -189,16 +189,6 @@ public class NoteUserObject extends RepositoryResourceUserObject
    }
 
    @Override
-   public boolean isSendFileAllowed()
-   {
-      return false;
-   }
-
-   @Override
-   public void sendFile()
-   {}
-
-   @Override
    public void drop(DefaultMutableTreeNode valueNode)
    {}
 

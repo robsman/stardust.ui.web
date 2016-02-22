@@ -31,7 +31,7 @@
 						<pc:automationTag
 							value="auto-COM-ProcDetConf-#{filterToolbarItem.name}"
 							standAlone="false" />
-						<h:graphicImage value="#{filterToolbarItem.image}"
+						<h:outputText styleClass="#{filterToolbarItem.image}"
 							style="border: none; padding-right: 10px;"
 							title="#{views_common_msgPropsBean[filterToolbarItem.messsageKey]}" />
 						<f:param value="#{filterToolbarItem.name}" name="name" />
@@ -67,7 +67,7 @@
 							actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
 							style="vertical-align: middle;">
 
-							<h:graphicImage value="#{row.image}"
+							<h:outputText styleClass="#{row.image}"
 								style="border: none; padding-right: 10px;"
 								title="#{views_common_msgPropsBean[row.messsageKey]}" />
 							<f:param value="#{row.name}" name="name" />
@@ -87,20 +87,19 @@
 					<pc:automationTag
 						value="auto-COM-ProcDetConf-ProcFilterTbl-FilterIcon"
 						standAlone="false" />
-					<ice:commandButton name="#{row.name}"
+					<ice:commandLink name="#{row.name}"
 						actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
 						title="#{processInstanceDetailConfigurationBean.messages['visibile']}"
-						image="/plugins/views-common/images/icons/eye.png"
-						rendered="#{row.active}" style="vertical-align: middle;">
+						rendered="#{row.active}" style="vertical-align: middle;"
+						styleClass="pi pi-eye-open pi-lg">
 						<f:attribute value="#{row.name}" name="testName" />
-					</ice:commandButton>
-					<ice:commandButton name="#{row.name}" styleClass="iceCmdBtn-dis"
+					</ice:commandLink>
+					<ice:commandLink name="#{row.name}" styleClass="pi pi-eye-close pi-lg"
 						actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
 						title="#{processInstanceDetailConfigurationBean.messages['invisibile']}"
-						image="/plugins/views-common/images/icons/eye.png"
 						rendered="#{!row.active}" style="vertical-align: middle;">
 						<f:attribute value="#{row.name}" name="testName" />
-					</ice:commandButton>
+					</ice:commandLink>
 				</ice:column>
 			</ice:dataTable>
 		</ice:panelGrid>

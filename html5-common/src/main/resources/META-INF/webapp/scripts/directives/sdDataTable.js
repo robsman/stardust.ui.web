@@ -17,7 +17,7 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdDataTable', 
-			['$parse', '$q', '$compile', '$timeout', 'sgI18nService', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService','sdPortalConfigurationService',
+			['$parse', '$q', '$compile', '$timeout', 'sgI18nService', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService','sdPortalConfigurationService','sdDialogService',
 			 DataTableDirective]);
 
 	var trace;
@@ -37,21 +37,21 @@
 	/*
 	 * 
 	 */
-	function DataTableDirective($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdLoggerService, sdPreferenceService, sdPortalConfigurationService) {
+	function DataTableDirective($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdLoggerService, sdPreferenceService, sdPortalConfigurationService, sdDialogService) {
 		trace = sdLoggerService.getLogger('bpm-common.sdDataTable');
 
 		return {
 			restrict : 'A',
 			require: ['sdData'],
 			scope: true,
-			compile: function(elem, attr, transclude) {				
+			compile: function(elem, attr, transclude) {
 				processRawMarkup(elem, attr);
 
 				return {
 					post : function(scope, element, attr, ctrl) {
 						var dataTableCompiler = new DataTableCompiler(
 								$parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService, 
-								scope, element, attr, ctrl, sdPortalConfigurationService);
+								scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService);
 					}
 				};
 			}
@@ -93,10 +93,10 @@
 	 * 
 	 */
 	function showElement(element, show) {
-		if (show) {
-			element.show();
-		} else {
-			element.hide();
+		if (show && element.css('visibility') == 'hidden') {
+			element.css('visibility', 'visible');
+		} else if (!show && element.css('visibility') != 'hidden') {
+			element.css('visibility', 'hidden');
 		}
 	}
 	
@@ -104,58 +104,58 @@
 	 * 
 	 */
 	function DataTableCompiler($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService, 
-			scope, element, attr, ctrl, sdPortalConfigurationService) {
+			scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
 					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}">\n' +
-					'<i class="glyphicon glyphicon-th"></i>\n' +
+					'<i class="pi pi-column-selector pi-lg"></i>\n' +
 				'</button>\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportExcel" ng-click=""' +
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}">\n' +
-					'<i class="glyphicon glyphicon-export"></i>\n' +
+					'<i class="pi pi-export pi-lg"></i>\n' +
 				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
-					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" style="margin-right: 0px;">\n' +
-					'<i class="glyphicon glyphicon-export"></i>\n' +
-				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.toggleExportOptions()">\n' +
-					'<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>\n' +
+				'<button class="button-link tbl-toolbar-item  tbl-tool-joined-link tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
+					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}">\n' +
+					'<i class="pi pi-export pi-lg"></i>\n' +
 				'</button>\n' +
 				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
-					'<div class="popup-dlg-hdr">\n' +
-						'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
-						'<span class="popup-dlg-cls glyphicon glyphicon-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()"></span>\n' +
-					'</div>\n' +
-					'<div class="popup-dlg-cnt tbl-col-selector">\n' +
-						'<div>\n' +
-							'<span class="ui-section" ng-if="$dtApi.columnSelectorAdmin">\n' +
-								'<span class="label-form">{{i18n(\'portal-common-messages.common-preferenceScope-label\')}}</span>\n' +
-								'<select class="inp-sel-one" ng-model="$dtApi.applyTo" ng-change="$dtApi.applyToChanged()">\n' +
-									'<option value="USER">{{i18n(\'portal-common-messages.common-preferenceScope-options-user\')}}</option>\n' +
-									'<option value="PARTITION">{{i18n(\'portal-common-messages.common-preferenceScope-options-partition\')}}</option>\n' +
-								'</select>\n' +
-							'</span>\n' +
-							'<button class="button-link" ng-if="$dtApi.columnSelectorAdmin" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
-								'<span class="glyphicon glyphicon-ban-circle" ng-show="$dtApi.lock"></span>\n' + 
-								'<span class="glyphicon glyphicon-ok-circle" ng-show="!$dtApi.lock"></span>\n' +
-							'</button>\n' +
-							'<button class="glyphicon glyphicon-repeat button-link" ng-click="$dtApi.resetColumnSelector()" style="cursor: pointer;"></button>\n' +
-						'</div>\n' +
-						'<div class="tbl-col-sel-list">\n' +
-							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop on-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
-								'<input type="checkbox" class="tbl-col-sel-input" ng-model="col.visible"></span>\n' +
-								'<span class="tbl-col-sel-label">{{col.title}}</span>\n' +
+				'<div class="popup-dlg-hdr">\n' +
+					'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
+					'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()">\n' +
+						'<i class="pi pi-close pi-lg" />\n' +
+					'</button>\n' +
+				'</div>\n' +
+				'<div class="popup-dlg-cnt tbl-col-selector">\n' +
+							'<div>\n' +
+								'<span class="ui-section" ng-if="$dtApi.columnSelectorAdmin">\n' +
+									'<span class="label-item">{{i18n(\'portal-common-messages.common-preferenceScope-label\')}}</span>\n' +
+									'<select class="inp-sel-one" ng-model="$dtApi.applyTo" ng-change="$dtApi.applyToChanged()">\n' +
+										'<option value="USER">{{i18n(\'portal-common-messages.common-preferenceScope-options-user\')}}</option>\n' +
+										'<option value="PARTITION">{{i18n(\'portal-common-messages.common-preferenceScope-options-partition\')}}</option>\n' +
+									'</select>\n' +
+								'</span>\n' +
+								'<button class="button-link tbl-col-sel-link" ng-if="$dtApi.columnSelectorAdmin" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
+									'<span class="pi pi-lg pi-lock" ng-show="$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-unlock\')}}"></span>\n' + 
+									'<span class="pi pi-lg pi-unlock" ng-show="!$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-lock\')}}"></span>\n' +
+								'</button>\n' +
+								'<button class="button-link tbl-col-sel-link pi pi-reset pi-lg" ng-click="$dtApi.resetColumnSelector()" title ="{{i18n(\'portal-common-messages.common-reset\')}}" style="cursor: pointer;"></button>\n' +
+							'</div>\n' +
+							'<div class="tbl-col-sel-list">\n' +
+								'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop sda-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
+									'<input type="checkbox" class="tbl-col-sel-input" ng-model="col.visible"></span>\n' +
+									'<span class="tbl-col-sel-label">{{col.title}}</span>\n' +
+								'</div>\n' +
 							'</div>\n' +
 						'</div>\n' +
-					'</div>\n' +
-					'<div class="popup-dlg-footer">\n' +
-						'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-apply\')}}" ng-click="$dtApi.applyColumnSelector()" />' +
-						'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()" />' +
-					'</div>\n' +
+						'<div class="popup-dlg-footer">\n' +
+							'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-apply\')}}" ng-click="$dtApi.applyColumnSelector()" />' +
+							'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()" />' +
+						'</div>\n' +
 				'</div>\n' +
-				'<div ng-show="$dtApi.showExportOptions" class="popup-dlg" style="margin-left: 20px;">\n' +
-					'<div class="popup-dlg-cnt">\n' +
+				'<span ng-if="$dtApi.enableExportCSV" sd-popover="$dtApi.exportPopoverHandle" sda-class="tbl-tool-link">' +
+					'<i class="pi pi-menu-dropdown"></i>\n' +
+					'<div class="popover-body">\n' +
 						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' + 
 							'{{i18n(\'html5-common.export-options-current-page-current-fields\')}}\n' +
 						'</a></div>\n' +
@@ -168,26 +168,29 @@
 						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: true})">' + 
 							'{{i18n(\'html5-common.export-options-all-pages-all-fields\')}}\n' +
 						'</a></div>\n' +
-					'</div>\n' +
-				'</div>\n' +
+					'</div>\n';
+				'</span>'+
 			'</div>\n';
 
 		var elemScope = scope.$parent;
 		var myScope = scope;
 		var sdData = ctrl[0];
 
-		var tableInLocalMode, initialized;
+		var treeTable = false, treeTableData, treeData;
+		var tableInLocalMode, initialized, firstInitiaizingDraw = true;
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
-		var onSelect = {}, onPagination = {}, onColumnReorder = {}, onSorting = {};
+		var onSelect = {}, onPagination = {}, onColumnReorder = {}, onSorting = {}, onTreeNodeAction = {};
 		var enableColumnSelector, columnSelectorAdmin, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
 		var columnSelectorPreference, localPrefStore = {};
 		var pageSize = 8, disablePagination;
 		var sortingMode, sortByGetter, enableFiltering;
 		var columnFilters;
-		var exportConfig = {}, exportAnchor = document.createElement("a"), remoteModeLastParams;
-		var localModeData, localModeRefreshInitiated;
+		var exportConfig = {}, remoteModeLastParams;
+		var localModeData, localModeMasterData, localModeRefreshInitiated, localModeRebuildData;
+		var localModeGlobalFilter = {}, localModeSortingCols = [];
+		var compileTime = 0;
 
 		// Setup component instance
 		setup();
@@ -203,10 +206,10 @@
 			theTableId = element.attr('id');
 
 			if (attr.sdaReady) {
-				trace.log(theTableId + ': Table defines sda-ready attribute, so deferring initialization...');
+				trace.log('Table defines sda-ready attribute, so deferring initialization...');
 				var unregister = elemScope.$watch(attr.sdaReady, function(newVal, oldVal) {
 					if(newVal === true) {
-						trace.log(theTableId + ': sda-ready flag is triggered...');
+						trace.log('sda-ready flag is triggered...');
 
 						// Initialize after current digest cycle
 						$timeout(initialize);
@@ -222,20 +225,20 @@
 		 * 
 		 */
 		function showErrorOnUI(e) {
-			trace.error(theTableId + ':', e);
+			trace.error('Error', e);
 			trace.printStackTrace();
 
 			showElement(theTable.parent(), false);
 			showElement(theToolbar, false);
 
-			var errorToShow = 'Unknown Error'; // TODO: i18n
+			var errorToShow = 'Unknown Error';
 			if (angular.isString(e)) {
 				errorToShow = e;
 			} else if (e.status != undefined && e.statusText != undefined) {
 				errorToShow = e.status + ' - ' + e.statusText;
 			}
 
-			// TODO: i18n
+			// No need to i18n this message as this error state is expected to be reached only during development
 			var msg = 'sd-data-table is unable to process table. Pl. refer browser console for details. Reason: ' + errorToShow;
 			jQuery('<pre class="tbl-error">' + msg + '</pre>').insertAfter(theTable.parent());
 		}
@@ -244,7 +247,7 @@
 		 * 
 		 */
 		function initialize() {
-			trace.log(theTableId + ': Initializing Data Table...');
+			trace.log('Initializing Data Table...');
 
 			try {
 				processAttributes();
@@ -276,14 +279,29 @@
 		 * 
 		 */
 		function processAttributes() {
-			trace.log(theTableId + ': Processing table attributes...');
+			trace.log('Processing table attributes...');
 
+			// Tree Table
+			if (attr.sdaTreeTable != undefined) {
+				trace.log('Rendering as Tree Table, Forcing local mode, no pagination, no sorting, no exports...');
+
+				treeTable = true;
+
+				attr.sdaMode = 'local';
+				attr.sdaNoPagination = 'true';
+				attr.sdaSortable = 'false';
+
+				if (attr.sdaOnTreeNodeAction) {
+					onTreeNodeAction = parseFunction(attr.sdaOnTreeNodeAction, 'sda-on-tree-node-action');
+				}
+			}
+			
 			tableInLocalMode = attr.sdaMode == 'local';
 				
 			if (attr.sdaPageSize != undefined && attr.sdaPageSize != '') {
 				pageSize = parseInt(attr.sdaPageSize);
 			} else {
-			    pageSize =  sdPortalConfigurationService.getPageSize();
+			    pageSize =  parseInt(sdPortalConfigurationService.getPageSize());
 			}
 
 			if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
@@ -313,26 +331,12 @@
 				}
 
 				if (attr.sdaOnSelect) {
-					onSelect.handler = $parse(attr.sdaOnSelect);
-
-					var onSelectFuncInfo = sdUtilService.parseFunction(attr.sdaOnSelect);
-					if (onSelectFuncInfo && onSelectFuncInfo.params && onSelectFuncInfo.params.length > 0) {
-						onSelect.param = onSelectFuncInfo.params[0];
-					} else {
-						trace.error(theTableId + ': sda-on-select does not seems to be correcly used, it does not appear to be a function accepting parameter.');
-					}
+					onSelect = parseFunction(attr.sdaOnSelect, 'sda-on-select');
 				}
 			}
 
 			if (attr.sdaOnPagination) {
-				onPagination.handler = $parse(attr.sdaOnPagination);
-
-				var onPaginationfuncInfo = sdUtilService.parseFunction(attr.sdaOnPagination);
-				if (onPaginationfuncInfo && onPaginationfuncInfo.params && onPaginationfuncInfo.params.length > 0) {
-					onPagination.param = onPaginationfuncInfo.params[0];
-				} else {
-					trace.error(theTableId + ': sda-on-pagination does not seems to be correcly used, it does not appear to be a function accepting parameter.');
-				}
+				onPagination = parseFunction(attr.sdaOnPagination, 'sda-on-pagination');
 			}
 
 			if (attr.sdaColumnSelector && (attr.sdaColumnSelector == 'true' || attr.sdaColumnSelector == 'admin')) {
@@ -340,14 +344,7 @@
 				columnSelectorAdmin = attr.sdaColumnSelector == 'admin' ? true : false;
 
 				if (attr.sdaOnColumnReorder) {
-					onColumnReorder.handler = $parse(attr.sdaOnColumnReorder);
-
-					var onColumnReorderfuncInfo = sdUtilService.parseFunction(attr.sdaOnColumnReorder);
-					if (onColumnReorderfuncInfo && onColumnReorderfuncInfo.params && onColumnReorderfuncInfo.params.length > 0) {
-						onColumnReorder.param = onColumnReorderfuncInfo.params[0];
-					} else {
-						trace.error(theTableId + ': sda-on-columns-reorder does not seems to be correcly used, it does not appear to be a function accepting parameter.');
-					}
+					onColumnReorder = parseFunction(attr.sdaOnColumnReorder, 'sda-on-column-reorder');
 				}
 			}
 
@@ -361,14 +358,7 @@
 				}
 
 				if (attr.sdaOnSorting) {
-					onSorting.handler = $parse(attr.sdaOnSorting);
-
-					var onSortingfuncInfo = sdUtilService.parseFunction(attr.sdaOnSorting);
-					if (onSortingfuncInfo && onSortingfuncInfo.params && onSortingfuncInfo.params.length > 0) {
-						onSorting.param = onSortingfuncInfo.params[0];
-					} else {
-						trace.error(theTableId + ': sda-on-sorting does not seems to be correcly used, it does not appear to be a function accepting parameter.');
-					}
+					onSorting = parseFunction(attr.sdaOnSorting, 'sda-on-sorting');
 				}
 			}
 
@@ -407,10 +397,8 @@
 				}
 			}
 
-			// Disable functionality not yet supported
-			if (tableInLocalMode) {
-				sortingMode = undefined; // Disable sorting - Causes weird angular issues, like ng-click stops working
-				enableFiltering = false; // Disable filtering
+			if (tableInLocalMode && enableFiltering && attr.sdaFilterHandler) {
+				localModeGlobalFilter = parseFunction(attr.sdaFilterHandler, 'sda-filter-handler');
 			}
 		}
 
@@ -418,16 +406,16 @@
 		 *
 		 */
 		function cleanupAsDirective() {
-			var currentDir = "sd-data-table: " + element.attr("sd-data-table");
-			jQuery("<!-- " + currentDir + " -->").insertBefore(element);
-			element.removeAttr("sd-data-table", "");
+			var currentDir = 'sd-data-table: ' + element.attr('sd-data-table');
+			jQuery('<!-- ' + currentDir + ' -->').insertBefore(element);
+			element.removeAttr('sd-data-table', '');
 		}
 
 		/*
 		 * 
 		 */
 		function validateMarkup() {
-			trace.log(theTableId + ': Validating table markup...');
+			trace.log('Validating table markup...');
 
 			// Check Tag Name <table>
 			var tagName = element.prop('tagName');
@@ -453,11 +441,11 @@
 		 * 
 		 */
 		function processMarkup() {
-			trace.log(theTableId + ': Processing table markup...');
+			trace.log('Processing table markup...');
 
 			// Process Columns
 			var head = element.find('> thead');
-			var i18nScope = "";
+			var i18nScope = '';
 			if (head.attr('sda-i18n-scope') != undefined) {
 				i18nScope = head.attr('sda-i18n-scope');
 			}
@@ -482,14 +470,15 @@
 					dataType: bCol.attr('sda-data-type'),
 					visible: hCol.attr('sda-visible') == undefined || hCol.attr('sda-visible') == 'true' ? true : false,
 					sortable: hCol.attr('sda-sortable') == 'true' ? true : false,
-					filterable: hCol.attr('sda-filterable') == 'true' ? true : false,
+					filterable: hCol.attr('sda-filterable') == undefined || hCol.attr('sda-filterable') == '' ? undefined : (hCol.attr('sda-filterable') == 'true'? true : false),	
 					exportable: hCol.attr('sda-exportable') == undefined || hCol.attr('sda-exportable') == 'true' ? true : false,
 					exportParser: bCol.attr('sda-exporter') ? $parse(bCol.attr('sda-exporter')) : null,
-					fixed: hCol.attr('sda-fixed') != undefined && hCol.attr('sda-fixed') == 'true' ? true : false
+					fixed: hCol.attr('sda-fixed') != undefined && hCol.attr('sda-fixed') == 'true' ? true : false,
+					treeColumn: treeTable && bCol.attr('sda-tree-column') != undefined ? true : undefined
 				};
 
 				if (!colDef.name) {
-					trace.warn(theTableId + ': Column ' + (i + 1) + ' is missing attribute sda-name');
+					trace.warn('Column ' + (i + 1) + ' is missing attribute sda-name');
 					colDef.name = 'column' + (i + 1); // Default
 				}
 
@@ -520,7 +509,7 @@
 				
 				colDef.contents = bCol.children().html();
 				colDef.contents = colDef.contents.trim();
-				if (colDef.contents == "") {
+				if (colDef.contents == '') {
 					var contents = getDefaultContent(colDef);
 					colDef.contents = '{{' + contents + '}}';
 					colDef.defaultContentsParser = $parse(contents);
@@ -532,6 +521,19 @@
 						'</div>';
 				}
 
+				if (treeTable && colDef.treeColumn) {
+					colDef.fixed = true;
+					var treeContents = 
+						'<span class="tbl-tree-controls">' +
+							'<span ng-repeat="treeLevel in rowData.$$treeInfo.levels" class="tbl-tree-indent"></span>' +
+							'<button class="button-link tbl-tree-action" ng-click="$dtApi.toggleTreeNode($index)" ng-disabled="rowData.$leaf" ng-style="{\'visibility\': rowData.$leaf ? \'hidden\' : \'visible\'}">' +
+								'<span ng-show="rowData.$expanded" class="pi pi-tree-collapse"></span>' +
+								'<span ng-show="!rowData.$expanded" class="pi pi-tree-expand"></span>' +
+							'</button>' +
+						'</span>';
+					colDef.contents = treeContents + colDef.contents;
+				}
+
 				if (bCol.attr('style')) {
 					colDef.cellStyle = bCol.attr('style');
 				}
@@ -541,31 +543,43 @@
 				}
 
 				colDef.filterMarkup = '';
-				var filterTemplate = hCol.find('> [sda-filter-template]');
-				if (filterTemplate && filterTemplate.length > 0) {
-					filterTemplate.remove();
-					colDef.filterable = true;
-				
-					var url = filterTemplate.attr('sda-filter-template');
-					if (url != undefined && url != null && url != '') {
-						colDef.filterMarkup = '<div ng-include="\'' + url + '\'"></div>';
-					} else {
-						colDef.filterMarkup = filterTemplate.html();
+				if(colDef.filterable == undefined || colDef.filterable) {
+					var filterTemplate = hCol.find('> [sda-filter-template]');
+					if (filterTemplate && filterTemplate.length > 0) {
+						filterTemplate.remove();
+						colDef.filterable = true;
+					
+						var url = filterTemplate.attr('sda-filter-template');
+						if (url != undefined && url != null && url != '') {
+							colDef.filterMarkup = '<div ng-include="\'' + url + '\'"></div>';
+						} else {
+							colDef.filterMarkup = filterTemplate.html();
+						}
 					}
 				}
 
 				if (colDef.filterMarkup == '') {
-					switch (bCol.attr('sda-data-type')) {
+					switch (colDef.dataType) {
+						case 'string':
+							colDef.filterMarkup = '<div sd-text-search-table-filter></div>';
+							break;
 						case 'int': 
 						case 'integer':
-							colDef.filterMarkup = '<div sd-number-filter></div>';
+							colDef.filterMarkup = '<div sd-number-table-filter></div>';
 							break;
-						case 'date': 
+						case 'date':
 						case 'dateTime':
 						case 'time':
-							colDef.filterMarkup = '<div sd-date-filter></div>';
+							colDef.filterMarkup = '<div sd-date-table-filter></div>';
+							break;
+						case 'boolean':
+							colDef.filterMarkup = '<div sd-boolean-table-filter></div>';
 							break;
 					}
+				}
+
+				if (hCol.attr('sda-sort-handler')) {
+					colDef.sorter = parseFunction(hCol.attr('sda-sort-handler'), 'sda-sort-handler');
 				}
 
 				columns.push(colDef);
@@ -588,6 +602,24 @@
 		/*
 		 * 
 		 */
+		function parseFunction(funcAsStr, attribute) {
+			var retInfo = {};
+			retInfo.attribute = attribute;
+			retInfo.handler = $parse(funcAsStr);
+			
+			var funcInfo = sdUtilService.parseFunction(funcAsStr);
+			if (funcInfo && funcInfo.params && funcInfo.params.length > 0) {
+				retInfo.param = funcInfo.params[0];
+			} else {
+				trace.error(attribute + ' is not correcly used, it does not appear to be a function accepting parameter.');
+			}
+
+			return retInfo;
+		}
+		
+		/*
+		 * 
+		 */
 		function getVisibleColumnsByDisplayOrder() {
 			var visibleCols = [];
 			angular.forEach(columnsByDisplayOrder, function(col, i) {
@@ -605,7 +637,7 @@
 			var contents = 'rowData.' + colDef.field;
 
 			if (colDef.dataType === 'int') {
-				contents = 'rowData.' + colDef.field + ' | number';
+				contents = 'rowData.' + colDef.field;
 			} else if (colDef.dataType === 'dateTime') {
 				contents = 'rowData.' + colDef.field + ' | sdDateTimeFilter';
 			} else if (colDef.dataType === 'date') {
@@ -620,8 +652,28 @@
 		/*
 		 * 
 		 */
+		function getCellAlignmentClass(colDef) {
+			var clazz = 'tbl-col-align-left';
+
+			if (colDef.dataType && colDef.dataType != '') {
+				var dataType = colDef.dataType.toLowerCase();
+				if (dataType === 'int') {
+					clazz = 'tbl-col-align-center tbl-col-no-wrap';
+				} else if (dataType === 'datetime' || dataType === 'date' || dataType === 'time') {
+					clazz = 'tbl-col-align-center tbl-col-no-wrap';
+				} else if (dataType === 'boolean') {
+					clazz = 'tbl-col-align-center';
+				}
+			}
+			
+			return clazz;
+		}
+
+		/*
+		 * 
+		 */
 		function buildDataTableInformation() {
-			trace.log(theTableId + ': Building table information...');
+			trace.log('Building table information...');
 
 			angular.forEach(columns, function(col, i) {
 				dtColumns.push({
@@ -643,7 +695,7 @@
 					}
 
 					if (ret == undefined || ret == null) {
-						ret = "";
+						ret = '';
 					}
 
 					return ret;
@@ -655,7 +707,7 @@
 		 * 
 		 */
 		function createDataTable() {
-			trace.log(theTableId + ': Creating table...');
+			trace.log('Creating table...');
 
 			// Toolbar
 			theToolbar = element.prev();
@@ -672,7 +724,7 @@
 
 			// Compile the default toolbar, which was inserted
 			var defaultToolbar = theToolbar.children().first();
-			$compile(defaultToolbar)(defaultToolbar.scope());
+			compileMarkup(defaultToolbar, defaultToolbar.scope(), 'Toolbar');
 
 			// Create space for column filters
 			columnFilters = {};
@@ -696,10 +748,10 @@
 					filterMarkup =
 						'<span flt-anchor="' + col.name + '"></span>' +
 						'<button class="button-link tbl-col-flt" ng-show="!' + filterSet + '" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
-							'<i class="glyphicon glyphicon-filter"></i>\n' +
+							'<i class="pi pi-filter"></i>\n' +
 						'</button>\n' +
 						'<button class="button-link tbl-col-flt-set" ng-show="' + filterSet + '" ng-click="' + stopEvent + resetFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter-tooltip\')}}">\n' +
-							'<i class="glyphicon glyphicon-filter"></i>\n' +
+							'<i class="pi pi-filter"></i>\n' +
 						'</button>\n' +
 						'<button class="button-link" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
 							'<span class="tbl-col-flt-title" ng-if="!' + filterSet + '">{{i18n("portal-common-messages.common-filterPopup-filterNotSet")}}</span>' + 
@@ -711,7 +763,9 @@
 							'<div class="popup-dlg-hdr">\n' +
 								'<span class="popup-dlg-hdr-txt">' +
 									'{{i18n("portal-common-messages.common-filterPopup-dataFilterByLabel")}} ' + col.title + '</span>\n' + 
-								'<span class="popup-dlg-cls glyphicon glyphicon-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '"></span>\n' +
+								'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '">\n' +
+									'<i class="pi pi-close pi-lg" />\n' +
+								'</button>\n' +
 							'</div>\n' +
 							'<div class="popup-dlg-cnt tbl-col-flt-dlg-cnt">\n' +
 								'<div ng-if="' + filterVisible + '">\n' + 
@@ -728,20 +782,23 @@
 				var columnHeader = 
 					'<div>\n' + 
 						'<div class="tbl-col-flt-wrapper">' + filterMarkup + '</div>\n' +
-						'<div class="tbl-hdr-col-label">' + col.title + '</div>\n' +
+						'<div>\n' + 
+							'<span class="tbl-hdr-col-label">' + col.title + '</span>' + 
+							'<span class="pi pi-tbl-sort pi-lg" />' +
+						'</div>\n' +
 					'</div>';
 
 				var hCol = angular.element(headCols[i]);
 				hCol.prepend(columnHeader);
 
 				var header = hCol.children().first();
-				$compile(header)(header.scope());
+				compileMarkup(header, header.scope(), 'Header for ' + col.name);
 
 				if (filterDialogMarkup.length > 0) {
 					// Setup Filter Dialog Element
 					var filterDialog = angular.element(filterDialogMarkup);
 					var filterScope = elemScope.$new();
-					$compile(filterDialog)(filterScope);
+					compileMarkup(filterDialog, filterScope, 'Filter for ' + col.name);
 					theFilters.append(filterDialog);
 
 					// Setup Filter Data
@@ -784,15 +841,16 @@
 			var dtOptions = {};
 
 			dtOptions.sDom = 'irtp';
-			dtOptions.sPaginationType = "full_numbers";
+			dtOptions.sPaginationType = 'full_numbers';
 			dtOptions.iDisplayLength = pageSize;
 			dtOptions.oLanguage = {
-				 "oPaginate": {
-					 "sFirst": "<<",
-					 "sPrevious": "<",
-					 "sNext": ">",
-					 "sLast": ">>"
-				 }
+					oPaginate: {
+						sFirst: '<i class="pi pi-fast-rewind dataTables_paginate_icon"></i>',
+						sPrevious: '<i class="pi pi-prev-page dataTables_paginate_icon"></i>',
+						sNext: '<i class="pi pi-next-page dataTables_paginate_icon"></i>',
+						sLast: '<i class="pi pi-fast-forward dataTables_paginate_icon"></i>'
+					},
+ 					sEmptyTable: sgI18nService.translate('portal-common-messages.common-genericDataTable-noRecordsFoundLabel')
 			};
 			
 			dtOptions.aoColumns = dtColumns;
@@ -800,7 +858,7 @@
 
 			dtOptions.bProcessing = false;
 
-			// TODO: Datatables does not support single column sorting yet. What it has is only multi column sort
+			dtOptions.bSingleColumnSort = true;
 			dtOptions.bSort = sortingMode != undefined;
 			if (dtOptions.bSort) {
 				var dtOrder = [];
@@ -835,7 +893,7 @@
 			dtOptions.fnCreatedRow = createRowHandler;
 
 			dtOptions.bServerSide = true;
-			dtOptions.sAjaxSource = "dummy.html";
+			dtOptions.sAjaxSource = 'dummy.html';
 			dtOptions.fnServerData = tableInLocalMode ? ajaxHandlerLocalMode : ajaxHandler;
 
 			if (tableInLocalMode) {
@@ -844,14 +902,27 @@
 				}
 			}
 
-			trace.log(theTableId + ': Building table for ' + 
-				(tableInLocalMode ? 'local' : 'remote') + ' mode... with options: ', dtOptions);
+			trace.log('Building table for ' + (tableInLocalMode ? 'local' : 'remote') + ' mode... with options: ', dtOptions);
 
 			try {
 				theDataTable = theTable.DataTable(dtOptions);
+
+				// Table will be refreshed again after initialization is complete, so hide some information
+
+				// Replace no Records Found row with loading indicator
+				theTable.find('> tbody > tr').html('<span class="pi pi-lg pi-spin pi-spinner"></span>');
+
+				// Hide Pagination Info
+				var dataTablesInfo = angular.element(theTable.parent()).find('.dataTables_info');
+				showElement(dataTablesInfo, false);
+
+				// Show table and toolbar, this was hidden while processing raw markup in processRawMarkup()
+				showElement(theTable, true);
+				showElement(theToolbar, true);
+
 				buildDataTableCompleted();
 			} catch (e) {
-				trace.error(theTableId + ': Error occurred while using Datatables library', e);
+				trace.error('Error occurred while using Datatables library', e);
 				showErrorOnUI(e);
 			}
 		}
@@ -866,14 +937,26 @@
 			}
 
 			var ret = {
-				"sEcho" : dataMap['sEcho']
+				sEcho : dataMap['sEcho']
 			};
+
+			if (firstInitiaizingDraw) {
+				// Return empty data, table will be refreshed during initialization for Column Reordering.
+				// At that time return actual data, this way it avoids duplicate requests to load 1st page.
+
+				ret.iTotalRecords = 0;
+				ret.iTotalDisplayRecords = 0;
+				ret.aaData = [];
+
+				callback(ret);
+
+				return;
+			}
 
 			var params = {skip : dataMap['iDisplayStart'], pageSize : dataMap['iDisplayLength']};
 
-			// TODO: Sorting, Filtering
-			
 			if(localModeRefreshInitiated) {
+				localModeMasterData = undefined;
 				localModeData = undefined;
 				localModeRefreshInitiated = false;
 			}
@@ -884,10 +967,22 @@
 						localModeData = result.list ? result.list : result;
 
 						validateData(localModeData);
-		
+
+						if (treeTable) {
+							treeData = localModeData;
+							treeTableData = sdUtilService.marshalDataForTree(localModeData);
+							localModeData = sdUtilService.rebuildTreeTable(treeTableData, function(rowData) {
+								return isRowVisibleForLocalMode(rowData);
+							});
+						} else {
+							localModeSortingCols = getSortingInfo();
+							localModeMasterData = localModeData;
+							localModeData = applyFilteringAndSortingForLocalMode(localModeMasterData);
+						}
+
 						ret.iTotalRecords = localModeData.length;
 						ret.iTotalDisplayRecords = localModeData.length;
-						
+
 						if (disablePagination) {
 							ret.aaData = localModeData;
 						} else {
@@ -899,9 +994,21 @@
 						showErrorOnUI(e);
 					}
 				}, function(error) {
-					alert('Error while fetching data'); // TODO
+					trace.error('Error while fetching data', error);
+					showErrorOnUI(error);
 				});
 			} else {
+				if (treeTable) {
+					localModeData = sdUtilService.rebuildTreeTable(treeTableData, function(rowData) {
+						return isRowVisibleForLocalMode(rowData);
+					});
+				} else {
+					if (localModeRebuildData) {
+						localModeRebuildData = false;
+						localModeData = applyFilteringAndSortingForLocalMode(localModeMasterData);
+					}
+				}
+
 				ret.iTotalRecords = localModeData.length;
 				ret.iTotalDisplayRecords = localModeData.length;
 
@@ -913,7 +1020,7 @@
 
 				callback(ret);
 			}
-
+			
 			/*
 			 * 
 			 */
@@ -938,6 +1045,154 @@
 		/*
 		 * 
 		 */
+		function applyFilteringAndSortingForLocalMode(master) {
+			var data = [];
+
+			// Filtering
+			for(var i = 0; i < master.length; i++) {
+				if (isRowVisibleForLocalMode(master[i])) {
+					data.push(master[i]);
+				}
+			}
+
+			// Sorting
+			for (var i = 0; i < localModeSortingCols.length; i++) {
+				var sortBy = localModeSortingCols[i];
+				var colDef = columnsInfoByDisplayOrder[sortBy.name].column;
+
+				data.sort(function(row1, row2) {
+					var params = {
+						sortBy: sortBy,
+						row1: row1,
+						row2: row2
+					};
+
+					if (colDef.sorter && colDef.sorter.handler) {
+						return invokeScopeFunction(colDef.sorter, params);
+					}
+					else {
+						return builtInComparatorForLocalMode(params);
+					}
+				});
+			}
+
+			return data;
+		}
+
+		/*
+		 * 
+		 */
+		function isRowVisibleForLocalMode(rowData) {
+			var visible = true;
+			if (localModeGlobalFilter.handler) {
+				visible = invokeScopeFunction(localModeGlobalFilter, rowData);
+			}
+
+			if (visible) {
+				for (var colName in columnFilters) {
+					var filterScope = columnFilters[colName].filter.scope();
+					if (filterScope.$$filterData != undefined && !jQuery.isEmptyObject(filterScope.$$filterData)) {
+						try {
+							if (!filterScope.handlers.filterCheck) {
+								trace.error('Filter does not declare method called filterCheck() for column: ' + colName);
+								continue;
+							}
+
+							filterScope.filterData = angular.copy(filterScope.$$filterData);
+							visible = filterScope.handlers.filterCheck(rowData, sdUtilService.resolveProperty(rowData, filterScope.colData.field));
+							if (!visible) {
+								break;
+							}
+						} catch(e) {
+							trace.error('Error occurred filtering', e);
+						} finally {
+							delete filterScope.filterData;
+						}
+					}
+				}
+			}
+
+			return visible;
+		}
+
+		/*
+		 * 
+		 */
+		function builtInComparatorForLocalMode(params) {
+			var ret = 0;
+
+			try {
+				var value1 = params.row1[params.sortBy.field];
+				var value2 = params.row2[params.sortBy.field];
+
+				if (value1 != undefined && value1 != null && value2 != undefined && value2 != null) {
+					switch (params.sortBy.dataType) {
+						case 'string':
+							value1 = value1.toLowerCase();
+							value2 = value2.toLowerCase();
+							if (params.sortBy.dir == 'asc') {
+								ret = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1));
+							} else {
+								ret = (value2 == value1 ? 0 : (value2 > value1 ? 1 : -1));
+							}
+							break;
+						case 'int': 
+						case 'integer':
+							if (params.sortBy.dir == 'asc') {
+								ret = value1 - value2;
+							} else {
+								ret = value2 - value1;
+							}
+							break;
+						case 'date': 
+						case 'dateTime':
+						case 'time':
+							if (value1.getTime) {
+								value1 = value1.getTime();
+							}
+							if (value2.getTime) {
+								value2 = value2.getTime();
+							}
+
+							if (params.sortBy.dir == 'asc') {
+								ret = value1 - value2;
+							} else {
+								ret = value2 - value1;
+							}
+							break;
+						case 'boolean':
+							value1 = value1 == true ? 1 : 2;
+							value2 = value2 == true ? 1 : 2;
+							if (params.sortBy.dir == 'asc') {
+								ret = value1 - value2;
+							} else {
+								ret = value2 - value1;
+							}
+							break;
+						default:
+							trace.error('Built-in sorting not supported for data type: ' + 
+									params.sortBy.dataType + ', column: ' + params.sortBy.name);
+					}
+				} else {
+					// Either value is null or both null
+					if ((value1 == undefined || value1 == null) && (value2 == undefined || value2 == null)) {
+						ret = 0;
+					} else if (value1 != undefined && value1 != null) {
+						ret = params.sortBy.dir == 'asc' ? -1 : 1;
+					} else if (value2 != undefined && value2 != null) {
+						ret = params.sortBy.dir == 'asc' ? 1 : -1;
+					}
+				}
+			} catch (e) {
+				trace.error('Error while using built in sort for Local Mode:', params, e);
+			}
+
+			return ret;
+		}
+
+		/*
+		 * 
+		 */
 		function ajaxHandler(source, data, callback, settings) {
 			var dataMap = {};
 			for (var i = 0; i < data.length; i++) {
@@ -945,8 +1200,21 @@
 			}
 
 			var ret = {
-				"sEcho" : dataMap['sEcho']
+				sEcho : dataMap['sEcho']
 			};
+			
+			if (firstInitiaizingDraw) {
+				// Return empty data, table will be refreshed during initialization for Column Reordering.
+				// At that time return actual data, this way it avoids duplicate requests to load 1st page.
+
+				ret.iTotalRecords = 0;
+				ret.iTotalDisplayRecords = 0;
+				ret.aaData = [];
+
+				callback(ret);
+
+				return;
+			}
 
 			var params = {skip : dataMap['iDisplayStart'], pageSize : dataMap['iDisplayLength']};
 
@@ -1023,9 +1291,11 @@
 
 			if (enableColumnSelector) {
 				try {
-					theColReorder = new jQuery.fn.dataTable.ColReorder(theDataTable, {bNoDragDrop: true});
+					// Sometimes it's observed that jQuery.fn.dataTable is undefined, so added the check and fallback
+					var jQueryDataTableFunc = jQuery.fn.dataTable || theTable.DataTable;
+					theColReorder = new jQueryDataTableFunc.ColReorder(theDataTable, {bNoDragDrop: true});
 				} catch (e) {
-					trace.error(theTableId + ': Error occurred while enabling ColReorder, so disabling column selector', e);
+					trace.error('Error occurred while enabling ColReorder, so disabling column selector', e);
 					enableColumnSelector = false;
 				}
 			}
@@ -1044,53 +1314,73 @@
 		 * 
 		 */
 		function firePaginationEvent() {
-			// Invoke the event handler when processing is complete and data is displayed
-			$timeout(function() {
-				var settings = theDataTable.fnSettings();
-				var paginationInfo = {
-					currentPage: (settings._iDisplayStart / settings._iDisplayLength) + 1,
-					totalPages: Math.ceil(settings._iRecordsTotal / settings._iDisplayLength)
-				};
-				
-				fireDataTableEvent(onPagination, paginationInfo, 'onPagination');
-			}, 0, true);
+			if (onPagination.handler) {
+				// Invoke the event handler when processing is complete and data is displayed
+				$timeout(function() {
+					var settings = theDataTable.fnSettings();
+					var paginationInfo = {
+						currentPage: (settings._iDisplayStart / settings._iDisplayLength) + 1,
+						totalPages: Math.ceil(settings._iRecordsTotal / settings._iDisplayLength)
+					};
+					
+					invokeScopeFunction(onPagination, paginationInfo);
+				}, 0, true);
+			}
 		}
 
 		/*
 		 * 
 		 */
 		function processSortEvent() {
+			if (tableInLocalMode) {
+				localModeRebuildData = true;
+				localModeSortingCols = getSortingInfo();
+			}
+
 			// Invoke the event handler when processing is complete and data is displayed
-			$timeout(function() {
-				var sortingInfo = [];
-
-				var order = theDataTable.fnSettings().aaSorting;
-				for (var i in order) {
-					var columnInfo = columnsByDisplayOrder[order[i][0]];
-					if (columnInfo) {
-						sortingInfo.push({
-							name : columnInfo.name,
-							dir : order[i][1] == 'asc' ? 'asc' : 'desc'
-						});
+			if (onSorting.handler) {
+				$timeout(function() {
+					var sortingInfo = getSortingInfo();
+	
+					if (sortingMode == 'single' && sortingInfo.length > 0) {
+						sortingInfo = sortingInfo[sortingInfo.length - 1];
 					}
-				}
-
-				if (sortingMode == 'single' && sortingInfo.length > 0) {
-					sortingInfo = sortingInfo[sortingInfo.length - 1];
-				}
-				
-				if (sortByGetter && sortByGetter.assign) {
-					sortByGetter.assign(elemScope, sortingInfo);
-				}
-
-				fireDataTableEvent(onSorting, sortingInfo, 'onSorting');
-			}, 0, true);
+					
+					if (sortByGetter && sortByGetter.assign) {
+						sortByGetter.assign(elemScope, sortingInfo);
+					}
+	
+					invokeScopeFunction(onSorting, sortingInfo);
+				}, 0, true);
+			}
 		}
 
 		/*
 		 * 
 		 */
-		function fireDataTableEvent(handleInfo, data, eventType, invokeAfterDigest) {
+		function getSortingInfo() {
+			var sortingInfo = [];
+
+			var order = theDataTable.fnSettings().aaSorting;
+			for (var i in order) {
+				var columnInfo = columnsByDisplayOrder[order[i][0]];
+				if (columnInfo) {
+					sortingInfo.push({
+						name : columnInfo.name,
+						field: columnInfo.field,
+						dataType: columnInfo.dataType,
+						dir : order[i][1] == 'asc' ? 'asc' : 'desc'
+					});
+				}
+			}
+
+			return sortingInfo;
+		}
+
+		/*
+		 * 
+		 */
+		function invokeScopeFunction(handleInfo, data, invokeAfterDigest) {
 			if (handleInfo.handler) {
 				try {
 					var transObj = {};
@@ -1098,7 +1388,7 @@
 						transObj[handleInfo.param] = data;
 					} else {
 						transObj.info = data;
-						trace.warn(theTableId + ': ' + eventType + ' event handler is not properly configured, may not receive event info.');
+						trace.warn(handleInfo.attribute + ' is not properly implemented, may not receive params');
 					}
 
 					if (!invokeAfterDigest) {
@@ -1109,7 +1399,7 @@
 						}, 0, true);
 					}
 				} catch(e) {
-					trace.error(theTableId + ': Error while firing ' + eventType + ' event on data table', e);
+					trace.error('Error while invoking function for ' + handleInfo.attribute, e);
 				}
 			}
 		}
@@ -1118,16 +1408,16 @@
 		 * 
 		 */
 		function fetchData(params) {
-			trace.log(theTableId + ': Calling sd-data with params:', params);
+			trace.log('Calling sd-data with params:', params);
 
 			var deferred = $q.defer();
 
 			var dataResult = sdData.retrieveData(params);
 			dataResult.then(function(result) {
-				trace.log(theTableId + ': sd-data returned with:', result);
+				trace.log('sd-data returned successfully');
 				deferred.resolve(result);
 			}, function(error) {
-				trace.log(theTableId + ': sd-data failed with:', error);
+				trace.log('sd-data failed with:', error);
 				deferred.reject(error);
 		    });
 
@@ -1138,18 +1428,23 @@
 		 * 
 		 */
 		function validateData(result, maxPageSize) {
-			if (tableInLocalMode) {
-				sdUtilService.assert(result && angular.isArray(result),
-					'sd-data did not return acceptable result: Missing "list" or its not an array');
-			} else {
-				sdUtilService.assert(jQuery.isPlainObject(result),
-					'sd-data did not return acceptable result: Return is not a plain object');
-				sdUtilService.assert(result.totalCount != undefined,
-					'sd-data did not return acceptable result: Missing "totalCount"');
-				sdUtilService.assert(result.list && angular.isArray(result.list),
-					'sd-data did not return acceptable result: Missing "list" or its not an array');
-				sdUtilService.assert(result.list.length <= maxPageSize,
-					'sd-data did not return acceptable result: Returned more records than expected (' + maxPageSize + ')');
+			try {
+				if (tableInLocalMode) {
+					sdUtilService.assert(result && angular.isArray(result),
+						'sd-data did not return acceptable result: Missing "list" or its not an array');
+				} else {
+					sdUtilService.assert(jQuery.isPlainObject(result),
+						'sd-data did not return acceptable result: Return is not a plain object');
+					sdUtilService.assert(result.totalCount != undefined,
+						'sd-data did not return acceptable result: Missing "totalCount"');
+					sdUtilService.assert(result.list && angular.isArray(result.list),
+						'sd-data did not return acceptable result: Missing "list" or its not an array');
+					sdUtilService.assert(result.list.length <= maxPageSize,
+						'sd-data did not return acceptable result: Returned more records than expected (' + maxPageSize + ')');
+				}
+			} catch (e) {
+				trace.error('sd-data returned with incorrect data:', result);
+				throw e;
 			}
 		}
 
@@ -1159,6 +1454,10 @@
 		function createRowHandler(row, data, dataIndex) {
 			row = angular.element(row);
 			row.addClass(CLASSES.BODY_TR);
+
+			// Hide row so that uncompiled markup is not visible 
+			row.addClass('ng-hide');
+			row.attr('ng-show', 'true');
 
 			var cells = row.find('> td');
 			cells.addClass(CLASSES.TD);
@@ -1172,13 +1471,12 @@
 				}
 
 				cell = angular.element(cell);
-				if (visibleOrderedCols[i].cellClass && visibleOrderedCols[i].cellClass != '') {
-					var value = cell.attr('class');
-					value = value ? (value.trim() + ' ') : '';
-					value += visibleOrderedCols[i].cellClass;
-					cell.attr('class', value);
-				}
 
+				// Class Attribute
+				addClass(cell, getCellAlignmentClass(visibleOrderedCols[i]));
+				addClass(cell, visibleOrderedCols[i].cellClass);
+
+				// Style Attribute
 				if (visibleOrderedCols[i].cellStyle && visibleOrderedCols[i].cellStyle != '') {
 					var value = cell.attr('style');
 					value = value ? (value.trim()) : '';
@@ -1190,19 +1488,19 @@
 				}
 			});
 
-			var rowScope = row.scope();
-			if (rowScope == undefined) {
-				rowScope = createRowScope();
-			}
+			row.attr('sd-data-table-row', dataIndex); // Another directive, which will handle setting of rowData
+		}
 
-			rowScope.rowData = data;
-			rowScope.$index = dataIndex;
-			rowScope.$first = (dataIndex === 0);
-			//rowScope.$last = (dataIndex === (value.length - 1));
-			//rowScope.$middle = !(rowScope.$first || rowScope.$last);
-			rowScope.$odd = !(rowScope.$even = (dataIndex & 1) === 0);
-			
-			$compile(row)(rowScope);
+		/*
+		 * 
+		 */
+		function addClass(elem, clazz) {
+			if (clazz && clazz != '') {
+				var value = elem.attr('class');
+				value = value ? (value.trim() + ' ') : '';
+				value += clazz;
+				elem.attr('class', value);
+			}
 		}
 
 		/*
@@ -1220,44 +1518,52 @@
 			// Handle empty table case
 			var count = getPageDataCount();
 			if (count == 0) {
-				trace.log(theTableId + ': Handling empty table case...');
+				trace.log('Handling empty table case...');
 
 				var rows = theTable.find('> tbody > tr');
 				var row = angular.element(rows[0]); // There will be only one row 
-				var rowScope = createRowScope();
-				$compile(row)(rowScope);
+				var rowScope = myScope.$new();
+				compileMarkup(row, rowScope, 'Empty row');
+			} else {
+				var body = angular.element(theTable.find('> tbody'));
+				var bodyScope = body.scope();
+				bodyScope.$$pageData = getPageData(); // Used by sd-data-table-row
+				compileMarkup(body, bodyScope, 'Table body');
 			}
 
-			if(!initialized) {
-				// Show the element, as it's ready to be visible
-				showElement(element, true);
-				if (theToolbar) {
-					showElement(theToolbar, true);
-				}
-
+			if(firstInitiaizingDraw) {
+				firstInitiaizingDraw = false;
 				enableRowSelection();
 
 				$timeout(function() {
-					reorderColumns(null, null, false);
-					doInitialSelection();
-					
+					reorderColumns(null, null); // This will cause another draw, at that time further initialization is to be done
 					exposeScopeInfo();
 				}, 0, false);
-
-				initialized = true;
 			} else {
-				clearState();
-				showElement(theTable, true);
-			}
+				if (!initialized) {
+					// First Draw is done, this one is second caused by Column Reorder - Complete initialization
+					doInitialSelection();
+					initialized = true;
 
-			sdUtilService.safeApply(elemScope);
+					// Show Pagination Info
+					var dataTablesInfo = angular.element(theTable.parent()).find('.dataTables_info');
+					showElement(dataTablesInfo, true);
+
+					logCompilationTime();
+				} else {
+					clearState(); // Subsequent draws will pass from here
+					logCompilationTime();
+				}
+
+				sdUtilService.safeApply(elemScope);
+			}
 		}
 
 		/*
 		 * 
 		 */
 		function refresh(retainPageIndex) {
-			trace.log(theTableId + ': Refreshing table with retainPageIndex = ' + retainPageIndex);
+			trace.log('Refreshing table with retainPageIndex = ' , retainPageIndex);
 
 			if (tableInLocalMode) {
 				localModeRefreshInitiated = true;
@@ -1266,26 +1572,28 @@
 		}
 
 		/*
+		 * rebuild = Not valid for Tree Table
+		 */
+		function refreshUi(rebuild) {
+			trace.log('Refreshing table Ui');
+
+			localModeRebuildData = rebuild;
+
+			theDataTable.fnDraw(true);
+		}		
+
+		/*
 		 * 
 		 */
 		function getPreferenceDelegate(pScope) {
 			var preferenceDelegate = {};
 
 			if (attr.sdaPreferenceDelegate) {
-				var funcInfo = sdUtilService.parseFunction(attr.sdaPreferenceDelegate);
-				if (funcInfo && funcInfo.params && funcInfo.params.length > 0) {
-					var preferenceDelagate = {
-						handler : $parse(attr.sdaPreferenceDelegate),
-						param : funcInfo.params[0]
-					}
-					var data = {
-						scope : pScope
-					}
-
-					preferenceDelegate.store = fireDataTableEvent(preferenceDelagate, data, 'PreferenceDelegate');					
-				} else {
-					sdUtilService.assert(false, 'sda-preference-delegate does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+				var preferenceDelagate = parseFunction(attr.sdaPreferenceDelegate, 'sda-preference-delegate');
+				var data = {
+					scope : pScope
 				}
+				preferenceDelegate.store = invokeScopeFunction(preferenceDelagate, data);					
 			} else if(attr.sdaPreferenceModule && attr.sdaPreferenceModule != '' && 
 					attr.sdaPreferenceId && attr.sdaPreferenceId != '' &&
 					attr.sdaPreferenceName && attr.sdaPreferenceName != '') {
@@ -1308,7 +1616,7 @@
 				if (pScope == 'USER' && !columnSelectorAdmin) {
 					var parentPrefValue = preferenceDelegate.store.getValue(preferenceDelegate.name, true);
 					parentPrefValue = marshalPreferenceValue(parentPrefValue);
-					if (parentPrefValue && parentPrefValue.lock) {
+					if (parentPrefValue && sdUtilService.toBoolean(parentPrefValue.lock)) {
 						prefValue = parentPrefValue;
 					}
 				}
@@ -1368,7 +1676,7 @@
 		/*
 		 * 
 		 */
-		function reorderColumns(pScope, preview, skipVisibility) {
+		function reorderColumns(pScope, preview) {
 			if (!enableColumnSelector) {
 				// Draw is required here for angular markup work properly!
 				// If this is not done then colData is not available for render templates on first pass (1st page)
@@ -1501,9 +1809,6 @@
 					}
 				});
 
-				if (!skipVisibility) {
-					showElement(theTable, false);
-				}
 				theDataTable.fnDraw(false);
 
 				// Fire Event
@@ -1520,22 +1825,32 @@
 				current : newOrder
 			};
 			
-			fireDataTableEvent(onColumnReorder, columnReorderInfo, 'onColumnReorder', true);
+			invokeScopeFunction(onColumnReorder, columnReorderInfo, true);
 		}
 
 		/*
 		 * 
 		 */
 		function clearState() {
-			unselectRows();
-			processSelectionBinding();
+			if (getRowSelectionCount() > 0) {
+				unselectRows();
+				processSelectionBinding();
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function logCompilationTime() {
+			trace.log('Angular Compilation Total Time: ' , compileTime);
+			compileTime = 0;
 		}
 
 		/*
 		 * 
 		 */
 		function getPageData(index) {
-			var tableData = theDataTable.fnGetData();
+			var tableData = treeTable ? localModeData : theDataTable.fnGetData();
 
 			if (index == undefined || index == null) {
 				var start = 0;
@@ -1663,6 +1978,21 @@
 		/*
 		 * 
 		 */
+		function getRowSelectionCount() {
+			var selection = [];
+
+			if (rowSelectionMode) {
+				angular.forEach(selectedRowIndexes, function(value, key) {
+					selection.push(value);
+				});
+			}
+
+			return selection.length;
+		}
+
+		/*
+		 * 
+		 */
 		function findRowByData(rowData) {
 			var count = getPageDataCount();
 			if (count > 0) {
@@ -1728,7 +2058,7 @@
 
 			selectionInfo.all = getRowSelection();
 
-			fireDataTableEvent(onSelect, selectionInfo, 'onSelect');
+			invokeScopeFunction(onSelect, selectionInfo);
 		}
 
 		/*
@@ -1775,13 +2105,13 @@
 		 * 
 		 */
 		function exposeAPIs() {
-			if (attr.sdDataTable != undefined && attr.sdDataTable != "") {
+			if (attr.sdDataTable != undefined && attr.sdDataTable != '') {
 				var dataTableAssignable = $parse(attr.sdDataTable).assign;
 				if (dataTableAssignable) {
-					trace.info(theTableId + ': Exposing API for: ' + attr.sdDataTable + ', on scope Id: ' + elemScope.$id + ', Scope:', elemScope);
+					trace.info('Exposing API for: ' + attr.sdDataTable + ', on scope Id: ' + elemScope.$id + ', Scope:', elemScope);
 					dataTableAssignable(elemScope, new DataTable());
 				} else {
-					trace.error(theTableId + ': Could not expose API for: ' + attr.sdDataTable + ', expression is not an assignable.');
+					trace.error('Could not expose API for: ' + attr.sdDataTable + ', expression is not an assignable.');
 				}
 			}
 		}
@@ -1797,18 +2127,6 @@
 		/*
 		 * 
 		 */
-		function createRowScope() {
-			var rowScope = myScope.$new();
-			rowScope.$on('$destroy', function() {
-				//	trace.log(theTableId + ': Row Scope ' + rowScope.$id + ' destroyed for parent ' + rowScope.$parent.$id);
-			});
-
-			return rowScope;
-		}
-
-		/*
-		 * 
-		 */
 		function destroyRowScopes() {
 			try {
 				var rows = theTable.find('> tbody > tr');
@@ -1817,7 +2135,7 @@
 					row.scope().$destroy();
 				}
 			} catch (e) {
-				trace.error(theTableId + ': Error while destroying rows scopes', e);
+				trace.error('Error while destroying rows scopes', e);
 			}
 		}
 
@@ -1843,11 +2161,9 @@
 					}
 	
 					var exportConents = exportData.join('\n');
-					
+					var downloadMetaData = 'application/octet-stream;charset=utf-8';
 					// Download File
-					var downloadMetaData = 'data:application/csv;charset=utf-8,';
-					var downloadUrl = downloadMetaData + encodeURIComponent(exportConents);
-					downloadDataAsFile(exportConfig.fileName + '.csv', downloadUrl);
+					sdUtilService.downloadAsFile(exportConents, exportConfig.fileName+ '.csv', downloadMetaData);
 				}
 
 				var message = {};
@@ -1857,7 +2173,7 @@
 						message.val = 'No data to export.';
 					}
 				} else {
-					trace.error(theTableId + ': Error occurred while exporting data.', result.error);
+					trace.error('Error occurred while exporting data.', result.error);
 					if (exportedRows.length > 1) {
 						message.key = 'export-error-incomplete-data';
 						message.val = 'Error occurred, however exported the data fetched till now.'; 
@@ -1868,7 +2184,10 @@
 				}
 
 				if (message.key != undefined) {
-					alert(sgI18nService.translate('html5-common.' + message.key, message.val));
+					var options = {
+							title : sgI18nService.translate('portal-common-messages.common-info')
+							};
+					sdDialogService.alert(scope, sgI18nService.translate('html5-common.' + message.key, message.val), options);
 				}
 			}, function(error) {
 				alert(error);
@@ -1924,7 +2243,7 @@
 					// Validate
 					for (var j = 0; j < expotCols.length; j++) {
 						if (!expotCols[j].exportParser && !expotCols[j].defaultContentsParser) {
-							trace.warn(theTableId + ': Cannot export column ' + expotCols[j].name + ', as sda-exporter is not defined.');
+							trace.warn('Cannot export column ' + expotCols[j].name + ', as sda-exporter is not defined.');
 						}
 					}
 
@@ -1951,7 +2270,15 @@
 							} else if (expotCols[j].defaultContentsParser) {
 								exportVal = expotCols[j].defaultContentsParser(elemScope, locals);
 							}
-							
+
+							if (treeTable && expotCols[j].treeColumn) {
+								var indent = '';
+								for (var level = 0; level < data[i].$$treeInfo.level; level++) {
+									indent += '    ';
+								}
+								exportVal = indent + exportVal;
+							}
+
 							rowExportData.push(encoder(exportVal));
 						}
 						exportedRows.push(rowExportData);
@@ -2006,9 +2333,9 @@
 
 			var data;
 			if (exportAllRows) {
-				data = localModeData;
+				data = treeTable ? treeTableData : localModeData; // Tree Table: All Rows including collapsed rows 
 			} else {
-				data = getPageData();
+				data = treeTable ? localModeData : getPageData(); // Tree Table: As seen on UI
 			}
 
 			deferred.resolve(data);
@@ -2062,7 +2389,7 @@
 		 */
 		function fetchAllInBatches(deferred, params, data) {
 			var batchNo = (params.skip / params.pageSize) + 1;
-			trace.log(theTableId + ': Fetching data for export, batch ' + batchNo);
+			trace.log('Fetching data for export, batch ' , batchNo);
 
 			fetchData(params).then(function(result) {
 				try {
@@ -2087,32 +2414,16 @@
 		/*
 		 * 
 		 */
-		function downloadDataAsFile(fileName, dataUrl) {
-			try {
-				if (exportAnchor.download != undefined) {
-					exportAnchor.download = fileName;
-					exportAnchor.href = dataUrl;
-					exportAnchor.target = '_blank';
-	
-					var mouseEvent = document.createEvent("MouseEvents");
-					mouseEvent.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-					exportAnchor.dispatchEvent(mouseEvent);
-				} else if (navigator.msSaveBlob) {
-					var index = dataUrl.indexOf(',');
-					var contentType = dataUrl.substr(0, index);
-					var data = dataUrl.substr(index + 1);
-					data = decodeURIComponent(data);
-	
-					var blob = new Blob([data], {type : contentType});
-					navigator.msSaveBlob(blob, fileName);
-				} else {
-					trace.error(theTableId + ': Browser does not support download feature');
-				}
-			} catch (e) {
-				trace.error(theTableId + ': Failed to download as file', e);
-			}
-		}
+		function compileMarkup(elem, scope, id) {
+			var start = new Date().getTime();
+			$compile(elem)(scope);
+			var end = new Date().getTime();
 
+			compileTime += (end - start);
+
+			trace.log('Angular Compilation For: ' , id , ', Time: ' + (end - start));
+		}
+		
 		/*
 		 * Public API
 		 */
@@ -2124,7 +2435,9 @@
 			 * 
 			 */
 			this.refresh = function (retainPageIndex) {
-				refresh(retainPageIndex);
+				$timeout(function() {
+					refresh(retainPageIndex);
+				}, 0, false);
 			};
 
 			/*
@@ -2148,6 +2461,41 @@
 			this.getData = function(index) {
 				return getPageData(index);
 			}
+
+			// This API is available only for Tree Table
+			if (treeTable) {
+				/*
+				 * 
+				 */
+				this.refreshUi = function () {
+					$timeout(function() {
+						refreshUi();
+					}, 0, false);
+				};
+
+				/*
+				 * 
+				 */
+				this.expandAll = function () {
+					sdUtilService.expandTreeTable(treeTableData);
+					refreshUi();
+				};
+	
+				/*
+				 * 
+				 */
+				this.collapseAll = function () {
+					sdUtilService.collapseTreeTable(treeTableData);
+					refreshUi();
+				};
+
+				/*
+				 * 
+				 */
+				this.getTreeData = function () {
+					return treeData;
+				};
+			}
 		}
 
 		/*
@@ -2160,13 +2508,13 @@
 
 			function init() {
 				self.columns = [];
-				self.enableSelectColumns = enableColumnSelector && (columnSelectorAdmin || !columnSelectorPreference.lock);
+				self.enableSelectColumns = enableColumnSelector && (columnSelectorAdmin || ! sdUtilService.toBoolean(columnSelectorPreference.lock) );
 				self.columnSelectorAdmin = columnSelectorAdmin;
 				self.showSelectColumns = false;
 				self.applyTo = 'USER';
 				self.enableExportExcel = false; // exportConfig.EXCEL; // TODO: Support Excel download
 				self.enableExportCSV = exportConfig.CSV;
-				self.showExportOptions = false;
+				self.exportPopoverHandle = null;
 
 				self.showColumnFilters = {};
 			}
@@ -2232,7 +2580,7 @@
 			this.toggleColumnSelectorLock = function() {
 				self.lock = !self.lock;				
 			}
-
+			
 			/*
 			 * 
 			 */
@@ -2244,10 +2592,27 @@
 			 * 
 			 */
 			this.resetColumnSelector = function() {
-				setColumnSelectionFromPreference(self.applyTo, null);
-				reorderColumns(self.applyTo);
-				self.toggleColumnSelector();
-			}
+				
+				var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
+		    	var html = '<span>'
+		    		+ sgI18nService.translate('portal-common-messages.common-preferenceScope-resetConfimation',
+		    		'Are you sure you want to reset the Preferences?') + '</span>';
+		    	
+		    	var options = {
+		    			title : title,
+						dialogActionType : 'YES_NO'
+					};
+				
+		    	var defer = sdDialogService.confirm
+							(scope, sgI18nService.translate('portal-common-messages.common-preferenceScope-resetConfimation'), 
+							options);
+		    	
+		    	defer.then(function() {
+		    		setColumnSelectionFromPreference(self.applyTo, null);
+    				reorderColumns(self.applyTo);
+    				self.toggleColumnSelector();
+				});
+			};
 
 			/*
 			 * 
@@ -2298,7 +2663,11 @@
 					}
 				}
 				self.toggleColumnFilter(colName, true);
-				refresh();
+				if (tableInLocalMode) {
+					refreshUi(true);
+				} else {
+					refresh();
+				}
 			}
 
 			/*
@@ -2315,7 +2684,11 @@
 				}
 
 				filterScope.$$filterData = {};
-				refresh();
+				if (tableInLocalMode) {
+					refreshUi(true);
+				} else {
+					refresh();
+				}
 			}
 
 			/*
@@ -2339,20 +2712,9 @@
 			/*
 			 * 
 			 */
-			this.toggleExportOptions = function(forceHide) {
-				if (forceHide) {
-					self.showExportOptions = false;
-				} else {
-					self.showExportOptions = !self.showExportOptions;
-				}
-			}
-
-			/*
-			 * 
-			 */
 			this.exportCSV = function(options) {
+				self.exportPopoverHandle.hide();
 				exportAsCSV(options);
-				self.toggleExportOptions(true);
 			}
 
 			/*
@@ -2377,6 +2739,68 @@
 			/*
 			 * 
 			 */
+			this.toggleTreeNode = function(index) {
+				var rowData = localModeData[index];
+
+				var treeActionInfo = {
+					current : rowData
+				};
+						
+				if (rowData.$expanded) {
+					rowData.$expanded = false;
+
+					treeActionInfo.action = 'collapse';
+					invokeScopeFunction(onTreeNodeAction, treeActionInfo, true);
+					
+					refreshUi();
+				} else {
+					rowData.$expanded = true;
+					if (!rowData.$$treeInfo.loaded) {
+						// Load Children
+						var treeParams = {parent: rowData};
+						fetchData(treeParams).then(function(result) {
+							try {
+								var children = result.list ? result.list : result;
+								validateData(children);
+
+								if (children.length > 0) {
+									rowData.children = children;
+									children = sdUtilService.marshalDataForTree(children, rowData);
+									sdUtilService.insertChildrenIntoTreeTable(treeTableData, rowData, children);
+								} else {
+									rowData.$leaf = true;
+									delete rowData.$expanded;
+								}
+
+								rowData.$$treeInfo.loaded = true;
+							} catch (e) {
+								// TODO: Show Error
+								trace.error('Error', e);
+								rowData.$expanded = false;
+							}
+
+							treeActionInfo.action = 'expand';
+							invokeScopeFunction(onTreeNodeAction, treeActionInfo, true);
+
+							refreshUi();
+						}, function(error) {
+							// TODO: Show Error
+							trace.error('Error', error);
+							rowData.$expanded = false;
+							refreshUi();
+						});
+					} else {
+						treeActionInfo.action = 'expand';
+						invokeScopeFunction(onTreeNodeAction, treeActionInfo, true);
+
+						refreshUi();
+					}
+				}
+			}
+
+			/*
+			 * 
+			 */
 			function getSelectableColumns(cols) {
 				var selectableCols = [];
 				angular.forEach(cols, function(col, i) {
@@ -2392,5 +2816,33 @@
 				return selectableCols;
 			}
 		}
+	};
+
+	angular.module('bpm-common').directive('sdDataTableRow', [DataTableRowDirective]);
+
+	/*
+	 * 
+	 */
+	function DataTableRowDirective() {
+		return {
+			restrict: 'A',
+			scope: true,
+			link: function(scope, element, attr, ctrl) {
+				var index = parseInt(attr.sdDataTableRow);
+				
+				// Using isolate scope and passing data as attributes doesnot work here
+				// So retrieve data from parent via $parent
+				var pageData = scope.$parent.$$pageData;
+
+				scope.rowData = pageData[index];
+				scope.$index = index;
+				scope.$first = (index === 0);
+				scope.$last = (index === (pageData.length - 1));
+				scope.$even = !(scope.$odd = (index & 1) === 0);
+
+				scope.$on('$destroy', function() {
+				});
+			}
+		};
 	};
 })();

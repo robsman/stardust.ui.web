@@ -12,11 +12,9 @@
 						? false : true}"
 			action="#{roleManagerDetail.addUserToRole}">
 			<pc:automationTag value="auto-BCC-RoleMgrDet-AssignableUserTbl-ToolbarAdd" standAlone="false"/>
-			<h:graphicImage
-				value="/plugins/views-common/images/icons/group_add.png"
-				style="border: none;"
+			<h:outputText
 				styleClass="#{(roleManagerDetail.addUser > 0) and (roleManagerDetail.roleModifiable)
-							? '' : 'iceCmdBtn-dis'}"
+							? '' : 'iceCmdBtn-dis'} pi pi-create pi-lg"
 				title="#{roleManagerDetail.messages['button.addUserToRole']}" />
 		</ice:commandLink>
 	</ice:panelGrid>

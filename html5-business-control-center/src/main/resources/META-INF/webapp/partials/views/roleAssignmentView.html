@@ -1,38 +1,47 @@
-<div ng-controller="sdRoleAssignmentCtrl as ctrl">
-<div class="roleAssignment-wrapper">
-    <div class="view-panel-toolbar toolbar-buttons">
-		<div class="view-toolbar-section" >
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+<div sg-stretch-to-bottom class="view-panel">
+<div class=" ng-hide" ng-show="true" ng-controller="sdRoleAssignmentCtrl as ctrl" >
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"
+			aid="BCC-RoleAssignment"></span>
 		</div>
 	</div>
-    <div ng-if="ctrl.createTable">
-    <div class="view-panel-toolbar tbl-title" style="color: #708090;font-size:11px">{{i18n('business-control-center-messages.views-roleAssignmentView-title')}}</div>
-	<table sd-data-table="ctrl.roleAssignmentTable"
-		sd-data="ctrl.getRoleAssignmentData()" sda-mode="remote" sda-ready="ctrl.showRoleAssignmentTable"
-		sda-selectable="multiple"
-		sda-selection="ctrl.rowSelectionForRoleAssignment"
-		sda-column-selector="{{ctrl.columnSelector}}"
-		sda-sortable="true"
-		sda-sort-by="{name : 'teamMember', dir : 'desc'}" sda-exports="true"
-		sda-exports-file-name="{{ctrl.exportFileNameForRoleAssignment}}">
-		<thead
-			sda-i18n-scope="business-control-center-messages.views-common-column">
-			<tr>
-			   <th sda-name="teamMember" sda-fixed="true" sda-sortable="true" sda-label={{rowData.teamMember}}>
-				</th>
-				<th ng-repeat="obj in ctrl.columns" sda-name="{{obj}}" sda-label="{{obj}}" sda-visible="true">
-				 </th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td sda-exporter="rowData.teamMember"><a href="#" ng-click="bpmCommon.stopEvent($event); ctrl.openUserManagerView(rowData.userOid,rowData.userId);" title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
-							class="tbl-tool-link">{{rowData.teamMember}}</a></td>
-				<td ng-repeat="obj in ctrl.columns" sda-exporter="ctrl.getExportValue(rowData.columnsValue[colData.title])">
-				    <div sd-role-assignment-column-content sda-value="rowData.columnsValue[colData.title]"></div>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+	<div ng-if="ctrl.createTable">
+		<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-roleAssignmentView-title')}}</div>
+		<table sd-data-table="ctrl.roleAssignmentTable"
+			sd-data="ctrl.getRoleAssignmentData(params)" sda-mode="local"
+			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sda-ready="ctrl.showRoleAssignmentTable" sda-selectable="multiple"
+			sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
+			sda-sort-by="{name : 'teamMember', dir : 'asc'}" sda-exports="true"
+			sda-exports-file-name="{{ctrl.exportFileNameForRoleAssignment}}">
+			<thead
+				sda-i18n-scope="business-control-center-messages.views-common-column">
+				<tr>
+					<th sda-name="teamMember.displayName" sda-fixed="true" sda-sortable="true"  sda-label-key="teamMember">
+					   <div sda-filter-template>
+						<div sd-text-search-table-filter></div>
+					   </div>
+					</th>
+					<th ng-repeat="obj in ctrl.columns" sda-name="{{ctrl.columnsLabelMap[obj]}}"
+						sda-label="{{obj}}" sda-visible="true"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td sda-exporter="rowData.teamMember" sda-data-type="string"><a href="#"
+						ng-click="bpmCommon.stopEvent($event); ctrl.openUserManagerView(rowData.userOid,rowData.userId);"
+						title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
+						class="tbl-tool-link"
+						aid="BCC-RoleAssignment-RoleTbl-TeamMember">{{rowData.teamMember}}</a></td>
+					<td ng-repeat="obj in ctrl.columns"
+						sda-exporter="ctrl.getExportValue(rowData.columnsValue[colData.title])">
+						<div sd-role-assignment-column-content
+							sda-value="rowData.columnsValue[colData.title]"></div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
-	</div>
+</div>
+</div>

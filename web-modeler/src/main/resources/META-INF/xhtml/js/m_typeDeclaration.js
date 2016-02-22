@@ -698,11 +698,16 @@ define(
 //						&& ((this.type.body.classifier === 'sequence')
 //								|| (this.type.body.classifier === 'choice') || (this.type.body.classifier === 'all'));
 
-				// TODO - check
-				if (this.type) {
-					var type = this.type
+			  var type = "";
+
+			  if (this.type) {
+					type = this.type
+					//TODO this appears to be little weird but added to support few cases of imported type declarations
+					 if (type.schema && type.schema.types) {
+             type = type.schema.types[0];
+           }
 				} else if (this.schema && this.schema.types) {
-					var type = this.schema.types[0];
+					type = this.schema.types[0];
 				}
 				if (type) {
 					if (type.body) {
@@ -735,10 +740,15 @@ define(
 				// TODO - check
 				if (this.isStructure()) {
 					var elements = [];
+					var type = "";
 					if (this.type) {
-						var type = this.type
+						type = this.type
+						// TODO this appears to be little weird but added to support few cases of imported type declarations
+           	if (type.schema && type.schema.types) {
+              type = type.schema.types[0];
+            }
 					} else if (this.schema && this.schema.types) {
-						var type = this.schema.types[0];
+						type = this.schema.types[0];
 					}
 
 					if (type && type.body) {
@@ -823,12 +833,17 @@ define(
 
 					var typeQName = parseQName(element.type, this.schema);
 					if (!typeQName.prefix && typeQName.namespace == undefined) {
+					  //Added to support imported type declarations having no namespace
+            var type = resolveSchemaTypeFromModel(typeQName.name,
+                    this.scope, this.schema ? this.schema.locations : null);
+					  
 						// no ns prefix, resolve to containing schema
-						var type = findType(this.schema, typeQName.name);
-
-						return new SchemaType(typeQName.name,
-								this.schema.targetNamespace, type, this.schema,
-								this.scope);
+            if(!type){
+              type = findType(this.schema, typeQName.name);  
+            }
+						
+						return new SchemaType(typeQName.name, "", type, this.schema, this.scope);
+						
 					} else {
 						if (!typeQName.namespace && typeQName.prefix) {
 							typeQName.namespace = this.schema.nsMappings[typeQName.prefix];
@@ -866,82 +881,86 @@ define(
 			function resolveSchemaTypeFromModel(sqName, model, locations) {
 				var schema = null;
 				var parsedName = parseQName(sqName);
-				if (parsedName.namespace != undefined) {
-					// resolve ns prefix to schema
-					if (parsedName.namespace === "http://www.w3.org/2001/XMLSchema") {
-						return new SchemaType("xsd:" + parsedName.name,
-								parsedName.namespace);
-					} else if (model) {
-						jQuery
-								.each(
-										model.typeDeclarations,
-										function(i, declaration) {
-											if ((null != declaration.typeDeclaration)
-													&& (null != declaration.typeDeclaration.schema)
-													&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
-												if (declaration.typeDeclaration.type && declaration.typeDeclaration.type.xref) {
-													if (declaration.typeDeclaration.type.xref === sqName || (parsedName.namespace == "" && declaration.typeDeclaration.type.xref == parsedName.name)) {
-														schema = declaration.typeDeclaration.schema;
-														return false;
-													}
-												} else {
-													if (declaration.id === parsedName.name) {
-														schema = declaration.typeDeclaration.schema;
-														return false;
-													}
+				
+				// Added to support imported type declarations having no namespace
+				if(!parsedName.namespace){
+				  parsedName.namespace = "";
+				}
+
+				// resolve ns prefix to schema
+				if (parsedName.namespace === "http://www.w3.org/2001/XMLSchema") {
+					return new SchemaType("xsd:" + parsedName.name,
+							parsedName.namespace);
+				} else if (model) {
+					jQuery
+							.each(
+									model.typeDeclarations,
+									function(i, declaration) {
+										if ((null != declaration.typeDeclaration)
+												&& (null != declaration.typeDeclaration.schema)
+												&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
+											if (declaration.typeDeclaration.type && declaration.typeDeclaration.type.xref) {
+												if (declaration.typeDeclaration.type.xref === sqName || (parsedName.namespace == "" && declaration.typeDeclaration.type.xref == parsedName.name)) {
+													schema = declaration.typeDeclaration.schema;
+													return false;
+												}
+											} else {
+												if (declaration.id === parsedName.name) {
+													schema = declaration.typeDeclaration.schema;
+													return false;
 												}
 											}
-										});
+										}
+									});
 
-						if(!schema){
-							var referenceModelId = null;
+					if(!schema){
+						var referenceModelId = null;
 
-							if(locations){
-								var location = locations[parsedName.namespace];
-								if(location){
-									referenceModelId = parseQName(location).namespace;
-								}
+						if(locations){
+							var location = locations[parsedName.namespace];
+							if(location){
+								referenceModelId = parseQName(location).namespace;
+							}
+						}
+
+						var allModels = m_globalVariables.get("models");
+						for ( var i in allModels) {
+							var mod = allModels[i];
+							if (schema) {
+								break;
+							}
+							if (referenceModelId
+									&& mod.id != referenceModelId) {
+								continue;
 							}
 
-							var allModels = m_globalVariables.get("models");
-							for ( var i in allModels) {
-								var mod = allModels[i];
-								if (schema) {
-									break;
-								}
-								if (referenceModelId
-										&& mod.id != referenceModelId) {
-									continue;
-								}
-
-								jQuery
-										.each(
-												mod.typeDeclarations,
-												function(i, declaration) {
-													if ((null != declaration.typeDeclaration)
-															&& (null != declaration.typeDeclaration.schema)
-															&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
-														if (declaration.typeDeclaration.type && declaration.typeDeclaration.type.xref) {
-															if (declaration.typeDeclaration.type.xref === sqName || (parsedName.namespace == "" && declaration.typeDeclaration.type.xref == parsedName.name)) {
-																schema = declaration.typeDeclaration.schema;
-																return false;
-															}
-														} else {
-															if (declaration.id === parsedName.name) {
-																schema = declaration.typeDeclaration.schema;
-																return false;
-															}
+							jQuery
+									.each(
+											mod.typeDeclarations,
+											function(i, declaration) {
+												if ((null != declaration.typeDeclaration)
+														&& (null != declaration.typeDeclaration.schema)
+														&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
+													if (declaration.typeDeclaration.type && declaration.typeDeclaration.type.xref) {
+														if (declaration.typeDeclaration.type.xref === sqName || (parsedName.namespace == "" && declaration.typeDeclaration.type.xref == parsedName.name)) {
+															schema = declaration.typeDeclaration.schema;
+															return false;
+														}
+													} else {
+														if (declaration.id === parsedName.name) {
+															schema = declaration.typeDeclaration.schema;
+															return false;
 														}
 													}
-												});
-							}
+												}
+											});
 						}
+					}
 
-						if (schema) {
-							var type = findType(schema, parsedName.name);
-							return new SchemaType(parsedName.name,
-									parsedName.namespace, type, schema, model);
-						}
+					if (schema) {
+						var type = findType(schema, parsedName.name);
+						return new SchemaType(parsedName.name,
+								parsedName.namespace, type, schema, model);
 					}
 				}
 

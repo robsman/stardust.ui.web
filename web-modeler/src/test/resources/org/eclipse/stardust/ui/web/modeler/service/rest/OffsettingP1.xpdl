@@ -2,7 +2,7 @@
 <Package xmlns:carnot="http://www.carnot.ag/xpdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.wfmc.org/2008/XPDL2.1" xsi:schemaLocation="http://www.wfmc.org/2008/XPDL2.1 http://www.wfmc.org/standards/docs/bpmnxpdl_31.xsd" Id="OffsettingP1" Name="Offsetting P1">
    <PackageHeader>
       <XPDLVersion>2.1</XPDLVersion>
-      <Vendor>SunGard CSA LLC</Vendor>
+      <Vendor>Eclipse.org, Eclipse Process Manager</Vendor>
       <Created>Mon Sep 02 10:06:03 CEST 2013</Created>
    </PackageHeader>
    <RedefinableHeader PublicationStatus="UNDER_REVISION">
@@ -1093,7 +1093,7 @@
    </WorkflowProcesses>
    <ExtendedAttributes>
       <ExtendedAttribute Name="CarnotExt">
-         <carnot:Package Oid="0" CarnotVersion="7.2.0" ModelOid="0">
+         <carnot:Package Oid="0" CarnotVersion="1.1.0" ModelOid="0">
             <carnot:MetaTypes>
                <carnot:DataTypes>
                   <carnot:DataType Oid="1" Id="primitive" Name="Primitive Data" IsPredefined="true">

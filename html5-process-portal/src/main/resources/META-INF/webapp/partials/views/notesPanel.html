@@ -1,0 +1,88 @@
+<div class="view-panel" ng-controller="sdNotesCtrl as ctrl"
+	sg-stretch-to-bottom>
+	<div class="view-panel-toolbar heading">{{i18n('processportal.views-notesPanel-title')}}</div>
+	<div sda-toolbar>
+		<div class="tbl-toolbar-section">
+			<button ng-disabled="ctrl.isAddMode"
+				ng-click="bpmCommon.stopEvent($event); ctrl.addNote();"
+				title="{{i18n('processportal.views-notesPanel-button-addNote')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				aid="PP-NotesView-AddNote">
+				<i class="pi pi-create pi-lg"></i>
+			</button>
+		</div>
+	</div>
+	<table sd-data-table="ctrl.notesTable"
+		sd-data="ctrl.getNotesData(params)" sda-mode="local"
+		sda-ready="ctrl.showNotesTable" sda-selectable="row"
+		sda-initial-selection="[{noteNumber: ctrl.notes.totalCount}]"
+		sda-on-select="ctrl.onSelect(info)"
+		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
+		sda-sort-by="{name : 'teamMember', dir : 'desc'}" sda-exports="false"
+		sda-preference-module="ipp-workflow-perspective" sda-preference-id="preference"
+		sda-preference-name="ipp-workflow-perspective.processportalNotesTable.selectedColumns">
+		<thead sda-i18n-scope="processportal.views-notesPanel-column">
+			<tr>
+				<th sda-name="noteNumber" sda-sortable="true"></th>
+				<th sda-name="creatorName" sda-label-key="createdBy"></th>
+				<th sda-name="created" sda-label-key="creationTime"
+					sda-sortable="true"></th>
+				<th sda-name="note" sda-label-key="preview"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td sda-data-type="int"></td>
+				<td sda-exporter="rowData.creatorName" style="text-align: center;">
+					<img alt="" ng-if="ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1"
+						ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}"
+						width="24px" height="24px" style="padding-right: 5px;">
+					<i class="{{ctrl.getUserImageURL(rowData.avatarImageURI)}} pi-1-5x" 
+						ng-if="!(ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1)"  style="margin-right: 5px;"></i>
+						{{rowData.creatorName}}
+				</td>
+				<td sda-data-type="dateTime"></td>
+				<td><table>
+						<tbody>
+							<tr style="vertical-align: top;">
+								<td><i class="pi pi-note pi-lg"></i></td>
+								<td><div sd-tool-tip
+										sda-tool-tip-url="'plugins/html5-process-portal/partials/views/notePreviewToolTip.html'"
+										sda-title="rowData.note"></div>
+								</td>
+							</tr>
+						</tbody>
+					</table></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div>
+		<div style="padding-bottom: 5px;"
+			ng-if="!ctrl.isAddMode && ctrl.notesTable.getSelection()">
+			<table>
+				<tr>
+					<td><img alt="" ng-if="ctrl.getUserImageURL(ctrl.notesTable.getSelection().avatarImageURI)"
+						ng-src="{{ctrl.getUserImageURL(ctrl.notesTable.getSelection().avatarImageURI)}}"
+						width="24px" height="24px" style="padding-right: 5px;"></td>
+					<td><sd-user-details
+							sda-user-oid="ctrl.notesTable.getSelection().userOID"
+							sda-account="ctrl.notesTable.getSelection().creatorName"
+							sda-aid-prefix="PP-NotesView-UserDetails"></sd-user-details></td>
+					<td>added note #{{ctrl.notesTable.getSelection().noteNumber}} -
+						{{ctrl.notesTable.getSelection().created | sdDateTimeFilter}}</td>
+				</tr>
+			</table>
+		</div>
+		<textarea ng-if="ctrl.notes.totalCount > 0 || ctrl.isAddMode"
+			ng-disabled="!ctrl.isAddMode" ng-model="ctrl.note" cols="20" rows="2"
+			style="height: 300px; width: 99%; background-color: rgb(247, 246, 178);" aid="PP-NotesView-NoteText"></textarea>
+		 <br/>
+			<div class="button-pane cf"  ng-if="ctrl.isAddMode">
+				<div class="button-alignment">
+				  	<button class="button" 	ng-click="ctrl.saveNote()" aid="PP-NotesView-SaveNote">{{i18n('processportal.views-notesPanel-button-save')}} </button>
+				   <button class="button" ng-click="ctrl.cancelNote()" aid="PP-NotesView-CancelNote">{{i18n('processportal.views-notesPanel-button-cancel')}} </button>
+				</div>
+		    </div>
+	</div>
+</div>

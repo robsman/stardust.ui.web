@@ -1,0 +1,13 @@
+
+ <ul id="myTab" class="nav nav-tabs">
+		<li class="active"><a href="#basic" data-toggle="tab" ng-click="ctrl.showRoleAssignment()" aid="ADM-PartMgmt-UserPopupBasicTab">
+				{{i18n('admin-portal-messages.views-createUser-basicPanel-title')}}
+		</a></li>
+  </ul>
+	<div id="myTabContent" class="tab-content" style="overflow: hidden;">
+		<div id="basic">
+			<div
+			    ng-include="'plugins/html5-admin-portal/partials/views/userProfile.html'">
+			</div>
+		</div>
+	</div>

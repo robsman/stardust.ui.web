@@ -242,6 +242,7 @@ define(["m_toolbarManager", "m_constants", "m_pageController"], function(m_toolb
 		//Stamps selection handling
 		jQuery('#stampGallery img').click(function() {
 			selectedStamp = jQuery(this).attr('src');
+			jQuery("#selectedStamp").show();
 			jQuery("#selectedStamp").attr('src', selectedStamp);
 			jQuery("#selectedStamp").attr('width', m_constants.STAMP_PREVIEW_WIDTH);
 			jQuery("#selectedStamp").attr('height', m_constants.STAMP_PREVIEW_HEIGHT);
@@ -496,10 +497,11 @@ define(["m_toolbarManager", "m_constants", "m_pageController"], function(m_toolb
 			selectedStampDocId = imageViewerConfigOptions.selectedStamp;
 			selectedStamp = getDocDownloadURL(imageViewerConfigOptions.selectedStamp);
 			jQuery("#selectedStamp").attr("src", selectedStamp);
+			jQuery("#selectedStamp").show();
 		}
 		else
 		{
-			jQuery("#selectedStamp").attr("width", 0);
+			jQuery("#selectedStamp").hide();
 		}
 	}
 	

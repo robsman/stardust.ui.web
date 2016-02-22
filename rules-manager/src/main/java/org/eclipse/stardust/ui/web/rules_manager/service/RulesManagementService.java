@@ -12,6 +12,7 @@
 package org.eclipse.stardust.ui.web.rules_manager.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +28,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifactQuery;
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifacts;
+import org.eclipse.stardust.engine.api.runtime.DeployedRuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.rules_manager.service.RulesManagementService.Response.OPERATION;
 import org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy;
@@ -45,7 +52,8 @@ import org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy;
 public class RulesManagementService
 {
    private static final Logger trace = LogManager.getLogger(RulesManagementService.class);
-
+   private static final String RULESARTIFACT_TYPE_ID = "drools-ruleset";
+   
    @Resource
    private ApplicationContext context;
 
@@ -178,6 +186,135 @@ public class RulesManagementService
       getRulesManagementStrategy().deleteRuleSet(documentId);
 
       ruleSetUUIDVsDocumentIdMap.remove(id);
+   }
+
+   /**
+    * @return
+    */
+   public JsonArray getAllRuntimeRuleSets()
+   {
+      JsonArray ruleSets = new JsonArray();
+      DeployedRuntimeArtifactQuery query = DeployedRuntimeArtifactQuery.findActive(
+            RULESARTIFACT_TYPE_ID, new Date());
+      
+      DeployedRuntimeArtifacts artifacts = getRulesManagementStrategy().getAllRuntimeRuleSets(query);
+      for(DeployedRuntimeArtifact artifact : artifacts)
+      {
+         JsonObject ruleSet = createRuleSetJson(artifact);
+         ruleSets.add(ruleSet);
+      }
+      return ruleSets;
+   }
+   
+   /**
+    * 
+    * @param artifact
+    * @return
+    */
+   private JsonObject createRuleSetJson(DeployedRuntimeArtifact artifact)
+   {
+      RuntimeArtifact runtimeArtifact = getRulesManagementStrategy().getRuntimeArtifact(artifact.getOid());
+      String contents = new String(runtimeArtifact.getContent());
+      JsonObject ruleSet = new JsonParser().parse(contents).getAsJsonObject();
+      ruleSet.addProperty("oid", artifact.getOid());
+      ruleSet.addProperty("validFrom", artifact.getValidFrom().getTime());
+      ruleSet.addProperty("artifactTypeId", artifact.getArtifactTypeId());
+      return ruleSet;
+   }
+   
+   /**
+    * 
+    * @param postedData
+    * @return
+    */
+   public JsonObject publishRuleSet(String postedData)
+   {
+      JsonObject result = new JsonObject();
+      JsonObject ruleSetJson = new JsonParser().parse(postedData).getAsJsonObject();
+      String ruleSetId = GsonUtils.extractString(ruleSetJson, "ruleSetId");
+      RuntimeArtifact artifact = null;
+      DeployedRuntimeArtifact deployedRuntimeArtifact = null;
+      Document document;
+      // ruleSetId is used with .json at RuntimeArtifactory 
+      if (!ruleSetId.endsWith(".json"))
+      {
+         ruleSetId = ruleSetId + ".json";
+      }
+      String documentId = ruleSetUUIDVsDocumentIdMap.get(ruleSetId);
+      
+      if(StringUtils.isEmpty(documentId))
+      {
+         document = getRulesManagementStrategy().getRuleSetByName(ruleSetId);
+         if(null == document)
+         {
+            return null;
+         }
+         ruleSetUUIDVsDocumentIdMap.put(ruleSetId, document.getId());
+      }
+      else
+      {
+         document = getDocumentManagementService().getDocument(documentId);
+      }
+      // retrieve contents
+      byte[] contents = getDocumentManagementService().retrieveDocumentContent(document.getId());
+      DeployedRuntimeArtifacts runtimeArtifact = getRulesManagementStrategy().getRuntimeRuleSet(ruleSetId);
+      if(null != runtimeArtifact && runtimeArtifact.getSize() > 0)
+      {
+         DeployedRuntimeArtifact deployedArtifact = runtimeArtifact.get(0);
+         artifact = getRulesManagementStrategy().getRuntimeArtifact(deployedArtifact.getOid());
+         artifact.setContent(contents);
+         deployedRuntimeArtifact = getRulesManagementStrategy().publishRuleSet(deployedArtifact.getOid(), artifact);
+      }
+      else
+      {
+         artifact = new RuntimeArtifact(RULESARTIFACT_TYPE_ID, ruleSetId, document.getName(), contents,
+               new Date(0));   
+         deployedRuntimeArtifact = getRulesManagementStrategy().publishRuleSet(0, artifact);
+      }
+      
+      if(null != deployedRuntimeArtifact && deployedRuntimeArtifact.getOid() > 0)
+      {
+         result = createRuleSetJson(deployedRuntimeArtifact);
+      }
+      return result;
+   }
+
+  /**
+   * 
+   * @param oid
+   * @return
+   */
+   public JsonObject getRuntimeRuleSet(String ruleSetId)
+   {
+      JsonObject ruleSetJson = new JsonObject();
+      if (!ruleSetId.endsWith(".json"))
+      {
+         ruleSetId = ruleSetId + ".json";
+      }
+      DeployedRuntimeArtifacts deployedArtifacts = getRulesManagementStrategy().getRuntimeRuleSet(ruleSetId);
+      for(DeployedRuntimeArtifact artifact : deployedArtifacts)
+      {
+         ruleSetJson = createRuleSetJson(artifact);
+         break;
+      }
+      
+      return ruleSetJson;
+   }
+
+   /**
+    * @param ruleSetId
+    * @return
+    */
+   public JsonObject deleteRuntimeRuleSet(String ruleSetId)
+   {
+      JsonObject result = new JsonObject();
+      if (!ruleSetId.endsWith(".json"))
+      {
+         ruleSetId = ruleSetId + ".json";
+      }
+      getRulesManagementStrategy().deleteRuntimeRuleSet(ruleSetId);
+
+      return result;
    }
 
    /**

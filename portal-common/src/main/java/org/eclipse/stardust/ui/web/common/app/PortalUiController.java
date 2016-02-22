@@ -117,8 +117,6 @@ public class PortalUiController
 
    private CommonMenuIframeHandler commonMenuIframeHandler;
    
-   private PerspectiveMenuIframeHandler perspectiveMenuIframeHandler;
-
    private transient Map<View, List<ViewDataEventHandler>> viewDataEventHandlers;
    
    private List<IPerspectiveDefinition> allPerspectives;
@@ -132,7 +130,6 @@ public class PortalUiController
       this.openViews = new ArrayList<View>();
       this.recreatableViews = new HashMap<String, View>();
       this.viewDataEventHandlers = new HashMap<View, List<ViewDataEventHandler>>();
-      this.perspectiveMenuIframeHandler = new PerspectiveMenuIframeHandler();
    }
    
    /**
@@ -247,6 +244,7 @@ public class PortalUiController
       // Collect Perspectives based on Role
       PerspectiveDefinition pd;
       systemPerspectives = appContext.getBeansOfType(PerspectiveDefinition.class);
+      
       for (String key : systemPerspectives.keySet())
       {
          pd = systemPerspectives.get(key);
@@ -279,7 +277,8 @@ public class PortalUiController
          });
 
          initPerspectiveItems();
-
+         recordConfiguredPermissions();
+         
          if (null == currentPerspective)
          {
             // Show first perspective by default
@@ -303,7 +302,7 @@ public class PortalUiController
       this.perspectiveItems = new ArrayList<MenuItem>();
 
       Map<String, PerspectiveExtension> extensions = appContext.getBeansOfType(PerspectiveExtension.class);
-      
+
       for (IPerspectiveDefinition perspective : allPerspectives)
       {
          if (null == currentPerspective && perspective.isDefaultPerspective())
@@ -316,10 +315,41 @@ public class PortalUiController
 
          for (PerspectiveExtension extension : extensions.values())
          {
+            //populate default Authorization
+            authorizationProvider.addDefaultPermissions(extension.getName(), extension.getRequiredRolesSet(), true);
+            authorizationProvider.addDefaultPermissions(extension.getName(), extension.getExcludeRolesSet(), false);
+
             if (isAuthorized(extension))
             {
                perspective.addExtension(extension);
             }
+         }
+      }
+   }
+   
+   //store default permissions
+   private void recordConfiguredPermissions()
+   {
+      IAuthorizationProvider authorizationProvider = getAuthorizationProvider();
+      
+      for (String key : systemPerspectives.keySet())
+      {
+         IPerspectiveDefinition perspective = systemPerspectives.get(key);
+         authorizationProvider.addDefaultPermissions(perspective.getName(), perspective.getRequiredRolesSet(), true);
+         authorizationProvider.addDefaultPermissions(perspective.getName(), perspective.getExcludeRolesSet(), false);
+
+         // Launch Panels
+         for (ViewDefinition view : perspective.getViews())
+         {
+            authorizationProvider.addDefaultPermissions(view.getName(), view.getRequiredRolesSet(), true);
+            authorizationProvider.addDefaultPermissions(view.getName(), view.getExcludeRolesSet(), false);
+         }
+
+         // Views
+         for (LaunchPanel lp : perspective.getLaunchPanels())
+         {
+            authorizationProvider.addDefaultPermissions(lp.getName(), lp.getRequiredRolesSet(), true);
+            authorizationProvider.addDefaultPermissions(lp.getName(), lp.getExcludeRolesSet(), false);
          }
       }
    }
@@ -361,8 +391,38 @@ public class PortalUiController
    {
       MenuItem result = new MenuItem();
       result.setTitle(perspective.getLabel());
-      result.setValue(perspective.getLabel());
       result.setId(perspective.getName());
+
+      String icon = null;
+      if (null != perspective.getPreferences())
+      {
+         PreferencePage iconPreference = perspective.getPreferences().getPreference(PreferencesDefinition.PREF_ICON);
+         if (null != iconPreference)
+         {
+            icon = iconPreference.getInclude();
+         }
+      }
+
+      if (StringUtils.isEmpty(icon))
+      {
+         icon = "pi pi-perspective-default"; // Default Icon
+      }
+
+      // Check if icon is image URL or a css class. It's mapping with MenuItem -
+      // - Icon property = Image URL
+      // - Value Property = CSS Class
+      if (icon.contains("/") && icon.contains(".")) // It's an image URL
+      {
+         result.setIcon(icon);
+         result.setValue(perspective.getName() + " " + PortalApplication.deriveIconClass(icon));
+      }
+      else
+      {
+         result.setLink(null);
+         result.setIcon("");
+         result.setValue(perspective.getName() + " " + icon);
+      }
+
       return result;
    }
 
@@ -411,22 +471,15 @@ public class PortalUiController
    }
 
    /**
-    * @param ae
-    * @throws AbortProcessingException
-    */
-   public void processPerspectiveMenuAction(ActionEvent ae) throws AbortProcessingException
-   {
-      processPerspectiveChange(ae.getComponent().getId());
-   }
-
-   /**
     *
     * @param ae
-    * @throws AbortProcessingException
     */
-   public void perspectiveChangeActionListener(ValueChangeEvent ae) throws AbortProcessingException
+   public void perspectiveChangeAction(ActionEvent ae) throws AbortProcessingException
    {
-      String perspectiveId = (String)ae.getNewValue();
+      FacesContext context = FacesContext.getCurrentInstance();
+      Map<String, String> params = context.getExternalContext().getRequestParameterMap();
+      
+      String perspectiveId = params.get("perspectiveId");
       processPerspectiveChange(perspectiveId);
    }
 
@@ -453,8 +506,6 @@ public class PortalUiController
             break;
          }
       }
-      perspectiveMenuIframeHandler.closeIframePopup();
-      
    }
 
    /**
@@ -624,6 +675,7 @@ public class PortalUiController
    public View openViewById(String viewId, String viewKey,
          Map<String, Object> viewParams, AbstractMessageBean msgBean, boolean nested)
    {
+      
       ViewDefinition viewDefinition = lookupViewID(viewId);
 
       if (null == viewDefinition)
@@ -660,7 +712,7 @@ public class PortalUiController
    public View openView(ViewDefinition viewDef, String viewKey,
          Map<String, Object> params, AbstractMessageBean msgBean, boolean nestedView)
    {
-	  // For backward compatibility
+      // For backward compatibility
       // If View Key is empty then only calculate it 
       if (StringUtils.isEmpty(viewKey))
       {
@@ -1461,16 +1513,6 @@ public class PortalUiController
    public CommonMenuIframeHandler getCommonMenuIframeHandler()
    {
       return this.commonMenuIframeHandler;
-   }
-   
-   /**
-    * Implementation class handles Perspective menu Iframe
-    *
-    * @return
-    */
-   public PerspectiveMenuIframeHandler getPerspectiveMenuIframeHandler()
-   {
-      return perspectiveMenuIframeHandler;
    }
 
    /**

@@ -186,8 +186,14 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
       {
          ModelManagementStrategy modelMgtStrategy = modelService
                .getModelManagementStrategy();
-         changes.removed.add(modelService.currentSession().xpdlMarshaller()
-               .toModelJson(model));
+         try
+         {
+            changes.removed.add(modelService.currentSession().xpdlMarshaller()
+                  .toModelJson(model));
+         }
+         catch (Exception e)
+         {
+         }
          modelMgtStrategy.deleteModel(model);
       }
       return changes;

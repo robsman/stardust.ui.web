@@ -8,10 +8,9 @@
 
 	<ice:panelGrid columns="7">
 		<ice:commandLink actionListener="#{bean.terminateProcess}"
-			disabled="#{bean.selectedItemCount eq 0 ? true : false}">
+			disabled="#{bean.selectedItemCount eq 0 ? true : false}" style="padding-left: 5px;">
 			<pc:automationTag value="auto-COM-ProcTbl-ToolbarTerminate" standAlone="false"/>
-			<ice:graphicImage styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
-				value="/plugins/views-common/images/icons/abort_process.png"
+			<ice:outputText styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-process-abort pi-lg"
 				title="#{views_common_msgPropsBean['common.tooltip.terminate']}"/>
 		</ice:commandLink>
 		<!-- Rendered when some row is selected -->
@@ -27,39 +26,29 @@
 		<ice:panelGroup
 			rendered="#{bean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-COM-ProcTbl-ToolbarTerminateMenu" standAlone="false"/>	
-			<ice:graphicImage styleClass="iceCmdBtn-dis"
-				value="/plugins/views-common/images/icons/arrow.png" />
+			<ice:outputText styleClass="iceCmdBtn-dis pi pi-menu-dropdown pi-sm" />
 		</ice:panelGroup>
 		
 		<ice:commandLink actionListener="#{bean.recoverProcess}"
 			disabled="#{bean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-COM-ProcTbl-ToolbarRecover" standAlone="false"/>
-			<ice:graphicImage styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
-				value="/plugins/views-common/images/icons/recover_process.png"
+			<ice:outputText styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-recover pi-lg"
 				title="#{views_common_msgPropsBean['common.tooltip.recover']}"/>
 		</ice:commandLink>	
 		
 		<!-- Case Menu -->
-		<ice:panelGroup
-			rendered="#{!(bean.selectedItemCount eq 0 ? true : false)}">
+		<ice:panelGroup>
 			<pc:automationTag value="auto-COM-ProcTbl-ToolbarCaseMenu" standAlone="false"/>	
-			<ui:include src="/plugins/views-common/common/caseMenuBar.xhtml" />
-			<ui:param name="bean" value="#{bean}" />
-		</ice:panelGroup>
-		<!-- Rendered when no row is selected -->
-		<ice:panelGroup
-			rendered="#{bean.selectedItemCount eq 0 ? true : false}">
-			<pc:automationTag value="auto-COM-ProcTbl-ToolbarCaseMenu" standAlone="false"/>
-			<ice:graphicImage styleClass="iceCmdBtn-dis"
-				value="/plugins/views-common/images/icons/case-menu.png" />
+			<ui:include src="/plugins/views-common/common/caseMenuBar.xhtml">
+				<ui:param name="disabled" value="#{(bean.selectedItemCount eq 0 ? true : false)}" />
+			</ui:include>
 		</ice:panelGroup>
 		
 		<ice:commandLink actionListener="#{bean.applyChanges}" 
 			disabled="#{!bean.priorityChanged}">
 			<pc:automationTag value="auto-COM-ProcTbl-ToolbarSavePrio" standAlone="false"/>
-			<ice:graphicImage
-				url="/plugins/views-common/images/icons/save_flag.png"
-                   style="border:none;" styleClass="#{!bean.priorityChanged ? 'iceCmdBtn-dis' : ''}"
+			<ice:outputText
+                   styleClass="#{!bean.priorityChanged ? 'iceCmdBtn-dis' : ''} pi pi-save pi-lg"
                    title="#{views_common_msgPropsBean['common.tooltip.savePriorityChanges']}"/>
 		</ice:commandLink>
 

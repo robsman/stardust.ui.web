@@ -1,0 +1,179 @@
+<form name="ctrl.userProfileForm">
+	<table
+		style="vertical-align: top; white-space: nowrap; text-align: left">
+		<tbody>
+			<tr>
+				<td class="msg-error"
+					ng-show="ctrl.userProfileForm.$error.validationMsg">
+					{{ctrl.validationMsg}}</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-account-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><div>
+						<input type="text" name="account" ng-model="ctrl.user.account" sd-focus
+							ng-change="ctrl.initDisplayFormats()" 
+							ng-disabled="(ctrl.mode == 'MODIFY_USER' && ctrl.user.isInternalAuthentication) || ctrl.mode == 'MODIFY_PROFILE_CONFIGURATION'" required
+							aid="ADM-PartMgmt-UserPopup-Acct">
+						<div class="msg-error"
+							ng-show="ctrl.userProfileForm.account.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
+						</div>
+					</div></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-firstName-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><div>
+						<input type="text" name="firstName" ng-model='ctrl.user.firstName'
+							ng-change="ctrl.initDisplayFormats()" required
+							aid="ADM-PartMgmt-UserPopup-FirstName"
+							ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication">
+						<div class="msg-error"
+							ng-show="ctrl.userProfileForm.firstName.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
+						</div>
+					</div></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-lastName-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><div>
+						<input type="text" name="lastName" ng-model='ctrl.user.lastName'
+							ng-change="ctrl.initDisplayFormats()" required aid="ADM-PartMgmt-UserPopup-LastName"
+							ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication">
+						<div class="msg-error"
+							ng-show="ctrl.userProfileForm.lastName.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
+						</div>
+					</div></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-name-displayAs')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><select size="1" name="selectedDisplayFormat"
+					ng-model="ctrl.user.selectedDisplayFormat"
+					style="width: 210px; align: center;"
+					ng-options="opt.value as opt.label for opt in ctrl.user.displayFormats"
+					aid="ADM-PartMgmt-UserPopup-SelDisplayFormat"></select></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-changePwd-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><div>
+						<input ng-disabled="!ctrl.user.isPasswordEnabled || !ctrl.user.isInternalAuthentication" ng-model="ctrl.user.changePassword"
+							type="checkbox" aid="ADM-PartMgmt-UserPopup-ChangePasswd">
+					</div></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-pwd-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><div>
+						<input maxlength="20" name="password"
+							ng-model='ctrl.user.password' size="20" type="password" 
+							ng-disabled="(!ctrl.user.changePassword || !ctrl.user.isInternalAuthentication)" ng-required="ctrl.user.changePassword && ctrl.user.isInternalAuthentication"
+							aid="ADM-PartMgmt-UserPopup-Pwd">
+						<div class="msg-error"
+							ng-show="ctrl.userProfileForm.password.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
+						</div>
+
+					</div></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-cPwd-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><div>
+						<input maxlength="20" ng-model='ctrl.user.confirmPassword'
+							size="20" type="password" name="confirmPassword" 
+							ng-disabled="!ctrl.user.changePassword || !ctrl.user.isInternalAuthentication" ng-required="ctrl.user.changePassword && ctrl.user.isInternalAuthentication"
+							aid="ADM-PartMgmt-UserPopup-PwdConfirm">
+						<div class="msg-error"
+							ng-show="ctrl.userProfileForm.confirmPassword.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
+						</div>
+					</div></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td class="msg-error"
+					ng-show="ctrl.userProfileForm.$error.passwordMismatch">
+					{{i18n('views-common-messages.views-createUser-password-mismatch')}}</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td ng-show="ctrl.userProfileForm.$error.passwordValidationMsg">
+					<span class="msg-error"  ng-bind-html="ctrl.passwordValidationMsg"></span></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-realm-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><select size="1" ng-model="ctrl.user.realmId"
+					style="width: 210px; align: center;"
+					ng-options="opt.value as opt.label for opt in ctrl.user.allRealms"
+					aid="ADM-PartMgmt-UserPopup-Realm"
+					ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication"></select></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-email-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><input type="email" name="email" ng-model="ctrl.user.eMail"
+					aid="ADM-PartMgmt-UserPopup-Email"
+					ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication"></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><span class="msg-error"
+					ng-show="ctrl.userProfileForm.email.$error.email">
+						{{i18n('views-common-messages.views-createUser-invalideEmailAddress')}}</span></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-validFrom-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><div sd-date-time-picker ng-model="ctrl.user.validFrom"
+						name="validFrom" ng-model-onblur
+						sda-aid-prefix="ADM-PartMgmt-UserPopup-ValidFrom"
+						ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication"></div>
+					<div class="msg-error"
+						ng-show="ctrl.userProfileForm.validFrom.$error.validate">
+						{{i18n('html5-common.date-error')}}</div></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-validTo-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><div sd-date-time-picker ng-model="ctrl.user.validTo"
+						name="validTo" ng-model-onblur
+						sda-aid-prefix="ADM-PartMgmt-UserPopup-ValidTo"
+						ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication"></div>
+					<div class="msg-error"
+						ng-show="ctrl.userProfileForm.validTo.$error.validate">
+						{{i18n('html5-common.date-error')}}</div></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><div class="msg-error"
+						ng-show="ctrl.userProfileForm.$error.invalidDateRange"
+						style="width: 260px;">
+						{{i18n('views-common-messages.views-createUser-invalidDate')}}</div></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-qaOverride-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><div>
+						<input maxlength="3" style="width: 30px" type="text"
+							ng-model='ctrl.user.qaOverride'
+							aid="ADM-PartMgmt-UserPopup-QAProbability"
+							ng-disabled="ctrl.mode == 'MODIFY_PROFILE_CONFIGURATION'">
+					</div></td>
+			</tr>
+			<tr>
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-desc-label')
+						+ i18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><textarea cols="20" rows="5"
+						ng-model='ctrl.user.description' aid="ADM-PartMgmt-UserPopup-Desc"
+						ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication"></textarea></td>
+			</tr>
+		</tbody>
+	</table>
+</form>

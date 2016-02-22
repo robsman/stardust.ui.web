@@ -25,6 +25,7 @@ import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
@@ -35,8 +36,9 @@ import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.PerformerType;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.ParticipantSearchRequestDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
@@ -44,6 +46,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.DefaultDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DepartmentDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDepartmentProvider;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
@@ -70,8 +73,10 @@ public class ParticipantSearchComponent
 
    private Boolean disabledAdministrator = null;
 
+   private Map<Long, Department> departmentCache = CollectionUtils.newMap();
+   
    public enum PerformerTypeUI {
-      All(0), User(1), Role(2), Organization(3), Department(4);
+      All(0), Role(1), Organization(2), User(4), Department(8);
 
       private Integer val;
 
@@ -90,7 +95,7 @@ public class ParticipantSearchComponent
     * @param request
     * @return
     */
-   public String searchParticipants(String request)
+   public String searchParticipants(String request, Integer skip, Integer pageSize)
    {
       // convert request json to request object
       ParticipantSearchRequestDTO delegationDTO = GsonUtils.fromJson(request, ParticipantSearchRequestDTO.class);
@@ -110,50 +115,99 @@ public class ParticipantSearchComponent
       }
 
       // search participant
-      List<ParticipantSearchResponseDTO> response = getMatchingData(delegationDTO);
+      List<ParticipantDTO> response = getMatchingData(delegationDTO);
 
+      QueryResultDTO result = new QueryResultDTO();
+      result.totalCount = response.size();
+      result.list = response;
+      
+      if (skip != null && pageSize != null && skip < result.totalCount && result.totalCount > pageSize) {
+         long to = pageSize;
+         if (result.totalCount - skip < pageSize) {
+            to = result.totalCount;
+         }
+         result.list = response.subList(skip, (int) to);
+      }
+      
       // convert response to json string
-      return GsonUtils.toJsonHTMLSafeString(response);
+      return GsonUtils.toJsonHTMLSafeString(result);
    }
    
    
-   
    /**
-    * @param request
+    * @param searchText
+    * @param maxMatches
     * @return
     */
    public String searchAllParticipants(String searchText, int maxMatches)
    {
-      
-     QueryService service = serviceFactoryUtils.getQueryService();
-      UserQuery userQuery = UserQuery.findActive();
-      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
-      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL, UserPreferencesEntries.M_VIEWS_COMMON);
-      userQuery.setPolicy(userPolicy);
-      
-      if (!StringUtils.isEmpty(searchText))
+      return searchAllParticipants(searchText, maxMatches, 15, true, true);
+   }
+   
+   /**
+    * @param searchText
+    * @param maxMatches
+    * @param type 
+    * @return
+    */
+   public String searchAllParticipants(String searchText, int maxMatches, int type, boolean filterPredefinedModel, boolean filterScopedParticipant)
+   {
+      List<ParticipantDTO> selectedParticipants = new ArrayList<ParticipantDTO>();
+      QueryService service = serviceFactoryUtils.getQueryService();
+
+      if (containsUser(type))
       {
-         String name = searchText.replaceAll("\\*", "%") + "%";
-         String nameFirstLetterCaseChanged = UserUtils.alternateFirstLetter(name);
-         FilterOrTerm or = userQuery.getFilter().addOrTerm();
-         or.add(UserQuery.LAST_NAME.like(name));
-         or.add(UserQuery.LAST_NAME.like(nameFirstLetterCaseChanged));
-         or.add(UserQuery.FIRST_NAME.like(name));
-         or.add(UserQuery.FIRST_NAME.like(nameFirstLetterCaseChanged));
-         or.add(UserQuery.ACCOUNT.like(name));
-         or.add(UserQuery.ACCOUNT.like(nameFirstLetterCaseChanged));
+         UserQuery userQuery = UserQuery.findActive();
+         UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+         userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL, UserPreferencesEntries.M_VIEWS_COMMON);
+         userQuery.setPolicy(userPolicy);
+
+         if (!StringUtils.isEmpty(searchText))
+         {
+            String name = searchText.replaceAll("\\*", "%") + "%";
+            String nameFirstLetterCaseChanged = UserUtils.alternateFirstLetter(name);
+            FilterOrTerm or = userQuery.getFilter().addOrTerm();
+            or.add(UserQuery.LAST_NAME.like(name));
+            or.add(UserQuery.LAST_NAME.like(nameFirstLetterCaseChanged));
+            or.add(UserQuery.FIRST_NAME.like(name));
+            or.add(UserQuery.FIRST_NAME.like(nameFirstLetterCaseChanged));
+            or.add(UserQuery.ACCOUNT.like(name));
+            or.add(UserQuery.ACCOUNT.like(nameFirstLetterCaseChanged));
+         }
+         userQuery.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
+         Users matchingUsers = service.getAllUsers(userQuery);
+         selectedParticipants.addAll(copyToParticipantDTOList(matchingUsers));
       }
-      userQuery.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
-
-      Users matchingUsers = service.getAllUsers(userQuery);
-      List<ParticipantSearchResponseDTO> selectedParticipants = new ArrayList<ParticipantSearchResponseDTO>();
-      selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(matchingUsers));
-
-      List<Participant> rolesAndOrgs = service.getAllParticipants();
-      selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(rolesAndOrgs, searchText));      
       
-      Set<DepartmentInfo> departments = getAllDepartments(rolesAndOrgs, service);
-      selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(departments, searchText));
+      //TODO: is there a requirement for separate role and organizations?
+      if (containsOrganization(type) && containsRole(type))
+      {
+         List<Participant> rolesAndOrgs = null;
+         if(filterScopedParticipant)
+         {
+            rolesAndOrgs = ParticipantUtils.getAllUnScopedModelParticipant(filterPredefinedModel);   
+         }
+         else
+         {
+            List<QualifiedModelParticipantInfo> allParticipants = ParticipantUtils.getAllModelParticipants(filterPredefinedModel);
+            rolesAndOrgs = CollectionUtils.newArrayList();
+            for (QualifiedModelParticipantInfo participant : allParticipants)
+            {
+               if (participant instanceof Participant)
+               {
+                  rolesAndOrgs.add((Participant) participant);
+               }
+            }
+         }
+         
+         selectedParticipants.addAll(copyToParticipantDTOList(rolesAndOrgs, searchText));
+         
+         if (containsDepartment(type))
+         {
+            Set<DepartmentInfo> departments = getAllDepartments(rolesAndOrgs, service);
+            selectedParticipants.addAll(copyToParticipantDTOList(departments, searchText));
+         }
+      }
       
       return GsonUtils.toJsonHTMLSafeString(selectedParticipants);
    }
@@ -162,7 +216,7 @@ public class ParticipantSearchComponent
     * @param participantSReqDTO
     * @return
     */
-   public List<ParticipantSearchResponseDTO> getMatchingData(ParticipantSearchRequestDTO participantSReqDTO)
+   private List<ParticipantDTO> getMatchingData(ParticipantSearchRequestDTO participantSReqDTO)
    {
       IDepartmentProvider.Options departmentOptions = null;
 
@@ -189,13 +243,13 @@ public class ParticipantSearchComponent
     * @param depOptions
     * @return
     */
-   public List<ParticipantSearchResponseDTO> getMatchingData(Long[] activities,
+   private List<ParticipantDTO> getMatchingData(Long[] activities,
          IDelegatesProvider.Options defualtOptions, IDepartmentProvider.Options depOptions)
    {
       // prepare activities
       List<ActivityInstance> activityInstances = activityInstanceUtils.getActivityInstancesFor(activities);
 
-      List<ParticipantSearchResponseDTO> result = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> result = new ArrayList<ParticipantDTO>();
 
       if (defualtOptions != null)
       {
@@ -215,7 +269,7 @@ public class ParticipantSearchComponent
     * @param options
     * @return
     */
-   private List<ParticipantSearchResponseDTO> getMatchingDataDefault(List<ActivityInstance> activities,
+   private List<ParticipantDTO> getMatchingDataDefault(List<ActivityInstance> activities,
          IDelegatesProvider.Options options)
    {
       if (null == delegatesProvider)
@@ -223,15 +277,15 @@ public class ParticipantSearchComponent
          delegatesProvider = DefaultDelegatesProvider.INSTANCE;
       }
 
-      List<ParticipantSearchResponseDTO> selectedParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectedParticipants = new ArrayList<ParticipantDTO>();
 
       // Add default participants
       Map<PerformerType, List< ? extends ParticipantInfo>> delegates = delegatesProvider.findDelegates(activities,
             options);
-      selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(delegates.get(PerformerType.User)));
+      selectedParticipants.addAll(copyToParticipantDTOList(delegates.get(PerformerType.User)));
       selectedParticipants
-            .addAll(copyToParticipantSearchResponseDTOList(delegates.get(PerformerType.ModelParticipant)));
-      selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(delegates.get(PerformerType.UserGroup)));
+            .addAll(copyToParticipantDTOList(delegates.get(PerformerType.ModelParticipant)));
+      selectedParticipants.addAll(copyToParticipantDTOList(delegates.get(PerformerType.UserGroup)));
 
       return selectedParticipants;
    }
@@ -241,11 +295,11 @@ public class ParticipantSearchComponent
     * @param options
     * @return
     */
-   private List<ParticipantSearchResponseDTO> getMatchingDepartment(List<ActivityInstance> activities,
+   private List<ParticipantDTO> getMatchingDepartment(List<ActivityInstance> activities,
          IDepartmentProvider.Options options)
    {
 
-      List<ParticipantSearchResponseDTO> selectedParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectedParticipants = new ArrayList<ParticipantDTO>();
 
       // Add departments
       if (null == departmentDelegatesProvider)
@@ -259,7 +313,7 @@ public class ParticipantSearchComponent
 
       for (DepartmentInfo departmentInfo : selectedDepts)
       {
-         ParticipantSearchResponseDTO participantDTO = new ParticipantSearchResponseDTO(departmentInfo);
+         ParticipantDTO participantDTO = new ParticipantDTO(departmentInfo);
          selectedParticipants.add(participantDTO);
       }
 
@@ -270,23 +324,23 @@ public class ParticipantSearchComponent
     * @param allParticipants
     * @return
     */
-   private List<ParticipantSearchResponseDTO> copyToParticipantSearchResponseDTOList(
+   private List<ParticipantDTO> copyToParticipantDTOList(
          List< ? extends ParticipantInfo> allParticipants)
    {
-      List<ParticipantSearchResponseDTO> selectParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectParticipants = new ArrayList<ParticipantDTO>();
       if (allParticipants != null)
       {
          for (ParticipantInfo participantInfo : allParticipants)
          {
             if (participantInfo instanceof Participant)
             {
-               selectParticipants.add(new ParticipantSearchResponseDTO((Participant) participantInfo));
+               selectParticipants.add(new ParticipantDTO((Participant) participantInfo));
             }
          }
       }
       return selectParticipants;
    }
-
+   
    /**
     * @param ParticipantSearchRequestDTO
     * @return
@@ -409,10 +463,10 @@ public class ParticipantSearchComponent
     * @param searchValue
     * @return
     */
-   private Collection< ? extends ParticipantSearchResponseDTO> copyToParticipantSearchResponseDTOList(Set<DepartmentInfo> departments,
+   private Collection< ? extends ParticipantDTO> copyToParticipantDTOList(Set<DepartmentInfo> departments,
          String searchValue)
    {
-      List<ParticipantSearchResponseDTO> selectParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectParticipants = new ArrayList<ParticipantDTO>();
       String regex = !StringUtils.isEmpty(searchValue) ? searchValue.replaceAll("\\*", ".*") + ".*" : null;
       if (CollectionUtils.isNotEmpty(departments))
       {
@@ -420,7 +474,7 @@ public class ParticipantSearchComponent
          {
             if (deptInfo.getName().matches(regex))
             {
-               selectParticipants.add(new ParticipantSearchResponseDTO((Department) deptInfo));
+               selectParticipants.add(new ParticipantDTO(deptInfo));
             }
          }
       }
@@ -432,34 +486,34 @@ public class ParticipantSearchComponent
     * @param allParticipants
     * @return
     */
-   private List<ParticipantSearchResponseDTO> copyToParticipantSearchResponseDTOList(Users allParticipants)
+   private List<ParticipantDTO> copyToParticipantDTOList(Users allParticipants)
    {
-      List<ParticipantSearchResponseDTO> selectParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectParticipants = new ArrayList<ParticipantDTO>();
       if (allParticipants != null)
       {
          for (Participant participant : allParticipants)
          {
-            selectParticipants.add(new ParticipantSearchResponseDTO(participant));
+            selectParticipants.add(new ParticipantDTO(participant));
          }
       }
       return selectParticipants;
-   }
+   }    
 
    /**
     * @param allParticipants
     * @return
     */
-   private List<ParticipantSearchResponseDTO> copyToParticipantSearchResponseDTOList(List<Participant> allParticipants, String searchValue)
+   private List<ParticipantDTO> copyToParticipantDTOList(List<Participant> allParticipants, String searchValue)
    {
-      List<ParticipantSearchResponseDTO> selectParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectParticipants = new ArrayList<ParticipantDTO>();
       String regex = !StringUtils.isEmpty(searchValue) ? searchValue.replaceAll("\\*", ".*") + ".*" : null;
       if (allParticipants != null)
       {
          for (Participant participant : allParticipants)
          {
-            if (participant.getName().matches(regex))
+            if (regex == null || participant.getName().matches(regex))
             {
-               selectParticipants.add(new ParticipantSearchResponseDTO(participant));
+               selectParticipants.add(new ParticipantDTO(participant));
             }
          }
       }
@@ -502,4 +556,23 @@ public class ParticipantSearchComponent
       this.disabledAdministrator = disabledAdministrator;
    }
    
+   private boolean containsRole(int input)
+   {
+      return ((input & PerformerTypeUI.Role.getValue()) == PerformerTypeUI.Role.getValue());
+   }
+   
+   private boolean containsOrganization(int input)
+   {
+      return ((input & PerformerTypeUI.Organization.getValue()) == PerformerTypeUI.Organization.getValue());
+   }
+   
+   private boolean containsUser(int input)
+   {
+      return ((input & PerformerTypeUI.User.getValue()) == PerformerTypeUI.User.getValue());
+   }
+   
+   private boolean containsDepartment(int input)
+   {
+      return ((input & PerformerTypeUI.Department.getValue()) == PerformerTypeUI.Department.getValue());
+   }
 }

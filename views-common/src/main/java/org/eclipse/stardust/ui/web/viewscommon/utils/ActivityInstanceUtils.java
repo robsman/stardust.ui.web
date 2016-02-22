@@ -19,12 +19,14 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.ConcurrencyException;
@@ -49,6 +51,7 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.benchmark.BenchmarkResult;
 import org.eclipse.stardust.engine.core.model.utils.ActivityReportUtils;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.core.runtime.beans.ActivityInstanceProperty;
@@ -59,6 +62,7 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
@@ -79,6 +83,7 @@ public class ActivityInstanceUtils
    private static final String STATUS_PREFIX = "views.activityTable.statusFilter.";
    public static final String IMAGE_BASE_PATH = "/plugins/views-common/images/icons/process-history/";
    private static final Map<String, String> iconMap;
+   private static final Map<String, String> fontMap;
    
    static
    {
@@ -100,6 +105,27 @@ public class ActivityInstanceUtils
       iconMap.put("activityQAPassed", Constants.ACTIVITY_QA_PASSED_IMAGE);
       iconMap.put("activityQAAwait", Constants.ACTIVITY_QA_AWAIT_IMAGE);
       iconMap.put("Note", "/plugins/views-common/images/icons/mime-types/notes-filled.png");
+      
+      // TODO - review icons
+      fontMap = new LinkedHashMap<String, String>();
+      fontMap.put("ApplicationActivity", "pi-non-interactive-activity");
+      fontMap.put("ManualActivity", "pi-manual-activity");
+      fontMap.put("Auxiliary", "pi-activity-auxiliary");
+      fontMap.put("Delegate", "pi-activity-delegate");
+      fontMap.put("Exception", "pi-exception-circle");
+      fontMap.put("EventException", "pi-exception-circle");
+      fontMap.put("EventTimer", "pi-clock");
+      fontMap.put("ActivityCompleted", "pi-activity-complete");
+      fontMap.put("StateChange", "pi-activity-state");
+      fontMap.put("ProcessInstance", "pi-process");
+      fontMap.put("SubProcess", "pi-process");
+      fontMap.put("AuxiliaryProcess", "pi-process-auxiliary");
+      fontMap.put("CaseInstance", "pi-case");
+      fontMap.put("activityQAFailed", "pi-qa-failed");
+      fontMap.put("activityQAPassed", "pi-qa-passed");
+      fontMap.put("activityQAAwait", "pi-qa-waiting");
+      fontMap.put("Note", "pi-notes");
+      
    }
    
    /**
@@ -183,6 +209,33 @@ public class ActivityInstanceUtils
 
          }
       }
+   }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static boolean isRelocationEligible(ActivityInstance ai)
+   {
+      boolean canRelocate = false;
+      if (null != ai.getActivity().getAttribute("carnot:engine:relocate:source")
+            && (Boolean) ai.getActivity().getAttribute("carnot:engine:relocate:source"))
+      {
+         if (ai.getActivity().isInteractive()
+               && (ai.getState().equals(ActivityInstanceState.Application)
+                     || ai.getState().equals(ActivityInstanceState.Suspended) || ai.getState()
+                     .equals(ActivityInstanceState.Hibernated)))
+         {
+            canRelocate = true;
+         }
+         else if (ai.getState().equals(ActivityInstanceState.Hibernated)
+               || ai.getState().equals(ActivityInstanceState.Interrupted))
+         {
+            canRelocate = true;
+         }
+      }
+
+      return canRelocate;
    }
 
    /**
@@ -364,10 +417,64 @@ public class ActivityInstanceUtils
          // Target timestamp is available as ActivityInstanceProperty
          ActivityInstanceProperty targetTimeProperty = (ActivityInstanceProperty) binding
                .getAttribute(PredefinedConstants.TARGET_TIMESTAMP_ATT);
+         Calendar dateTime = PortalTimestampProvider.getCalendar();
+         if(null != targetTimeProperty)
+         {
+            dateTime.setTimeInMillis(targetTimeProperty.getLongValue());
+            return dateTime.getTime();
+         }
+         else
+         {
+            Boolean dataAttr = (Boolean) binding.getAttribute(PredefinedConstants.TIMER_CONDITION_USE_DATA_ATT);
+            if (null != dataAttr && dataAttr.booleanValue())
+            {
+               String dataId = (String) binding.getAttribute(PredefinedConstants.TIMER_CONDITION_DATA_ATT);
+               String dataPathId = (String) binding.getAttribute(PredefinedConstants.TIMER_CONDITION_DATA_PATH_ATT);
+               if (null != dataId)
+               {
+                  Map<String, Serializable> data = null;
+                  // Primitive IN dataMapping, dataPath not required
+                  if (null == dataPathId)
+                  {
+                     Object value = workflowService.getInDataValue(ai.getOID(), PredefinedConstants.DEFAULT_CONTEXT,
+                           dataId);
+                     return getTimestampValue(value, ai);
 
-         Calendar dateTime = Calendar.getInstance();
-         dateTime.setTimeInMillis(targetTimeProperty.getLongValue());
-         return dateTime.getTime();
+                  }
+                  else
+                  {
+                     // Structured IN dataMapping
+                     data = (Map<String, Serializable>) workflowService.getInDataValue(ai.getOID(),
+                           PredefinedConstants.DEFAULT_CONTEXT, dataId);
+                  }
+                  if (CollectionUtils.isNotEmpty(data))
+                  {
+                     for (Entry<String, Serializable> dataMap : data.entrySet())
+                     {
+                        String key = dataMap.getKey();
+                        if (key.equals(dataPathId))
+                        {
+                           Object value = dataMap.getValue();
+                           return getTimestampValue(value, ai);
+                        }
+                     }
+                  }
+
+               }
+            }
+            else
+            {
+               Period period = (Period) binding.getAttribute(PredefinedConstants.TIMER_PERIOD_ATT);
+               if (period != null)
+               {
+                  dateTime = null != ai.getStartTime() ? PortalTimestampProvider.getCalendar(ai.getStartTime()) : dateTime;
+                  dateTime = period.add(dateTime);
+                  return dateTime.getTime();
+               }
+            }
+            
+         }
+         
       }
       catch (Exception e) {
          trace.error("Resubmission Date not available for : " + ai != null ? ai.getOID() : "");
@@ -866,6 +973,11 @@ public class ActivityInstanceUtils
       return fileName;
    }
    
+   public static String getFont(String formatType)
+   {
+      return getFontMap().get(formatType);
+   }
+   
    /**
     * @param type
     * @param strict
@@ -923,6 +1035,11 @@ public class ActivityInstanceUtils
    {
       return iconMap;
    }
+
+   public static Map<String, String> getFontMap()
+   {
+      return fontMap;
+   }
    
    
    /**
@@ -937,5 +1054,69 @@ public class ActivityInstanceUtils
          notes = ProcessInstanceUtils.getNotes2(ai.getProcessInstance());
       }
       return notes;
+   }
+   
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static String getBenchmarkLabel(ActivityInstance ai)
+   {
+      return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "name");
+   }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static String getBenchmarkColor(ActivityInstance ai)
+   { 
+      return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "color");
+   }
+   
+   /**
+    * 
+    * @param result
+    * @param property
+    * @return
+    */
+   private static String getPropertyFromBenchmarkResult(BenchmarkResult result, String property)
+   {
+      String value = null;
+      if (null != result)
+      {
+         Map<String, Serializable> properties = result.getProperties();
+         if ((properties != null) && properties.containsKey(property))
+         {
+            return (String) properties.get(property);
+         }
+      }
+      return value;
+   }
+   
+   /**
+    * 
+    * @param value
+    * @param ai
+    * @return
+    */
+   private static Date getTimestampValue(Object value, ActivityInstance ai)
+   {
+      Date targetTimeStamp = null;
+      if (value instanceof Date)
+      {
+         targetTimeStamp = ((Date) value);
+      }
+      else if (value instanceof Long)
+      {
+         targetTimeStamp = new Date((Long) value);
+      }
+      else if (value instanceof Period)
+      {
+         Calendar dateTime = PortalTimestampProvider.getCalendar(ai.getStartTime());
+         targetTimeStamp = ((Period) value).add(dateTime).getTime();
+      }
+      return targetTimeStamp;
    }
 }

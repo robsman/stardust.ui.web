@@ -779,7 +779,7 @@ define(
 				Diagram.prototype.processCommand = function(command) {
 					m_utils.debug("===> Diagram Process Command");
 					m_utils.debug(command.type);
-
+					m_messageDisplay.clear();
 					// Parse the response JSON from command pattern
 
 					var obj = ("string" == typeof (command)) ? jQuery
@@ -1054,6 +1054,26 @@ define(
 						this.animationEasing = null;
 					}
 				};
+				
+	      /**
+         * 
+         * @param command
+         * @param response
+         */
+            Diagram.prototype.processCommandError = function(command, response) {
+              m_messageDisplay.clear();
+   
+              // rever operation
+              if (response.responseText
+                      && (response.responseText
+                              .indexOf("ModelerError.revertLastCommand") > -1)) {
+                m_messageDisplay.showMessage(m_i18nUtils.getProperty(response.responseText).replace('{0}', "ID"));
+                if (this.lastSymbol) {
+                  console.log("Reverting Last Operation....");
+                  this.lastSymbol.remove();
+                }
+              }
+            }
 
 				/**
 				 * Find an Activity Symbol by the Id of the corresponding Activity.

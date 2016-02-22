@@ -29,33 +29,51 @@ define(
 				"rules-manager/js/m_i18nMapper",
 				"rules-manager/js/m_ruleSetCommandDispatcher",
 				"rules-manager/js/m_ruleSetCommand",
-				"rules-manager/js/hotDecisionTable/m_utilities"],
+				"rules-manager/js/hotDecisionTable/m_utilities",
+				"rules-manager/js/m_rulesManagerService",],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_data, m_elementConfiguration, m_jsfViewManager,
 				m_messageDisplay, m_i18nUtils, m_communicationController, m_jsfViewManagerHelper,
 				m_outlineToolbarController, CommandsDispatcher, RuleSet,
 				m_i18nMapper,m_ruleSetCommandDispatcher,m_ruleSetCommand,
-				m_utilities) {
+				m_utilities,m_rulesManagerService) {
 			
-			
+			var that = this;
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
 			var displayScope = "";
 			var viewManager;
 			
+			this.supportsRuleSetPublish = false;
+			//Retrieve artifact types
+			m_rulesManagerService.getSupportedArtifactTypes()
+			.done(function(data){
+				
+				that.supportsRuleSetPublish = data.some(function(v){
+					return v.id ==="drools-ruleset";
+				});
+				
+				if(that.supportsRuleSetPublish===false){
+					jQuery("#selectRuleMode").hide();
+				}
+			})
+			.fail(function(){
+				//fail
+			});
 			
-			
-			var readAllRuleSets = function(force) {
 
+			var readAllRuleSets = function(force,mode) {
+
+				loadCustomTheme();
+				mode = (mode === "DESIGN" || mode ==="PUBLISHED")?mode:"DESIGN";
 				// Needed for types
-
 				m_model.loadModels(false);
-
+				
 				jQuery("#lastsave").text(m_i18nUtils
 										.getProperty("rules.outline.labels.lastSave"));
 	
-				jQuery.each(RuleSet.getRuleSets(force),
+				jQuery.each(RuleSet.getRuleSets(force,mode),
 					function(index, ruleSet) {
 
 						if(ruleSet.state.isDeleted===false){
@@ -96,7 +114,7 @@ define(
 								"elementId" : ruleSet.id,
 								"title": ruleSet.description
 							},
-							"data" : ruleSet.name
+							"data" : { title : ruleSet.name , icon : 'pi pi-rule-set pi-lg'}
 						}, null, true);
 				jQuery(displayScope + "#outline").jstree("set_type", "ruleSet",
 						"#" + ruleSet.uuid);
@@ -114,7 +132,7 @@ define(
 								"draggable" : true,
 								"elementId" : decTable.id
 							},
-							"data" : decTable.name
+							"data" : { title : decTable.name , icon : 'pi pi-decision-table pi-lg '}
 						}, null, true);
 			};
 			
@@ -130,13 +148,74 @@ define(
 								"draggable" : true,
 								"elementId" : techRule.id
 							},
-							"data" : techRule.name
+							"data" : { title : techRule.name , icon : 'pi pi-technical-rule pi-lg '}
 						}, null, true);
 			};
 			
-			var exportRuleSet = function(uuid) {
-				var ruleSet = RuleSet.findRuleSetByUuid(uuid);
-
+			/*Publishes a design-time rule set*/
+			var publishRuleSet = function(uuid){
+				
+				//Find our ruleSet as we will need the id from it for our url.
+				var ruleSet = RuleSet.findRuleSetByUuid(uuid,"DESIGN");
+				
+				//Set up success callback;
+				var successCallback = function(){
+					
+					var message = m_i18nUtils.getProperty("rules.messages.publish.success", "Ruleset, {0} was successfully published.");
+					message = message.replace("{0}", ruleSet.name);
+					
+					var data = {
+							"attributes" : {
+								"width" : "400px",
+								"height" : "200px",
+								"src" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/notificationDialog.html"
+							},
+							"payload" : {
+								"title" : m_i18nUtils.getProperty("rules.messages.publish.title.success","Success"),
+								"message" : message,
+								"okButtonText" :  m_i18nUtils.getProperty("rules.messages.confirm.close","Close")
+							}
+						};
+					
+					parent.iPopupDialog.openPopup(data);
+				};
+				
+				//Set up error callback;
+				var errorCallback = function(){
+					
+					var message = m_i18nUtils.getProperty("rules.messages.publish.error","An error occurred publishing ruleset, {0}.");
+					message = message.replace("{0}",ruleSet.name);
+					
+					var data = {
+						"attributes" : {
+							"width" : "400px",
+							"height" : "200px",
+							"src" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/errorDialog.html"
+						},
+						"payload" : {
+							"title" :  m_i18nUtils.getProperty("rules.messages.warning","Warning"),
+							"message" :  message,
+							"okButtonText" : m_i18nUtils.getProperty("rules.messages.confirm.close","Close")
+						}
+					};
+					
+					parent.iPopupDialog.openPopup(data);
+				};
+				RuleSet.publishRuleSet(ruleSet.id,successCallback,errorCallback);
+			};
+			
+			var exportRuleSet = function(uuid,mode) {
+				
+				var ruleSet,
+					terminalPoint,
+					url;
+				
+				//guard mode value to ensure it is valid
+				mode = (mode === "DESIGN" || mode ==="PUBLISHED")?mode:"DESIGN";
+				ruleSet = RuleSet.findRuleSetByUuid(uuid,mode);
+				
+				terminalPoint = (mode==="DESIGN")?"design-time":"run-time";
+				
 				if (!areRuleSetsSaved()) {
 					if (parent.iPopupDialog) {
 						parent.iPopupDialog
@@ -161,7 +240,11 @@ define(
 					}
 				} else {
 					if (ruleSet) {
-						window.location = m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/ruleSet/" + encodeURIComponent(ruleSet.id) + "/download"
+						url =  m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/";
+						url += new Date().getTime() + "/rule-sets/" + terminalPoint;
+						url += "/" + encodeURIComponent(ruleSet.id) + "/download";
+						window.location = url;
+						//window.location = m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/ruleSet/" + encodeURIComponent(ruleSet.id) + "/download"
 					}	
 				}
 			}
@@ -239,7 +322,7 @@ define(
 				var nodeType=data.rslt.obj.attr('rel');
 				var newID;
 				if (nodeType == 'ruleSet') {
-					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"));
+					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"),"DESIGN");
 					var oldName = ruleSet.name;
 					var newName = data.rslt.name;
 					ruleSet.name = newName;
@@ -251,7 +334,7 @@ define(
 					m_ruleSetCommandDispatcher.trigger(cmd);
 				} 
 				else if(nodeType=="DecisionTable"){
-					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"));
+					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"),"DESIGN");
 					var decTable = ruleSet.findDecisionTableByUuid(data.rslt.obj.attr("id"));
 					var oldName=decTable.name;
 					var newName=data.rslt.name;
@@ -264,7 +347,7 @@ define(
 					m_ruleSetCommandDispatcher.trigger(cmd);
 				}
 				else if(nodeType=="TechnicalRule"){
-					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"));
+					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"),"DESIGN");
 					var techRule = ruleSet.findTechnicalRuleByUuid(data.rslt.obj.attr("id"));
 					var oldName=techRule.name;
 					var newName=data.rslt.name;
@@ -334,10 +417,32 @@ define(
 			};
 			
 			var reloadOutlineTree = function(force) {
+				var mode;
+				
 				jQuery(displayScope + "#outline").empty();
-				readAllRuleSets(force);
+				mode = getCurrentMode();
+				readAllRuleSets(force,mode);
 			};
-
+			
+			/**
+			 * Retrieves the current mode as specified in select dropdown (DESIGN | PUBLISHED)
+			 */
+			var getCurrentMode = function(){
+				var selectRuleMode,
+					mode;
+				
+				selectRuleMode = document.getElementById('selectRuleMode');
+				if(selectRuleMode && selectRuleMode.options  && selectRuleMode.options.length > 0){
+					mode = selectRuleMode.options[selectRuleMode.selectedIndex].value;
+				}
+				else{
+					mode="DESIGN";
+				}
+				
+				return mode;
+				
+			};
+			
 			var importRuleSet = function() {
 				if (!areRuleSetsSaved()) {
 					if (parent.iPopupDialog) {
@@ -443,7 +548,7 @@ define(
 			function saveRuleSets(deletedOnly,virginOnly) {
 				var rsArray=[], /* transformed ruleSets we will post to the server*/
 					refRsArray=[]; /* ref to original ruleSets we will operate on within the success callback*/
-				debugger;
+				
 				console.log("SAVE=");
 				console.log(this);
 				deletedOnly=deletedOnly || false;
@@ -492,7 +597,7 @@ define(
 				m_communicationController
 						.syncPostData(
 								{
-									url : m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/save"
+									url : m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/rule-sets/design-time/save"
 								},
 								JSON.stringify(rsArray),
 								new function() {
@@ -648,7 +753,7 @@ define(
 				
 				jsOutlineTree.on(cnstCmd.ruleDeleteCmd,function(event,data){
 					var elementUUID=data.elementID;
-					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID,"DESIGN");
 					viewManager.closeViewsForElement(data.elementID);
 					if(ruleSet.technicalRules.hasOwnProperty(data.elementID)){
 						ruleSet.deleteTechnicalRule(data.elementID);
@@ -659,7 +764,7 @@ define(
 				jsOutlineTree.on(cnstCmd.ruleCreateCmd,function(event,data){
 					var elementUUID=data.elementID;
 					var techRule=data.changes[0].value.after;
-					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID,"DESIGN");
 					
 					/*filter duplicates, guranteed to occur as we receive the echo of
 					 *our own techrule create events.*/
@@ -671,7 +776,7 @@ define(
 				
 				jsOutlineTree.on(cnstCmd.decTableDeleteCmd,function(event,data){
 					var elementUUID=data.elementID;
-					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID,"DESIGN");
 					/*Only delete if we actually have something to delete*/
 					if(ruleSet.decisionTables.hasOwnProperty(data.elementID)===true){						
 						viewManager.closeViewsForElement(data.elementID);
@@ -683,7 +788,7 @@ define(
 				jsOutlineTree.on(cnstCmd.decTableCreateCmd,function(event,data){
 					var elementUUID=data.elementID;
 					var decTable=data.changes[0].value.after;
-					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID,"DESIGN");
 					
 					/*If the decision table is already present (which it will be in cases
 					 * where we subscribe to our own create events, then ignore.)*/
@@ -705,29 +810,34 @@ define(
 					.bind(
 							"select_node.jstree",
 							function(event, data) {
+								
+								var mode = getCurrentMode();
+								
 								if (data.rslt.obj.attr('rel') == 'ruleSet') {
-									var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"));
+									var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"),mode);
 									viewManager.openView("ruleSetView",
-											"id=" + ruleSet.id + "&name="
-													+ ruleSet.name
-													+ "&uuid="
-													+ ruleSet.uuid,
+											"id=" + ruleSet.id + 
+											"&name=" + ruleSet.name +
+											"&uuid=" + ruleSet.uuid +
+											"&mode=" + mode,
 											ruleSet.uuid);
 								}
 								else if (data.rslt.obj.attr('rel') == "TechnicalRule") {
 									var ruleSet = RuleSet
-											.findRuleSetByUuid(data.rslt.obj
-													.attr("ruleSetUuid"));
+											.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"),mode);
 
 									var techRule = ruleSet
 											.findTechnicalRuleByUuid(data.rslt.obj.attr("id"));
 
-									viewManager.openView("technicalRuleView", "id="
-											+ techRule.id + "&ruleSetId="
-											+ ruleSet.id + "&name="
-											+ techRule.name + "&uuid="
-											+ techRule.uuid + "&ruleSetUuid="
-											+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, techRule.uuid);
+									viewManager.openView("technicalRuleView", 
+											"id=" + techRule.id + 
+											"&ruleSetId=" + ruleSet.id + 
+											"&name=" + techRule.name + 
+											"&uuid=" + techRule.uuid + 
+											"&ruleSetUuid=" + ruleSet.uuid + 
+											"&parentUUID=" + ruleSet.uuid + 
+											"&mode=" + mode,
+											techRule.uuid);
 								} 
 								else if (data.rslt.obj.attr('rel') == "DecisionTable") {
 									var ruleSet = RuleSet
@@ -737,12 +847,15 @@ define(
 									var decTable = ruleSet
 											.findDecisionTableByUuid(data.rslt.obj.attr("id"));
 
-									viewManager.openView("decisionTableView", "id="
-											+ decTable.id + "&ruleSetId="
-											+ ruleSet.id + "&name="
-											+ decTable.name + "&uuid="
-											+ decTable.uuid + "&ruleSetUuid="
-											+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, decTable.uuid);
+									viewManager.openView("decisionTableView", 
+											"id=" + decTable.id + 
+											"&ruleSetId=" + ruleSet.id + 
+											"&name=" + decTable.name + 
+											"&uuid=" + decTable.uuid + 
+											"&ruleSetUuid=" + ruleSet.uuid + 
+											"&parentUUID=" + ruleSet.uuid + 
+											"&mode=" + mode,
+											decTable.uuid);
 								} 
 								else {
 									m_utils.debug("No View defined for "
@@ -838,135 +951,160 @@ define(
 											"ui","sort" ],
 									contextmenu : {
 										"items" : function(node) {
-											var nodeType=node.attr('rel');
-											if("DecisionTable"===nodeType || "TechnicalRule"===nodeType){
-												return{
-													"ccp":false,
-													"create":false,										
-													"delete":{
-														"label":m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.delete","Delete"),
-														"action": function(obj){
-															var techRule,decTable;
-															deleteElementAction(obj.context.lastChild.data,
-																function(){
-																	var ruleSet = RuleSet.findRuleSetByUuid(obj.attr("ruleSetUuid")),
-																	    id=obj.attr("id");
-																	if(nodeType==="DecisionTable"){
-																		decTable=ruleSet.decisionTables[id];
-																		if(decTable){
-																			cmd=m_ruleSetCommand.decTableDeleteCmd(ruleSet,decTable,decTable,undefined);
-																			m_ruleSetCommandDispatcher.trigger(cmd);
-																			ruleSet.deleteDecisionTable(id);
+											var nodeType=node.attr('rel'),
+												currentMode = getCurrentMode();
+											if(currentMode === "DESIGN"){
+												if("DecisionTable"===nodeType || "TechnicalRule"===nodeType){
+													return{
+														"ccp":false,
+														"create":false,										
+														"delete":{
+															"label":m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.delete","Delete"),
+															"action": function(obj){
+																var techRule,decTable;
+																deleteElementAction(obj.context.lastChild.data,
+																	function(){
+																		var ruleSet = RuleSet.findRuleSetByUuid(obj.attr("ruleSetUuid")),
+																		    id=obj.attr("id");
+																		if(nodeType==="DecisionTable"){
+																			decTable=ruleSet.decisionTables[id];
+																			if(decTable){
+																				cmd=m_ruleSetCommand.decTableDeleteCmd(ruleSet,decTable,decTable,undefined);
+																				m_ruleSetCommandDispatcher.trigger(cmd);
+																				ruleSet.deleteDecisionTable(id);
+																			}
+																		}else if(nodeType==="TechnicalRule"){
+																			techRule=ruleSet.technicalRules[id];
+																			if(techRule){
+																				cmd=m_ruleSetCommand.ruleDeleteCmd(ruleSet,techRule,techRule,undefined);
+																				m_ruleSetCommandDispatcher.trigger(cmd);
+																				ruleSet.deleteTechnicalRule(id);
+																			}
 																		}
-																	}else if(nodeType==="TechnicalRule"){
-																		techRule=ruleSet.technicalRules[id];
-																		if(techRule){
-																			cmd=m_ruleSetCommand.ruleDeleteCmd(ruleSet,techRule,techRule,undefined);
-																			m_ruleSetCommandDispatcher.trigger(cmd);
-																			ruleSet.deleteTechnicalRule(id);
-																		}
-																	}
-																	viewManager.closeViewsForElement(obj.attr("id"));
-																	jQuery(displayScope + "#outline")
-																		.jstree("delete_node","#"+ id);
-																});
-														}
-													},
-													"rename":{
-														"label":m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.rename","Rename"),
-														"action":function(obj){
-															/*TODO:Rename Portal Label*/
-															/*Rename of View is handled on rename_node event of tree*/
-															jQuery(displayScope + "#outline").jstree("rename","#"+ obj.attr("id"));
+																		viewManager.closeViewsForElement(obj.attr("id"));
+																		jQuery(displayScope + "#outline")
+																			.jstree("delete_node","#"+ id);
+																	});
+															}
+														},
+														"rename":{
+															"label":m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.rename","Rename"),
+															"action":function(obj){
+																/*TODO:Rename Portal Label*/
+																/*Rename of View is handled on rename_node event of tree*/
+																jQuery(displayScope + "#outline").jstree("rename","#"+ obj.attr("id"));
+															}
 														}
 													}
 												}
-											}
-											if ('ruleSet' == node.attr('rel')) {
-												return {
-													"ccp" : false,
-													"create" : false,													
-													"createTechnicalRule" : {
-														"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.createRule","Create Rule"),
-														"action" : function(obj) {
-															var techRule;
-															techRule=createTechnicalRule(obj.attr("id"));
-															/*set new tree node for user editing*/
-															jQuery(displayScope + "#outline").jstree("rename","#" + techRule.uuid);
-														}
-													},
-													"createDecisionTable" : {
-														"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.createDecisionTable","Create Decision Table"),
-														"action" : function(obj) {
-															var decTable;
-															decTable=createDecisionTable(obj.attr("id"));
-															/*set new tree node for user editing*/
-															jQuery(displayScope + "#outline").jstree("rename","#" + decTable.uuid);
-															//var inst=jQuery.jstree._reference(displayScope + "#outline");
-															//inst.sort(jQuery(displayScope + "#outline"));//asdads//
-														}
-													},
-													"rename" : {
-														"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.rename","Rename"),
-														"action" : function(obj) {
-															jQuery(displayScope + "#outline")
-																	.jstree("rename","#"+ obj.attr("id"));
-														}
-													},
-													"deleteRuleSet" : {
-														"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.delete","Delete"),
-														"action" : function(obj) {
-															deleteElementAction(
-																	obj.context.lastChild.data,
-																	function() {
-																		deleteRuleSet(obj.attr("id"));
-																		viewManager.closeViewsForElement(obj.attr("id"));
-																	});
-														}
-													},
-													"export RuleSet" : {
-														"label": m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.export","Export Rule Set"),
-														"action": function(obj){
-															exportRuleSet(obj.attr("id"))
+												if ('ruleSet' == node.attr('rel')) {
+													//TODO: Targert DESIGNTIME endpoints
+													return {
+														"ccp" : false,
+														"create" : false,
+														"createTechnicalRule" : {
+															"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.createRule","Create Rule"),
+															"action" : function(obj) {
+																var techRule;
+																techRule=createTechnicalRule(obj.attr("id"));
+																/*set new tree node for user editing*/
+																jQuery(displayScope + "#outline").jstree("rename","#" + techRule.uuid);
+															}
 														},
-														"_class" : "ipp-text-red"
-													}
-												};
+														"createDecisionTable" : {
+															"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.createDecisionTable","Create Decision Table"),
+															"action" : function(obj) {
+																var decTable;
+																decTable=createDecisionTable(obj.attr("id"));
+																/*set new tree node for user editing*/
+																jQuery(displayScope + "#outline").jstree("rename","#" + decTable.uuid);
+																//var inst=jQuery.jstree._reference(displayScope + "#outline");
+																//inst.sort(jQuery(displayScope + "#outline"));//asdads//
+															}
+														},
+														"rename" : {
+															"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.rename","Rename"),
+															"action" : function(obj) {
+																jQuery(displayScope + "#outline")
+																		.jstree("rename","#"+ obj.attr("id"));
+															}
+														},
+														"deleteRuleSet" : {
+															"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.delete","Delete"),
+															"action" : function(obj) {
+																deleteElementAction(
+																		obj.context.lastChild.data,
+																		function() {
+																			deleteRuleSet(obj.attr("id"));
+																			viewManager.closeViewsForElement(obj.attr("id"));
+																		});
+															}
+														},
+														"export RuleSet" : {
+															"label": m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.export","Export Rule Set"),
+															"action": function(obj){
+																exportRuleSet(obj.attr("id"),"DESIGN")
+															},
+															"_class" : "ipp-text-red"
+														},
+														"publish RuleSet" :(function(){
+															if(that.supportsRuleSetPublish){
+																return {
+																		"label": m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.publish","Publish Rule Set"),
+																		"action": function(obj){
+																			publishRuleSet(obj.attr("id"));
+																	}
+																}
+															}
+															else{
+																return false;
+															}
+														})()
+													};
+												}
 											}
-
+											else if(currentMode==="PUBLISHED"){
+												//TODO: Target RUNTIME endpoints
+												if ('ruleSet' == node.attr('rel')) {
+													return {
+														"deleteRuleSet" : {
+															"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.delete","Delete"),
+															"action" : function(obj) {
+																deleteElementAction(
+																		obj.context.lastChild.data,
+																		function() {
+																			deleteRunTimeRuleSet(obj.attr("id"));
+																			viewManager.closeViewsForElement(obj.attr("id"));
+																		});
+															}
+														},
+														"export RuleSet" : {
+															"label": m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.export","Export Rule Set"),
+															"action": function(obj){
+																exportRuleSet(obj.attr("id"),"PUBLISHED")
+															},
+															"_class" : "ipp-text-red"
+														}
+													};//return object ends
+												}
+											}
 											return {};
-										}
+											
+										}//contextMenu items function end
 									},
 									types : {
 										"types" : {
 											"ruleSet" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "rules-manager/images/icons/rule-set.png"
-												},
 												"valid_children" : [ "rule","TechnicalRule","DecisionTable" ]
 											},
 											"rule" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "rules-manager/images/icons/rule.png"
-												}
+												
 											},
 											"TechnicalRule" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "rules-manager/images/icons/script_gear.png"
-												}
+												
 											},
 											"DecisionTable":{
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "rules-manager/images/icons/dt_icon.png"
-												}
+												
 											}
 										}
 									},
@@ -1036,18 +1174,65 @@ define(
 						}
 					}
 				}
-
+				
 				/* Marks a rulesets state object as isDeleted=true.
 				 * calls saveAllRules with the deleteOnly flag set. THis will cause the method to only
 				 * send ruleSets we have marked for deletion. The hard delete is performed by the 
 				 * success callback intenal to the method.*/
 				function deleteRuleSet(ruleSetUUID) {
-					RuleSet.markRuleSetForDeletion(ruleSetUUID);
+					//DESIGN TIME DELETE ONLY as this is actally a save (don't ask)
+					RuleSet.markRuleSetForDeletion(ruleSetUUID,"DESIGN");
 					jQuery(displayScope + "#outline").jstree("delete_node", "#"+ ruleSetUUID);
 					saveRuleSets(true); /*deleteOnly=true*/
 					window.parent.EventHub.events.publish("CONTEXT_UPDATED");
-				}
-
+				};
+				
+				function deleteRunTimeRuleSet(ruleSetUUID){
+					
+					var url,
+						ruleSet;
+					
+					if(getCurrentMode() ==="DESIGN"){
+						return;
+					}
+					
+					//extract actual ruleSet
+					ruleSet = RuleSet.findRuleSetByUuid(ruleSetUUID,"PUBLISHED");
+					
+					//Delete URL
+					url = m_urlUtils.getContextName();
+					url += "/services/rest/rules-manager/rules/";
+					url += new Date().getTime(); 
+					url += "/rule-sets/run-time/" +  encodeURIComponent(ruleSet.id);
+					
+					jQuery.ajax({
+						url: url,
+						type: "DELETE",
+						success : function(){
+							reloadOutlineTree(true,"PUBLISHED");
+						},
+						error: function(){
+							var message = m_i18nUtils.getProperty("rules.messages.delete.error","An error occurred deleting ruleset, {0}.");
+							message = message.replace("{0}",ruleSet.name);
+							
+							var data = {
+								"attributes" : {
+									"width" : "400px",
+									"height" : "200px",
+									"src" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/errorDialog.html"
+								},
+								"payload" : {
+									"title" :  m_i18nUtils.getProperty("rules.messages.warning","Warning"),
+									"message" :  message,
+									"okButtonText" : m_i18nUtils.getProperty("rules.messages.confirm.close","Close")
+								}
+							};
+							
+							parent.iPopupDialog.openPopup(data);
+						}
+					});
+				};
+				
 				function prepareDeleteElementData(name, callback) {
 					var popupData = {
 						attributes : {
@@ -1093,12 +1278,15 @@ define(
 					
 					createDecisionTableNode(ruleSet, decTable);
 					
-					viewManager.openView("decisionTableView", "id="
-							+ decTable.id + "&ruleSetId="
-							+ ruleSet.id + "&name="
-							+ decTable.name + "&uuid="
-							+ decTable.uuid + "&ruleSetUuid="
-							+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, decTable.uuid);
+					viewManager.openView("decisionTableView", 
+							"id=" + decTable.id + 
+							"&ruleSetId=" + ruleSet.id + 
+							"&name=" + decTable.name + 
+							"&uuid=" + decTable.uuid + 
+							"&ruleSetUuid=" + ruleSet.uuid + 
+							"&parentUUID=" + ruleSet.uuid + 
+							"&mode=DESIGN",
+							decTable.uuid);
 					return decTable;
 				}
 				
@@ -1115,12 +1303,15 @@ define(
 					m_ruleSetCommandDispatcher.trigger(cmd);
 					createTechinicalRuleNode(ruleSet, techRule);
 					console.log("creating technical rule");
-					viewManager.openView("technicalRuleView", "id="
-							+ techRule.id + "&ruleSetId="
-							+ ruleSet.id + "&name="
-							+ techRule.name + "&uuid="
-							+ techRule.uuid + "&ruleSetUuid="
-							+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, techRule.uuid);
+					viewManager.openView("technicalRuleView", 
+							"id=" + techRule.id + 
+							"&ruleSetId=" + ruleSet.id + 
+							"&name=" + techRule.name + 
+							"&uuid=" + techRule.uuid + 
+							"&ruleSetUuid=" + ruleSet.uuid + 
+							"&parentUUID=" + ruleSet.uuid,
+							"&mode=DESIGN",
+							techRule.uuid);
 					
 					return techRule;
 				}
@@ -1156,14 +1347,14 @@ define(
 					url : m_urlUtils.getContextName() + "/services/rest/common/html5/api/themes/current/custom",
 					async : true
 				}).done(function(json){
-					var head = document.getElementsByTagName('head')[0];
+					var body = document.getElementsByTagName('body')[0];
 					
 					for(var i in json.stylesheets) {
 						var link = document.createElement('link');
 						link.href = m_urlUtils.getContextName() + "/" + json.stylesheets[i];
 						link.rel = 'stylesheet';
 						link.type = 'text/css';
-						head.appendChild(link);
+						body.appendChild(link);
 					}
 				}).fail(function(err){
 					m_utils.debug("Failed in loading custom theme");
@@ -1278,8 +1469,6 @@ define(
 
 					m_outlineToolbarController.init("rulesOutlineToolbar");
 					
-					loadCustomTheme();
-					
 					return outline;
 				},
 				refresh : function() {
@@ -1302,11 +1491,23 @@ define(
 				 * 
 				 */
 				Outline.prototype.initialize = function() {
+					var selectRuleMode;
 					CommandsDispatcher.registerCommandHandler(this);
 					
+					/*Load options for Design/Publish mode select box*/
+					selectRuleMode = document.getElementById('selectRuleMode');
+					selectRuleMode.options[0]= new Option(m_i18nUtils.getProperty("rules.outline.mode.options.design","Design"), 'DESIGN');
+					selectRuleMode.options[1]= new Option(m_i18nUtils.getProperty("rules.outline.mode.options.published","Published"), 'PUBLISHED');
+					
+					/*Add our change event listener*/
+					selectRuleMode.addEventListener("change",function(e){
+						var selectedOption = this.options[this.selectedIndex];
+						$("#rulesOutlineToolbar").toggle();
+						$("#lastSaveStatusPanel").toggle();
+			            reloadOutlineTree(true,selectedOption.value);
+					});
+					
 					/*quick initialization of ruleSet dispatcher if null.*/
-					console.log("testing command sink");
-					console.log(m_ruleSetCommandDispatcher);
 					m_ruleSetCommandDispatcher.register("Bob","something");
 					
 					
@@ -1322,20 +1523,25 @@ define(
 						m_ruleSetCommandDispatcher.trigger({name: "RuleSet.command"});
 					});
 				};
-
+				
+				
 				/**
 				 * 
 				 */
 				Outline.prototype.createRuleSet = function() {
-						var rsName = m_i18nUtils.getProperty("rules.object.ruleset.name","Rule Set");
-						var name = rsName + " " + RuleSet.getNextRuleSetNamePostfix();
+					
+					var rsName = m_i18nUtils.getProperty("rules.object.ruleset.name","Rule Set");
+					var name = rsName + " " + RuleSet.getNextRuleSetNamePostfix("DESIGN");
 					var id = name.replace(/\s/g,"");
 					var ruleSet = RuleSet.create(id, name);
 
 					createRuleSetNode(ruleSet);
 					viewManager.openView("ruleSetView",
-							"id=" + ruleSet.id + "&name=" + ruleSet.name
-									+ "&uuid=" + ruleSet.uuid, ruleSet.uuid);
+							"id=" + ruleSet.id + 
+							"&name=" + ruleSet.name +
+							"&uuid=" + ruleSet.uuid +
+							"&mode=DESIGN",
+							ruleSet.uuid);
 					jQuery(displayScope + "#outline").jstree("rename","#" + ruleSet.uuid);
 					/*save our virgin Rule Set to the server.*/
 					saveRuleSets(false,true);

@@ -1,121 +1,154 @@
-<link rel="stylesheet" href="plugins/html5-common/styles/html5-common.css"/>
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true"
+	ng-controller="sdParticipantManagementCtrl as ctrl">
 
-<div class="view-panel" 
-	 ng-controller="sdParticipantManagementViewController as pmCtrl" 
-	 data-ng-init="pmCtrl.init()">
-	 
-	<div sd-http-loader 
-	     style="top:0;position:absolute;width:100%;left:0px;" 
-	     methods="GET,POST">
+	<div style="clear: both" class="participantManager">
+
+		<div sd-http-loader
+			style="top: 0; position: absolute; width: 100%; left: 0px;"
+			methods="GET,POST"></div>
+
+		<!-- <div sd-js-error>Error:</div> -->
+
+		<section style="clear: both; float: left; width: 60%; overflow: auto">
+			<header>
+				<div class="view-panel-toolbar heading">
+					{{i18n('admin-portal-messages.views-common-users-label')}}
+				</div>
+			</header>
+			<div ng-show="ctrl.showMessage" sd-message></div>
+
+			<div
+				ng-include="'plugins/html5-admin-portal/partials/views/participantMgtUsersTable.html'">
+			</div>
+			
+			<div ng-if="ctrl.loadUserProfileDialog">
+				<div sd-dialog sda-modal="true"
+					sda-show="ctrl.showUserProfileDialog" sda-type="confirm"
+					sda-title="{{sdI18n(ctrl.title,'',[ctrl.titleParams])}}"
+					sda-scope="this"
+					sda-template="plugins/html5-admin-portal/partials/views/createUser.html"
+					sda-on-confirm="ctrl.onConfirmFromCreateUser(res)"
+					sda-on-close="ctrl.onCloseFromCreateUser(res)"
+					sda-confirm-action-label="{{i18n('admin-portal-messages.common-apply')}}"
+					sda-width="550px" sda-height="600px"
+					sda-aid-prefix="ADM-PartMgmt-UserPopup"></div>
+			</div>
+			<div sd-dialog sda-modal="true"
+				sda-show="ctrl.showNotificationDialog" sda-type="alert"
+				sda-title="{{i18n('admin-portal-messages.common-notification-title')}}"
+				sda-scope="this"
+				sda-template="plugins/html5-admin-portal/partials/views/invalidateUsersNotificationDialog.html"
+				sda-cancel-action-label="{{i18n('admin-portal-messages.common-close')}}"
+				sda-width="520px" sda-height="400px"
+				sda-aid-prefix="ADM-PartMgmt-InvalUsersNotificationDlg"></div>
+			<div sd-dialog sda-modal="true"
+				sda-show="ctrl.showDefaultDelegateDialog" sda-type="confirm"
+				sda-title="{{i18n('admin-portal-messages.common-defaultDelegateDialog-title')}}"
+				sda-scope="this"
+				sda-template="plugins/html5-admin-portal/partials/views/delegateActivitiesConfirmationDialog.html"
+				sda-cancel-action-label="{{i18n('admin-portal-messages.common-no')}}"
+				sda-confirm-action-label="{{i18n('admin-portal-messages.common-yes')}}"
+				sda-on-close="ctrl.onCloseFromDefaultDelegateDialog(res)"
+				sda-on-confirm="ctrl.onConfrimFromDefaultDelegateDialog(res)"
+				sda-width="520px" sda-height="50px"
+				sda-aid-prefix="ADM-PartMgmt-DelegateActConfDlg"></div>
+			<div sd-dialog sda-modal="true"
+				sda-show="ctrl.showStrandedActivitiesAlert" sda-type="alert"
+				sda-title="{{i18n('admin-portal-messages.common-strandedActivitiesAlert-title')}}"
+				sda-scope="this"
+				sda-template="plugins/html5-admin-portal/partials/views/strandedActivitiesAlertDialog.html"
+				sda-cancel-action-label="{{i18n('admin-portal-messages.common-ok')}}"
+				sda-on-close="ctrl.onConfirmFromStrandedActivitiesAlert(res)"
+				sda-width="520px" sda-height="50px"
+				sda-aid-prefix="ADM-PartMgmt-StrandedActAlertDialog"></div>
+
+		</section>
+
+		<section style="float: left; padding-left: 30px; width: 33%">
+			<header>
+				<div class="heading"
+					ng-bind="sdI18n('admin-portal-messages.views.participantMgmt.participantTree.title')">
+				</div>
+			</header>
+			
+			<div style="min-height:22px;">
+				<div  ng-show="ctrl.showMessage2" sd-message></div>
+			</div>
+			
+			<div sda-toolbar>
+				<div>
+					<input  type="text"  
+					        ng-keypress="($event.which === 13)?ctrl.filterTree(myFilter):0" 
+					        required="required"
+					        ng-model="myFilter" 
+					        class="search"
+					        aid="COM-PartMgr-ApplyFilter" />
+					<button ng-disabled="!myFilter || myFilter.length==0" 
+							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-filter-title')}}"
+					        class="pi pi-filter pi-1x" 
+					        ng-click="ctrl.filterTree(myFilter)"></button>
+					<button class="pi pi-clear pi-1x" 
+							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-reserFilter-title')}}"
+					        ng-click="ctrl.resetFilter();myFilter=''"></button>
+					<button class="pi pi-ban pi-1x" 
+							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-emptyNode-title')}}"
+					        ng-click="ctrl.filterForEmptyUsers()"></button>
+					<button class="pi pi-torch pi-1x"
+							ng-disabled="ctrl.rowSelectionForAllUsersTable.length===0" 
+							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-flashlight-title')}}"
+					        ng-click="ctrl.filterByTableSelection()"></button>
+					<button class="pi pi-refresh pi-1x" 
+							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-refresh-title')}}"
+					        ng-click="ctrl.treeInit()"></button>
+				</div>
+				
+			</div>
+			
+			<div class="permission-tree">
+				<ul sd-tree="ctrl.onTreeInit(api)"
+					sda-menu-callback="ctrl.menuCallback(item)"
+					sda-icon-callback="ctrl.iconCallback(item)"
+					sda-recurse-factory = "ctrl.recursiveTreeNodeFactory(item)"
+					sda-event-callback="ctrl.eventCallback(data,e)">
+					<li sd-tree-node 
+						sda-node-id="item.uuid" 
+						sda-label="item.name"
+						sda-menu-items="(,)" 
+						sda-is-leaf="item.children.length == 0"
+						ng-repeat="item in ctrl.models">
+						<ul>
+							<li sd-tree-node ng-repeat="item in item.children"
+								sda-droppable-expr="ctrl.isDroppable(item)"
+								sda-menu-items="(,)"
+								sda-node-id="item.uuid" 
+								sda-lazy-compile="true"
+								sda-is-leaf="!item.children || item.children.length == 0"
+								sda-label="item.name" >
+								<ul>
+									<li sd-tree-curse-fx></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+			
+			<div ng-show="ctrl.showCreateOrModifyDeparatmentDialog">
+				<div sd-dialog sda-modal="true"
+					sda-show="ctrl.showCreateOrModifyDeparatmentDialog"
+					sda-type="confirm" sda-title="{{ctrl.departmentTitle}}"
+					sda-scope="this"
+					sda-template="plugins/html5-admin-portal/partials/views/department.html"
+					sda-on-confirm="ctrl.createModifyDepartment()"
+					sda-on-close="ctrl.showCreateOrModifyDeparatmentDialog = false"
+					sda-confirm-action-label="{{i18n('admin-portal-messages.common-apply')}}"
+					sda-width="400px" sda-height="300px"
+					sda-aid-prefix="ADM-PartMgmt-DepartmentPopup"></div>
+			</div>
+			
+		</section>
 	</div>
-	
-	<div sd-js-error >Error:</div>
-	
-	<!-- View Toolbar -->
-	<div sd-include="'plugins/html5-admin-portal/partials/views/participantManagementViewToolbar.html'"></div>
-	
-	<!-- View Content -->
-	<div class="view-panel-content">
-		<h4>{{i18n('views.worklistPanel-labelTitle')}}</h4>
-		message:{{pmCtrl.message}}
-		<!-- Table Toolbar -->	
-		<div class="tbl-toolbar">
-			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td class="tbl-toolbar-item">
-						<a href="#" ng-click="" title="Select Columns" class="tbl-tool-link">
-							<i class="glyphicon glyphicon-th"></i>
-						</a>
-					</td>
-					<td class="tbl-toolbar-item">
-						<a href="#" ng-click="" title="Export Excel" class="tbl-tool-link">
-							<i class="glyphicon glyphicon-export"></i>
-						</a>
-					</td>
-					<td class="tbl-toolbar-item">
-						<a href="#" ng-click="" title="Export CSV" class="tbl-tool-link">
-							<i class="glyphicon glyphicon-export"></i>
-						</a>
-					</td>
-				</tr>
-			</table>
-		</div>
-		
-		<button ng-click="pmCtrl.generateError()">Generate JS Error</button>
-		<button ng-click="pmCtrl.getPeople()">HTTP Request</button>
-		<button sd-dialog
-				sd-show-overlay="false"
-				sd-dialog-type="info" 
-				ng-dialog-close-previous
-				sd-is-moveable="true"
-				sd-title="Testing Info Dialog"
-				sd-on-open="pmCtrl.onInfoOpen(res)">
-				Open Info Dialog
-		</button>
-		<button sd-dialog 
-				sd-dialog-type="confirm"
-				sd-title="Testing Confirmation Dialog"
-				sd-on-open="pmCtrl.onConfirmOpen(res)"
-				sd-dialog-scope="this"
-				sd-template="plugins/html5-admin-portal/partials/views/confirm.html">
-				Open Confirmation Dialog1
-		</button>
-		
-		<button ng-click="pmCtrl.testShow=!pmCtrl.testShow">testShow={{pmCtrl.testShow}}
-		</button>
-		<div style="position:relative;">
-			<button sd-moveable>move me</button>
-		</div>
-		<button sd-dialog 
-				sd-show-dialog="pmCtrl.testShow"
-				sd-title="Testing Alert Dialog"
-				sd-is-moveable="true"
-				sd-show-overlay="false"
-				sd-dialog-type="alert"
-				sd-template="Some message!{{pmCtrl.testShow}} {{pmCtrl.message}}">
-				Open Dialog on Scope {{testShow}}
-		</button>
-		
-		<h3 ng-if="pmCtrl.people">People</h3>
-		{{pmCtrl.people | json}}
-		<br>
-		<h3>All Users</h3>
-		<!-- Table -->
-		<table style="width: 100%;">
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>OID</th>
-					<th>Account</th>
-					<th>Realm</th>
-					<th>Valid From</th>
-					<th>Valid To</th>
-					<th>Email</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="user in pmCtrl.data.users">
-					<td>{{user.name.last + ', ' + user.name.first + ' (' + user.account + ')' }}</td>
-					<td>{{user.oid}}</td>
-					<td>{{user.account}}</td>
-					<td>{{user.realm || 'Carnot'}}</td>
-					<td>{{user.validFrom}}</td>
-					<td>{{user.validTo}}</td>
-					<td>{{user.email}}</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	<div style="height:500px;">
-		<h2>Autocomplete</h2>
-		<div  sd-auto-complete
-            sda-matches="pmCtrl.matchData" 
-            sda-match-str="pmCtrl.matchVal" 
-            sda-change="pmCtrl.getMatches(pmCtrl.matchVal)" 
-            sda-text-property="name" 
-            sda-container-class="sd-ac-container" 
-            sda-item-hot-class="sd-ac-item-isActive" 
-            sda-selected-matches="pmCtrl.dataSelected">
-      </div>
-	</div>
+
+</div>
 </div>

@@ -10,10 +10,12 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.legacy;
 
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
+
 public class DefaultTimeProvider implements ITimeProvider{
 
 	public long getCurrentTime() {
-		return System.currentTimeMillis();
+		return PortalTimestampProvider.getTimeStampValue();
 	}
 
 }

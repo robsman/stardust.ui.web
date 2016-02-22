@@ -17,35 +17,39 @@
 
 	angular.module("bcc-ui").controller(
 			'sdUserManagerDetailViewCtrl',
-			[ '$q', '$scope', '$element', 'sdUserManagerDetailService', 'sdLoggerService', 'sdViewUtilService',
-					UserManagerDetailViewCtrl ]);
+			['$q', '$scope', '$element', 'sdUserManagerDetailService', 'sdLoggerService', 'sdViewUtilService',
+					'sdLoggedInUserService', 'sdPreferenceService', 'sdDataTableHelperService',
+					UserManagerDetailViewCtrl]);
 	var _q;
 	var _scope;
 	var _element;
 	var _sdUserManagerDetailService;
 	var _sdViewUtilService;
 	var trace;
-
+	var _sdLoggedInUserService;
+	var _sdPreferenceService;
+	var _sdDataTableHelperService;
 	/*
 	 * 
 	 */
 	function UserManagerDetailViewCtrl($q, $scope, $element, sdUserManagerDetailService, sdLoggerService,
-			sdViewUtilService) {
+			sdViewUtilService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdUserManagerDetailViewCtrl');
 		_q = $q;
 		_scope = $scope;
 		_element = $element;
 		_sdUserManagerDetailService = sdUserManagerDetailService;
 		_sdViewUtilService = sdViewUtilService;
+		_sdLoggedInUserService = sdLoggedInUserService;
+		_sdPreferenceService = sdPreferenceService;
+		_sdDataTableHelperService = sdDataTableHelperService;
 
-		this.columnSelector = 'admin';
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.exportFileNameForAssignedRoles = "AssignedRoles";
 		this.exportFileNameForAssignableRoles = "AssignableRoles";
 		this.assignedRolesTable = null;
 		this.assignableRolesTable = null;
 		this.activityTable = null;
-		this.rowSelectionAssignedRolesTable = null;
-		this.rowSelectionAssignableRolesTable = null;
 		this.showActivityListTab = false;
 		this.activeTab = 1;
 
@@ -75,12 +79,14 @@
 		var self = this;
 		_sdUserManagerDetailService.getUserManagerDetails(self.viewParams.userOid).then(function(data) {
 			self.userManagerDetails = data;
-			self.showAssignedRolesTable = true;
-			self.showAssignableRolesTable = true;
-			if (self.assignedRolesTable != undefined && self.assignableRolesTable != undefined) {
+			if(self.assignedRolesTable != undefined && self.assignableRolesTable != undefined){
 				self.assignedRolesTable.refresh();
 				self.assignableRolesTable.refresh();
+			}else{
+				self.showAssignedRolesTable = true;
+				self.showAssignableRolesTable = true;
 			}
+			
 		}, function(error) {
 			trace.log(error);
 		});
@@ -99,17 +105,31 @@
 	/**
 	 * 
 	 */
-	UserManagerDetailViewCtrl.prototype.getAssignedRoles = function() {
+	UserManagerDetailViewCtrl.prototype.getAssignedRoles = function(options) {
 		var self = this;
-		return self.userManagerDetails.assignedRoleList;
+		var deferred = _q.defer();
+		var result = {
+			list : self.userManagerDetails.assignedRoleList,
+			totalCount : self.userManagerDetails.assignedRoleList.length
+		}
+
+		deferred.resolve(result);
+		return deferred.promise;
 	};
 
 	/**
 	 * 
 	 */
-	UserManagerDetailViewCtrl.prototype.getAssignableRoles = function() {
+	UserManagerDetailViewCtrl.prototype.getAssignableRoles = function(options) {
 		var self = this;
-		return self.userManagerDetails.assignableRoleList;
+		var deferred = _q.defer();
+		var result = {
+			list : self.userManagerDetails.assignableRoleList,
+			totalCount : self.userManagerDetails.assignableRoleList.length
+		}
+
+		deferred.resolve(result);
+		return deferred.promise;
 	};
 
 	/**
@@ -126,7 +146,7 @@
 	UserManagerDetailViewCtrl.prototype.refreshOnlyActiveTab = function() {
 		var self = this;
 		if (self.activeTab == 1) {
-			self.getUserManagerDetails();
+			self.refresh();
 		} else {
 			self.activityTable.refresh();
 		}
@@ -134,11 +154,10 @@
 
 	/**
 	 * 
-	 * @param rowSelectionAssignedRolesTable
 	 */
-	UserManagerDetailViewCtrl.prototype.removeRoleFromUser = function(rowSelectionAssignedRolesTable) {
+	UserManagerDetailViewCtrl.prototype.removeRoleFromUser = function() {
 		var self = this;
-		var roleIds = self.getSelectedRoleIds(rowSelectionAssignedRolesTable);
+		var roleIds = self.getSelectedRoleIds(self.assignedRolesTable.getSelection());
 		_sdUserManagerDetailService.removeRoleFromUser(roleIds, self.viewParams.userOid).then(function(data) {
 			self.userAuthorizationMsg = data.userAuthorization;
 			self.refresh();
@@ -149,11 +168,10 @@
 
 	/**
 	 * 
-	 * @param rowSelectionAssignableRolesTable
 	 */
-	UserManagerDetailViewCtrl.prototype.addRoleToUser = function(rowSelectionAssignableRolesTable) {
+	UserManagerDetailViewCtrl.prototype.addRoleToUser = function() {
 		var self = this;
-		var roleIds = self.getSelectedRoleIds(rowSelectionAssignableRolesTable);
+		var roleIds = self.getSelectedRoleIds(self.assignableRolesTable.getSelection());
 
 		_sdUserManagerDetailService.addRoleToUser(roleIds, self.viewParams.userOid).then(function(data) {
 			self.userAuthorizationMsg = data.userAuthorization;
@@ -224,6 +242,28 @@
 		var self = this;
 		self.activeTab = 1;
 
+	};
+
+	/**
+	 * 
+	 */
+
+	UserManagerDetailViewCtrl.prototype.preferenceForAssignedRoleTable = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService
+				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.roleAssigned.selectedColumns";
+		}
+		return preferenceStore;
+	};
+
+	UserManagerDetailViewCtrl.prototype.preferenceForAssignableRoleTable = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService
+				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.roleAssignable.selectedColumns";
+		}
+		return preferenceStore;
 	};
 
 })();

@@ -33,8 +33,8 @@ import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.bcc.jsf.IQueryExtender;
+import org.eclipse.stardust.ui.web.rest.service.dto.GenericQueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.RoleAssignmentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.RoleAssignmentResultDTO;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantDepartmentPair;
@@ -49,7 +49,7 @@ public class RoleAssignmentUtils
 
    private final static String QUERY_EXTENDER = "carnotBcRoleAssignment/queryExtender";
 
-   public RoleAssignmentResultDTO getRoleAssignments()
+   public GenericQueryResultDTO getRoleAssignments()
    {
       Query query = createQuery();
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
@@ -94,7 +94,7 @@ public class RoleAssignmentUtils
          roleAssignmentData.userOid = String.valueOf(user.getOID());
 
          Map<String, Boolean> columnsValue = CollectionUtils.newHashMap();
-
+         Map<String, String> columnsLabel = CollectionUtils.newHashMap();
          List<ParticipantDepartmentPair> paitList = userPairMap.get(user);
          Set<ParticipantDepartmentPair> roles = roleNameMap.keySet();
          for (ParticipantDepartmentPair participantDepartmentPair : roles)
@@ -110,19 +110,27 @@ public class RoleAssignmentUtils
             }
 
             columnsValue.put(roleNameMap.get(participantDepartmentPair), found);
+            columnsLabel.put(roleNameMap.get(participantDepartmentPair), participantDepartmentPair.getFirst() + "_"
+                  + participantDepartmentPair.getSecond());
          }
          roleAssignmentData.columnsValue = columnsValue;
+         roleAssignmentData.columnsLabel = columnsLabel;
          roleAssignmentList.add(roleAssignmentData);
       }
 
-      RoleAssignmentResultDTO result = new RoleAssignmentResultDTO();
+      GenericQueryResultDTO result = new GenericQueryResultDTO();
 
-      if (roleAssignmentList.get(0) != null && !roleAssignmentList.get(0).columnsValue.isEmpty())
+      if (roleAssignmentList.get(0) != null)
       {
-         Set<String> roles = roleAssignmentList.get(0).columnsValue.keySet();
+         result.columnsDefinition = roleAssignmentList.get(0).columnsLabel;
+         result.columns = roleAssignmentList.get(0).columnsValue.keySet();
+         for (int i = 0; i < roleAssignmentList.size(); i++)
+         {
+            roleAssignmentList.get(i).columnsLabel = null;
+         }
          result.list = roleAssignmentList;
          result.totalCount = roleAssignmentList.size();
-         result.roleColumns = roles;
+
       }
 
       userPairMap = null;

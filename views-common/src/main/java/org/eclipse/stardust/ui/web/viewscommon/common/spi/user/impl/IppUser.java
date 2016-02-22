@@ -96,7 +96,7 @@ public class IppUser implements User
          if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(role))
          {
             return ippUser.isAdministrator();
-         }
+         } 
          else
          {
             QName qname = QName.valueOf(role);
@@ -169,13 +169,19 @@ public class IppUser implements User
     * @param permissionId
     * @return
     * @author Yogesh.Manware 
-    * TODO approach to evaluate general permissions can be improved
-    *         similar to hasUiPermission()
     */
    public boolean hasPermission(ExecutionPermission.Id exePermissionId)
    {
       String permissionId = exePermissionId.toString();
+      return hasPermission(permissionId);
+   }
 
+   /**
+    * @param permissionId
+    * @return
+    */
+   public boolean hasPermission(String permissionId)
+   {
       if (null == permissionsCache)
       {
          permissionsCache = new HashMap<String, Boolean>();
@@ -228,6 +234,21 @@ public class IppUser implements User
                }
             }
          }
+         
+         //evaluate denied grants
+         Set<ModelParticipantInfo> grants = adminService.getGlobalPermissions().getDeniedGrants(permissionId);
+         for (ModelParticipantInfo grant : grants)
+         {
+            if (grant instanceof QualifiedModelParticipantInfo)
+            {
+               QualifiedModelParticipantInfo qualifiedParticipantInfo = (QualifiedModelParticipantInfo) grant;
+               if (this.isInRole(qualifiedParticipantInfo.getQualifiedId()))
+               {
+                  hasPermission = false;
+                  break;
+               }
+            }
+         }
       }
       catch (Exception e)
       {
@@ -249,15 +270,32 @@ public class IppUser implements User
       {
          uiPermissionsCache = new HashMap<String, Boolean>();
          Map<String, List<String>> allUiPermissionsCache = UiPermissionUtils.getAllPermissions(
-               ServiceFactoryUtils.getAdministrationService(), false);
+               ServiceFactoryUtils.getAdministrationService(), true);
+
+         Map<String, List<String>> allDeniedGrants = new HashMap<String, List<String>>();
 
          for (Entry<String, List<String>> permission : allUiPermissionsCache.entrySet())
          {
             Set<ModelParticipantInfo> grants = UiPermissionUtils.externalize(permission.getValue());
-            uiPermissionsCache.put(UiPermissionUtils.getPortalPermissionId(permission.getKey()), isInRoles(grants));
+            if (permission.getKey().endsWith(UiPermissionUtils.SUFFIX_ALLOW))
+            {
+               uiPermissionsCache.put(UiPermissionUtils.getPortalPermissionId(permission.getKey()), isInRoles(grants));
+            }
+            else
+            {
+               allDeniedGrants.put(permission.getKey(), permission.getValue());
+            }
+         }
+         
+         // check all denied grants
+         for (Entry<String, List<String>> permission : allDeniedGrants.entrySet())
+         {
+            Set<ModelParticipantInfo> grants = UiPermissionUtils.externalize(permission.getValue());
+            uiPermissionsCache.put(UiPermissionUtils.getPortalPermissionId(permission.getKey()),
+                  isInRoles(grants) == null ? null : !isInRoles(grants));
          }
       }
- 
+
       return uiPermissionsCache.get(permissionId);
    }
    
@@ -316,7 +354,7 @@ public class IppUser implements User
          if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(participantQualifiedId))
          {
             return ippUser.isAdministrator();
-         }
+}
          if (modelParticipant.getQualifiedId().equals(participantQualifiedId))
          {
             return true;

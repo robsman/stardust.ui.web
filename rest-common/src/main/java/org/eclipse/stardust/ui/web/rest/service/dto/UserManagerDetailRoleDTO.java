@@ -20,11 +20,11 @@ public class UserManagerDetailRoleDTO extends AbstractDTO
 {
    public String roleId;
 
-   public String roleName;
+   public String name;
 
-   public String itemsCount;
+   public String items;
 
-   public String roleAccount;
+   public String account;
 
    public String itemsPerUser;
 
@@ -33,10 +33,10 @@ public class UserManagerDetailRoleDTO extends AbstractDTO
          long itemsPerUser)
    {
       super();
-      this.roleName = roleName;
+      this.name = roleName;
       this.roleId = roleId;
-      this.itemsCount = Long.toString(itemsCount);
-      this.roleAccount = Long.toString(roleAccount);
+      this.items = Long.toString(itemsCount);
+      this.account = Long.toString(roleAccount);
       this.itemsPerUser = Long.toString(itemsPerUser);
    }
 }

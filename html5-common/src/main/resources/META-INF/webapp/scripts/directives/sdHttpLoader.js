@@ -9,8 +9,8 @@
  ******************************************************************************/
 
 angular.module('bpm-common.directives')
-  .directive('sdHttpLoader', ['$parse','$timeout','$injector','eventBus',
-    function ($parse, $timeout,$injector,eventBus) {
+  .directive('sdHttpLoader', ['$parse','$timeout','$injector','eventBus','sdLoggerService',
+    function ($parse, $timeout,$injector,eventBus,sdLoggerService) {
       return {
         scope: {
           methods: '@',
@@ -29,7 +29,7 @@ angular.module('bpm-common.directives')
                          .map(function(v){
                             return v.toUpperCase();
                           });
-
+          var trace = sdLoggerService.getLogger('bpm-common.directives.sdHttpLoader');
           var ttl = $parse($scope.ttl)() || $scope.ttl;
           ttl = angular.isUndefined(ttl) ? 0 : ttl;
           ttl = Number(ttl) * 1000;
@@ -65,7 +65,7 @@ angular.module('bpm-common.directives')
           
           eventBus.onMsg("http.request",function(e,m){
         	  toggleLoader(e,m);
-        	  console.log("directive received event..");
+        	  trace.log("directive received event..");
           },$scope);
           
           eventBus.onMsg("http.response",toggleLoader,$scope);

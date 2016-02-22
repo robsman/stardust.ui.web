@@ -209,6 +209,19 @@ public class ModelUtils
    }
 
 
+   /**
+    * Auditor is available if at least one model is deployed
+    * @return
+    */
+   public static Participant getAuditorRole()
+   {
+      DeployedModel pdModel = ModelUtils.getModel(PredefinedConstants.PREDEFINED_MODEL_ID);
+      if (pdModel != null)
+      {
+         return pdModel.getParticipant(PredefinedConstants.AUDITOR_ROLE);
+      }
+      return null;
+   }
 
    /**
     * method returns Map of DataPath from all active models (exclude PredefinedModel)
@@ -338,8 +351,11 @@ public class ModelUtils
             {
                String parts[] = typeDeclarationId.split("\\{")[1].split("\\}");
                typeDeclarationId = parts[1];
-               Model newRefModel = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(parts[0]);
-               refModel = newRefModel != null ? newRefModel : refModel;
+               if (!parts[0].equals(refModel.getId()))
+               {
+                  Model newRefModel = getModel(model.getResolvedModelOid(parts[0]));
+                  refModel = newRefModel != null ? newRefModel : refModel;
+               }
             }
             catch (Exception e)
             {
@@ -408,8 +424,11 @@ public class ModelUtils
          {
             String parts[] = typeDeclarationId.split("\\{")[1].split("\\}");
             typeDeclarationId = parts[1];
-            Model newRefModel = getModel(model.getResolvedModelOid(parts[0]));
-            refModel = newRefModel != null ? newRefModel : refModel;
+            if (!parts[0].equals(refModel.getId()))
+            {
+               Model newRefModel = getModel(model.getResolvedModelOid(parts[0]));
+               refModel = newRefModel != null ? newRefModel : refModel;
+            }
          }
          catch (Exception e)
          {

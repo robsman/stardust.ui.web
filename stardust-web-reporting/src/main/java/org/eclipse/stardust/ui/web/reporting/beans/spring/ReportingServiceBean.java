@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
@@ -87,6 +88,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.I18nFolderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.BenchmarkUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
@@ -136,6 +138,8 @@ public class ReportingServiceBean
    private static final String PARTICIPANT_REPORT_INSTANCE_ADHOC_DIR = PARTICIPANT_REPORT_INSTANCE_DIR + AD_HOC;
    private static final String USER_REPORT_INSTANCE_DIR = "/documents/reports/saved-reports";
    private static final String USER_REPORT_INSTANCE_ADHOC_DIR = USER_REPORT_INSTANCE_DIR + AD_HOC;
+   
+   public static final String BENCHMARK_RUNTIME_OID = "id";
    
    private DocumentManagementService documentManagementService;
 
@@ -214,9 +218,11 @@ public class ReportingServiceBean
          JsonObject resultJson = new JsonObject();
          JsonObject processesJson = new JsonObject();
          JsonObject descriptorsJson = new JsonObject();
+         JsonObject benchmarksJson = new JsonObject();
 
          resultJson.add("processDefinitions", processesJson);
          resultJson.add("descriptors", descriptorsJson);
+         resultJson.add("benchmarkDefinitions", benchmarksJson);
 
          // Ensures uniqueness of descriptor entries across all Process
          // Definitions
@@ -329,7 +335,36 @@ public class ReportingServiceBean
 
             participantsJson.add(participant.getId(), participantJson);
          }
+         
+         //Runtime Benchmark Definitions
+         Map<String, JsonObject> reportingRuntimeBenchmarkDefinitionsInfo = null;
+         try
+         {
+            reportingRuntimeBenchmarkDefinitionsInfo = BenchmarkUtils.getReportingRuntimeBenchmarkDefinitionsInfo();
+         }
+         catch (Exception e)
+         {
+            e.printStackTrace();
+         }
+         
+         if (reportingRuntimeBenchmarkDefinitionsInfo != null)
+         {
+            Set<Entry<String,JsonObject>> entrySet = reportingRuntimeBenchmarkDefinitionsInfo.entrySet();
 
+            for (Entry<String, JsonObject> entry : entrySet)
+            {
+               JsonObject bmJsonObject = entry.getValue();
+               JsonObject benchmarkJson = new JsonObject();
+               
+               benchmarkJson.addProperty(BENCHMARK_RUNTIME_OID, entry.getKey());
+               benchmarkJson.addProperty(BenchmarkUtils.BENCHMARK_NAME, bmJsonObject.get(BenchmarkUtils.BENCHMARK_NAME).getAsString());
+               
+               JsonArray benchmarkCategories = GsonUtils.extractJsonArray(bmJsonObject, BenchmarkUtils.BENCHMARK_CATEGORIES);
+               benchmarkJson.add(BenchmarkUtils.BENCHMARK_CATEGORIES, benchmarkCategories);
+               
+               benchmarksJson.add(entry.getKey(), benchmarkJson);
+            }
+         }
          return resultJson;
       }
       finally

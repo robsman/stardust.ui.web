@@ -533,46 +533,14 @@ define(
                               && (dataSymbol.connections[n].fromAnchorPoint.symbol.oid == activity.oid || dataSymbol.connections[n].toAnchorPoint.symbol.oid == activity.oid)) {
                            // Use the existing connection
                            updateConnection = dataSymbol.connections[n];
-
-                           updateConnection.modelElement.dataMappings = [{
-                             id : this.modelElement.id,
-                             name : this.modelElement.name,
-                             direction : "IN"
-                           }, {
-                             id : this.modelElement.id,
-                             name : this.modelElement.name,
-                             direction : "OUT"
-                           }];
-                           
-                           if (updateConnection.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
-                              var tempFromAnchorPoint = updateConnection.fromAnchorPoint;
-                              updateConnection.fromAnchorPoint = updateConnection.toAnchorPoint;
-                              updateConnection.toAnchorPoint = tempFromAnchorPoint;
-                              updateConnection.fromModelElementOid = updateConnection.fromAnchorPoint.symbol.oid;
-                              updateConnection.toModelElementOid = updateConnection.toAnchorPoint.symbol.oid;
-                              var tempFromOrientation = updateConnection.fromAnchorPointOrientation;
-                              updateConnection.fromAnchorPointOrientation = updateConnection.toAnchorPointOrientation;
-                              updateConnection.toAnchorPointOrientation = tempFromOrientation;
+                           var existingDataMapping = updateConnection.modelElement.dataMappings[0]
+                           var changes = {'id': existingDataMapping.id, 'name': existingDataMapping.name};
+                           changes.direction = "OUT";
+                           if(existingDataMapping.direction == "OUT"){
+                             changes.direction = "IN"; 
                            }
-
-                           // While update only mapping change are
-                           // required
-                           var changes = {
-                              modelElement : {
-                                 fromAnchorPointOrientation : updateConnection.fromAnchorPointOrientation,
-                                 toAnchorPointOrientation : updateConnection.toAnchorPointOrientation,
-                                 toModelElementOid : updateConnection.toModelElementOid,
-                                 fromModelElementOid : updateConnection.fromModelElementOid,
-                                 dataMappings : updateConnection.modelElement.dataMappings,
-                                 id : updateConnection.modelElement.id,
-                                 name : updateConnection.modelElement.name,
-                                 updateDataMapping : true
-                              }
-                           }
-                           updateConnection
-                                 .createUpdateCommand(changes);
-                           m_messageDisplay
-                                 .showMessage("Connection updated");
+                           updateConnection.createDataMapping(changes);
+                           m_messageDisplay.showMessage("Connection updated");
                            break;
                         }
                      }
@@ -2137,6 +2105,15 @@ define(
                m_commandsController.submitCommand(command);
             };
 
+            /**
+             * 
+             */
+            Connection.prototype.createDataMapping = function(changes) {
+              var command = m_command.createCommand("datamapping.create",
+                      this.diagram.model.id, this.uuid, changes);
+              m_commandsController.submitCommand(command);
+            };
+            
             /**
             * Nothing required here
             */

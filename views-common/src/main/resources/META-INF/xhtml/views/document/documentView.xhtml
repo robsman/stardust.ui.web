@@ -10,8 +10,6 @@
 	# Attributes ('*' indicates mandatory attributes)
 		includeUploadDialog = true/false. Default true
 	-->
-	<script type="text/javascript"
-		src="#{facesContext.externalContext.requestContextPath}/plugins/views-common/scripts/documentUtil.js" />
 	<c:if test="#{empty includeUploadDialog}">
 		<c:set var="includeUploadDialog" value="true" />
 	</c:if>
@@ -45,10 +43,10 @@
 						<ice:commandLink
 							action="#{documentHandlerBean.togglePropertiesPanel}">
 							<pc:automationTag value="auto-COM-DocView-Properties" standAlone="false" />
-							<ice:graphicImage url="/plugins/views-common/images/icons/arrow-down-box.png"
+							<ice:outputText styleClass="pi pi-arrow-down-square pi-lg"
 								rendered="#{!documentHandlerBean.propertiesPanelExpanded}"
 				                style="border:none;" />
-							<ice:graphicImage url="/plugins/views-common/images/icons/arrow-up-box.png"
+							<ice:outputText styleClass="pi pi-arrow-up-square pi-lg"
 								rendered="#{documentHandlerBean.propertiesPanelExpanded}"
 				                style="border:none;" />
 						</ice:commandLink>
@@ -119,11 +117,10 @@
 								action="#{documentHandlerBean.toggleMetaDataPanel}">
 								<pc:automationTag value="auto-COM-DocView-DocMetaData"
 									standAlone="false" />
-								<ice:graphicImage
-									url="/plugins/views-common/images/icons/arrow-down-box.png"
+								<ice:outputText styleClass="pi pi-arrow-down-square pi-lg"
 									rendered="#{!documentHandlerBean.metaDataPanelExpanded}"
 									style="border:none;" />
-								<ice:graphicImage url="/plugins/views-common/images/icons/arrow-up-box.png"
+								<ice:outputText styleClass="pi pi-arrow-up-square pi-lg"
 									rendered="#{documentHandlerBean.metaDataPanelExpanded}"
 									style="border:none;" />
 							</ice:commandLink>

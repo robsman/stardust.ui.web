@@ -19,9 +19,11 @@
 					<ice:outputText styleClass="headerText"
 						rendered="#{relatedProcessSearchBean.currentPage eq 'ADVANCE'}"
 						value="#{views_common_msgPropsBean['views.relatedProcessSearchAdvanced.title']}" />
-					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+					<ice:commandLink title="#{common_msgPropsBean['common.close']}"
 						action="#{relatedProcessSearchBean.closePopup}" immediate="true"
-						styleClass="windowClose" />
+						styleClass="windowClose pi-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+					</ice:commandLink>
 				</ice:panelGroup>
 			</f:facet>
 

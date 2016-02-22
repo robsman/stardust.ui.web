@@ -14,9 +14,10 @@
       <version>9.9.9-SNAPSHOT</version>
       <relativePath>../../product/product-parent/pom.xml</relativePath>
    </parent>
-
-	<properties>
+   
+   <properties>
       <skip.i18n-bundle-copy>false</skip.i18n-bundle-copy>
+      <skip.web.file.concatenation>false</skip.web.file.concatenation>
    </properties>
 
    <dependencies>
@@ -35,7 +36,6 @@
          <groupId>org.eclipse.stardust.modeling.model</groupId>
          <artifactId>ipp-bpm-model</artifactId>
          <version>${project.version}</version>
-         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>org.eclipse.stardust.modeling.core</groupId>
@@ -43,6 +43,12 @@
          <version>${project.version}</version>
          <scope>compile</scope>
       </dependency>
+      <dependency>
+         <groupId>org.eclipse.stardust.modeling.core</groupId>
+         <artifactId>ipp-bpm-authorization</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>      
       <dependency>
          <groupId>org.eclipse.stardust.modeling.model</groupId>
          <artifactId>ipp-bpm-model-builder</artifactId>
@@ -193,6 +199,15 @@
             <executions>
                <execution>
                   <id>replace-i18n-default-bundle</id>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>concatenate-web-files</id>
                </execution>
             </executions>
          </plugin>

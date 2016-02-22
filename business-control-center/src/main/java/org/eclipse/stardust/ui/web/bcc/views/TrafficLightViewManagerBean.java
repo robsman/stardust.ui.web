@@ -77,6 +77,7 @@ import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.table.PaginatorDataTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
@@ -224,7 +225,7 @@ public void init()
 
       fixedCols.add(colCategory);
 
-      long startingDate = System.currentTimeMillis();
+      long startingDate = PortalTimestampProvider.getTimeStampValue();
 
       activityList = getAllColumnActivities();
       Map tableDataMap = this.createModel();
@@ -1010,7 +1011,7 @@ public void init()
       selectedProcessActivityId = (String) ae.getComponent().getAttributes().get("processActivityId");
       String processActivityQualifiedId = (String) ae.getComponent().getAttributes().get("processActivityQualifiedId");
 
-      long startingDate = System.currentTimeMillis();
+      long startingDate = PortalTimestampProvider.getTimeStampValue();
       List<String> columns = TrafficLightViewPropertyProvider.getInstance().getAllColumnIDs(this.processId);
 
       ProcessInstances pInstances = getProcessInstances(processId, startingDate);

@@ -33,6 +33,7 @@ import org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionC
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
+import org.eclipse.stardust.ui.web.viewscommon.common.controller.ActivityInteractionControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -55,23 +56,12 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
       switch (event.getType())
       {
       case TO_BE_ACTIVATED:
-         String uri = providePanelUri(activityInstance);
-
-//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-//               "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
-//                     + getContentFrameId(activityInstance) + "', '" + uri + "');");
          break;
 
       case TO_BE_DEACTIVATED:
-//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-//               "InfinityBpm.ProcessPortal.deactivateContentFrame('"
-//                     + getContentFrameId(activityInstance) + "');");
          break;
 
       case CLOSED:
-//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-//               "InfinityBpm.ProcessPortal.closeContentFrame('"
-//                     + getContentFrameId(activityInstance) + "');");
          break;
 
       case LAUNCH_PANELS_ACTIVATED:
@@ -80,9 +70,6 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
       case RESTORED_TO_NORMAL:
       case PINNED:
       case PERSPECTIVE_CHANGED:
-//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-//               "InfinityBpm.ProcessPortal.resizeContentFrame('"
-//                     + getContentFrameId(activityInstance) + "');");
          break;
       }
    }
@@ -97,7 +84,7 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
          String uri = providePanelUri(activityInstance);
 
          eventScript = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
-               + getContentFrameId(activityInstance) + "', '" + uri + "');";
+               + getContentFrameId(activityInstance) + "', '" + uri + "', {html5ViewId: '" + event.getView().getHtml5FwViewId() + "'});";
          break;
 
       case TO_BE_DEACTIVATED:
@@ -186,12 +173,11 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
       // TODO emit java script to load page into panel?
    }
 
-   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
+   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario, Object parameters)
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
 
-      if ((ClosePanelScenario.COMPLETE == scenario)
-            || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario))
+      if (ActivityInteractionControllerUtils.isExternalWebAppInterventionRequired(scenario))
       {
          trace.info("Triggering asynchronous close of activity panel ...");
 

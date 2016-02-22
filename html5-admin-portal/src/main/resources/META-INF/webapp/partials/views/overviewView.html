@@ -1,0 +1,95 @@
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true" ng-controller="sdOverviewCtrl as ctrl">
+
+		<div class="overview-wrapper">
+			<div>
+				<div class="view-panel-toolbar heading">
+					{{i18n('admin-portal-messages.views-common-processes-label')}}</div>
+				<table>
+					<tr>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-total-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="ADM-Overview-TotalProcCnt">{{ctrl.processInstanceCounts.total}}</span></td>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-active-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="ADM-Overview-ActiveProcCnt">{{ctrl.processInstanceCounts.active}}</span></td>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-interrupted-label') +  i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="ADM-Overview-IntProcCnt">{{ctrl.processInstanceCounts.waiting}}</span></td>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-aborted-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="abortedProcessInstancesCount">{{ctrl.processInstanceCounts.aborted}}</span></td>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-completed-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="ADM-Overview-CompProcCnt">{{ctrl.processInstanceCounts.completed}}</span></td>
+					</tr>
+				</table>
+			</div>
+			<div>
+				<div class="view-panel-toolbar heading">
+					{{i18n('admin-portal-messages.views-common-activities-label')}}</div>
+				<table>
+					<tr>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-total-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="ADM-Overview-TotalActCnt">{{ctrl.activityInstanceCounts.total}}</span></td>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-active-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="ADM-Overview-ActiveActCnt">{{ctrl.activityInstanceCounts.active}}</span></td>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-waiting-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item"aid="ADM-Overview-WaitActCnt">{{ctrl.activityInstanceCounts.waiting}}</span></td>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-aborted-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="ADM-Overview-AbortActCnt">{{ctrl.activityInstanceCounts.aborted}}</span></td>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-completed-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="ADM-Overview-CompActCnt">{{ctrl.activityInstanceCounts.completed}}</span></td>
+					</tr>
+				</table>
+			</div>
+			<div>
+				<div class="view-panel-toolbar heading">
+					{{i18n('admin-portal-messages.views-common-users-label')}}</div>
+				<table>
+					<tr>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-total-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="ADM-Overview-TotalUserCnt">{{ctrl.userCounts.totalCount}}</span></td>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-valid-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="ADM-Overview-ValidUserCnt">{{ctrl.userCounts.activeCount}}</span></td>
+					</tr>
+				</table>
+			</div>
+			<div class="view-panel-content">
+				<div class="view-panel-toolbar heading">
+					{{i18n('admin-portal-messages.views-overview-logTable-title')}}</div>
+				<div sda-toolbar>
+					<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="ADM-Overview"></span>
+				</div>
+				<table sd-data-table="ctrl.allLogEntriesTable"
+					sd-data="ctrl.getAllLogEntries(params)" sda-mode="remote"
+					sda-selectable="multiple"
+					sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+					sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
+					sda-sort-by="{name : 'timeStamp', dir : 'desc'}" sda-exports="true"
+					sda-exports-file-name="{{ctrl.exportFileNameForAllLogEntries}}">
+					<thead
+						sda-i18n-scope="admin-portal-messages.views-overview-logTable-column">
+						<tr>
+							<th sda-name="timeStamp" sda-sortable="true"></th>
+							<th sda-name="type"></th>
+							<th sda-name="code"></th>
+							<th sda-name="context"></th>
+							<th sda-name="subject"></th>
+							<th sda-name="account"></th>
+					</thead>
+					<tbody>
+						<tr>
+							<td sda-data-type="dateTime"></td>
+							<td style="text-align: center;"></td>
+							<td style="text-align: center;"></td>
+							<td style="text-align: center;"></td>
+							<td sda-exporter="rowData.subject">
+								<div title="{{rowData.subject}}" class="trimText tbl-tool-link">{{rowData.subject}}</div>
+							</td>
+							<td sda-exporter="rowData.account"><sd-user-details
+									sda-user-oid="rowData.userOID" sda-account="rowData.account"
+									sda-link-disabled="rowData.linkDisabled"
+									sda-aid-prefix="ADM-Overview-LogTable"> </sd-user-details></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+</div>
+</div>

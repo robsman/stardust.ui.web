@@ -14,11 +14,13 @@
 				<ice:outputText
 					value="#{printerDialogPopup.messages['printerDialog.printSettings']}"
 					styleClass="headerText" />
-				<ice:commandButton
+				<ice:commandLink
 					title="#{common_msgPropsBean['common.close']}"
 					action="#{printerDialogPopup.closePopup}"
 					immediate="true"
-					styleClass="windowClose" />
+					styleClass="windowClose pi-cmdLnk">
+					<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+				</ice:commandLink>
 			</ice:panelGroup>
 		</f:facet>
 

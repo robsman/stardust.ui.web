@@ -25,6 +25,10 @@
 	        <link href="#{facesContext.externalContext.requestContextPath}/plugins/common/css/nirvanaRime-override.css" rel="stylesheet" type="text/css" />
 	        <link href="#{facesContext.externalContext.requestContextPath}/plugins/common/css/nirvanaPortal.css" rel="stylesheet" type="text/css" />
 	        <link href="#{facesContext.externalContext.requestContextPath}/plugins/common/css/portalComponentStyle.css" rel="stylesheet" type="text/css" />
+	        
+	        <link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/plugins/modern-skin/login.css"></link>
+			<link rel="stylesheet" type="text/css"  href="#{facesContext.externalContext.requestContextPath}/plugins/modern-skin/modern.font.icons.css">	</link>
+	        
 			<c:if test="#{ippLoginDialog.pluginLoginStyleSheetPath !=null}">
 				<link href="#{facesContext.externalContext.requestContextPath}/#{ippLoginDialog.pluginLoginStyleSheetPath}"  rel="stylesheet" type="text/css" />
 			</c:if>
@@ -39,7 +43,7 @@
               <div class="loginContent">
               	<div class="portalTitle">#{ippLoginDialog.loginHeader}</div>
                 <ice:panelGrid columns="2" style="width: 100%" cellspacing="0" cellpadding="0" columnClasses="label, data">
-                  <ice:outputLabel for="j_username" value="#{common_msgPropsBean['loginDialog.account']}:" 
+                  <ice:outputLabel for="j_username" value="#{common_msgPropsBean['loginDialog.account']}" 
                      styleClass="label-form"/>
                   <ice:panelGroup>
                   	<h:inputText id="j_username" value="#{ippLoginDialog.account}"
@@ -47,7 +51,7 @@
                     	<pc:automationTag value="auto-Login-AcctField" standAlone="false"/>
                     </h:inputText>
                   </ice:panelGroup>
-                  <ice:outputLabel for="j_password" value="#{common_msgPropsBean['loginDialog.password']}:" 
+                  <ice:outputLabel for="j_password" value="#{common_msgPropsBean['loginDialog.password']}" 
                      styleClass="label-form"/>
                   <ice:panelGroup>
                   	<h:inputSecret id="j_password" value="#{ippLoginDialog.password}"
@@ -55,19 +59,19 @@
                     	 <pc:automationTag value="auto-Login-PwdField" standAlone="false"/>
                     </h:inputSecret>
                   </ice:panelGroup>
-                  <ice:outputLabel for="realm" value="#{common_msgPropsBean['loginDialog.realm']}:" 
+                  <ice:outputLabel for="realm" value="#{common_msgPropsBean['loginDialog.realm']}" 
                      styleClass="label-form" rendered="#{ippLoginDialog.promptForRealm}"/>
                   <h:inputText id="realm" value="#{ippLoginDialog.realm}" 
                       rendered="#{ippLoginDialog.promptForRealm}">
                       <pc:automationTag value="auto-Login-RealmField" standAlone="false"/>
                   </h:inputText>
-                  <ice:outputLabel for="domain" value="#{common_msgPropsBean['loginDialog.domain']}:" 
+                  <ice:outputLabel for="domain" value="#{common_msgPropsBean['loginDialog.domain']}" 
                      styleClass="label-form" rendered="#{ippLoginDialog.promptForDomain}"/>
                   <h:inputText id="domain" value="#{ippLoginDialog.domain}" 
                       rendered="#{ippLoginDialog.promptForDomain}">
                       <pc:automationTag value="auto-Login-DomainField" standAlone="false"/>
                   </h:inputText>   
-                  <ice:outputLabel for="partition" value="#{common_msgPropsBean['loginDialog.partition']}:" 
+                  <ice:outputLabel for="partition" value="#{common_msgPropsBean['loginDialog.partition']}" 
                      styleClass="label-form" rendered="#{ippLoginDialog.promptForPartition}"/>
                   <h:inputText id="partition" value="#{ippLoginDialog.partition}" 
                      rendered="#{ippLoginDialog.promptForPartition}">

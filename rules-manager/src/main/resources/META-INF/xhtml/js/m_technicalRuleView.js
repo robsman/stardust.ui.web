@@ -25,14 +25,14 @@ define(
 				 m_ruleSetCommandDispatcher,m_ruleSetCommand,
 				 m_typeParser,m_autoCompleters,m_utilities) {
 			return {
-				initialize : function(uuid,techRuleID,options) {
+				initialize : function(uuid,techRuleID,options,mode) {
 					m_utils.jQuerySelect("#hideGeneralProperties").hide();
 					initViewCollapseClickHandlers();
 					
-					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
+					var ruleSet = RuleSet.findRuleSetByUuid(uuid,mode);
 					var techRule=ruleSet.findTechnicalRuleByUuid(techRuleID);
 					var view = new TechnicalRuleView();
-					view.initialize(ruleSet,techRule,options);
+					view.initialize(ruleSet,techRule,options,mode);
 				}
 			};
 
@@ -52,7 +52,7 @@ define(
 			
 			function TechnicalRuleView() {
 
-				TechnicalRuleView.prototype.initialize = function(ruleSet,techRule,options) {
+				TechnicalRuleView.prototype.initialize = function(ruleSet,techRule,options,mode) {
 					
 					var themeMenuHandler,   /*Handler function to assign to any UI element that controls themes for ACE*/
 						themeMenu,          /*string-domFrag for our theme options for ACE*/
@@ -70,6 +70,7 @@ define(
 						fontSizeMenuHandler;/*handler for click events on $fontSizeMenu*/
 					
 					
+			
 					/* Close over the local UI elements we will reference via JQUERY etc.
 					 * The options object passed in to our initialize function should
 					 * specify valid selectors for each value below.
@@ -124,6 +125,22 @@ define(
 					uiElements.drlEditorTextArea=m_utils.jQuerySelect(options.selectors.drlEditor)[0];
 					uiElements.drlEditor=m_codeEditorAce.getDrlEditor(uiElements.drlEditorTextArea);
 					
+					//Set to Read only if mode = published
+					if(mode==="PUBLISHED"){
+						
+						m_utils.jQuerySelect("#nameInput").attr("disabled", 'disabled');
+						m_utils.jQuerySelect("#descriptionTextarea").attr("disabled", 'disabled');
+						m_utils.jQuerySelect("#techEditToolbar").hide();
+						
+						uiElements.drlEditor.editor.setOptions({
+						    readOnly: true,
+						    highlightActiveLine: false,
+						    highlightGutterLine: false
+						});
+						uiElements.drlEditor.editor.renderer.$cursorLayer.element.style.opacity=0;
+					};
+					
+					
 					/*Loop through each Fact/ParameterDefinition and construct Keywords 
 					 *for each path within the model hierarchy.*/
 					var pDef,k,completerStrings=[];
@@ -142,6 +159,7 @@ define(
 					
 					/*Listen for our module loaded events. Specifically, for our
 					 *language tools being loaded.*/
+					
 					$(uiElements.drlEditor).on("moduleLoaded",function(event,module){
 						if(module.name==="ace/ext/language_tools"){
 							uiElements.drlEditor.addCompleter(sessionCompleter);

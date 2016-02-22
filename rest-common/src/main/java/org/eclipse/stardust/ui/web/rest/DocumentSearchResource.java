@@ -39,7 +39,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
@@ -144,29 +143,6 @@ public class DocumentSearchResource
          return Response.serverError().build();
       }
 
-   }
-
-   /**
-    * 
-    * @param documentOwner
-    * @return
-    */
-   @GET
-   @Path("/loadUserDetails/{documentOwner}")
-   public Response getUserDetails(@PathParam("documentOwner") String documentOwner)
-   {
-      try
-      {
-         UserDTO user = documentSearchService.getUserDetails(documentOwner);
-
-         Gson gson = new Gson();
-         return Response.ok(gson.toJson(user), MediaType.TEXT_PLAIN_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         trace.error(e, e);
-         return Response.serverError().build();
-      }
    }
 
    /**

@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdAttachToCaseDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
+	angular.module('bpm-common').directive('sdAttachToCaseDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService',
 	                                                                    AttachToCaseDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function AttachToCaseDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
+	function AttachToCaseDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, sdMessageService, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdAttachToCaseDialog');
 		
@@ -50,7 +50,8 @@
 					+ ' sda-type="confirm"'
 					+ ' sda-scope="this"'
 					+ ' sda-on-open="attachToCaseController.onOpenDialog(res)"'
-					+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/attachToCaseDialog.html"'
+					+ ' sda-template="'
+					+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/attachToCaseDialog.html"'
 					+ ' sda-on-confirm="attachToCaseController.confirm()"'
 					+ ' sda-confirm-action-label="{{i18n(\'views-common-messages.views-attachToCase-button-attach\')}}"'
 					+ ' sda-cancel-action-label="{{i18n(\'views-common-messages.common-cancel\')}}"'
@@ -63,7 +64,8 @@
 					+ ' sda-type="custom"'
 					+ ' sda-scope="this"'
 					+ ' sda-on-close="attachToCaseController.onCloseNotification()"'
-					+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/attachToCaseNotification.html">'
+					+ ' sda-template="'
+					+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/attachToCaseNotification.html">'
 					+ '</span>',
 				controller: AttachToCaseDialogController
 			};
@@ -143,17 +145,9 @@
 					}
 				}
 
-				self.resetErrorMessage();
-				eventBus.emitMsg("js.error", msg);
+				sdMessageService.showMessage(msg);
 			}
 
-			/*
-			 * 
-			 */
-			AttachToCaseDialogController.prototype.resetErrorMessage = function() {
-				eventBus.emitMsg("js.error.reset");
-			}
-			
 			/*
 			 * 
 			 */
@@ -261,7 +255,7 @@
 
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while performing Attach to case.\n Caused by: ' + result);
+					trace.log('An error occurred while performing Attach to case.\n Caused by: ' , result);
 					deferred.reject(result);
 				});
 
@@ -462,7 +456,7 @@
 					deferred.resolve(data);
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while performing "Get Related Processes".\n Caused by: ' + result);
+					trace.log('An error occurred while performing "Get Related Processes".\n Caused by: ' , result);
 					deferred.reject(result);
 				});
 

@@ -16,12 +16,16 @@ import static org.eclipse.stardust.ui.web.plugin.support.resources.PluginResourc
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.WeakHashMap;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -107,11 +111,12 @@ public class PluginUtils
     * @param pluginId
     * @param baseUri
     * @param pattern
+    * @param skip
     * @return
     */
-   public static List<String> findWebResources(ResourcePatternResolver resolver, String pluginId, String webUriBase, String baseUri, String pattern)
+   public static List<WebResource> findWebResources(ResourcePatternResolver resolver, String pluginId, String webUriBase, String baseUri, String pattern, List<String> skip)
    {
-      List<String> allResources = newArrayList();
+      List<WebResource> allResources = newArrayList();
 
       try
       {
@@ -147,8 +152,12 @@ public class PluginUtils
          for (Resource resource : matchedResources)
          {
             String resourceUri = resource.getURI().toString();
-            String extensionWebUri = webUriPrefix + resourceUri.substring(baseUri.length());
-            allResources.add(extensionWebUri);
+            String pluginUri = resourceUri.substring(baseUri.length());
+            if (!contains(pluginUri, skip))
+            {
+               String extensionWebUri = webUriPrefix + pluginUri;
+               allResources.add(new WebResource(extensionWebUri, resource));
+            }
          }
       }
       catch (Exception e)
@@ -157,6 +166,27 @@ public class PluginUtils
       }
 
       return allResources;
+   }
+
+   /**
+    * @param str
+    * @param skip
+    * @return
+    */
+   private static boolean contains(String str, List<String> skip)
+   {
+      if (CollectionUtils.isNotEmpty(skip))
+      {
+         for(String file : skip)
+         {
+            if (str.startsWith(file))
+            {
+               return true;
+            }
+         }
+      }
+
+      return false;
    }
 
    public static class PluginDescriptor
@@ -283,5 +313,18 @@ public class PluginUtils
       {
          CloseableUtil.closeQuietly(inputStream);
       }
+   }
+
+   /**
+    * @param resource
+    * @param contents
+    * @return
+    * @throws IOException
+    */
+   public static void writeResource(File file, String contents) throws IOException
+   {
+      
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(contents.getBytes());
    }
 }

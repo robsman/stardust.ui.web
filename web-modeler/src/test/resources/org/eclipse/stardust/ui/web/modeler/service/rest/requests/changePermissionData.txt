@@ -1,0 +1,4 @@
+{"commandId":"permission.addParticipant","modelId":"PermissionModelEmpty","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000250","changes":{"permissionID":"data.readDataValues","participantFullId":"PermissionModelEmpty:Administrator"}}]}
+{"commandId":"permission.addParticipants","modelId":"PermissionModelEmpty","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000250","changes":{"permissionID":"data.modifyDataValues","participants":[{"participantFullId":"PermissionModelEmpty:Role1"},{"participantFullId":"PermissionModelEmpty:Role2"},{"participantFullId":"PermissionModelEmpty:Role3"},{"participantFullId":"PermissionModelEmpty:Role4"},{"participantFullId":"PermissionModelEmpty:Organization1"},{"participantFullId":"PermissionModelEmpty:Organization2"},{"participantFullId":"PermissionModelEmpty:Organization3"},{"participantFullId":"PermissionModelEmpty:Organization4"}]}}]}
+
+

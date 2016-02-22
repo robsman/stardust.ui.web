@@ -171,7 +171,7 @@ define(
                   header += "  <when>\n";
                   header += "    <simple>$simple{in.header." + Headerkey + "} == null</simple>\n";
                   
-                  if(HeaderInputContent.indexOf("{{") != -1 || HeaderInputContent.indexOf("$") != -1)
+                  if(this.isEmailTemplateVariable(HeaderInputContent) || this.isVelocityVariable(HeaderInputContent))
                   {
                      HeaderInputContent = HeaderInputContent.replace(new RegExp("\n", 'g'), " ")
                                                       .replace(new RegExp("toDate", 'g'), "formatDate")
@@ -198,6 +198,30 @@ define(
                   header += "</choice>\n";
                   return header;
                };
+               /**
+                * Return true if it is a variable data that will be used by templating engine
+                */
+               MailRouteDefinitionHandler.prototype.isEmailTemplateVariable = function(HeaderInputContent)
+               {
+                  return HeaderInputContent.startsWith('{{')&& HeaderInputContent.endsWith("}}");
+               }
+               
+               /**
+                * Return true if it is a variable data that will be used by templating engine
+                */
+               MailRouteDefinitionHandler.prototype.isVelocityVariable = function(HeaderInputContent)
+               {
+                  return HeaderInputContent.startsWith('$')&& !this.isConfigurationVariable(HeaderInputContent);
+               }
+               
+               /**
+                * Return true if it is a Configuration variable (starts with ${)
+                */
+               MailRouteDefinitionHandler.prototype.isConfigurationVariable = function(HeaderInputContent)
+               {
+                  HeaderInputContent=HeaderInputContent.trim();
+                  return HeaderInputContent.startsWith("${") && HeaderInputContent.endsWith("}");
+               }
                
                MailRouteDefinitionHandler.prototype.setHeaderInputForEmailEmbeddedOrDataMode = function(Headerkey, HeaderInputContent)
                {
@@ -206,7 +230,7 @@ define(
                   header += "  <when>\n";
                   header += "    <simple>$simple{in.header." + Headerkey + "} == null</simple>\n";
                   
-                  if(HeaderInputContent.indexOf("$") != -1)
+                  if(this.isVelocityVariable(HeaderInputContent) )
                   {
                      header += m_routeDefinitionUtils
                               .createTemplatingHandlerRouteDefinition("text", "embedded",
@@ -349,6 +373,7 @@ define(
                   route += "} else {\n";
                   route += "var bcc= eval(bcc);\n";
                   route += "}\n";
+                  route += "\nvar response=' ';\n";
                   if (attributes["stardust:emailOverlay::templateSource"] == "data")
                   {
                      route += "if(mailContentAP){\n";
@@ -364,7 +389,7 @@ define(
                                        new RegExp("}}", 'g'), " + '") + "';\n";
                   }
                   route += "]]>";
-                  route += "\n      setOutHeader('response', response);\n";
+                 route += "\nsetOutHeader('response', response);\n";
                   if (attributes["stardust:emailOverlay::includeUniqueIdentifierInSubject"] != null
                            && attributes["stardust:emailOverlay::includeUniqueIdentifierInSubject"]==true)
                   {
@@ -409,7 +434,7 @@ define(
                
                MailRouteDefinitionHandler.prototype.includeAttachmentBean = function(attributes,accessPoints)
                {
-                  if(attributes["stardust:emailOverlay::attachmentsTemplateSource"]=="DOCUMENT_REQUEST")
+                  if(attributes["stardust:emailOverlay::attachmentsTemplateSource"]=="CORRESPONDENCE")
                      return true;
                   for (var n = 0; n < accessPoints.length; ++n)
                   {
@@ -424,6 +449,9 @@ define(
                
                MailRouteDefinitionHandler.prototype.includeProcessTemplateConfigurations = function(attributes,accessPoints) 
                {
+                  var correspondenceAp = m_routeDefinitionUtils.findAccessPoint(accessPoints, "CORRESPONDENCE");
+                  if(correspondenceAp)
+                     return true;
                   if(!attributes["stardust:emailOverlay::templateConfigurations"])
                      attributes["stardust:emailOverlay::templateConfigurations"]="[]";
                   

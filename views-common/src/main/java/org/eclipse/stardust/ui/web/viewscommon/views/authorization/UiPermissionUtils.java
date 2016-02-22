@@ -23,7 +23,6 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
-import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Department;
@@ -59,7 +58,7 @@ public class UiPermissionUtils
    public static final String VIEW = "view";
    public static final String GLOBAL_EXTNS = "globalExtensions";
    public static final String PERSPECTIVE = "perspective";
-   
+
    public static final String PROPERTY_C_KEY = "views.authorizationManagerView.";
 
    /**
@@ -72,25 +71,21 @@ public class UiPermissionUtils
     */
    private static final String UI = "ui";
 
-   private final static Map<String, String> defaultPermissions;
-
    /**
     * Constants for Administrator role as used by engine permissions. Can be changed to a
     * portal related constant.
     */
-   private final static String ADMINISTRATOR = PredefinedConstants.ADMINISTRATOR_ROLE;
    private static final String PREFIX = "portal.ui.";
-   private static final String POSTFIX_ALLOW = ".allow";
-   private static final String POSTFIX_DENY = ".deny";
+   public static final String SUFFIX_ALLOW = ".allow";
+   public static final String SUFFIX_DENY = ".deny";
+   public static final String PREFIX_DENY = "deny:";
    private static final String PERIOD = ".";
    private static final String SPACE = " ";
+   public static final String PROCESS = "processDefinition.";
+   public static final String ACTIVITY = "activity.";
+   public static final String DATA = "data.";
 
-   static
-   {
-      defaultPermissions = new HashMap<String, String>();
-      // Set Administrator default
-      defaultPermissions.put("portal.ui.ippAdminPerspective.allow", ADMINISTRATOR);
-   }
+   private final static Map<String, Set<String>> defaultPermissions = new HashMap<String, Set<String>>();
 
    /**
     * @param permissionId
@@ -101,10 +96,17 @@ public class UiPermissionUtils
    {
       if (CollectionUtils.isNotEmpty(grants))
       {
-         String permission = defaultPermissions.get(permissionId);
-         if (permission != null && grants.size() == 1 && grants.get(0).equals(permission))
+         Set<String> permissions = defaultPermissions.get(permissionId);
+         if (permissions == null)
          {
-            return true;
+            return false;
+         }
+         for (String permission : permissions)
+         {
+            if (permission != null && grants.contains(permission))
+            {
+               return true;
+            }
          }
       }
       return false;
@@ -144,13 +146,22 @@ public class UiPermissionUtils
    }
 
    /**
+    * @param permissionId
+    * @return
+    */
+   public static String getPermissionId(String permissionId)
+   {
+      return PREFIX + permissionId;
+   }
+
+   /**
     * @author Yogesh.Manware
     * @param permissionId
     * @return
     */
    public static String getPermissionIdAllow(String permissionId)
    {
-      return PREFIX + permissionId + POSTFIX_ALLOW;
+      return PREFIX + permissionId + SUFFIX_ALLOW;
    }
 
    /**
@@ -159,7 +170,7 @@ public class UiPermissionUtils
     */
    public static String getPermissionIdDeny(String permissionId)
    {
-      return PREFIX + permissionId + POSTFIX_DENY;
+      return PREFIX + permissionId + SUFFIX_DENY;
    }
 
    /**
@@ -255,7 +266,7 @@ public class UiPermissionUtils
     */
    public static boolean isGeneralPermissionId(String permissionId)
    {
-      if (!permissionId.startsWith(PREFIX))
+      if (!isUIPermissionId(permissionId) && !isModelPermissionId(permissionId))
       {
          return true;
       }
@@ -263,6 +274,83 @@ public class UiPermissionUtils
       {
          return false;
       }
+   }
+
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public static boolean isUIPermissionId(String permissionId)
+   {
+      if (permissionId.startsWith(PREFIX))
+      {
+         return true;
+      }
+      else
+      {
+         return false;
+      }
+   }
+
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public static boolean isModelPermissionId(String permissionId)
+   {
+      if (isProcessPermissionId(permissionId) || isActivityPermissionId(permissionId)
+            || isDataPermissionId(permissionId))
+      {
+         return true;
+      }
+      else
+      {
+         return false;
+      }
+   }
+
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public static boolean isProcessPermissionId(String permissionId)
+   {
+      if (permissionId.startsWith(PROCESS))
+      {
+         return true;
+      }
+      return false;
+   }
+
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public static boolean isActivityPermissionId(String permissionId)
+   {
+      if (permissionId.startsWith(ACTIVITY))
+      {
+         return true;
+      }
+      return false;
+   }
+
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public static boolean isDataPermissionId(String permissionId)
+   {
+      if (permissionId.startsWith(DATA))
+      {
+         return true;
+      }
+      return false;
    }
 
    /**
@@ -402,6 +490,32 @@ public class UiPermissionUtils
    }
 
    /**
+    * 
+    * @param permissionId
+    * @param roles
+    * @param allow
+    */
+   public static void populateDefaultPermissions(String permissionId, Set<String> roles, boolean allow)
+   {
+      if (allow)
+      {
+         String allowId = UiPermissionUtils.getPermissionIdAllow(permissionId);
+         if (!defaultPermissions.containsKey(allowId))
+         {
+            defaultPermissions.put(allowId, roles);
+         }
+      }
+      else
+      {
+         String denyId = UiPermissionUtils.getPermissionIdDeny(permissionId);
+         if (!defaultPermissions.containsKey(denyId))
+         {
+            defaultPermissions.put(denyId, roles);
+         }
+      }
+   }
+
+   /**
     * @param key
     * @return
     */
@@ -439,19 +553,21 @@ public class UiPermissionUtils
       extensionMap.get(elementType).add(uiElement);
    }
 
+
    /**
     * @param permissions
+    * @param defaultPermissions
     */
    @SuppressWarnings({"rawtypes", "unchecked"})
    private static void addDefaultPermissions(Map<String, List<String>> permissions)
    {
-      for (Entry<String, String> entry : defaultPermissions.entrySet())
+      for (Entry<String, Set<String>> entry : defaultPermissions.entrySet())
       {
          List value = permissions.get(entry.getKey());
          if (value == null)
          {
             List values = new LinkedList<String>();
-            values.add(entry.getValue());
+            values.addAll(entry.getValue());
             permissions.put(entry.getKey(), values);
          }
       }
@@ -471,6 +587,7 @@ public class UiPermissionUtils
       return preferences != null ? preferences.getPreferences() : null;
    }
 
+ 
    /**
     * @param preferencesMap
     * @param includeDefaultPermissions

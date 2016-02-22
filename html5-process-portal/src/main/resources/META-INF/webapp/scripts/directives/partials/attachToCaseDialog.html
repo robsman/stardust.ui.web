@@ -1,7 +1,6 @@
 <div class="attach-to-case-dialog">
 	<div class="section" style="border:none;">
-		<div sd-js-error class="msgError">
-		</div>
+		<div sd-message></div>
 		
 		<!-- Select From List -->	
 		<div ng-show="!attachToCaseController.attachToCase.advancedSelect">
@@ -62,7 +61,7 @@
 				<table class="switch-form-info">
 					<tr>
 						<td style="padding-right: 11px;">
-							<i class="glyphicon glyphicon-info-sign"></i>
+							<i class="pi pi-lg pi-information"></i>
 						</td>
 						<td>
 							<span ng-if="attachToCaseController.attachToCase.isCase">
@@ -85,10 +84,10 @@
 				<table class="join-form">
 					<tr>
 						<td>
-							<label ng-if="!attachToCaseController.attachToCase.isCase" class="label-form">
+							<label ng-if="!attachToCaseController.attachToCase.isCase" class="label-item">
 								* {{i18n('views-common-messages.views-attachToCase-caseOID-label')}}
 							</label>
-							<label ng-if="attachToCaseController.attachToCase.isCase" class="label-form">
+							<label ng-if="attachToCaseController.attachToCase.isCase" class="label-item">
 								{{i18n('views-common-messages.views-attachToCase-processOID-label')}}
 							</label>
 						</td>
@@ -101,8 +100,7 @@
 				</table>
 				<br>
 				<div>
-					<i class="glyphicon glyphicon-info-sign"></i>
-						
+					<i class="pi pi-lg pi-information"></i>
 					<span ng-if="attachToCaseController.attachToCase.isCase">
 						{{i18n('views-common-messages.views-attachToCase-specifyProcess-message')}}
 					</span>

@@ -36,10 +36,10 @@
 		style="text-align: center;">
 		<ice:outputText value="-"
 			rendered="#{!dialogBean.currentPage.modelDeployed}" />
-		<h:graphicImage url="/plugins/views-common/images/icons/accept.png"
+		<ice:outputText styleClass="pi pi-deploy-success pi-lg"
 			rendered="#{row.errors == 0 and dialogBean.currentPage.modelDeployed and !dialogBean.currentPage.deploymentException }"
 			title="#{ messages_admin['views.deploymodel.deploymentStatus.success']}" />
-		<h:graphicImage url="/plugins/views-common/images/icons/cancel.png"
+		<ice:outputText styleClass="pi pi-deploy-failure pi-lg"
 			rendered="#{row.errors > 0 or dialogBean.currentPage.deploymentException }"
 			title="#{ messages_admin['views.deploymodel.deploymentStatus.failed']}" />
 	</ice:panelGroup>

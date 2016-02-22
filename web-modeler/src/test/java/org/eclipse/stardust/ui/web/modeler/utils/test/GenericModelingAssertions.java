@@ -7,6 +7,7 @@ import java.lang.reflect.Proxy;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.connectionhandler.EObjectProxyHandler;
@@ -37,6 +38,15 @@ public class GenericModelingAssertions
       assertThat(process.getName(), is(not(nullValue())));
       assertThat(process.getName(), is(processName));
       return process;
+   }
+   
+   public static void assertProcessDoesNotExist(ModelType model, String processID)
+   {
+      ProcessDefinitionType process = (ProcessDefinitionType) ModelUtils
+            .findIdentifiableElement(model,
+                  CarnotWorkflowModelPackage.eINSTANCE.getModelType_ProcessDefinition(),
+                  processID);
+      assertThat(process, is(nullValue()));
    }
 
    public static ProcessDefinitionType assertSubProcess(ActivityType activity,
@@ -71,6 +81,15 @@ public class GenericModelingAssertions
       assertThat(activity.getImplementation(), is(not(nullValue())));
       assertThat(implType, is(activity.getImplementation()));
       return activity;
+   }
+   
+   public static void assertActivityDoesNotExist(ProcessDefinitionType process,
+         String activityID)
+   {
+      ActivityType activity = (ActivityType) ModelUtils.findIdentifiableElement(process,
+            CarnotWorkflowModelPackage.eINSTANCE.getProcessDefinitionType_Activity(),
+            activityID);     
+      assertThat(activity, is(nullValue()));
    }
 
    public static ApplicationType assertApplication(ModelType model, String applicationID)
@@ -309,6 +328,13 @@ public class GenericModelingAssertions
       assertThat(dataType.getName(), is(dataName));
       return dataType;
    }
+   
+   public static void assertDataDoesNotExist(ModelType model, String dataID)
+   {
+      DataType dataType = (DataType) ModelUtils.findIdentifiableElement(model,
+            CarnotWorkflowModelPackage.eINSTANCE.getModelType_Data(), dataID);
+      assertThat(dataType, is(nullValue()));
+   }
 
    public static RoleType assertRole(ModelType model, String roleID, String roleName)
    {
@@ -338,7 +364,6 @@ public class GenericModelingAssertions
       assertThat(dataType.getName(), is(dataName));
       return dataType;
    }
-
 
 
    public static DataType assertDocumentData(ModelType model, String dataID, String dataName,
@@ -374,6 +399,32 @@ public class GenericModelingAssertions
          assertThat(transition.getTo(), is(toActivity));
 
       }
+   }
+
+   public static EventHandlerType assertEventHandler(ActivityType activity, String id,
+         String name, String type, boolean logHandler)
+   {
+      assertThat(activity.getEventHandler(), is(not(nullValue())));
+      assertThat(activity.getEventHandler().size(), is(not(0)));
+      EventHandlerType foundHandler = null;
+      for (Iterator<EventHandlerType> i = activity.getEventHandler().iterator(); i
+            .hasNext();)
+      {
+         EventHandlerType eventHandler = i.next();
+         assertThat(eventHandler.getId(), is(not(nullValue())));
+         assertThat(eventHandler.getName(), is(not(nullValue())));
+         assertThat(eventHandler.getType(), is(not(nullValue())));
+         assertThat(eventHandler.getType().getId(), is(not(nullValue())));
+         if (eventHandler.getId().equals(id))
+         {
+            foundHandler = eventHandler;
+         }
+      }
+      assertThat(foundHandler, is(not(nullValue())));
+      assertThat(foundHandler.getName(), is(name));
+      assertThat(foundHandler.getType().getId(), is(type));
+      assertThat(foundHandler.isLogHandler(), is(logHandler));
+      return foundHandler;
    }
 
    public static void assertReferencedRole(ModelType consumerModel, ModelType providerModel, String roleID, String roleName)
@@ -419,6 +470,29 @@ public class GenericModelingAssertions
       for (int i = 0; i < keys.length; i++)
       {
          assertThat(json.has(keys[i]), is(true));
+      }
+   }
+
+   public static void assertJsonHasKeyValue(JsonObject json, String... keyValues)
+   {
+      for (int i = 0; i < keyValues.length; i++)
+      {
+         String keyValue = keyValues[i];
+         String key = keyValue.split("=")[0];
+         assertThat(json.has(key), is(true));
+
+         String value = keyValue.split("=")[1];
+         String containedValue = json.get(key).getAsString();
+         assertThat(value, is(containedValue));
+      }
+   }
+   
+   public static void assertJsonArrayHasKeyValue(JsonArray jsonArray, String... keyValues)
+   {
+      for (int i = 0; i < jsonArray.size(); i++)
+      {
+         JsonObject json = jsonArray.get(i).getAsJsonObject();
+         assertJsonHasKeyValue(json, keyValues[i]);
       }
    }
 

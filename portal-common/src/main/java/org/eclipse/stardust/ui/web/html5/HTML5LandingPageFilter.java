@@ -34,6 +34,7 @@ import org.eclipse.stardust.ui.web.html5.utils.ResourceDependency;
 import org.eclipse.stardust.ui.web.html5.utils.ResourceDependencyUtils;
 import org.eclipse.stardust.ui.web.plugin.support.resources.PluginResourceUtils;
 import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils;
+import org.eclipse.stardust.ui.web.plugin.utils.WebResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -84,7 +85,8 @@ public class HTML5LandingPageFilter implements Filter
 
          // This is required in HTTP header for IE9
          response.setHeader("X-UA-Compatible", "IE=10,chrome=1");
-         
+
+         response.setContentType("text/html; charset=UTF-8");
          ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(request.getSession(false)
                .getServletContext());
          
@@ -107,9 +109,9 @@ public class HTML5LandingPageFilter implements Filter
                List<ResourceDependency> resourceDependencies = ResourceDependencyUtils.discoverDependencies(appContext);
                for (ResourceDependency resourceDependency : resourceDependencies)
                {
-                  allScripts.addAll(resourceDependency.getLibs());
-                  allScripts.addAll(resourceDependency.getScripts());
-                  allStyles.addAll(resourceDependency.getStyles());
+                  allScripts.addAll(getWebResourceUrls(resourceDependency.getLibs()));
+                  allScripts.addAll(getWebResourceUrls(resourceDependency.getScripts()));
+                  allStyles.addAll(getWebResourceUrls(resourceDependency.getStyles()));
                }
 
                if (trace.isDebugEnabled())
@@ -133,7 +135,6 @@ public class HTML5LandingPageFilter implements Filter
                }
 
                landingPageContent = injectArtifacts(otherStyles, landingPageContent, SKIN_AND_OTHER_STYLES_PLACE_HOLDER, false);
-
                // Return the contents
                response.getWriter().print(landingPageContent);
             }
@@ -229,6 +230,22 @@ public class HTML5LandingPageFilter implements Filter
       }
       
       return styles;
+   }
+
+   /**
+    * @param list
+    * @return
+    */
+   private List<String> getWebResourceUrls(List<WebResource> list)
+   {
+      List<String> newList = new ArrayList<String>();
+
+      for (WebResource webResource : list)
+      {
+         newList.add(webResource.webUri);
+      }
+      
+      return newList;
    }
 
    /**

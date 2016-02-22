@@ -34,10 +34,9 @@
 			<ice:commandLink action="#{filterPopup.openPopup}"
 				disabled="#{disabled || (!ippPortalApp.loggedInUser.administrator and filterPopup.columnModel.lock)}">
 				<pc:automationTag value="auto-DT-ColSelector" standAlone="false" />
-				<ice:graphicImage
-					value="/plugins/common/images/icons/adjust-columns.png"
-					style="vertical-align:top; border:none;"
-					styleClass="#{(disabled || (!ippPortalApp.loggedInUser.administrator and filterPopup.columnModel.lock)) ? 'iceCmdBtn-dis' : ''}"
+				<ice:outputText
+					style="vertical-align:top;"
+					styleClass="#{(disabled || (!ippPortalApp.loggedInUser.administrator and filterPopup.columnModel.lock)) ? 'iceCmdBtn-dis' : ''} pi pi-column-selector pi-lg"
 					title="#{filterPopup.title}" />
 			</ice:commandLink>
 		</ice:panelGroup>
@@ -57,15 +56,16 @@
 			<f:facet name="header">
 				<pc:automationTag value="auto-DT-ColSelector-Header"/>
 				<table cellpadding="0" cellspacing="0" width="100%"><tr>
-					<td>
+					<td> 
 						<ice:outputText value="#{filterPopup.title}"
 							styleClass="headerText" />
 					</td>
 					<td style="text-align: right">
 						<pc:automationTag value="auto-DT-ColSelector-CloseLink" standAlone="false"/>
-						<ice:commandButton title="#{common_msgPropsBean['common.filterPopup.close']}"
-							action="#{filterPopup.closePopup}"
-							styleClass="windowClose" />
+						<ice:commandLink title="#{common_msgPropsBean['common.filterPopup.close']}"
+							action="#{filterPopup.closePopup}" styleClass="pi-cmdLnk">
+							<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+						</ice:commandLink>
 					</td>
 				</tr></table>
 			</f:facet>
@@ -96,16 +96,12 @@
 										onclick="Event.stop(event);">
 										<pc:automationTag value="auto-DT-ColSelector-LockColumns"
 											standAlone="false" />
-										<ice:graphicImage rendered="#{filterPopup.lock}"
-											style="border: none;"
-											value="/plugins/common/images/icons/lock.png"
+										<ice:outputText rendered="#{filterPopup.lock}"
 											title="#{common_msgPropsBean['common.filterPopup.unlock']}" 
-											styleClass="#{filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''}"/>
-										<ice:graphicImage rendered="#{!filterPopup.lock}"
-											value="/plugins/common/images/icons/lock_open.png"
-											style="border: none;"
+											styleClass="#{filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''} pi pi-lock pi-lg"/>
+										<ice:outputText rendered="#{!filterPopup.lock}"
 											title="#{common_msgPropsBean['common.filterPopup.lock']}" 
-											styleClass="#{filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''}"/>
+											styleClass="#{filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''} pi pi-unlock pi-lg"/>
 									</ice:commandLink>
 								</ice:panelGrid>
 								<ice:panelGrid columns="1" styleClass="toolbarGroupLeft" 
@@ -113,8 +109,8 @@
 									<ice:commandLink action="#{filterPopup.reset}" panelConfirmation="resetConfirm#{filterPopup.id}"
 									disabled="#{!filterPopup.lockDisabled}">
 										<pc:automationTag value="auto-DT-ColSelector-Reset" standAlone="false"/>
-										<ice:graphicImage value="/plugins/common/images/icons/arrow_rotate_anticlockwise.png"
-											style="border: none;"  styleClass="#{!filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''}"
+										<ice:outputText 
+											styleClass="#{!filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''} pi pi-reset pi-lg"
 											title="#{common_msgPropsBean['common.reset']}"/>
 									</ice:commandLink>
 								</ice:panelGrid>

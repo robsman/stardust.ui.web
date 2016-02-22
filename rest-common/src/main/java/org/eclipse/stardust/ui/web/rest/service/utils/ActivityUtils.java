@@ -32,7 +32,7 @@ public class ActivityUtils
     */
    public static Activity getActivity(String processQualifiedId, String activityQualiedId)
    {
-      List<DeployedModel> models = CollectionUtils.newArrayList(ModelUtils.getAllModels());
+      List<DeployedModel> models = CollectionUtils.newArrayList(ModelUtils.getAllModelsActiveFirst());
       for (DeployedModel model : models)
       {
          // get all process definitions from the model

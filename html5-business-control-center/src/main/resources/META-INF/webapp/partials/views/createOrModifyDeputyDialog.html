@@ -1,0 +1,171 @@
+<div>
+	<form name="ctrl.addEditDeputyForm">
+		<table>
+			<tbody>
+				<tr>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm.$error.invalidDeputy">
+						{{i18n('views-common-messages.views-deputyManagementView-dialog-error-invalidDeputy')}}
+					</td>
+				</tr>
+				<tr>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm.$error.invalidDateRange">
+						{{i18n('views-common-messages.views-deputyManagementView-dialog-error-invalidDateRange')}}
+					</td>
+				</tr>
+				<tr>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm.$error.noAuthsSelected">
+						{{i18n('views-common-messages.views-deputyManagementView-dialog-error-noAuthsSelected')}}
+					</td>
+				</tr>
+				<tr>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm.$error.invalidFromDate">
+						{{i18n('views-common-messages.views-deputyManagementView-dialog-error-invalidFromDate')}}
+					</td>
+				</tr>
+				<tr>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm.$error.invalidToDate">
+						{{i18n('views-common-messages.views-deputyManagementView-dialog-error-invalidEndDate')}}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table>
+			<tbody>
+				<tr>
+					<td><span
+						class="label-item">{{i18n('views-common-messages.views-deputyManagementView-dialog-deputyName')}}</span></td>
+					<td>
+						<div ng-if="ctrl.deputy.mode != 'EDIT'" sd-participant-selector
+							sda-selected-data="ctrl.deputy.participantDataSelected"
+							sda-multiple="false" sd-data="ctrl.getDeputyUsersData(params)"
+							sda-aid-prefix="COM-DeputyMgmt-DeputyPopup">
+						</div>
+						<div ng-if="ctrl.deputy.mode == 'EDIT'">
+							<span>{{ctrl.deputy.deputyDisplayName}}</span>
+						</div>
+					</td>
+					<td>
+						<div ng-if="ctrl.deputy.mode != 'EDIT'">
+							<table cellpadding="0" cellspacing="0">
+								<tbody>
+									<tr>
+										<td>
+											<fieldset>
+												<table border="0" cellpadding="0" cellspacing="0">
+													<tbody>
+														<tr>
+															<td><input type="radio" ng-model="ctrl.searchMode" style="margin-bottom: 4px;"
+																value="ALL_USERS" aid="COM-DeputyMgmt-DeputyPopup-SrchMode"> <span class="label-item">{{i18n('views-common-messages.views-deputyManagementView-dialog-searchMode-allUsers')}}</span></td>
+														</tr>
+														<tr>
+															<td><input type="radio" ng-model="ctrl.searchMode" style="margin-bottom: 4px;"
+																value="SIMILAR_USERS" aid="COM-DeputyMgmt-DeputyPopup-SrchMode"> <span class="label-item">{{i18n('views-common-messages.views-deputyManagementView-dialog-searchMode-similarUsers')}}</span></td>
+														</tr>
+													</tbody>
+												</table>
+											</fieldset>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><span class="label-item">{{i18n('business-control-center-messages.views-deputyManagementView-validFrom')}}</span></td>
+					<td><div sd-date-time-picker
+							ng-model="ctrl.deputy.validFrom" name="validFrom" ng-model-onblur
+							sda-aid-prefix="COM-DeputyMgmt-DeputyPopup-ValidFrom"></div>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm['validFrom'].$error.validate">
+						{{i18n('html5-common.date-error')}}</td>
+				</tr>
+				<tr>
+					<td class="table-columnVertical"><span class="label-item">{{i18n('business-control-center-messages.views-deputyManagementView-validTo')}}</span></td>
+					<td class="table-columnVertical"><div sd-date-time-picker
+							ng-model="ctrl.deputy.validTo" name="validTo" ng-model-onblur
+							sda-aid-prefix="COM-DeputyMgmt-DeputyPopup-ValidTo">
+						</div></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm['validTo'].$error.validate">
+						{{i18n('html5-common.date-error')}}</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<div class="view-panel-toolbar heading">
+			{{i18n('views-common-messages.views-deputyManagementView-dialog-authorizations')}}
+		</div>
+		<div>
+			<table
+				style="vertical-align: top; white-space: nowrap; text-align: center;">
+				<tbody>
+					<tr>
+						<td><span>{{i18n('views-common-messages.dualList-available-header')}}</span></td>
+						<td><span></span></td>
+						<td><span>{{i18n('views-common-messages.dualList-selected-header')}}</span></td>
+					</tr>
+					<tr>
+						<td><select multiple="multiple"
+							ng-model="ctrl.deputy.selectedSourceParticipants"
+							style="min-width: 300px; height: 150px;" size="10"
+							ng-options="opt as opt.label for opt in ctrl.deputy.sourceParticipants"
+							aid="COM-DeputyMgmt-DeputyPopup-SelSrcParticipants">
+						</select></td>
+
+						<td><table style="vertical-align: top; margin-bottom:">
+								<tbody>
+									<tr>
+										<td><input class="button"
+											style="padding: 5px; width: 90px;" type="submit"
+											value="{{i18n('views-common-messages.dualList-add-label')}}"
+											ng-click="ctrl.add()"
+											aid="COM-DeputyMgmt-DeputyPopup-Add"></td>
+									</tr>
+									<tr>
+										<td><input class="button"
+											style="padding: 5px; width: 90px;" type="submit"
+											value="{{i18n('views-common-messages.dualList-addAll-label')}}"
+											ng-click="ctrl.addAll()"
+											aid="COM-DeputyMgmt-DeputyPopup-AddAll"></td>
+									</tr>
+									<tr>
+										<td><input class="button"
+											style="padding: 5px; width: 90px;" type="submit"
+											value="{{i18n('views-common-messages.dualList-remove-label')}}"
+											ng-click="ctrl.remove()"
+											aid="COM-DeputyMgmt-DeputyPopup-Remove"></td>
+									</tr>
+									<tr>
+										<td><input class="button"
+											style="padding: 5px; width: 90px;" type="submit"
+											value="{{i18n('views-common-messages.dualList-removeAll-label')}}"
+											ng-click="ctrl.removeAll()"
+											aid="COM-DeputyMgmt-DeputyPopup-RemoveAll"></td>
+									</tr>
+								</tbody>
+							</table></td>
+						<td><select multiple="multiple"
+							ng-model="ctrl.deputy.selectedTargetParticipants"
+							style="min-width: 300px; height: 150px;" size="10"
+							ng-options="opt as opt.label for opt in ctrl.deputy.targetParticipants"
+							aid="COM-DeputyMgmt-DeputyPopup-SelTargetParticipants">
+						</select></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</form>
+</div>

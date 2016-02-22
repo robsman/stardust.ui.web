@@ -205,7 +205,7 @@ public class ManualActivityUi
                      break;
                   }
                }
-               else if (dataMapping.getDataPath().equals("properties/" + path.getXPath())) // Mapping to nested item in properties
+               else if (dataMapping.getDataPath() == null || dataMapping.getDataPath().equals("properties/" + path.getXPath())) // Mapping to nested item in properties
                {
                   docTypePath = new XsdPath(maPath, path, dataMapping.getId(),
                         Direction.IN == dataMapping.getDirection());

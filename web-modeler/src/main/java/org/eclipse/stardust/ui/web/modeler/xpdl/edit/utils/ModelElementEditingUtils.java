@@ -39,7 +39,7 @@ public class ModelElementEditingUtils
       short h = 0;
       short m = 0;
       short s = 0;
-      
+
       short value = 0;
       try
       {
@@ -49,7 +49,7 @@ public class ModelElementEditingUtils
       {
          // TODO: log ?
       }
-      
+
       if (!StringUtils.isEmpty(unit))
       {
          switch (unit.charAt(0))
@@ -63,10 +63,32 @@ public class ModelElementEditingUtils
          }
       }
       // TODO: else log ?
-         
+
       Period period = new Period(Y, M, D, h, m, s);
       AttributeUtil.setAttribute(element, "carnot:engine:period",
             Period.class.getSimpleName(), period.toString());
+   }
+
+   public static String getDelayUnit(String attributeValue)
+   {
+      if (null == attributeValue)
+      {
+         return null;
+      }
+      Period period = new Period(attributeValue);
+      String units = "YMDhms";
+      int delay = 0;
+      String unit = units.substring(Period.SECONDS);
+      for (int i = Period.YEARS; i <= Period.SECONDS; i++)
+      {
+         delay = period.get(i);
+         if (delay > 0)
+         {
+            unit = units.substring(i, i + 1);
+            break;
+         }
+      }
+      return delay + ":" + unit;
    }
 
    /**
@@ -85,7 +107,7 @@ public class ModelElementEditingUtils
          }
       }
    }
-   
+
    /**
     * @param symbol
     */
@@ -96,7 +118,7 @@ public class ModelElementEditingUtils
       // delete transition
       deleteTransitions(symbol, processDefinition, symbol.getInTransitions());
       deleteTransitions(symbol, processDefinition, symbol.getOutTransitions());
-      
+
       // delete connection symbol
       deleteConnectionSymbols(symbol.getInTransitions());
       deleteConnectionSymbols(symbol.getOutTransitions());
@@ -134,8 +156,8 @@ public class ModelElementEditingUtils
          }
       }
    }
-   
-   
+
+
    /**
     * @param processDefinition
     * @param dataConnIter
@@ -171,12 +193,12 @@ public class ModelElementEditingUtils
             }
          }
       }
-      
+
       for (DataMappingType mapping : mappings)
       {
          EcoreUtil.delete(mapping);
       }
-      
+
       EcoreUtil.delete(dataMappingConnection);
    }
 

@@ -19,11 +19,10 @@
 					<pc:automationTag
 						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Import"
 						standAlone="false" />
-					<h:graphicImage
-						value="/plugins/views-common/images/icons/page_white_get.png"
-						style="border: none;" title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.import']}" />
+					<h:outputText
+						styleClass="pi pi-upload pi-lg" title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.import']}" />
 				</ice:commandLink>
-				<ice:panelGroup
+				<ice:panelGroup styleClass="export"
 					title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.export']}">
 					<ice:outputResource
 						resource="#{bean.fileResource}"
@@ -38,8 +37,8 @@
 					<pc:automationTag
 						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Add"
 						standAlone="false" />
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/add.png" />
+					<ice:outputText
+						styleClass="pi pi-create pi-lg" />
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.removeRows}"
 					title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.delete']}"
@@ -47,9 +46,8 @@
 					<pc:automationTag
 						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Delete"
 						standAlone="false" />
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/delete.png"
-						styleClass="#{bean.deleteEnabled ? '' : 'iceCmdBtn-dis'}" />
+					<ice:outputText
+						styleClass="#{bean.deleteEnabled ? '' : 'iceCmdBtn-dis'} pi pi-delete pi-lg" />
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.editRow}"
 					title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.edit']}"
@@ -57,9 +55,8 @@
 					<pc:automationTag
 						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Edit"
 						standAlone="false" />
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/pencil.png"
-						styleClass="#{bean.editEnabled ? '' : 'iceCmdBtn-dis'}" />
+					<ice:outputText
+						styleClass="#{bean.editEnabled ? '' : 'iceCmdBtn-dis'} pi pi-edit pi-lg" />
 				</ice:commandLink>
 			</ice:panelGrid>
 		</ice:panelGrid>

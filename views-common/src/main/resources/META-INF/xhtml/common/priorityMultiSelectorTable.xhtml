@@ -52,9 +52,10 @@
 												</tbody>
 											</table>
 										</td>
-										<td class="autoCompTableRemoveCol"><ice:commandButton
-												action="#{priorityItem.removeFromList}"
-												image="/plugins/views-common/images/icons/dialog-windowbttn-close.png" /></td>
+										<td class="autoCompTableRemoveCol"><ice:commandLink
+												action="#{priorityItem.removeFromList}">
+													<i class="pi pi-dialog-close pi-lg"></i>
+												</ice:commandLink></td>
 									</tr>
 								</c:forEach>
 							</tbody>

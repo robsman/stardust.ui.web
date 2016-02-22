@@ -18,10 +18,12 @@
 							participantMgmtBean.messages['modifyDepartment.title'] : 
 							participantMgmtBean.messages['createDepartment.title']}"
 						styleClass="headerText" />
-					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+					<ice:commandLink title="#{common_msgPropsBean['common.close']}"
 						action="#{createOrModifyDepartmentBean.closePopup}"
 						immediate="true"
-						styleClass="windowClose" />
+						styleClass="windowClose pi-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+					</ice:commandLink>
 				</ice:panelGroup>
 			</f:facet>
 		

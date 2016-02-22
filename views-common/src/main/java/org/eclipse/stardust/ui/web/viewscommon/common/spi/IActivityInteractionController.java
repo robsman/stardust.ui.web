@@ -45,7 +45,7 @@ public interface IActivityInteractionController
    // TODO alternatively introduce an interface like UriProvider and move getPanelUri method there
    String providePanelUri(ActivityInstance ai);
 
-   boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario);
+   boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario, Object parameters);
 
    Map getOutDataValues(ActivityInstance ai);
    

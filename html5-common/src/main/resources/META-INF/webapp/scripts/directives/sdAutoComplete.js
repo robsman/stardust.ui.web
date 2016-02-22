@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 angular.module('bpm-common.directives')
 
 .controller('autoCompleteController', ['$scope','$timeout', '$attrs',
@@ -69,7 +79,6 @@ angular.module('bpm-common.directives')
             result=$attrs[attr];
           }
         }
-        console.log(result);
         return result;
     }
     
@@ -150,6 +159,11 @@ angular.module('bpm-common.directives')
           $scope.dataList.splice(idx,1);
         }
         
+        //clear user input on select
+        if($scope.clearOnSelect===true){
+        	$scope.matchStr ="";
+        }
+        
         $scope.dataSelected.push(item);
         if (angular.isDefined($attrs.sdaOnSelectionChange)) {
           $scope.onSelectionChange({selectedData: $scope.dataSelected});
@@ -157,6 +171,10 @@ angular.module('bpm-common.directives')
     };
               
     $scope.popData=function(item){
+    	if($scope.readOnly) {
+    		return;
+    	}
+    	
       var idx = $scope.dataSelected.indexOf(item);
       $scope.dataSelected.splice(idx,1);
       if (angular.isDefined($attrs.sdaOnSelectionChange)) {
@@ -175,18 +193,18 @@ angular.module('bpm-common.directives')
   
   var tpl = '<div name="sd-ac-Container"\
                ng-class="containerClass"\
-               ng-keyDown="keyMonitor($event)">\
-              <div name="sd-ac-tag"\
+               ng-keyDown="keyMonitor($event)" aid="{{autoIdPrefix}}-sd-ac-Container">\
+              <div ng-attr-title="{{item[tooltipProperty]|| item[textProperty]}}" name="sd-ac-tag"\
                    ng-click="popData(item)"\
                    ng-repeat="item in dataSelected track by $index"\
-                   ng-class="classWrapper(\'tagClass\',item)">\
+                   ng-class="classWrapper(\'tagClass\',item)" aid="{{autoIdPrefix}}-sd-ac-tag">\
                    <i ng-class="classGeneratorTPC(item,$index)"></i>\
                      {{item[textProperty] || item}}\
               </div>\
-              <input ng-model="matchStr"\
+              <input ng-hide="readOnly" ng-model="matchStr"\
                      ng-keyUp="changeWrapper(matchStr)"\
                      style="outline-width:0px;border:none; margin-left:4px"\
-                     type="text" />\
+                     type="text" aid="{{autoIdPrefix}}-MatchStr" />\
               <div  ng-show="dataList.length >0 && matchStr.length>0"\
                     name="sd-ac-selectList"\
                     style="z-index:9999"\
@@ -194,7 +212,7 @@ angular.module('bpm-common.directives')
                   <div ng-click="pushData(item)"\
                        ng-mouseover="ui.selectedIndex=$index"\
                        ng-class="{ \'{{itemHotClass}}\' : ui.selectedIndex==$index}"\
-                       ng-repeat="item in dataList | orderBy:orderPredicate">\
+                       ng-repeat="item in dataList | orderBy:orderPredicate" aid="{{autoIdPrefix}}-PushData" >\
                        <i ng-class="classGeneratorIPC(item, $index)"></i>\
                        {{item[textProperty]||item}}\
                   </div>\
@@ -226,6 +244,11 @@ angular.module('bpm-common.directives')
     input.on("blur",function(){
       scope.startTimer();
     });
+    
+    // Added watch to reset the auto-complete 
+    scope.$watch('dataSelected', function() {
+			scope.matchStr = '';
+	});
 
   };
           
@@ -235,6 +258,7 @@ angular.module('bpm-common.directives')
     "controller"   : "autoCompleteController",
     "scope"        : { 
         dataList           : "=sdaMatches",
+        clearOnSelect	   : "=sdaClearOnSelect",
         allowMultiple      : "=sdaAllowMultiple",
         textProperty       : "@sdaTextProperty",
         allowUserEntry     : "=sdAllowUserEntry",
@@ -252,7 +276,10 @@ angular.module('bpm-common.directives')
         orderPredicate     : "@sdaOrderPredicate",
         closeDelay         : "@sdaCloseDelay",
         keyDelay           : "@sdaKeyDelay",
-        onSelectionChange : "&sdaOnSelectionChange"    
+        onSelectionChange  : "&sdaOnSelectionChange",
+        autoIdPrefix       : "@sdaAidPrefix",
+        tooltipProperty    : "@sdaTooltipProperty",
+        readOnly           : "=sdaReadOnly"
       }
   }
   

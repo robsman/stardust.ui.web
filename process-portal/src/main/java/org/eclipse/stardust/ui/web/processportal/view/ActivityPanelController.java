@@ -13,6 +13,8 @@ package org.eclipse.stardust.ui.web.processportal.view;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.viewscommon.common.AbstractProcessExecutionPortal.GENERIC_PANEL;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -33,10 +35,10 @@ import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.FaceletPanelInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
@@ -50,7 +52,6 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler.DocumentUploadEventType;
@@ -65,6 +66,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
+
+import com.icesoft.util.encoding.Base64;
 
 /**
  * @author Robert.Sauer
@@ -195,11 +198,11 @@ public class ActivityPanelController extends UIComponentBean
             }
             else if (ClosePanelScenario.QA_PASS == scenario)
             {
-               activityDetailsBean.completeQualityAssurancePass();
+               activityDetailsBean.continueQualityAssurancePass();
             }
             else if (ClosePanelScenario.QA_FAIL == scenario)
             {
-               activityDetailsBean.completeQualityAssuranceFail();
+               activityDetailsBean.continueQualityAssuranceFail();
             }
             else if (ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
             {
@@ -276,21 +279,6 @@ public class ActivityPanelController extends UIComponentBean
    }
 
    /**
-    * Open new Correspondence View
-    */
-   public void openCorrespondence()
-   {
-      ProcessInstance processInstance = activityDetailsBean.getProcessInstance();
-      if (null != processInstance)
-      {
-         Map<String, Object> params = CollectionUtils.newTreeMap();
-         params.put("processInstanceOID", Long.toString(processInstance.getOID()));
-         PortalApplication.getInstance().openViewById("correspondenceView",
-               "DocumentID=" + processInstance.getOID(), params, null, true);
-      }
-   }
-
-   /**
     * Open new Chat View
     */
    public void openChat()
@@ -342,6 +330,11 @@ public class ActivityPanelController extends UIComponentBean
       return activityDetailsBean.getDisplayProcessDocuments();
    }
 
+   public List<DocumentInfo> getCorrespondenceFolders()
+   {
+      return activityDetailsBean.getCorrespondenceFolders();
+   }
+   
    /**
     * timeout
     */
@@ -364,6 +357,33 @@ public class ActivityPanelController extends UIComponentBean
          uploadTypedDocument();
       }
    }
+   
+   /**
+    * @param event
+    */
+   public void openCorrespondenceView(ActionEvent event)
+   {
+      DocumentInfo docInfo = (DocumentInfo) event.getComponent().getAttributes().get("documentInfo");
+
+      Map<String, Object> params = CollectionUtils.newMap();
+      params.put("folderId", docInfo.getId());
+      params.put("folderName", docInfo.getName());
+
+      String viewKey;
+      try
+      {
+         viewKey = "folderId=" + URLEncoder.encode(docInfo.getId(), "UTF-8");
+      }
+      catch (UnsupportedEncodingException e)
+      {
+         viewKey = "folderId=" + docInfo.getId();
+      }
+      viewKey = Base64.encode(viewKey);
+
+      PortalApplication.getInstance().openViewById("correspondencePanel", viewKey, params, null, true);
+   }
+   
+   
    
    /**
     * 
@@ -428,10 +448,10 @@ public class ActivityPanelController extends UIComponentBean
          }
          activityDetailsBean.closeProcessAttachmentsIframePopup();
       }
-      catch (ResourceNotFoundException e)
+      catch (Exception e)
       {
          trace.error("Unable to Detach Document from Activity");
-         ExceptionHandler.handleException(e);
+         ExceptionHandler.handleException(e, propsBean.getString("views.genericRepositoryView.processAttachmntDltErr"));
       }
    }
 
@@ -657,6 +677,15 @@ public class ActivityPanelController extends UIComponentBean
    
    /**
     * 
+    * @return
+    */
+   public boolean isHasCorrespondenceOutFolders()
+   {
+      return activityDetailsBean.hasCorrespondenceOutFolders();
+   }
+   
+   /**
+    * 
     */
    public void toggleNotesIframePopup()
    {
@@ -690,9 +719,12 @@ public class ActivityPanelController extends UIComponentBean
                PredefinedProcessInstanceLinkTypes.SWITCH);
          ProcessInstance joinProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO,
                  PredefinedProcessInstanceLinkTypes.JOIN);
+         ProcessInstance relatedProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO_FROM,
+               PredefinedProcessInstanceLinkTypes.RELATED);
          linkedProcess = LinkedProcessBean.getCurrent();
          linkedProcess.setFromLinkedProcess(fromProcessLink);
          linkedProcess.setJoinLinkedProcess(joinProcessLink);
+         linkedProcess.setRelatedLinkedProcess(relatedProcessLink);
          if (null != fromProcessLink)
          {
             ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
@@ -706,6 +738,13 @@ public class ActivityPanelController extends UIComponentBean
                   joinProcessLink.getModelOID(), joinProcessLink.getProcessID());
             linkedProcess.setJoinProcessName(propsBean.getParamString("views.linkedProcess.processname",
                   I18nUtils.getProcessName(processDefinition), Long.valueOf(joinProcessLink.getOID()).toString()));
+         }
+         if(null != relatedProcessLink)
+         {
+            ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
+                  relatedProcessLink.getModelOID(), relatedProcessLink.getProcessID());
+            linkedProcess.setRelatedProcessName(propsBean.getParamString("views.linkedProcess.processname",
+                  I18nUtils.getProcessName(processDefinition), Long.valueOf(relatedProcessLink.getOID()).toString()));
          }
       }
       activityDetailsBean.toggleLinkedProcessIframePopup();

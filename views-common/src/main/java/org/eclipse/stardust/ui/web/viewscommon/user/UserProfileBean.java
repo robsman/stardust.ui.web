@@ -53,10 +53,10 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.MyPicturePreferenceBean;
+import org.eclipse.stardust.ui.web.viewscommon.common.MySignaturePreferenceBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.validator.DateValidator;
 import org.eclipse.stardust.ui.web.viewscommon.core.EMailAddressValidator;
-import org.eclipse.stardust.ui.web.viewscommon.core.UserDefinedException;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.login.util.PasswordUtils;
@@ -102,6 +102,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
    private String selectedDisplayFormat;
 
    private MyPicturePreferenceBean myPicturePreference;
+   private MySignaturePreferenceBean mySignaturePreference;
    private User user;
 
    private ICallbackHandler callbackHandler;
@@ -235,12 +236,18 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
          }
          else if (isModifyProfileConfiguration())
          {
-            if (!myPicturePreference.isSelectedImageValid())
+            if (focusIndex == 1)
             {
-               return;
+               savePicture();
             }
-            newUser = modifyLoginUser();
-            myPicturePreference.save();
+            else if (focusIndex == 2)
+            {
+               saveSignature();
+            }
+            else
+            {
+               newUser = modifyLoginUser();
+            }
             MessageDialog.addInfoMessage(propsBean.getString("common.configuration.saveConfirmation"));
          }
       }
@@ -282,6 +289,25 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       }
    }
 
+   private void savePicture()
+   {
+      if (!myPicturePreference.isSelectedImageValid())
+      {
+         return;
+      }
+      myPicturePreference.save();
+
+   }
+
+   private void saveSignature()
+   {
+      if (!mySignaturePreference.isSelectedImageValid())
+      {
+         return;
+      }
+      mySignaturePreference.save();
+   }
+   
    /**
     * 
     */
@@ -351,6 +377,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
          if (isModifyProfileConfiguration())
          {
             myPicturePreference = new MyPicturePreferenceBean(user);
+            mySignaturePreference = new MySignaturePreferenceBean(user);
          }
       }
       
@@ -394,7 +421,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       if (getChangePassword())
       {
          String passwordConfirmation = getConfirmPassword();
-         if (StringUtils.isEmpty(passwordConfirmation) || StringUtils.isEmpty(password))
+         if ((StringUtils.isEmpty(passwordConfirmation) || StringUtils.isEmpty(password)) && isInternalAuthentication())
          {
             passwordValidationMsg = MessagesViewsCommonBean.getInstance().getString("views.createUser.password.empty");
             success = false;
@@ -449,6 +476,13 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
          userToModify.setEMail(getEmail());
          userToModify.setValidFrom(getValidFrom());
          userToModify.setValidTo(getValidTo());
+         if(!isInternalAuthentication())
+         {
+            if(StringUtils.isNotEmpty(getAccount()))
+            {
+               userToModify.setAccount(getAccount());
+            }
+         }
          userToModify.setQualityAssuranceProbability(getQaOverride());
          modifiedUser = userService.modifyUser(userToModify);
          if (modifiedUser != null && modifiedUser.equals(loggedInUser))
@@ -569,9 +603,21 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
     */
    public void resetConfiguration()
    {
-      FacesUtils.clearFacesTreeValues();
-      initializeView();
-      myPicturePreference.reset();
+      if (focusIndex == 1)
+      {
+         myPicturePreference.reset();
+         myPicturePreference = new MyPicturePreferenceBean(user);
+      }
+      else if (focusIndex == 2)
+      {
+         mySignaturePreference.reset();
+         mySignaturePreference = new MySignaturePreferenceBean(user);
+      }
+      else
+      {
+         initializeView();
+         FacesUtils.clearFacesTreeValues();
+      }
       MessageDialog.addInfoMessage(MessagesViewsCommonBean.getInstance().getString("views.common.config.reset"));
    }
    
@@ -651,7 +697,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
 
    public void setAccount(String account)
    {
-      if (isCreateMode() || isCopyMode())
+      if (isCreateMode() || isCopyMode() || (isModifyMode() && !isInternalAuthentication()))
       {
          this.account = account;
       }
@@ -908,6 +954,14 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       return userProfileConfirmationDlg;
    }
    
-   
+   public boolean isInternalAuthentication()
+   {
+      return isInternalAuthentication;
+   }
 
+   public MySignaturePreferenceBean getMySignaturePreference()
+   {
+      return mySignaturePreference;
+   }
+   
 }

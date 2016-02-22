@@ -2,89 +2,26 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="../css/lightdust.css" rel="stylesheet" type="text/css" />
+<link href="../../bpm-modeler/html5/styles/lightdust.css" rel="stylesheet" type="text/css" />
+<link href="../css/outline.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css" />
+
+<link rel="stylesheet" type="text/css" href="../../html5-common/styles/portal-icons.css" />
+<link rel="stylesheet" type="text/css" href="../../modern-skin/modern.css"></link>
+<link rel="stylesheet" type="text/css"  href="../../modern-skin/modern.font.icons.css"></link>
 <style>
-.jstree a,.modelLinks a {
-	color: #00629A !important;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
-	cursor: pointer;
-}
 
-.jstree-classic .jstree-clicked {
-	border: 1px solid navy !important;
-	color: white;
-	padding: 0 2px 0 1px !important;
-	background: none repeat scroll 0 0 #BEEBFF !important;
-}
-
-#vakata-contextmenu.jstree-classic-context li.jstree-contextmenu-disabled a,#vakata-contextmenu.jstree-classic-context li.jstree-contextmenu-disabled a:hover
-	{
-	color: gray !important;
-	background: transparent;
-	border: 0;
-	padding: 1px 4px;
-	cursor: default !important;
-}
-
-#vakata-contextmenu.jstree-classic-context a {
-	color: #00629A !important;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
-}
-
-#vakata-contextmenu.jstree-classic-context,#vakata-contextmenu.jstree-classic-context li ul
-	{
-	background: none repeat scroll 0 0 #FFFFFF !important;
-	border: 1px solid #979797;
-}
-
-#vakata-contextmenu li {
-	border: 1px solid #E7E7E7;
-}
-
-#vakata-contextmenu {
-	min-width: 200px !important;
-}
-
-input {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
-}
-
-div#outline {
-	overflow: auto;
-	border: none;
-}
-
-td#toolbar div.toolDiv {
-	margin: 2px 4px 5px;
-	padding: 3px;
-	cursor: pointer;
-	float: left;
-}
-
-div.toolDiv:hover {
-	background:
-		url(../../views-common/images/icons/toolbarIconSelectHover.png) center
-		repeat-x #ffd700;
-}
-
-.toolDisabled {
-	opacity : 0.5;
-	cursor: default;
-}
-
-td#toolbar div.toolSeparator {
-	float: left;
-	margin-top: 4px;
-}
 </style>
 <script type="text/javascript" data-main="../js/outlineMain"
-	src="../js/libs/require/2.0.5/require.js"></script>
+	src="../../views-common/js/libs/require/2.1.15/require.min.js"></script>
 </head>
 <body>
 	<table style="width: 100%;">
+		<tr>
+			<td>
+				<select id="selectRuleMode"></select>
+			</td>
+		</tr>
 		<tr>
 			<td>
 				<div id="lastSaveStatusPanel">
@@ -103,63 +40,44 @@ td#toolbar div.toolSeparator {
 		<tr>
 			<td id="toolbar">
 				<div id="rulesOutlineToolbar">
-					<div class="toolDiv">
-						<img id="createRuleSetButton"
-							src="../../views-common/images/icons/add.png"
-							title="Create RuleSet" />
+					<div class="toolSection">
+						<i id="createRuleSetButton"
+							class="pi pi-create pi-lg"
+							title="Create RuleSet"></i>
 					</div>
-					<div class="toolSeparator">
-						<img src="../../common/images/icons/toolbar-separator.png" />
+					<div class="toolSection">
+						<i id="importRuleSet" class="pi pi-upload pi-lg"
+							title="Import RuleSet"></i>
 					</div>
-					<div class="toolDiv">
-						<img id="importRuleSet"
-							src="../../views-common/images/icons/page_white_get.png"
-							title="Import test Model" />
+					<div class="toolSection">
+						<i id="undoChange"
+								class="pi pi-undo pi-lg"
+								title="Undo"></i>
 					</div>
-					<div class="toolSeparator">
-						<img src="../../common/images/icons/toolbar-separator.png" />
+					<div class="toolSection">
+						<i id="redoChange"
+							class="pi pi-redo pi-lg"
+							title="Redo"></i>
 					</div>
-
-					<div class="toolDiv">
-						<img id="undoChange"
-							class="toolDisabled"
-							src="../images/icons/undo.png"
-							title="Undo" />
+					<div class="toolSection">
+						<i id="saveAllRules"
+							class="pi pi-save pi-lg"
+							title="Save All Rules"></i>
 					</div>
-					<div class="toolSeparator">
-						<img src="../../common/images/icons/toolbar-separator.png" />
-					</div>
-					<div class="toolDiv">
-						<img id="redoChange"
-							class="toolDisabled"
-							src="../images/icons/redo.png"
-							title="Redo" />
-					</div>
-					<div class="toolSeparator">
-						<img src="../../common/images/icons/toolbar-separator.png" />
-					</div>
-
-					<div class="toolDiv">
-						<img id="saveAllRules"
-							src="../../views-common/images/icons/disk_multiple.png"
-							title="Save All Rules" />
-					</div>
-					<div class="toolSeparator">
-						<img src="../../common/images/icons/toolbar-separator.png" />
-					</div>
-					<div class="toolDiv">
-						<img id="refreshRules" src="../images/icons/refresh.png"
-							title="Refresh Rules" />
+					<div class="toolSection">
+						<i id="refreshRules" class="pi pi-refresh pi-lg"
+							title="Refresh Rules"></i>
 					</div>
 				</div></td>
 		</tr>
 		<tr>
 			<td>
 				<div id="outline"
-					style="text-align: left; list-style-type: none; background-color: white;">
+					style="text-align: left; list-style-type: none;">
 				</div>
 			</td>
 		</tr>
 	</table>
+	
 </body>
 </html>

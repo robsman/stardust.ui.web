@@ -1,0 +1,1519 @@
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true"
+	ng-controller="sdAuthorizationManagerCtrl as ctrl">
+	<div style="clear: both" class="authorizationManager">
+
+		<section style="clear: both; float: left; width: 60%">
+		
+			<header>
+				<div class="heading"
+					ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.participant.label')"></div>
+			</header>
+			<div ng-show="ctrl.showMessage" sd-message></div>
+			
+			<!-- Data table -->
+			<div class="participantTable">
+			
+				<div sda-toolbar>
+	               <div class="tbl-toolbar-section">
+	                      <button ng-click="ctrl.cloneParticipant()"
+	                             title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.cloneParticipant')}}"
+	                             class="button-link tbl-toolbar-item tbl-tool-link"
+	                             style="margin-right: 0px;"
+	                             aid="COM-AuthMgr-CloneParticipant">
+	                             <i class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
+	                                    <i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
+	                             </i>
+	
+	                      </button>
+	                      <button ng-click="ctrl.resetParticipants()"
+	                             title="Reset Participant(s)"
+	                             class="button-link tbl-toolbar-item tbl-tool-link"
+	                             style="margin-right: 0px; opacity: 0.4"
+	                             aid="COM-AuthMgr-ResetParticipants">
+	                             <i class="pi pi-role pi-lg" ></i>
+	                      </button>
+	               </div>
+	               <span sd-refresh 
+	                     sda-on-refresh="ctrl.refreshParticipants();" 
+	                     aid="COM-AuthMgr-RefreshParticipants"></span>
+         		</div>
+				
+				<table sd-data-table="ctrl.dataTable" sd-data="ctrl.participants"
+					sda-mode="local" sda-selectable="multiple"
+                    sda-no-pagination="false" 
+					sda-page-size="{{ctrl.pageSize}}"
+					sda-on-select="ctrl.onParticipantSelect(selectionInfo)"
+					sda-sortable="true" sda-exports="true"
+					sda-column-selector="{{ctrl.columnSelector}}"
+					sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)">
+					<thead
+						sda-i18n-scope="html5-admin-portal.views-authorizationManagerViewHtml5-participants-columns">
+						<tr>
+							<th sda-name="name" sda-sortable="true"></th>
+							<th sda-name="type" sda-sortable="true"></th>
+							<th sda-name="description" sda-sortable="false"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td sda-field="name" sda-exporter="rowData.name">
+								<a href=""
+								   ng-attr-title="{{rowData.qualifiedId}}"
+								   class="no-link"
+								   ng-class="{'selected-custom' : ctrl.selectedRoles.indexOf(role) >=0}"
+								   sd-data-drag 
+								   ng-model="rowData"
+								   sda-drag-elem-fx="ctrl.getDragElement(item)"
+								   sda-dragstart="ctrl.roleDragStart($data, $event)"> 
+								   <i class="pi pi-lg" 
+									   ng-class="{'pi-role' : rowData.type.indexOf('ROLE') > -1,
+									              'pi-organization':  rowData.type.indexOf('ORGANIZATION') > -1}">
+								   </i>
+								   <span style="margin-left: 18px;">
+									{{rowData.name}}
+								   </span>
+								</a>
+							</td>
+							<td sda-field="type"></td>
+							<td sda-field="description"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<span sd-dialog sda-show="ctrl.showCloneParticipantDialog"
+				sda-title="Clone Participant" sda-type="confirm" sda-scope="this"
+				sda-confirm-action-label="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.clone')}}"
+				sda-on-confirm="ctrl.cloneParticipantConfirmed()"
+				class="view-tool-link"
+				sda-aid-prefix="COM-AuthMgr-ClnParticipantDlg">
+				<div>
+					<div>{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.specifyParticipantsMsg')}}</div>
+					<br>
+					<div class="cloneParticipantSelector">
+						<table style="width: 100%;">
+							<tr>
+								<td>
+									<div sd-participant-selector style="height: 120px"
+										sda-selected-data="ctrl.selectedTargetParticipants"
+										sda-multiple="true" sd-data="ctrl.fetchParticipants(params)"
+										sda-aid-prefix="COM-AuthMgr-ClnParticipantDlg"></div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</span>
+
+		</section>
+<!-- 
+		<section style="float: left;">
+			<div style="padding-top:100px">>></div>
+		</section>
+ -->
+		<section style="float: left; padding-left: 30px; width: 33%">
+			<header>
+				<div class="heading"
+					ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissions.label')"></div>
+			</header>
+			<div style="min-height:22px;">
+				<div ng-show="ctrl.showMessage2" sd-message></div>
+			</div>
+			<div sda-toolbar>
+				<div>
+					<input class="search" 
+					       type="text" 
+					       required="required"
+					       ng-keypress="($event.which === 13)?ctrl.applyTextFilter(myFilter):0"
+					       ng-model="myFilter" />
+					<button class="pi pi-filter pi-1x" 
+							title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.filter.title')}}"
+							ng-disabled="!myFilter || myFilter.length==0"
+					        ng-click="ctrl.applyTextFilter(myFilter)" 
+					        aid="COM-AuthMgr-ApplyFilter"></button>
+					<button class="pi pi-clear pi-1x" 
+							title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.reserFilter.title')}}"
+					        ng-click="ctrl.resetFilter();myFilter=''"></button>
+					<button class="pi pi-torch pi-1x" 
+							ng-disabled="ctrl.selectedParticipants.length==0"
+					        title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.flashlight.title')}}"
+					        ng-click="ctrl.applyFlashlightFilter(ctrl.selectedParticipants)" ></button>
+					<button class="pi pi-refresh pi-1x" 
+							title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.refresh.title')}}"
+							ng-click="ctrl.refreshPermissions()"></button> 
+				</div>
+			</div>
+			<br>
+			
+			<!-- Permission Tree related code -->
+			<div class="permission-tree">
+			
+				<ul id="authTree{{ctrl.scopeId}}" class="sd-tree">
+					<!--General Permissions Start-->
+					<li ng-repeat="labelItem in ctrl.treeLabels.gp"
+						ng-init="isVisible=false">
+
+						<div class="title-section">
+							<div class="expand-section"
+								ng-show="ctrl.data.general.length > 0">
+								<i ng-click="isVisible=!isVisible"
+									ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+									class="pi"></i>
+							</div>
+							<a title="" class="tree-node" aid="{{labelItem.id}}"> 
+								<i class="pi pi-folder"></i> <span>{{labelItem.name}}</span>
+							</a>
+						</div> <!--Permission in General Permissions loop...-->
+						<ul ng-show="isVisible">
+
+							<li ng-init="isVisible=false"
+								ng-repeat="genItem in ctrl.data.general">
+
+								<div class="title-section">
+									<div class="expand-section" ng-show="true">
+										<i ng-click="isVisible=!isVisible"
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
+									</div>
+									<div sd-context-menu
+										sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+										sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+										<a title="" class="tree-node" aid="{{genItem.id}}"> <i
+											class="js-icon pi pi-permission"></i> <span
+											class="js-filterable">{{genItem.name}}</span>
+										</a>
+									</div>
+								</div> <!--Allow Deny Start-->
+								<ul ng-show="isVisible" ng-init="isVisible=false">
+									<!--Allow Root Label and List Starts-->
+									<li ng-repeat="item in ctrl.treeLabels.allow">
+										<div class="title-section">
+											<div class="expand-section">
+												<i ng-click="isVisible=!isVisible"
+													ng-show="genItem.allow.length > 0"
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
+											</div>
+											<div sd-context-menu
+												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+												<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+													ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
+													ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+													title="" class="tree-node" aid="{{item.name}}"> <i
+													class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{item.name}}</span>
+												</a>
+											</div>
+										</div>
+
+										<ul ng-show="isVisible" ng-init="isVisible=false">
+											<li ng-repeat="item in genItem.allow ">
+												<ul>
+													<li><a sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                               'ref': genItem,
+                                               'role' : item,
+                                               'target' : 'allow'}]"
+														sda-menu-callback='ctrl.removeParticipant(menuItem,e)'
+														ng-attr-title="{{item.participantQualifiedId}}" class="tree-node" aid="{{item.name}}"> <i
+															class="js-icon pi pi-role pi-lg"></i> <span
+															class="js-filterable">{{item.name}}</span>
+													</a></li>
+												</ul>
+											</li>
+										</ul>
+
+									</li>
+									<!--Allow Root Label and List Ends-->
+
+									<!--Deny Root Label and List Starts-->
+									<li ng-repeat="labelItem in ctrl.treeLabels.deny">
+
+										<div class="title-section">
+											<div class="expand-section">
+												<i ng-click="isVisible=!isVisible"
+													ng-show="genItem.deny.length > 0"
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
+											</div>
+											<div sd-context-menu
+												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+												<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+													ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
+													ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+													title="" class="tree-node" aid="{{labelItem.id}}"> <i
+													class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+												</a>
+											</div>
+										</div>
+
+										<ul ng-show="isVisible" ng-init="isVisible=false">
+											<li ng-repeat="item in genItem.deny ">
+												<ul>
+													<li><a sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                               'ref': genItem,
+                                               'role' : item,
+                                               'target' : 'deny'}]"
+														sda-menu-callback='ctrl.removeParticipant(menuItem,e)'
+														ng-attr-title="{{item.participantQualifiedId}}" class="tree-node" aid="{{labelItem.id}}"> <i
+															class="js-icon pi pi-role pi-lg"></i> <span
+															class="js-filterable">{{item.name}}</span>
+													</a></li>
+												</ul>
+											</li>
+										</ul>
+
+									</li>
+									<!--Deny Root Label and List Ends-->
+
+								</ul> <!--Allow Deny END-->
+
+							</li>
+						</ul> <!--Permission in General Permissions loop Ends-->
+
+					</li>
+					<!--General Permissions End-->
+
+					<!--Model Permissions Start-->
+					<li ng-repeat="labelItem in ctrl.treeLabels.models"
+						ng-init="isVisible=false">
+
+						<div class="title-section">
+							<div class="expand-section" ng-show="true">
+								<i ng-click="isVisible=!isVisible"
+									ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+									class="pi"></i>
+							</div>
+							<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
+								class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
+							</a>
+						</div> <!--Process Definitions Start-->
+						<ul ng-show="isVisible">
+
+							<li ng-repeat="labelItem in ctrl.treeLabels.pd"
+								ng-init="isVisible=false">
+
+								<div class="title-section">
+									<div class="expand-section"
+										ng-show="ctrl.data.processDefinitions.length > 0">
+										<i ng-click="isVisible=!isVisible"
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
+									</div>
+									<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
+										class="js-icon pi pi-process"></i> <span>{{labelItem.name}}</span>
+									</a>
+								</div>
+
+
+								<ul ng-show="isVisible">
+
+									<li ng-repeat="genItem in ctrl.data.processDefinitions "
+										ng-init="isVisible=false">
+
+										<div class="title-section">
+											<div class="expand-section" ng-show="true">
+												<i ng-click="isVisible=!isVisible"
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
+											</div>
+											<div sd-context-menu
+												sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+												<a title="" class="tree-node" aid="{{genItem.name}}"> <i
+													class="js-icon pi pi-permission"></i> <span
+													class="js-filterable">{{genItem.name}}</span>
+												</a>
+											</div>
+										</div> <!--Allow Deny Start-->
+										<ul ng-show="isVisible">
+
+											<li ng-repeat="labelItem in ctrl.treeLabels.allow"
+												ng-init="isVisible=false">
+
+												<div class="title-section">
+													<div class="expand-section"
+														ng-show="genItem.allow.length > 0">
+														<i ng-click="isVisible=!isVisible"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<div sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+															ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+															title="" class="tree-node"
+															aid="{{labelItem.id}}"> <i
+															class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
+												</div>
+
+												<ul ng-show="isVisible">
+													<li ng-repeat="item in genItem.allow ">
+														<ul>
+															<li><a sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                               'ref': genItem,
+                                               'role' : item,
+                                               'target' : 'allow'}]"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																	<i class="js-icon pi pi-role pi-lg"></i> <span
+																	class="js-filterable">{{item.name}}</span>
+															</a></li>
+														</ul>
+													</li>
+												</ul>
+
+											</li>
+
+											<li ng-repeat="labelItem in ctrl.treeLabels.deny">
+
+												<div class="title-section">
+													<div class="expand-section"
+														ng-show="genItem.deny.length > 0">
+														<i ng-click="isVisible=!isVisible"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<div sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+															ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+															title="" class="tree-node"
+															aid="{{labelItem.id}}"> <i
+															class="js-icon pi pi-deny {{iconClass}}"></i> <span
+															class="js-filterable">{{labelItem.name}}</span>
+														</a>
+													</div>
+												</div>
+
+												<ul ng-show="isVisible">
+													<li ng-repeat="item in genItem.deny ">
+														<ul>
+															<li><a sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                               'ref': genItem,
+                                               'role' : item,
+                                               'target' : 'deny'}]"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																	<i class="js-icon pi pi-role pi-lg"></i> <span>{{item.name}}</span>
+															</a></li>
+														</ul>
+													</li>
+												</ul>
+
+											</li>
+										</ul> <!--Allow Deny End-->
+
+									</li>
+								</ul>
+							</li>
+
+
+						</ul> <!--Process Definitions End--> 
+						
+						<!---Activities Start-->
+						<ul ng-show="isVisible">
+
+							<li ng-repeat="labelItem in ctrl.treeLabels.ac"
+								ng-init="isVisible=false">
+
+								<div class="title-section">
+									<div class="expand-section"
+										ng-show="ctrl.data.activities.length > 0">
+										<i ng-click="isVisible=!isVisible"
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
+									</div>
+									<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
+										class="js-icon pi pi-activity"></i> <span>{{labelItem.name}}</span>
+									</a>
+								</div>
+
+
+								<ul ng-show="isVisible">
+
+									<li ng-repeat="genItem in ctrl.data.activities " 
+										ng-init="isVisible=false">
+
+										<div class="title-section">
+											<div class="expand-section" ng-show="true">
+												<i ng-click="isVisible=!isVisible"
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
+											</div>
+											<div sd-context-menu
+												sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+												<a title="" class="tree-node" aid="{{genItem.name}}"> <i
+													class="js-icon pi pi-permission"></i> <span
+													class="js-filterable">{{genItem.name}}</span>
+												</a>
+											</div>
+										</div>
+
+										<ul ng-show="isVisible">
+
+											<li ng-repeat="labelItem in ctrl.treeLabels.allow"
+												ng-init="isVisible=false">
+
+												<div class="title-section">
+													<div class="expand-section"
+														ng-show="genItem.allow.length > 0">
+														<i ng-click="isVisible=!isVisible"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<div sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+															ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+															title="" class="tree-node" aid="{{labelItem.id}}"> <i
+															class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
+												</div>
+
+												<ul ng-show="isVisible">
+													<li ng-repeat="item in genItem.allow ">
+														<ul>
+															<li><a sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                               'ref': genItem,
+                                               'role' : item,
+                                               'target' : 'allow'}]"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																	<i class="js-icon pi pi-role pi-lg"></i> <span
+																	class="js-filterable">{{item.name}}</span>
+															</a></li>
+														</ul>
+													</li>
+												</ul>
+
+											</li>
+										</ul>
+
+										<ul ng-show="isVisible">
+
+											<li ng-repeat="labelItem in ctrl.treeLabels.deny">
+
+												<div class="title-section">
+													<div class="expand-section"
+														ng-show="genItem.deny.length > 0">
+														<i ng-click="isVisible=!isVisible"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<div sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+															ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+															title="" class="tree-node" aid="{{labelItem.id}}"> <i
+															class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
+												</div>
+
+												<ul ng-show="isVisible">
+													<li ng-repeat="item in genItem.deny ">
+														<ul>
+															<li><a sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                               'ref': genItem,
+                                               'role' : item,
+                                               'target' : 'deny'}]"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																	<i class="js-icon pi pi-role pi-lg"></i> <span
+																	class="js-filterable">{{item.name}}</span>
+															</a></li>
+														</ul>
+													</li>
+												</ul>
+
+											</li>
+										</ul>
+
+									</li>
+								</ul>
+							</li>
+
+
+						</ul> <!--Activities end--> 
+						
+						<!---Data Start-->
+						<ul ng-show="isVisible">
+
+							<li ng-repeat="labelItem in ctrl.treeLabels.data"
+								ng-init="isVisible=false">
+
+								<div class="title-section">
+									<div class="expand-section" ng-show="ctrl.data.data.length > 0">
+										<i ng-click="isVisible=!isVisible"
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
+									</div>
+									<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
+										class="js-icon pi pi-data"></i> <span>{{labelItem.name}}</span>
+									</a>
+								</div>
+
+
+								<ul ng-show="isVisible">
+
+									<li ng-repeat="genItem in ctrl.data.data "
+										ng-init="isVisible=false">
+
+										<div class="title-section">
+											<div class="expand-section" ng-show="true">
+												<i ng-click="isVisible=!isVisible"
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
+											</div>
+											<div sd-context-menu
+												sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+												<a title="" class="tree-node" aid="{{genItem.name}}"> <i
+													class="js-icon pi pi-permission"></i> <span
+													class="js-filterable">{{genItem.name}}</span>
+												</a>
+											</div>
+										</div>
+
+										<ul ng-show="isVisible">
+
+											<li ng-repeat="labelItem in ctrl.treeLabels.allow"
+												ng-init="isVisible=false">
+
+												<div class="title-section">
+													<div class="expand-section"
+														ng-show="genItem.allow.length > 0">
+														<i ng-click="isVisible=!isVisible"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<div sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+															ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+															title="" class="tree-node" aid="{{labelItem.id}}"> <i
+															class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
+												</div>
+
+												<ul ng-show="isVisible">
+													<li ng-repeat="item in genItem.allow ">
+														<ul>
+															<li><a sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                               'ref': genItem,
+                                               'role' : item,
+                                               'target' : 'allow'}]"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																	<i class="js-icon pi pi-role pi-lg"></i> <span
+																	class="js-filterable">{{item.name}}</span>
+															</a></li>
+														</ul>
+													</li>
+												</ul>
+
+											</li>
+										</ul>
+
+										<ul ng-show="isVisible">
+
+											<li ng-init="isVisible=false" ng-repeat="labelItem in ctrl.treeLabels.deny">
+
+												<div class="title-section">
+													<div class="expand-section"
+														ng-show="genItem.deny.length > 0">
+														<i ng-click="isVisible=!isVisible"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<div sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+															ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+															title="" class="tree-node" aid="{{labelItem.id}}"> <i
+															class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
+												</div>
+
+												<ul ng-show="isVisible">
+													<li ng-repeat="item in genItem.deny ">
+														<ul>
+															<li><a sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                               'ref': genItem,
+                                               'role' : item,
+                                               'target' : 'deny'}]"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																	<i class="js-icon pi pi-role pi-lg"></i> <span
+																	class="js-filterable">{{item.name}}</span>
+															</a></li>
+														</ul>
+													</li>
+												</ul>
+
+											</li>
+										</ul>
+
+									</li>
+								</ul>
+							</li>
+
+						</ul> <!--Data end-->
+
+					</li>
+					<!--Model Permissions End-->
+
+					<!--UI Permissions Start -->
+					<li ng-repeat="labelItem in ctrl.treeLabels.perm"
+						ng-init="isVisible=false">
+
+						<div class="title-section">
+							<div class="expand-section" ng-show="true">
+								<i ng-click="isVisible=!isVisible"
+									ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+									class="pi"></i>
+							</div>
+							<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
+								class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
+							</a>
+						</div>
+						
+						<!-- Perspective Permissions Start -->
+						<ul ng-show="isVisible">
+
+							<li ng-repeat="genItem in ctrl.data.perspectives "
+								ng-init="isVisible=false">
+
+								<div class="title-section">
+									<div class="expand-section" ng-show="true">
+										<i ng-click="isVisible=!isVisible"
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
+									</div>
+									<div sd-context-menu
+										sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+										sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+										<a title="" class="tree-node" aid="{{genItem.name}}"> 
+										<i ng-class="ctrl.getPerspectiveIcon(genItem)" 
+										   class="js-icon pi"></i> 
+											<span class="js-filterable">{{genItem.name}}</span>
+										</a>
+									</div>
+								</div> 
+								
+								<!--Top level permissions-->
+								<ul ng-show="isVisible">
+
+									<li ng-repeat="labelItem in ctrl.treeLabels.allow"
+										ng-init="isVisible=false">
+
+										<div class="title-section">
+											<div class="expand-section">
+												<i ng-click="isVisible=!isVisible"
+													ng-show="genItem.allow.length > 0"
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
+											</div>
+											<div sd-context-menu
+												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+												<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+													ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
+													ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+													title="" class="tree-node" aid="{{labelItem.id}}"> <i
+													class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+												</a>
+											</div>
+										</div>
+
+
+										<ul ng-show="isVisible">
+											<li ng-repeat="item in genItem.allow ">
+												<ul>
+													<li><a sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                               'ref': genItem,
+                                               'role' : item,
+                                               'target' : 'allow'}]"
+														ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+														sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+															<i class="js-icon pi pi-role pi-lg"></i> <span
+															class="js-filterable">{{item.name}}</span>
+													</a></li>
+												</ul>
+											</li>
+										</ul>
+
+									</li>
+
+									<li ng-repeat="labelItem in ctrl.treeLabels.deny"
+										ng-init="isVisible=false">
+
+										<div class="title-section">
+											<div class="expand-section">
+												<i ng-click="isVisible=!isVisible"
+													ng-show="genItem.deny.length > 0"
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
+											</div>
+											<div sd-context-menu
+												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+												<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+													ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
+													ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+													title="" class="tree-node" aid="{{labelItem.id}}"> <i
+													class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+												</a>
+											</div>
+										</div>
+
+
+										<ul ng-show="isVisible">
+											<li ng-repeat="item in genItem.deny ">
+												<ul>
+													<li><a sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                               'ref': genItem,
+                                               'role' : item,
+                                               'target' : 'deny'}]"
+														ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+														sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+															<i class="js-icon pi pi-role pi-lg"></i> <span
+															class="js-filterable">{{item.name}}</span>
+													</a></li>
+												</ul>
+											</li>
+										</ul>
+
+									</li>
+
+									<!--Views-->
+
+									<!--Views Start-->
+									<li ng-repeat="labelItem in ctrl.treeLabels.vw"
+										ng-init="isVisible=false">
+
+										<div class="title-section">
+											<div class="expand-section" ng-show="true">
+												<i ng-click="isVisible=!isVisible"
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
+											</div>
+											<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
+												class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
+											</a>
+										</div>
+
+										<ul ng-show="isVisible">
+
+											<li ng-repeat="genItem in genItem.views "
+												ng-init="isVisible=false">
+
+												<div class="title-section">
+													<div class="expand-section" ng-show="true">
+														<i ng-click="isVisible=!isVisible"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<div sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+														<a title="" class="tree-node" aid="{{genItem.name}}"> <i
+															class="js-icon pi pi-permission"></i> <span
+															class="js-filterable">{{genItem.name}}</span>
+														</a>
+													</div>
+												</div> <!--Allow-->
+												<ul ng-show="isVisible">
+													<li ng-repeat="labelItem in ctrl.treeLabels.allow"
+														ng-init="isVisible=false">
+														<div class="title-section">
+															<div class="expand-section" ng-show="true">
+																<i ng-click="isVisible=!isVisible"
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
+															</div>
+															<div sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+																	ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
+																	class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																</a>
+															</div>
+														</div>
+
+														<ul ng-show="isVisible">
+															<li ng-repeat="item in genItem.allow ">
+																<ul>
+																	<li><a sd-context-menu
+																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                                   'ref': genItem,
+                                                   'role' : item,
+                                                   'target' : 'allow'}]"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																			<i class="js-icon pi pi-role pi-lg"></i> <span
+																			class="js-filterable">{{item.name}}</span>
+																	</a></li>
+																</ul>
+															</li>
+														</ul>
+
+													</li>
+												</ul> <!--Allow END--> <!--Deny-->
+												<ul ng-show="isVisible">
+													<li ng-repeat="labelItem in ctrl.treeLabels.deny"
+														ng-init="isVisible=false">
+														<div class="title-section">
+															<div class="expand-section"
+																ng-show="genItem.deny.length >0">
+																<i ng-click="isVisible=!isVisible"
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
+															</div>
+															<div sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+																	ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
+																	class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																</a>
+															</div>
+														</div>
+
+														<ul ng-show="isVisible">
+															<li ng-repeat="item in genItem.deny ">
+																<ul>
+																	<li><a sd-context-menu
+																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                                   'ref': genItem,
+                                                   'role' : item,
+                                                   'target' : 'deny'}]"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																			<i class="js-icon pi pi-role pi-lg"></i> <span
+																			class="js-filterable">{{item.name}}</span>
+																	</a></li>
+																</ul>
+															</li>
+														</ul>
+
+													</li>
+												</ul> <!--Deny END-->
+
+											</li>
+										</ul> <!--End-->
+
+									</li>
+
+									<!--Views End-->
+
+									<!--LaunchPanels Start-->
+
+
+									<li ng-repeat="labelItem in ctrl.treeLabels.lp"
+										ng-init="isVisible=false">
+
+										<div class="title-section">
+											<div class="expand-section" ng-show="true">
+												<i ng-click="isVisible=!isVisible"
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
+											</div>
+											<a title="" class="tree-node" aid="{{labelItem.name}}"> <i
+												class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
+											</a>
+										</div>
+
+										<ul ng-show="isVisible">
+
+											<li ng-repeat="genItem in genItem.launchPanels "
+												ng-init="isVisible=false">
+
+												<div class="title-section">
+													<div class="expand-section" ng-show="true">
+														<i ng-click="isVisible=!isVisible"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<div sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+														<a title="" class="tree-node" aid="{{genItem.name}}"> <i
+															class="js-icon pi pi-permission"></i> <span
+															class="js-filterable">{{genItem.name}}</span>
+														</a>
+													</div>
+												</div> <!--Allow-->
+												<ul ng-show="isVisible">
+													<li ng-repeat="labelItem in ctrl.treeLabels.allow"
+														ng-init="isVisible=false">
+														<div class="title-section">
+															<div class="expand-section"
+																ng-show="genItem.allow.length > 0">
+																<i ng-click="isVisible=!isVisible"
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
+															</div>
+															<div sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+																	ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
+																	class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																</a>
+															</div>
+														</div>
+
+														<ul ng-show="isVisible">
+															<li ng-repeat="item in genItem.allow ">
+																<ul>
+																	<li><a sd-context-menu
+																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                                 'ref': genItem,
+                                                 'role' : item,
+                                                 'target' : 'allow'}]"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																			<i class="js-icon pi pi-role pi-lg"></i> <span
+																			class="js-filterable">{{item.name}}</span>
+																	</a></li>
+																</ul>
+															</li>
+														</ul>
+
+													</li>
+												</ul> <!--Allow END--> <!--Deny-->
+												<ul ng-show="isVisible">
+													<li ng-repeat="labelItem in ctrl.treeLabels.deny"
+														ng-init="isVisible=false">
+														<div class="title-section">
+															<div class="expand-section"
+																ng-show="genItem.deny.length >0">
+																<i ng-click="isVisible=!isVisible"
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
+															</div>
+															<div sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+																	ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
+																	class="js-icon pi pi-deny {{iconClass}}"></i> <span
+																	class="js-filterable">{{labelItem.name}}</span>
+																</a>
+															</div>
+														</div>
+
+														<ul ng-show="isVisible">
+															<li ng-repeat="item in genItem.deny ">
+																<ul>
+																	<li><a sd-context-menu
+																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+                                                 'ref': genItem,
+                                                 'role' : item,
+                                                 'target' : 'deny'}]"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																			<i class="js-icon pi pi-role pi-lg"></i> <span>{{item.name}}</span>
+																	</a></li>
+																</ul>
+															</li>
+														</ul>
+
+													</li>
+												</ul> <!--Deny END-->
+
+											</li>
+										</ul> <!--End-->
+
+									</li>
+									<!--LaunchPanels End-->
+
+								</ul> <!--Top level permissions End-->
+							</li>
+
+						</ul>
+						<!-- Perspective Permissions End -->
+						
+						<!-- Global Extensions Parent Node Start -->
+						<ul ng-show="isVisible">
+							<li ng-repeat="labelItem in ctrl.treeLabels.gx" ng-init="isVisible=false">
+	
+								<div class="title-section">
+									<div class="expand-section" ng-show="true">
+										<i ng-click="isVisible=!isVisible"
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
+									</div>
+									<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
+										class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
+									</a>
+								</div>
+								<!-- Global Extension Data Start -->
+								<ul ng-show="isVisible">
+		
+									<li ng-repeat="genItem in ctrl.data.globalExtensions  "
+										ng-init="isVisible=false">
+		
+										<div class="title-section">
+											<div class="expand-section" ng-show="true">
+												<i ng-click="isVisible=!isVisible"
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
+											</div>
+											<div sd-context-menu
+												sda-menu-items="[{'value' :ctrl.labels.restore,
+		                                               'ref': genItem}]"
+												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+												<a title="" class="tree-node" aid="{{genItem.name}}"> <i
+													class="js-icon pi pi-permission"></i> <span
+													class="js-filterable">{{genItem.name}}</span>
+												</a>
+											</div>
+										</div> <!--Top level permissions-->
+										<ul ng-show="isVisible">
+		
+											<li ng-repeat="labelItem in ctrl.treeLabels.allow"
+												ng-init="isVisible=false">
+		
+												<div class="title-section">
+													<div class="expand-section">
+														<i ng-click="isVisible=!isVisible"
+															ng-show="genItem.allow.length > 0"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<div sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+		                                               'ref': genItem,
+		                                               'target' : 'allow'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+															ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+															title="" class="tree-node" aid="{{labelItem.id}}"> <i
+															class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
+												</div>
+		
+		
+												<ul ng-show="isVisible">
+													<li ng-repeat="item in genItem.allow  ">
+														<ul>
+															<li><a sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+		                                               'ref': genItem,
+		                                               'role' : item,
+		                                               'target' : 'allow'}]"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																	<i class="js-icon pi pi-role pi-lg"></i> <span
+																	class="js-filterable">{{item.name}}</span>
+															</a></li>
+														</ul>
+													</li>
+												</ul>
+		
+											</li>
+		
+											<li ng-repeat="labelItem in ctrl.treeLabels.deny"
+												ng-init="isVisible=false">
+		
+												<div class="title-section">
+													<div class="expand-section">
+														<i ng-click="isVisible=!isVisible"
+															ng-show="genItem.deny.length > 0"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<div sd-context-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+		                                               'ref': genItem,
+		                                               'target' : 'deny'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+															ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+															title="" class="tree-node" aid="{{labelItem.id}}"> <i
+															class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
+												</div>
+		
+		
+												<ul ng-show="isVisible">
+													<li ng-repeat="item in genItem.deny  ">
+														<ul>
+															<li><a sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+		                                               'ref': genItem,
+		                                               'role' : item,
+		                                               'target' : 'deny'}]"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																	<i class="js-icon pi pi-role pi-lg"></i> <span
+																	class="js-filterable">{{item.name}}</span>
+															</a></li>
+														</ul>
+													</li>
+												</ul>
+		
+											</li>
+		
+											<!--Views-->
+		
+											<!--Views Start-->
+											<li ng-repeat="labelItem in ctrl.treeLabels.vw"
+												ng-init="isVisible=false">
+		
+												<div class="title-section">
+													<div class="expand-section" ng-show="true">
+														<i ng-click="isVisible=!isVisible"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
+														class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
+													</a>
+												</div>
+		
+												<ul ng-show="isVisible">
+		
+													<li ng-repeat="genItem in genItem.views  "
+														ng-init="isVisible=false">
+		
+														<div class="title-section">
+															<div class="expand-section" ng-show="true">
+																<i ng-click="isVisible=!isVisible"
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
+															</div>
+															<div sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.restore,
+		                                               'ref': genItem}]"
+																sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+																<a title="" class="tree-node" aid="{{genItem.name}}"> <i
+																	class="js-icon pi pi-permission"></i> <span
+																	class="js-filterable">{{genItem.name}}</span>
+																</a>
+															</div>
+														</div> <!--Allow-->
+														<ul ng-show="isVisible">
+															<li ng-repeat="labelItem in ctrl.treeLabels.allow"
+																ng-init="isVisible=false">
+																<div class="title-section">
+																	<div class="expand-section" ng-show="true">
+																		<i ng-click="isVisible=!isVisible"
+																			ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																			class="pi"></i>
+																	</div>
+																	<div sd-context-menu
+																		sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+		                                               'ref': genItem,
+		                                               'target' : 'allow'}]"
+																		sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																		<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+																			ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																			ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+																			title="" class="tree-node" aid="{{labelItem.id}}"> <i
+																			class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																		</a>
+																	</div>
+																</div>
+		
+																<ul ng-show="isVisible">
+																	<li ng-repeat="item in genItem.allow  ">
+																		<ul>
+																			<li><a sd-context-menu
+																				sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+		                                                   'ref': genItem,
+		                                                   'role' : item,
+		                                                   'target' : 'allow'}]"
+																				ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																				sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																					<i class="js-icon pi pi-role pi-lg"></i> <span
+																					class="js-filterable">{{item.name}}</span>
+																			</a></li>
+																		</ul>
+																	</li>
+																</ul>
+		
+															</li>
+														</ul> <!--Allow END--> 
+														
+														<!--Deny-->
+														<ul ng-show="isVisible">
+															<li ng-repeat="labelItem in ctrl.treeLabels.deny"
+																ng-init="isVisible=false">
+																<div class="title-section">
+																	<div class="expand-section"
+																		ng-show="genItem.deny.length >0">
+																		<i ng-click="isVisible=!isVisible"
+																			ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																			class="pi"></i>
+																	</div>
+																	<div sd-context-menu
+																		sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+		                                               'ref': genItem,
+		                                               'target' : 'deny'}]"
+																		sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																		<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+																			ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																			ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+																			title="" class="tree-node" aid="{{labelItem.id}}"> <i
+																			class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																		</a>
+																	</div>
+																</div>
+		
+																<ul ng-show="isVisible">
+																	<li ng-repeat="item in genItem.deny ">
+																		<ul>
+																			<li><a sd-context-menu
+																				sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+		                                                   'ref': genItem,
+		                                                   'role' : item,
+		                                                   'target' : 'deny'}]"
+																				ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																				sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																					<i class="js-icon pi pi-role pi-lg"></i> <span
+																					class="js-filterable">{{item.name}}</span>
+																			</a></li>
+																		</ul>
+																	</li>
+																</ul>
+		
+															</li>
+														</ul> <!--Deny END-->
+		
+													</li>
+												</ul> <!--End-->
+		
+											</li>
+		
+											<!--Views End-->
+		
+											<!--LaunchPanels Start-->
+		
+		
+											<li ng-repeat="labelItem in ctrl.treeLabels.lp"
+												ng-init="isVisible=false">
+		
+												<div class="title-section">
+													<div class="expand-section" ng-show="true">
+														<i ng-click="isVisible=!isVisible"
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
+													</div>
+													<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
+														class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
+													</a>
+												</div>
+		
+												<ul ng-show="isVisible">
+		
+													<li ng-repeat="genItem in genItem.launchPanels "
+														ng-init="isVisible=false">
+		
+														<div class="title-section">
+															<div class="expand-section" ng-show="true">
+																<i ng-click="isVisible=!isVisible"
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
+															</div>
+															<div sd-context-menu
+																sda-menu-items="[{'value' :ctrl.labels.restore,
+		                                               'ref': genItem}]"
+																sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+																<a title="" class="tree-node" aid="{{genItem.name}}"> <i
+																	class="js-icon pi pi-permission"></i> <span
+																	class="js-filterable">{{genItem.name}}</span>
+																</a>
+															</div>
+														</div> <!--Allow-->
+														<ul ng-show="isVisible">
+															<li ng-repeat="labelItem in ctrl.treeLabels.allow"
+																ng-init="isVisible=false">
+																<div class="title-section">
+																	<div class="expand-section"
+																		ng-show="genItem.allow.length > 0">
+																		<i ng-click="isVisible=!isVisible"
+																			ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																			class="pi"></i>
+																	</div>
+																	<div sd-context-menu
+																		sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+		                                               'ref': genItem,
+		                                               'target' : 'allow'}]"
+																		sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																		<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+																			ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																			ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+																			title="" class="tree-node" aid="{{labelItem.id}}"> <i
+																			class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																		</a>
+																	</div>
+																</div>
+		
+																<ul ng-show="isVisible">
+																	<li ng-repeat="item in genItem.allow ">
+																		<ul>
+																			<li><a sd-context-menu
+																				sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+		                                                 'ref': genItem,
+		                                                 'role' : item,
+		                                                 'target' : 'allow'}]"
+																				ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																				sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																					<i class="js-icon pi pi-role pi-lg"></i> <span
+																					class="js-filterable">{{item.name}}</span>
+																			</a></li>
+																		</ul>
+																	</li>
+																</ul>
+		
+															</li>
+														</ul> <!--Allow END--> <!--Deny-->
+														<ul ng-show="isVisible">
+															<li ng-repeat="labelItem in ctrl.treeLabels.deny"
+																ng-init="isVisible=false">
+																<div class="title-section">
+																	<div class="expand-section"
+																		ng-show="genItem.deny.length >0">
+																		<i ng-click="isVisible=!isVisible"
+																			ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																			class="pi"></i>
+																	</div>
+																	<div sd-context-menu
+																		sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+		                                               'ref': genItem,
+		                                               'target' : 'deny'}]"
+																		sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																		<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+																			ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																			ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+																			title="" class="tree-node" aid="{{labelItem.id}}"> <i
+																			class="js-icon pi pi-deny {{iconClass}}"></i> <span
+																			class="js-filterable">{{labelItem.name}}</span>
+																		</a>
+																	</div>
+																</div>
+		
+																<ul ng-show="isVisible">
+																	<li ng-repeat="item in genItem.deny ">
+																		<ul>
+																			<li><a sd-context-menu
+																				sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
+		                                                 'ref': genItem,
+		                                                 'role' : item,
+		                                                 'target' : 'deny'}]"
+																				ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
+																				sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
+																					<i class="js-icon pi pi-role pi-lg"></i> <span>{{item.name}}</span>
+																			</a></li>
+																		</ul>
+																	</li>
+																</ul>
+		
+															</li>
+														</ul> <!--Deny END-->
+		
+													</li>
+												</ul> <!--End-->
+		
+											</li>
+											<!--LaunchPanels End-->
+		
+										</ul> <!--Top level permissions End-->
+									</li>
+		
+								</ul>
+								<!-- Global Extension Data End -->
+							</li>
+						</ul>
+						<!-- Global Extensions Parent Node End -->
+					</li>
+					<!--UI Permissions End -->
+					
+				</ul>
+			</div>
+			<!--Tree Ends-->
+		</section>
+	</div>
+
+</div>
+</div>

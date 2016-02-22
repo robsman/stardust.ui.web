@@ -46,6 +46,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupContextConfigManager;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -363,9 +364,9 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       return uri;
    }
 
-   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
+   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario, Object parameters)
    {
-      if ((ClosePanelScenario.COMPLETE == scenario) || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario))
+      if (ActivityInteractionControllerUtils.isExternalWebAppInterventionRequired(scenario))
       {
          trace.info("Triggering asynchronous close of activity panel ...");
 
@@ -378,6 +379,10 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          {
             // out data mapping was already performed
             // validate data?
+            Map<String, Serializable> correspondenceData = new HashMap<String, Serializable>();
+            getOutDataValues(ai, correspondenceData);
+            RepositoryUtility.updateCorrespondenceOutFolder(correspondenceData, ai);
+                        
             return true;
          }
 
@@ -394,8 +399,22 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          return true;
       }
    }
+   
+   /**
+    *
+    */
+   public Map< ? , ? > getOutDataValues(ActivityInstance ai)
+   {
+      return getOutDataValues(ai, null);
+   }
 
-   public Map<?, ?> getOutDataValues(ActivityInstance ai)
+   /**
+    *  Return outdata, also populated the correspondence data separately. 
+    * @param ai
+    * @param correspondenceOutData
+    * @return
+    */
+   private Map<?, ?> getOutDataValues(ActivityInstance ai, Map<String, Serializable> correspondenceOutData)
    {
       InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
 
@@ -412,6 +431,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
             {
                // performing client side OUT mappings
                outData = newHashMap();
+               
                @SuppressWarnings("unchecked")
                List<DataMapping> allOutDataMappings = (List<DataMapping>) interaction.getDefinition().getAllOutDataMappings();
                for (DataMapping outMapping : allOutDataMappings)
@@ -425,6 +445,14 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
                               interaction.getModel(), ai.getActivity(), outParam, outMapping);
 
                         outData.put(outMapping.getId(), (Serializable) outValue);
+ 
+                        // retain correspondence data
+                        if (correspondenceOutData != null
+                              && RepositoryUtility.CORRESPONDENCE_REQUEST.equals(outMapping.getApplicationAccessPoint()
+                                    .getId()))
+                        {
+                           correspondenceOutData.put(RepositoryUtility.CORRESPONDENCE_REQUEST, (Serializable) outValue);
+                        }
                      }
                      catch (Exception e)
                      {
@@ -448,7 +476,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
 
       return outData;
    }
-
+   
    @Override
    public boolean unregisterInteraction(ActivityInstance ai)
    {
@@ -471,7 +499,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
    @Override
    public void handleScenario(ActivityInstance ai, ClosePanelScenario scenario)
    {
-      if (ClosePanelScenario.COMPLETE == scenario || ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
+      if (ActivityInteractionControllerUtils.isExternalWebAppInterventionRequired(scenario))
       {
          InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils
                .getManagedBean(InteractionRegistry.BEAN_ID);

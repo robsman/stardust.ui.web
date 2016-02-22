@@ -1,0 +1,55 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{ippAdmWorkflowAdministrations}" />
+			<ui:param name="title" value="#{ippAdmWorkflowAdministrations.messages['title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="false" />
+			<ui:param name="automationTag" value="auto-ADM-workflowAdministrationsPanel" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGrid columns="1" rendered="#{ippAdmWorkflowAdministrations.expanded}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'processView')}">
+			<pc:automationTag value="auto-ADM-processView" standAlone="false"/>
+			<f:param name="viewId" value="processView" />
+			<ice:outputText value="#{messages_admin['views.processView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'activityView')}">
+			<pc:automationTag value="auto-ADM-activityView" standAlone="false"/>
+			<f:param name="viewId" value="activityView" />
+			<ice:outputText value="#{messages_admin['views.activityView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>	
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'criticalityConf')}">
+			<pc:automationTag value="auto-ADM-criticalityConf" standAlone="false" />
+			<f:param name="viewId" value="criticalityConf" />
+			<ice:outputText value="#{messages_admin['views.criticalityConf.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'modelManagementView')}">
+			<pc:automationTag value="auto-ADM-LP-ModelMgmtView" standAlone="false"/>
+			<f:param name="viewId" value="modelManagementView" />
+			<ice:outputText value="#{messages_admin['views.modelManagementView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'qaManagementView')}">
+			<pc:automationTag value="auto-ADM-qaManagement" standAlone="false"/>
+			<f:param name="viewId" value="qaManagementView" />
+			<ice:outputText value="#{messages_admin['views.qaManagementView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+	</ice:panelGrid>
+</f:view>

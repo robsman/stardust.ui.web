@@ -1122,7 +1122,10 @@ define(
 								var dataValue = tdType.name + "#typeName:" + typeName;
 								select += "<option value='" + dataValue + "' ";
 								if ( schemaType && !schemaType.isBuiltinType()) {
-									select += ((schemaType.name === tdType.name && modelId == typeDeclaration.modelId) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+								  if((schemaType.name === tdType.name && modelId == typeDeclaration.modelId) && (schemaType.nsUri === tdType.nsUri)){
+								    select += "selected ";  
+								  }
+									
 									selected = true;
 								}
 								select += ">" + m_structuredTypeBrowser.getSchemaTypeLabel(typeDeclaration.name) + "</option>";
@@ -1151,7 +1154,10 @@ define(
 
 											var x = "<option value='" + dataValue + "' ";
 											if (schemaType && !schemaType.isBuiltinType()) {
-												x += ((schemaType.name === tdType.name && modelId == model.id) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+											  if((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri)){
+											    x += "selected ";  
+											  }
+												
 												selected = true;
 											}
 											x += ">" + model.name + "/" + typeDeclaration.name + "</option>";

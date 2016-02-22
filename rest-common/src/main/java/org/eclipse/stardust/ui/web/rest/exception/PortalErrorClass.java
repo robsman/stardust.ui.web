@@ -17,6 +17,8 @@ import java.util.ResourceBundle;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.stardust.common.StringUtils;
+
 /**
  * @author Yogesh.Manware
  * 
@@ -29,9 +31,10 @@ public class PortalErrorClass implements Serializable
 
    // throw this error when document does exist in the repository
    public final static PortalErrorClass DOCUMENT_NOT_FOUND = new PortalErrorClass("DOC00001", Status.NOT_FOUND);
-      
+
    private Status httpStatus;
    private String id;
+   private String i18nMessage;
 
    /**
     * @param id
@@ -43,12 +46,22 @@ public class PortalErrorClass implements Serializable
       this.httpStatus = httpStatus;
    }
 
+   protected PortalErrorClass(Status httpStatus, String i18nmessage)
+   {
+      this.httpStatus = httpStatus;
+      this.i18nMessage = i18nmessage;
+   }
+
    /**
     * @param locale
     * @return
     */
    public String getLocalizedMessage(Locale locale)
    {
+      if (StringUtils.isNotEmpty(i18nMessage))
+      {
+         return i18nMessage;
+      }
       ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME, locale);
       return bundle.getString(id);
    }

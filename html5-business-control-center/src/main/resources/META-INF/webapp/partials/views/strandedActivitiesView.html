@@ -1,0 +1,17 @@
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true" ng-controller="sdStrandedActivitiesCtrl as ctrl">
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"
+			aid="BCC-StrandedAct"></sapn>
+		</div>
+	</div>
+	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-strandedActivities-label')}}</div>
+	<div sd-activity-table="ctrl.strandedActivitiesTable"
+		sda-mode="activityTable" sd-data="ctrl.getStrandedActivities(params);"
+		sda-default-delegate-enabled="true"
+		sda-preference-module="ipp-views-common"
+		sda-preference-id="preference"
+		sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>
+</div>
+</div>

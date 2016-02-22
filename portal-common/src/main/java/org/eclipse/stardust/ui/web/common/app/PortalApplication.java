@@ -1402,7 +1402,7 @@ public class PortalApplication
    public String getOverflowTabIframePopupArgs()
    {
       String advanceArgs = "{anchorId:'ippOverflowTabAnchor', width:100, height:30, maxWidth:800, maxHeight:550, "
-            + "openOnRight:false, anchorXAdjustment:120, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+            + "openOnRight:false, anchorXAdjustment:120, anchorYAdjustment:5, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
@@ -1602,6 +1602,16 @@ public class PortalApplication
       }
    }
 
+   /**
+    * 
+    * @return
+    */
+   public TimeZone getSystemTimeZone()
+   {
+     
+         return java.util.TimeZone.getDefault();
+   }
+   
    public boolean isClientTimeZoneSet()
    {
       //Following fix was added as part of CRNT-20962 but later on with the new Icefaces jars the issue got resolved

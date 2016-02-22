@@ -13,9 +13,10 @@
  */
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import java.util.Date;
+import java.util.List;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
+
 /**
  * 
  * @author Johnson.Quadras
@@ -26,14 +27,15 @@ public class UserDTO extends AbstractDTO
    @DTOAttribute("id")
    public String id;
 
+   @DTOAttribute("qualifiedId")
+   public String qualifiedId;
+
    @DTOAttribute("name")
    public String displayName;
 
-   @DTOAttribute("validFrom")
-   public Date validFrom;
+   public Long validFrom;
 
-   @DTOAttribute("validTo")
-   public Date validTo;
+   public Long validTo;
 
    @DTOAttribute("description")
    public String description;
@@ -45,18 +47,39 @@ public class UserDTO extends AbstractDTO
    public String realm;
 
    public String userImageURI;
-   
+
    @DTOAttribute("firstName")
    public String firstName;
-   
+
    @DTOAttribute("lastName")
    public String lastName;
-   
+
    @DTOAttribute("OID")
    public Long oid;
-   
+
+   @DTOAttribute("realm.id")
+   public String realmId;
+
    @DTOAttribute("administrator")
-   public Boolean isAdminstartor;
-   
+   public Boolean isAdministrator;
+
+   @DTOAttribute("account")
+   public String account;
+
+   public boolean isInternalAuthentication;
+
+   public String oldPassword;
+
+   public String password;
+
+   public String confirmPassword;
+
+   public boolean changePassword;
+
+   public Integer qaOverride;
+
+   public List<SelectItemDTO> allRealms;
+
+   public String selectedDisplayFormat;
 
 }

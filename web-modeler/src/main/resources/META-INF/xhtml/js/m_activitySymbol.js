@@ -899,6 +899,12 @@ define(
 						applicationMD.applicationType = "UI Mashup Application"
 						applicationMD.applicationViewName = "uiMashupApplicationView";
 						break;
+						
+	             case "decoratorApp":
+	                  applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/applications-blue.png";
+	                  applicationMD.applicationType = "Decorator Application"
+	                  applicationMD.applicationViewName = "decoratorApplicationView";
+	                  break;
 
 					default:
 						applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/applications-blue.png";

@@ -13,10 +13,12 @@
 				<ice:outputText
 					value="#{startableProcessBean.messages['department.title']}"
 					styleClass="headerText" />
-				<ice:commandButton
+				<ice:commandLink
 					title="#{common_msgPropsBean['common.close']}"
 					action="#{startDepartmentBean.closePopup}"
-					immediate="true" styleClass="windowClose" />
+					immediate="true" styleClass="windowClose pi-cmdLnk">
+					<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+				</ice:commandLink>
 			</ice:panelGroup>
 		</f:facet>
 

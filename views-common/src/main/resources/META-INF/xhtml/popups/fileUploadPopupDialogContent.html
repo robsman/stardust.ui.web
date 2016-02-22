@@ -5,20 +5,22 @@
 <link href="../../common/css/iPopupDialogStyle.css" rel="stylesheet"
 	type="text/css" />
 
+<script src="../../views-common/js/libs/jquery/jquery-1.7.2.min.js"></script>
+<script src="../../common/js/ipopupDialogCustomSkinSupport.js"></script>
+
 <script type="text/javascript" src="../../views-common/js/commonRequire.js"></script>
 <script type="text/javascript" src="../../common/InfinityBPMI18N.js"></script>
 <script type="text/javascript"
 	data-main="../../views-common/js/fileUploadMain"
-	src="../../views-common/js/libs/require/2.0.5/require.js"></script>
-
-
+	src="../../views-common/js/libs/require/2.1.15/require.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../../modern-skin/modern.css"></link>
+<link rel="stylesheet" type="text/css" href="../../html5-common/styles/portal-icons.css" />
 </head>
 
 <body class="iPopupDialogBody">
 	<div id="titleBar" class="iPopupDialogTitleBar">
-		<span id="titleText" class="iPopupDialogTitleText"></span> <input
-			id="dialogCloseIcon" type="button" title="Close"
-			class="iPopupDialogCloseControl" />
+		<span id="titleText" class="iPopupDialogTitleText"></span>
+		<span id="dialogCloseIcon" class="iPopupDialogCloseButton"><i class="pi pi-dialog-close pi-lg"  title="Close" ></i></span>	
 	</div>
 
 	<div id="contentArea" class="iPopupDialogContentArea">

@@ -27,12 +27,14 @@ import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopu
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterOnOff;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilters;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.FilterToolbarItem;
 import org.eclipse.stardust.ui.web.viewscommon.core.ProcessInstanceDetailConfigurationBean;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.RelocateActivityDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
@@ -75,29 +77,27 @@ public class ActivityUIBuilder
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "ApplicationActivity",
             "processHistory.activityTable.showApplicationActivity",
-            "processHistory.activityTable.hideApplicationActivity", "activity_application.png",
-            Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "processHistory.activityTable.hideApplicationActivity", "pi pi-non-interactive-activity pi-lg"));
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "ManualActivity",
             "processHistory.activityTable.showManualActivity", "processHistory.activityTable.hideManualActivity",
-            "activity_manual.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "pi pi-manual-activity pi-lg"));
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "Auxiliary",
             "processHistory.activityTable.showAuxiliaryActivity", "processHistory.activityTable.hideAuxiliaryActivity",
-            "activity_auxiliary.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "pi pi-activity-auxiliary pi-lg"));
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "Delegate",
-            "processHistory.activityTable.showDelegate", "processHistory.activityTable.hideDelegate", "delegate.png",
-            Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "processHistory.activityTable.showDelegate", "processHistory.activityTable.hideDelegate", "pi pi-activity-delegate pi-lg"));
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "Exception",
             "processHistory.activityTable.showException", "processHistory.activityTable.hideException",
-            "exception.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "pi pi-exception-circle pi-lg"));
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "ActivityCompleted",
             "processHistory.activityTable.showEventsCompleted", "processHistory.activityTable.hideEventsCompleted",
-            "activity_completed.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "pi pi-activity-complete pi-lg"));
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "StateChange",
             "processHistory.activityTable.showStateChange", "processHistory.activityTable.hideStateChange",
-            "activity_state.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "pi pi-activity-state pi-lg"));
 
       setValuesFromConfiguration();
    }
@@ -220,6 +220,39 @@ public class ActivityUIBuilder
       else
       {
          trace.warn(this.getClass().getName() + " Method: openDelegateDialog()"
+               + " Runtime Object is not of type ActivityInstance");
+      }
+   }
+
+   /**
+    * Opens relocation dialog
+    * 
+    * @param ae
+    */
+   public void openRelocationDialog(ActionEvent ae)
+   {
+      ActivityTableEntryUserObject row = (ActivityTableEntryUserObject) ae.getComponent().getAttributes().get("row");
+      
+      if (row.getTableEntry().getRuntimeObject() instanceof ActivityInstance)
+      {
+         RelocateActivityDialogBean dialog = (RelocateActivityDialogBean) FacesUtils.getBeanFromContext("relocateActivityDialogBean");
+         dialog.setActivityInstance(((ActivityInstance) row.getTableEntry().getRuntimeObject()));
+         dialog.setCallbackHandler(new ICallbackHandler()
+         {
+            @Override
+            public void handleEvent(EventType eventType)
+            {
+               if (eventType.equals(EventType.APPLY))
+               {
+                  // TODO - refresh the process history table?
+               }
+            }
+         });
+         dialog.openPopup();
+      }
+      else
+      {
+         trace.warn(this.getClass().getName() + " Method: openRelocationDialog()"
                + " Runtime Object is not of type ActivityInstance");
       }
    }

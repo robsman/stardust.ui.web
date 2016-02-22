@@ -1,33 +1,33 @@
-<div class="res-availability-wrapper">
-	<div class="view-panel-toolbar tbl-title"
-		style="color: #708090; font-size: 11px">{{i18n('business-control-center-messages.views-common-assignedRole-title')}}</div>
+<div class="view-panel-content">
+	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-common-assignedRole-title')}}</div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
 			<button
-				ng-disabled="!(ctrl.rowSelectionAssignedRolesTable.length > 0 && ctrl.userManagerDetails.manageAuthorization)"
-				ng-click="bpmCommon.stopEvent($event); ctrl.removeRoleFromUser(ctrl.rowSelectionAssignedRolesTable);"
+				ng-disabled="!(ctrl.assignedRolesTable.getSelection().length > 0 && ctrl.userManagerDetails.manageAuthorization)"
+				ng-click="bpmCommon.stopEvent($event); ctrl.removeRoleFromUser();"
 				title="{{i18n('business-control-center-messages.views-common-button-removeRoleFromUser')}}"
-				class="button-link tbl-toolbar-item tbl-tool-link">
-				<i class="sc sc-fw sc-1x sc-users"></i>
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				aid="BCC-UserMgrDet-RoleAssignedTbl-RemRoleFrmUser">
+				<i class="pi pi-delete pi-lg" />
 			</button>
 		</div>
 	</div>
 	<table sd-data-table="ctrl.assignedRolesTable"
-		sd-data="ctrl.getAssignedRoles()" sda-mode="local"
-		sda-ready="ctrl.showAssignedRolesTable" sda-selectable="multiple"
-		sda-selection="ctrl.rowSelectionAssignedRolesTable"
+		sd-data="ctrl.getAssignedRoles(params)" sda-mode="local" sda-ready="ctrl.showAssignedRolesTable"
+	    sda-selectable="multiple"
+		sda-preference-delegate="ctrl.preferenceForAssignedRoleTable(prefInfo)"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
-		sda-sort-by="{name : 'roleName', dir : 'desc'}" sda-exports="true"
+		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
 		sda-exports-file-name="{{ctrl.exportFileNameForAssignedRoles}}">
 		<thead
 			sda-i18n-scope="business-control-center-messages.views-resourceAvailabilityView-rolesTable-column">
 			<tr>
-				<th sda-name="roleName"
+				<th sda-name="name"
 					sda-label="{{i18n('business-control-center-messages.views-common-column-name')}}"
 					sda-sortable="true"></th>
-				<th sda-name="itemsCount" sda-label-key="items" sda-sortable="true">
+				<th sda-name="items" sda-sortable="true">
 				</th>
-				<th sda-name="roleAccount" sda-label-key="account"
+				<th sda-name="account" 
 					sda-sortable="true"></th>
 				<th sda-name="itemsPerUser" sda-label-key="itemsperUser"
 					sda-sortable="true"></th>
@@ -35,10 +35,10 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
+				<td sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
 			</tr>
 		</tbody>
 	</table>

@@ -1,0 +1,172 @@
+
+	<table class="correspondence_container">
+		<tr class="correspondence_section">
+			<td class="correspondence_left_section">
+				<span class="iceOutLbl">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-type')}}: </span>
+			</td>
+			<td class="correspondence_right_section">	
+				<select ng-model="ctrl.selected.type" class="correspondence_type_selector" ng-disabled="ctrl.readOnly"
+			  	ng-change="ctrl.onTypeChange();" aid="COM-Correspondence-SelectType"
+				ng-options="opt.id as opt.label for opt in ctrl.correspondenceTypes">
+			</select>
+			</td>
+		</tr>
+		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email' ">
+			<td class="correspondence_left_section"> 
+				<a class="iceOutLbl dialog_link" href="#" ng-click="ctrl.openAddressSelector('TO');" ng-if="!ctrl.readOnly"  aid="COM-Correspondence-ToAddSelector">
+					 {{ctrl.i18n('views-common-messages.views-correspondenceView-details-to')}}: </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ ctrl.i18n('views-common-messages.views-correspondenceView-details-to')}}: </span>
+			</td>
+			<td class="correspondence_right_section">	
+				<div class="address-book-ac-container">
+					 <div sd-auto-complete class="correspondence_to_autocomplete"
+		                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
+		                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
+		                            sda-matches="ctrl.data.like.to" 
+		                            sda-user-entry-delimiter=","
+	           						sda-user-entry="ctrl.newItemFactory(val)"
+		                            sda-match-str="ctrl.data.matchVal.to" 
+		                            sda-change="ctrl.getAddressesAutoCompleteTO(ctrl.data.matchVal.to)" 
+		                            sda-text-property="name" 
+		                            sda-tooltip-property="value"
+		                            sda-container-class="address-book-ac-container-to" 
+		                            sda-item-hot-class="sd-ac-item-isActive" 
+		                            sda-selected-matches="ctrl.selected.to"
+		                            sda-read-only ="ctrl.readOnly">
+	                  </div>
+	                  <div ng-if="!ctrl.readOnly">
+		                     <a ng-show="!ctrl.selected.showCc" class="iceOutLbl correspondence_to_bcc_links" ng-click ="ctrl.showCc();" aid="COM-Correspondence-ShowCC" href="#">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-cc')}}</a>
+		                     <a ng-show="!ctrl.selected.showBcc" class="iceOutLbl correspondence_to_bcc_links" ng-click ="ctrl.showBcc();"  aid="COM-Correspondence-ShowBCC" href="#">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-bcc')}}</a> 
+	             	   </div>
+                    </div> 
+			</td>
+		</tr>
+		
+		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email'&& ctrl.selected.showCc">
+			<td class="correspondence_left_section"> 
+				<a class="iceOutLbl dialog_link" href="#" ng-click="ctrl.openAddressSelector('CC');"  ng-if="!ctrl.readOnly"  aid="COM-Correspondence-CCAddSelector">
+					{{ctrl.i18n('views-common-messages.views-correspondenceView-details-cc')}}: </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly"> {{ctrl.i18n('views-common-messages.views-correspondenceView-details-cc')}}:  </span>
+			</td>
+			<td class="correspondence_right_section">	
+				<div class="address-book-field-container">	
+					 <div sd-auto-complete 
+		                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
+		                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
+		                            sda-matches="ctrl.data.like.cc" 
+		                            sda-user-entry-delimiter=","
+	           						sda-user-entry="ctrl.newItemFactory(val)"
+		                            sda-match-str="ctrl.data.matchVal.cc" 
+		                            sda-change="ctrl.getAddressesAutoCompleteCC(ctrl.data.matchVal.cc)" 
+		                            sda-text-property="name"
+		                            sda-tooltip-property="value" 
+		                            sda-container-class="address-book-ac-container" 
+		                            sda-item-hot-class="sd-ac-item-isActive" 
+		                            sda-selected-matches="ctrl.selected.cc"
+		                            sda-read-only ="ctrl.readOnly"
+		                            >
+	                     </div>
+	              </div>
+			</td>
+		</tr>
+		
+	    <tr class="correspondence_section" ng-if="ctrl.selected.type == 'email' && ctrl.selected.showBcc">
+			<td class="correspondence_left_section"> 
+				<a class="iceOutLbl dialog_link" href="#" ng-click="ctrl.openAddressSelector('BCC');" ng-if="!ctrl.readOnly"  aid="COM-Correspondence-BCCAddSelector">
+					{{ctrl.i18n('views-common-messages.views-correspondenceView-details-bcc')}}:  </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-bcc')}}: </span>
+			</td>
+			<td class="correspondence_right_section">	
+				<div class="address-book-field-container">
+				 <div sd-auto-complete 
+	                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
+	                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
+	                            sda-matches="ctrl.data.like.bcc" 
+	                            sda-user-entry-delimiter=","
+           						sda-user-entry="ctrl.newItemFactory(val)"
+	                            sda-match-str="ctrl.data.matchVal.bcc" 
+	                            sda-change="ctrl.getAddressesAutoCompleteBCC(ctrl.data.matchVal.bcc)" 
+	                            sda-text-property="name" 
+	                            sda-tooltip-property="value"
+	                            sda-container-class="address-book-ac-container" 
+	                            sda-item-hot-class="sd-ac-item-isActive" 
+	                            sda-selected-matches="ctrl.selected.bcc"
+	                            sda-read-only ="ctrl.readOnly"
+	                            >
+                     </div>
+                    </div> 
+			</td>
+		</tr>
+		
+		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email'">
+			<td class="correspondence_left_section"> 
+				<span class="iceOutLbl">{{ctrl.i18n('views-common-messages.views.correspondenceView-details-subject')}}:  </span>
+			</td>
+			<td class="correspondence_right_section">	
+				<input class="correspondence_subject" ng-model="ctrl.selected.subject" type="text" ng-disabled="ctrl.readOnly"/>
+			</td>
+		</tr>
+		<tr class="correspondence_section">
+			<td class="correspondence_left_section"> 
+				<a class="iceOutLbl dialog_link" href="#" ng-click="ctrl.openMessageTemplateSelector();"  ng-if="!ctrl.readOnly"  aid="COM-Correspondence-SelectTemplate">
+				{{ctrl.i18n('views-common-messages.views.correspondenceView-details-message')}}: </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ctrl.i18n('views-common-messages.views.correspondenceView-details-message')}}: </span>
+			</td>
+			<td class="correspondence_right_section">	
+				<textarea id="messageEditor" data-ng-model="ctrl.selected.content"
+				 sd-rich-text-editor ng-disabled="ctrl.readOnly" sda-readOnly="{{ctrl.readOnly}}" sda-on-blur="ctrl.onMessageChange();"
+				 sda-on-mode-change="ctrl.onMessageChange()"> </textarea>
+			</td>
+		</tr>
+		<tr class="correspondence_section">
+			<td class="correspondence_left_section"> 
+			</td>
+			<td class="correspondence_right_section">	
+				<div style="float:right;padding-top: 10px;">
+				  	<div ng-hide="ctrl.readOnly">
+					  	<button  class="button-link tbl-toolbar-item tbl-tool-link spacing-right" ng-click="ctrl.openAttachmentSelector()" aid="COM-Correspondence-AtchDocument">
+				 		  	 <i class="pi pi-attach-document pi-1-5x" title="{{ctrl.i18n('views-common-messages.views-correspondenceView-details-attachments-title')}}"></i> 
+					   </button>
+						<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.convertToPdf"/>
+						<span class="iceOutLbl">{{ctrl.i18n('views-common-messages.views.correspondenceView-details-convertToPdf')}}</span>
+					</div>
+					<div  class="correspondence-file-uploader">
+							<div ng-repeat="att in ctrl.selected.attachments" ng-cloak class="correspondence_attachments">
+									<div>
+										<span ng-if="!ctrl.readOnly" class="iceOutLbl" ng-bind="att.name"
+											ng-click="ctrl.openAttachment(att)"> </span>
+			
+										<button
+											class="button-link tbl-toolbar-item tbl-tool-link spacing-right"
+											style="float: right" ng-hide="ctrl.readOnly" aid="COM-Correspondence-RemoveAtcment"
+											ng-click="ctrl.removeAttachment(att)">
+											<i class="pi pi-close icon-1x"></i>
+										</button>
+									</div>
+			
+									<div ng-if="ctrl.readOnly" sd-open-document-link sda-name="att.name"  sda-params="ctrl.documentParams"
+										sda-mime-type="att.contentType" sda-document-id="att.uuid">
+								</div>
+							
+							</div>
+							<form id="uploadAttachmentForm" ng-hide="ctrl.readOnly"  method="post"  class="correspondence-file-uploader"
+								enctype="multipart/form-data">
+								<fieldset>
+									<div>
+										<!-- /	<label for="fileselect">Files to upload:</label>  -->
+										<label for="fileselect" class="correspondence_file_Selector" aid="COM-Correspondence-UploadFile">
+	     									<i class="pi pi-upload pi-2x"  title="{{ctrl.i18n('views-common-messages.views-correspondenceView-details-uploadAttachments')}}"></i>
+	  								  	</label>
+											<input type="file" id="fileselect" name="fileselect" multiple = "multiple" style="display:none" aid="COM-Correspondence-FileDropUpload"/>
+											<div  style="padding-left: 50px;" class="iceOutLbl">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-uploadAttachments')}}</div>	
+											<div id="filedrag" > 
+											</div>
+									</div>
+								</fieldset>
+							</form >
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+	{{ctrl.initializeFileUploader()}}	

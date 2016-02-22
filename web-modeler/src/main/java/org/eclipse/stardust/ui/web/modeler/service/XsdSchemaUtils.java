@@ -22,6 +22,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.eclipse.emf.ecore.xmi.XMLResource;
+
 import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.common.Predicate;
 import org.eclipse.stardust.common.StringUtils;
@@ -40,6 +41,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.XSDElementCheckForType;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
+
 import org.eclipse.xsd.*;
 import org.eclipse.xsd.util.XSDConstants;
 import org.eclipse.xsd.util.XSDSwitch;
@@ -384,7 +386,7 @@ public final class XsdSchemaUtils
          }
 
          XSDTypeDefinition type = element.getTypeDefinition();
-
+         
          // elements are constructed similar with types
          JsonObject json = new JsonObject();
          if (type == element.getAnonymousTypeDefinition() && type != null
@@ -414,12 +416,9 @@ public final class XsdSchemaUtils
             String prefixedName = getPrefixedName(type);
             if(StringUtils.isEmpty(prefixedName))
             {
-               prefixedName = "{}" + element.getName();
-         }
-            else if(prefixedName.indexOf(':') < 0)
-            {
-               prefixedName = "{}" + prefixedName;
+               prefixedName = element.getName();
             }
+            
             json.addProperty("type", prefixedName);
          }
 
@@ -1032,7 +1031,11 @@ public final class XsdSchemaUtils
 
       if (schemaJson.has("targetNamespace"))
       {
-         schema.setTargetNamespace(GsonUtils.safeGetAsString(schemaJson, "targetNamespace"));
+         String tns = GsonUtils.safeGetAsString(schemaJson, "targetNamespace");
+         if (!CompareHelper.areEqual(tns, schema.getTargetNamespace()))
+         {
+            schema.setTargetNamespace(tns);
+         }
       }
 
       JsonObject locations = GsonUtils.safeGetAsJsonObject(schemaJson, LOCATIONS);
@@ -1429,7 +1432,7 @@ public final class XsdSchemaUtils
                   XSDParticle p = XSDFactory.eINSTANCE.createXSDParticle();
                   if(elementJson.getAsJsonPrimitive("cardinality") != null)
                   {
-                  ParticleCardinality.get(
+                     ParticleCardinality.get(
                         elementJson.getAsJsonPrimitive("cardinality").getAsString())
                         .update(p);
                   }
@@ -1513,21 +1516,21 @@ public final class XsdSchemaUtils
          }
          else
          {
-         QName qname = QName.valueOf(type);
-         localName = qname.getLocalPart();
-         namespace = qname.getNamespaceURI();
-         if (!prefix2Namespace.containsValue(namespace))
-         {
-            String nsPrefix = qname.getPrefix();
-            if (isEmpty(nsPrefix))
+            QName qname = QName.valueOf(type);
+            localName = qname.getLocalPart();
+            namespace = qname.getNamespaceURI();
+            if (!prefix2Namespace.containsValue(namespace))
             {
-               nsPrefix = TypeDeclarationUtils.computePrefix(localName.toLowerCase(), prefix2Namespace.keySet());
+               String nsPrefix = qname.getPrefix();
+               if (isEmpty(nsPrefix))
+               {
+                  nsPrefix = TypeDeclarationUtils.computePrefix(localName.toLowerCase(), prefix2Namespace.keySet());
+               }
+               prefix2Namespace.put(nsPrefix, namespace);
+               // propagate ns-prefix mappings to DOM
+               schema.updateElement(true);
             }
-            prefix2Namespace.put(nsPrefix, namespace);
-            // propagate ns-prefix mappings to DOM
-            schema.updateElement(true);
          }
-      }
       }
       else
       {
@@ -1537,57 +1540,61 @@ public final class XsdSchemaUtils
          {
             localName = type.substring(ix + 1);
          }
+         else
+         {
+            localName = type;                        
+         }
       }
 
       TypeDeclarationType useType = null;
-         // find target schema
-         ModelType model = ModelUtils.findContainingModel(def);
-         if (locations != null)
-         {
-            String location = GsonUtils.safeGetAsString(locations, namespace);
+      // find target schema
+      ModelType model = ModelUtils.findContainingModel(def);
+      if (locations != null)
+      {
+         String location = GsonUtils.safeGetAsString(locations, namespace);
          if(StringUtils.isEmpty(namespace))
          {
             location = GsonUtils.safeGetAsString(locations, "");
          }
 
-            if (location != null)
-            {
-               QName qname = QName.valueOf(location);
-               String refModelId = qname.getNamespaceURI();
-               if (XMLConstants.NULL_NS_URI != refModelId)
-               {
-               ModelType refModel = ModelUtils.getExternalModel(model, refModelId);
-                        if (refModel != null)
-                        {
-                           model = refModel;
-                        }
-                     }
-                  }
-               }
-
-         if (model != null)
+         if (location != null)
          {
-            TypeDeclarationsType declarations = model.getTypeDeclarations();
-            // (fh) try first an exact match
-            TypeDeclarationType decl = declarations.getTypeDeclaration(localName);
-            if (decl != null && canResolve(decl, namespace, localName))
+            QName qname = QName.valueOf(location);
+            String refModelId = qname.getNamespaceURI();
+            if (XMLConstants.NULL_NS_URI != refModelId)
             {
-               addImport(schema, namespace, decl);
-            useType = decl;
-            }
-            else
-            {
-               for (TypeDeclarationType typeDeclaration : declarations.getTypeDeclaration())
+               ModelType refModel = ModelUtils.getExternalModel(model, refModelId);
+               if (refModel != null)
                {
-                  if (canResolve(typeDeclaration, namespace, localName))
-                  {
-                     addImport(schema, namespace, typeDeclaration);
-                  useType = typeDeclaration;
-                     break;
-                  }
+                  model = refModel;
                }
             }
          }
+      }
+
+      if (model != null)
+      {
+         TypeDeclarationsType declarations = model.getTypeDeclarations();
+         // (fh) try first an exact match
+         TypeDeclarationType decl = declarations.getTypeDeclaration(localName);
+         if (decl != null && canResolve(decl, namespace, localName))
+         {
+            addImport(schema, namespace, decl, localName);
+            useType = decl;
+         }
+         else
+         {
+            for (TypeDeclarationType typeDeclaration : declarations.getTypeDeclaration())
+            {
+               if (canResolve(typeDeclaration, namespace, localName))
+               {
+                  addImport(schema, namespace, typeDeclaration, localName);
+                  useType = typeDeclaration;
+                  break;
+               }
+            }
+         }
+      }
 
       XSDNamedComponent findComponent = null;
       if (useType != null)
@@ -1616,7 +1623,7 @@ public final class XsdSchemaUtils
       return false;
    }
 
-   private static void addImport(XSDSchema schema, String namespace, TypeDeclarationType decl)
+   private static void addImport(XSDSchema schema, String namespace, TypeDeclarationType decl, String localName)
    {
       List<XSDImport> xsdImports = TypeDeclarationUtils.getImports(schema);
       if (xsdImports != null)
@@ -1635,9 +1642,22 @@ public final class XsdSchemaUtils
          }
       }
 
-         XSDImport schemaImport = XSDFactory.eINSTANCE.createXSDImport();
-         schemaImport.setNamespace(namespace);
+      XSDImport schemaImport = XSDFactory.eINSTANCE.createXSDImport();
+      schemaImport.setNamespace(namespace);
       updateInternalImport(schema, schemaImport, decl);
+      
+      
+      XSDNamedComponent findComponent = findElementOrTypeDeclaration(decl.getSchema(), localName, namespace);
+      if(findComponent instanceof XSDElementDeclaration)
+      {
+         String tns = findComponent.getTargetNamespace();      
+         if (!schema.getQNamePrefixToNamespaceMap().values().contains(tns))
+         {
+            String namespacePrefix = TypeDeclarationUtils.getNamespacePrefix(decl.getSchema(), findComponent.getTargetNamespace());
+            schema.getQNamePrefixToNamespaceMap().put(namespacePrefix, tns);
+         }
+      }
+      
       schema.getContents().add(0, schemaImport);
    }
 

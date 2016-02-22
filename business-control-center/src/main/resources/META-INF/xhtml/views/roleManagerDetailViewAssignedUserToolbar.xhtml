@@ -13,11 +13,9 @@
 			action="#{roleManagerDetail.removeUserFromRole}">
 			<pc:automationTag
 				value="auto-BCC-RoleMgrDet-AssignedUserTbl-ToolbarRemove" standAlone="false" />
-			<h:graphicImage
-				value="/plugins/views-common/images/icons/group_delete.png"
-				style="border: none;"
+			<h:outputText
 				styleClass="#{(roleManagerDetail.removeUser > 0) and (roleManagerDetail.roleModifiable) 
-							? '' : 'iceCmdBtn-dis'}"
+							? '' : 'iceCmdBtn-dis'} pi pi-delete pi-lg"
 				title="#{roleManagerDetail.messages['button.removeUserFromRole']}" />
 		</ice:commandLink>
 	</ice:panelGrid>

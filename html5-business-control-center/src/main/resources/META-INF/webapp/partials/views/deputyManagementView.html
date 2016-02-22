@@ -1,8 +1,23 @@
-<div style="padding-left: 20px;" ng-controller="sdDeputyManagementCtrl as ctrl">
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true" ng-controller="sdDeputyManagementCtrl as ctrl">
 	<div
 		ng-include="'plugins/html5-business-control-center/partials/views/deputyManagementUsersTable.html'">
 	</div>
 	<div style="padding-top: 20px;"
 		ng-include="'plugins/html5-business-control-center/partials/views/deputyManagementUserDeputiesTable.html'">
 	</div>
+	<div ng-if="ctrl.loadCreateOrModifyDeputyDialog">
+		<div sd-dialog sda-modal="true"
+			sda-show="ctrl.showCreateOrModifyDeputyDialog" sda-type="confirm"
+			sda-title="{{sdI18n(ctrl.deputy.title,'',[ctrl.deputy.titleParams])}}"
+			sda-scope="this"
+			sda-template="plugins/html5-business-control-center/partials/views/createOrModifyDeputyDialog.html"
+			sda-on-confirm="ctrl.onConfirmAddEditDeputy(res)"
+			sda-on-close="ctrl.onCloseAddEditDeputy(res)"
+			sda-confirm-action-label="{{i18n('views-common-messages.common-apply')}}"
+			sda-width="750px"
+			sda-aid-prefix="COM-DeputyMgmt-DeputyPopup"></div>
+	</div>
 </div>
+</div>
+

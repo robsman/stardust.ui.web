@@ -18,7 +18,10 @@
 
 		<ice:panelGroup rendered="#{col.columnName == 'Deputy' or col.columnName == 'User' or col.columnName == 'Participant'}">
 			<ice:panelGrid columns="2">
-				<ice:graphicImage value="#{row.avatarImageURI}" width="24px" height="24px" />
+				<ice:graphicImage value="#{row.avatarImageURI}" width="24px" height="24px" 
+								rendered="#{pc:contains(row.avatarImageURI, '/')}"/>
+				<ice:outputText styleClass="#{row.avatarImageURI} pi-1-5x"
+								rendered="#{!pc:contains(row.avatarImageURI, '/')}"></ice:outputText>
 				<ice:outputText value="#{row.userDisplayName}" />
 			</ice:panelGrid>
 		</ice:panelGroup>
@@ -27,18 +30,16 @@
 			<ice:panelGrid columns="4" style="float: right;">
 				<ice:commandLink actionListener="#{bean.editMyDeputy}">
 					<pc:automationTag value="auto-BCC-DeputyMgmt-MyDeputiesTbl-ActionsEditDeputy" standAlone="false" />
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/pencil.png"
+					<ice:outputText
 						title="#{bean.messages['edit']}"
-						styleClass="portal-std-icon" />
+						styleClass="pi pi-edit pi-lg" />
 					<f:attribute name="deputy" value="#{row}" />
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.removeMyDeputy}">
 					<pc:automationTag value="auto-BCC-DeputyMgmt-MyDeputiesTbl-ActionsRemoveDeputy" standAlone="false" />
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/delete.png"
+					<ice:outputText
 						title="#{bean.messages['remove']}"
-						styleClass="portal-std-icon" />
+						styleClass="pi pi-delete pi-lg" />
 					<f:attribute name="deputy" value="#{row}" />
 				</ice:commandLink>
 			</ice:panelGrid>
@@ -48,18 +49,16 @@
 			<ice:panelGrid columns="4" style="float: right;">
 				<ice:commandLink actionListener="#{bean.editUserDeputy}">
 					<pc:automationTag value="auto-BCC-DeputyMgmt-MyDeputiesTbl-ActionsEditDeputy" standAlone="false" />
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/pencil.png"
+					<ice:outputText
 						title="#{bean.messages['edit']}"
-						styleClass="portal-std-icon" />
+						styleClass="pi pi-edit pi-lg" />
 					<f:attribute name="deputy" value="#{row}" />
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.removeUserDeputy}">
 					<pc:automationTag value="auto-BCC-DeputyMgmt-MyDeputiesTbl-ActionsRemoveDeputy" standAlone="false" />
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/delete.png"
+					<ice:outputText
 						title="#{bean.messages['remove']}"
-						styleClass="portal-std-icon" />
+						styleClass="pi pi-delete pi-lg" />
 					<f:attribute name="deputy" value="#{row}" />
 				</ice:commandLink>
 			</ice:panelGrid>

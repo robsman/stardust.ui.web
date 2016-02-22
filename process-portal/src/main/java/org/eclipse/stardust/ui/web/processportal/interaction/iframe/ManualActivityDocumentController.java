@@ -291,9 +291,9 @@ public class ManualActivityDocumentController
    {
       if (isJCRDocument())
       {
-         return DOC_PATH + "mime-types/" + getDocument().getMimeType().getIconPath();
+         return getDocument().getMimeType().getIcon();
       }
-      return DOC_PATH + "page_white_error.png";
+      return "pi pi-document-error pi-lg";
    }
 
    /**

@@ -132,6 +132,17 @@ public class DateUtils
       }
       return simpleDateFormat.format(date);
    }
+   
+   /**
+    * 
+    * @param date
+    * @param timezone
+    * @return
+    */
+   public static String formatDate(Date date, TimeZone timezone)
+   {
+      return format(date, getDateFormat(), timezone);
+   }
 
    /**
     * @param date
@@ -193,7 +204,7 @@ public class DateUtils
    {
       MessagePropertiesBean msgProps = MessagePropertiesBean.getInstance();
 
-      long diffTime = System.currentTimeMillis() - timeStamp.getTime();
+      long diffTime = PortalTimestampProvider.getTimeStampValue() - timeStamp.getTime();
       diffTime = diffTime / 1000; // Now diffTime is in Sec
 
       StringBuffer str = new StringBuffer("");

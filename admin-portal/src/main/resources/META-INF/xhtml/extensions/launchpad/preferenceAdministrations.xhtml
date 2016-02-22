@@ -1,0 +1,33 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{ippAdmPreferenceAdministrations}" />
+			<ui:param name="title" value="#{ippAdmPreferenceAdministrations.messages['title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="false" />
+			<ui:param name="automationTag" value="auto-ADM-preferenceAdministrationsPanel" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGrid columns="1" rendered="#{ippAdmPreferenceAdministrations.expanded}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		      rendered="#{pc:isViewAvailable(ippPortalApp, 'passwordMgmt')}">
+			<pc:automationTag value="auto-ADM-passwordMgmt" standAlone="false"/>
+			<f:param name="viewId" value="passwordMgmt" />
+			<ice:outputText value="#{messages_admin['views.passwordMgmt.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		      rendered="#{pc:isViewAvailable(ippPortalApp, 'prefManagerBean')}">
+			<f:param name="viewId" value="prefManagerBean" />
+			<ice:outputText value="#{messages_admin['views.prefManagerBean.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+	</ice:panelGrid>
+</f:view>

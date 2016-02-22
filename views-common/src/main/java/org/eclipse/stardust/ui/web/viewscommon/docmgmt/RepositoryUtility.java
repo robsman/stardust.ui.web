@@ -10,12 +10,14 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.docmgmt;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.faces.model.SelectItem;
@@ -24,13 +26,18 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.ErrorCase;
 import org.eclipse.stardust.engine.api.dto.Note;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.FolderInfo;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
+import org.eclipse.stardust.engine.extensions.dms.data.DmsFolderBean;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
@@ -59,29 +66,40 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocumentUserOb
 
 /**
  * contains UI dependent utility methods for document management
- * 
+ *
  * @author Yogesh.Manware
  * @version $Revision: $
  */
 public class RepositoryUtility
 {
-   public static final String CORRESPONDENCE_FOLDER = "/documents/correspondence-templates";
+   public static final String CORRESPONDENCE_TEMPLATE_FOLDER = "/documents/correspondence-templates";
    public static final String DOCUMENT_DISPLAY_MODE_PORTAL = "PORTAL";
    public static final String DOCUMENT_DISPLAY_MODE_NEWBROWSER = "NEWBROWSER";
+   public static final String UI_PROPERTIES = "ui-properties";
+   public static final String CORRESPONDENCE_REQUEST = "CORRESPONDENCE";
+   
+   
+   public enum UIProperties{
+     readOnly, clickable, type 
+   }
+   
+   public enum ResourceType{
+      correspondenceOut
+   }
    
    private static final String ARTIFACTS_SKINS = "/artifacts/skins";
    private static final String ARTIFACTS_BUNDLES = "/artifacts/bundles";
    private static final String ARTIFACTS_CONTENT = "/artifacts/content";
    private static final String POSTFIX_OPEN = " (";
    private static final String POSTFIX_CLOSE = ")";
-   
+
    public static enum NodeType {
       DOCUMENT, ATTACHMENT, ATTACHMENT_FOLDER
    }
 
    /**
     * creates the model for Document Repository View
-    * 
+    *
     * @return
     */
    public static DefaultTreeModel createDocumentRepoModel()
@@ -107,7 +125,7 @@ public class RepositoryUtility
 
    /**
     * creates the Model for My Documents Tree view
-    * 
+    *
     * @return
     */
    public static DefaultTreeModel createMyDocumentsModel()
@@ -120,7 +138,7 @@ public class RepositoryUtility
       if (( !DMSHelper.isSecurityEnabled() || (sessionCtx.isSessionInitialized() && sessionCtx.getUser()
             .isAdministrator())))
       {
-         if (null == DocumentMgmtUtility.getFolder(CORRESPONDENCE_FOLDER))
+         if (null == DocumentMgmtUtility.getFolder(CORRESPONDENCE_TEMPLATE_FOLDER))
          {
             DocumentMgmtUtility.createFolder(DocumentMgmtUtility.DOCUMENTS,
                   CommonProperties.CORRESPONDENCE_TEMPLATES_AND_PARAGRAPHS);
@@ -139,7 +157,7 @@ public class RepositoryUtility
 
    /**
     * create model for process document tree view
-    * 
+    *
     * @param processInstance
     * @return
     */
@@ -150,7 +168,7 @@ public class RepositoryUtility
             I18nFolderUtils.getLabel(I18nFolderUtils.PROCESS_DOCUMENTS_V)).append(" [").append(
             I18nUtils.getProcessName(ProcessDefinitionUtils.getProcessDefinition(processInstance.getProcessID())))
             .append(" #").append(processInstance.getOID()).append("]");
-      
+
       DefaultMutableTreeNode processDocumentsNode = createVirtualNode(processDocPath.toString(),
             ResourcePaths.I_PROCESS, null);
       RepositoryVirtualUserObject virtualObject = (RepositoryVirtualUserObject) processDocumentsNode.getUserObject();
@@ -176,18 +194,25 @@ public class RepositoryUtility
          processDocumentsNode.add(createProcessAttachmentsNode(processInstance));
       }
 
-      // create Noted Node
+      // create correspondence folder if it exist.
+      DefaultMutableTreeNode correspondenceFolderNode = createCorrespondenceFolderNode(processInstance);
+      if (correspondenceFolderNode != null)
+      {
+         processDocumentsNode.add(correspondenceFolderNode);
+      }
+      
+      // create Notes Node
       List<Note> notesList = ProcessInstanceUtils.getNotes(processInstance);
       DefaultMutableTreeNode processNoteNode = createVirtualNode(I18nFolderUtils.getLabel(I18nFolderUtils.NOTES_V),
             ResourcePaths.I_NOTES, processInstance);
-      
+
       ((RepositoryVirtualUserObject) processNoteNode.getUserObject()).setCanCreateNotes(true);
       refreshNoteNodes(processNoteNode, notesList, processInstance);
       processDocumentsNode.add(processNoteNode);
 
       return new DefaultTreeModel(processDocumentsNode);
    }
-   
+
    public static DefaultTreeModel createCaseDocumentsModel(List<ProcessInstance> processInstances, ProcessInstance pi)
    {
       String resourcePath = null;
@@ -207,8 +232,8 @@ public class RepositoryUtility
       }
       return new DefaultTreeModel(parentNode);
    }
-   
-   
+
+
    /**
     * @param valueNode
     * @return
@@ -240,7 +265,7 @@ public class RepositoryUtility
       }
       return nodeType;
    }
-   
+
    /**
     * @param userObject
     * @return
@@ -264,7 +289,7 @@ public class RepositoryUtility
       }
       return false;
    }
-   
+
    private static DefaultMutableTreeNode createTreeNode(ProcessInstance processInstance, String resourcePath,
          boolean caseInstance)
    {
@@ -309,10 +334,10 @@ public class RepositoryUtility
       subProcessDocumentsNode.add(processNoteNode);
       return subProcessDocumentsNode;
    }
-   
+
     /**
     * create My Reports nodes
-    * 
+    *
     * @return
     */
    public static DefaultTreeModel createMyReportsModel()
@@ -328,21 +353,21 @@ public class RepositoryUtility
             ResourcePaths.I_FOLDER, null);
       ((RepositoryResourceUserObject)reportDefinitions.getUserObject()).setExpanded(false);
       reportsNode.add(reportDefinitions);
-      
+
       //Private Report Definitions
       DefaultMutableTreeNode privateReportDefinitionsNode = createPrivateReportDefinitionsNode();
       reportDefinitions.add(privateReportDefinitionsNode);
-      
+
       //Public Report Definitions
       DefaultMutableTreeNode publicReportDefinitionsNode = createPublicReportDefinitionsNode();
       reportDefinitions.add(publicReportDefinitionsNode);
-      
+
       List<DefaultMutableTreeNode> roleOrgReportDefinitionsNode = createRoleOrgReportDefinitionsNode();
       for (DefaultMutableTreeNode defaultMutableTreeNode : roleOrgReportDefinitionsNode)
       {
          reportDefinitions.add(defaultMutableTreeNode);
       }
-      
+
       //Saved Reports
       DefaultMutableTreeNode savedReportsNode = createVirtualNode(
             I18nFolderUtils.getLabel(I18nFolderUtils.MY_SAVED_REPORTS_V),
@@ -355,7 +380,7 @@ public class RepositoryUtility
             DocumentMgmtUtility.getPrivateSavedReportsPath(),
             I18nFolderUtils.PRIVATE_SAVED_REPORTS);
       savedReportsNode.add(privateSavedReports);
-      
+
       populateFolderContents(privateSavedReports);
 
       // Public Saved Reports
@@ -363,23 +388,23 @@ public class RepositoryUtility
             DocumentMgmtUtility.getPublicSavedReportsPath(),
             I18nFolderUtils.PUBLIC_SAVED_REPORTS);
       savedReportsNode.add(publicSavedReports);
-      
+
       populateFolderContents(publicSavedReports);
 
       List<DefaultMutableTreeNode> roleOrgSavedReportsNode = createRoleOrgSavedReportsNode(false);
-      
+
       for (int i = 0; i < roleOrgSavedReportsNode.size(); i++)
       {
          populateFolderContents(roleOrgSavedReportsNode.get(i));
          savedReportsNode.add(roleOrgSavedReportsNode.get(i));
       }
-      
+
       return new DefaultTreeModel(reportsNode);
    }
 
    /**
     * creates the Model for Resource Management Tree View
-    * 
+    *
     * @return
     */
    public static DefaultTreeModel createResourceMgmtModel()
@@ -393,11 +418,11 @@ public class RepositoryUtility
       artifactsRootNode.add(createFolderNode(DocumentMgmtUtility.createFolderIfNotExists(ARTIFACTS_CONTENT)));
       return new DefaultTreeModel(artifactsRootNode);
    }
-   
-   
+
+
    /**
     * updates process attachment documents
-    * 
+    *
     * @param node
     * @param processInstance
     */
@@ -420,7 +445,6 @@ public class RepositoryUtility
    {
       node.removeAllChildren();
       int size = documentsList.size();
-      RepositoryDocumentUserObject docUserObject;
       DefaultMutableTreeNode docNode;
       if (!node.getAllowsChildren() && size > 0)
       {
@@ -428,30 +452,27 @@ public class RepositoryUtility
       }
       for (int n = 0; n < size; ++n)
       {
-         docNode = createDocumentNode(documentsList.get(n));
-         docUserObject = (RepositoryDocumentUserObject) docNode.getUserObject();
-         docUserObject.setSendFileAllowed(true);
-         node.add(docNode);
+         docNode = createDocumentNode(documentsList.get(n), node);
       }
    }
-   
+
    /**
     * Expands the document tree when user clicks on the plus sign beside particular folder
     * It refreshes the current node as well as creates new children under the node
-    * 
+    *
     * @param node
     */
    public static void expandTree(DefaultMutableTreeNode node)
    {
       // refresh the selected node
       RepositoryFolderUserObject folderUserObject = (RepositoryFolderUserObject) node.getUserObject();
-      
+
       if (folderUserObject instanceof ProcessAttachmentUserObject)
       {
          ((ProcessAttachmentUserObject) folderUserObject).refresh();
          return;
       }
-      
+
       boolean versionSupported = true;
       boolean writeSupported = true;
       IRepositoryInstanceInfo repositoryInstance = (IRepositoryInstanceInfo) RepositoryCache.findRepositoryCache().getObject(
@@ -461,7 +482,7 @@ public class RepositoryUtility
          versionSupported = repositoryInstance.isVersioningSupported();
          writeSupported = repositoryInstance.isWriteSupported();
       }
-      
+
       Folder refreshedFolder = getUpdatedFolder(node);
       folderUserObject.setResource(refreshedFolder);
       // Remove existing children if any
@@ -480,19 +501,18 @@ public class RepositoryUtility
       // create new documents nodes
       for (int i = 0; i < documentCount; i++)
       {
-         DefaultMutableTreeNode documentNode = createDocumentNode((Document) refreshedFolder.getDocuments().get(i));
+         DefaultMutableTreeNode documentNode = createDocumentNode((Document) refreshedFolder.getDocuments().get(i), node);
          ((RepositoryDocumentUserObject)documentNode.getUserObject()).setVersioningSupported(versionSupported);
          ((RepositoryDocumentUserObject)documentNode.getUserObject()).setWriteSupported(writeSupported);
-         node.add(documentNode);
       }
       folderUserObject.setExpanded(true);
    }
-   
+
    /**
     * Refreshes the selected node (both folder and documents) without collapsing the
     * already expanded tree. it refreshes all the expanded or unexpanded nodes but does
     * not refresh children of unexpanded nodes.
-    * 
+    *
     * @param node
     */
    public static void refreshNode(DefaultMutableTreeNode node)
@@ -546,24 +566,24 @@ public class RepositoryUtility
                userObj.setDefaultRepository(false);
                userObj.setIcon(ResourcePaths.I_REPOSITORY);
                userObj.setLabel(getRepositoryLabel(userObj, null));
-               
+
                repositoryUserObject.setLabel(getRepositoryLabel(repositoryUserObject, null));
-               
+
             }
          }
          return;
       }
-      
+
       List<String> expandedFolders = new ArrayList<String>();
       populateExpandedFolderList(node, expandedFolders);
       if(expandedFolders.size()>0 || node.getUserObject() instanceof RepositoryDocumentUserObject){
-         refreshExpandedNodes(node, expandedFolders);   
+         refreshExpandedNodes(node, expandedFolders);
       }
    }
 
    /**
     * returns latest folder
-    * 
+    *
     * @param node
     * @return latest folder
     */
@@ -575,7 +595,7 @@ public class RepositoryUtility
 
    /**
     * creates blank document with default name under node provided as argument
-    * 
+    *
     * @param parentNode
     */
    public static DefaultMutableTreeNode createBlankDocument(DefaultMutableTreeNode parentNode, String contentType)
@@ -585,15 +605,14 @@ public class RepositoryUtility
       parentNode.setAllowsChildren(true);
       Document document = DocumentMgmtUtility.createBlankDocument(parentUserObject.getFolder().getId(), contentType,
             null);
-      DefaultMutableTreeNode subNode = createDocumentNode(document);
+      DefaultMutableTreeNode subNode = createDocumentNode(document, parentNode);
       ((RepositoryDocumentUserObject)subNode.getUserObject()).setNewNodeCreated(true);
-      parentNode.add(subNode);
       return subNode;
    }
-   
+
    /**
     * This function creates a copy of document
-    * 
+    *
     * @param parentNode
     * @param doc
     */
@@ -602,17 +621,16 @@ public class RepositoryUtility
       expandTree(parentNode);
       RepositoryFolderUserObject userObject = (RepositoryFolderUserObject) parentNode.getUserObject();
       parentNode.setAllowsChildren(true);
-      Document newDocument = DocumentMgmtUtility.createDocumentCopy(getUpdatedDocument(valueNode), userObject
+      Document newDocument = DocumentMgmtUtility.copyDocumentTo(getUpdatedDocument(valueNode), userObject
             .getFolder().getPath());
-      DefaultMutableTreeNode subNode = createDocumentNode(newDocument);
+      DefaultMutableTreeNode subNode = createDocumentNode(newDocument, parentNode);
       ((RepositoryDocumentUserObject)subNode.getUserObject()).setNewNodeCreated(true);
-      parentNode.add(subNode);
       return newDocument;
    }
 
    /**
     * This function MOVES document from one folder to other in the same tree
-    * 
+    *
     * @param targetNode
     * @param valueNode
     */
@@ -626,7 +644,7 @@ public class RepositoryUtility
    /**
     * creates new sub folder and corresponding new subNode also attaches the subNode to
     * its parent node
-    * 
+    *
     * @param parentNode
     * @param folderName
     * @return subfolder
@@ -637,16 +655,16 @@ public class RepositoryUtility
       parentNode.setAllowsChildren(true);
       RepositoryFolderUserObject parentUserObject = (RepositoryFolderUserObject) parentNode.getUserObject();
       DefaultMutableTreeNode subNode = createFolderNode(DocumentMgmtUtility.createFolder(
-            RepositoryIdUtils.addRepositoryId(parentUserObject.getResource().getPath(), parentUserObject.getResource().getRepositoryId()), folderName));
+            parentUserObject.getResource().getId(), folderName));
       parentNode.add(subNode);
       RepositoryFolderUserObject repositoryFolderUserObject = (RepositoryFolderUserObject) subNode.getUserObject();
       //repositoryFolderUserObject.renameStart();
       repositoryFolderUserObject.setNewNodeCreated(true);
       return subNode;
    }
-   
+
    /**
-    * 
+    *
     * @param rootNode
     * @param repositoryInstanceInfo
     * @return
@@ -659,20 +677,53 @@ public class RepositoryUtility
       repositoryNodeUserObject.setLabel(getRepositoryLabel(repositoryNodeUserObject, null));
 
       // Fetch the folders for the Repository
-      String folderId = RepositoryIdUtils.addRepositoryId("/", repositoryInstanceInfo.getRepositoryId());
-      Folder rootFolder = DocumentMgmtUtility.getDocumentManagementService().getFolder(folderId);
-      // Create Folder Node
-      DefaultMutableTreeNode folderNode = new DefaultMutableTreeNode();
-      RepositoryFolderUserObject repositoryFolderUserObject = new RepositoryFolderUserObject(folderNode, rootFolder);
-      folderNode.setUserObject(repositoryFolderUserObject);
-      repositoryNode.add(folderNode);
+      Folder rootFolder = getRootFolder(repositoryInstanceInfo.getRepositoryId());
+      if (rootFolder != null)
+      {
+         // Create Folder Node
+         DefaultMutableTreeNode folderNode = new DefaultMutableTreeNode();
+         RepositoryFolderUserObject repositoryFolderUserObject = new RepositoryFolderUserObject(
+               folderNode, rootFolder);
+         folderNode.setUserObject(repositoryFolderUserObject);
+         repositoryNode.add(folderNode);
+      }
       rootNode.add(repositoryNode);
       return repositoryNode;
    }
-   
+
+   /**
+    * @param repositoryId
+    *           the repository to retrieve the root folder for.
+    * @return null if repository is not found e.g. connection not available. In other
+    *         cases the {@link DocumentManagementServiceException} bubbles up.
+    */
+   private static Folder getRootFolder(String repositoryId)
+   {
+      String folderId = RepositoryIdUtils.addRepositoryId("/", repositoryId);
+      Folder folder;
+      try
+      {
+         folder = DocumentMgmtUtility.getDocumentManagementService().getFolder(folderId);
+      }
+      catch (DocumentManagementServiceException e)
+      {
+         ErrorCase error = e.getError();
+         if (error != null && "DMS00001".equals(error.getId()))
+         {
+            // No repository found, return null
+            folder = null;
+         }
+         else
+         {
+            throw e;
+         }
+      }
+      return folder;
+   }
+
    /**
     * searches a node for provided path
-    * 
+    *
     * @param rootNode
     * @param resourcePath
     * @param forceReload
@@ -728,7 +779,7 @@ public class RepositoryUtility
 
    /**
     * expands the tree bottoms up, from the particular resource to Root
-    * 
+    *
     * @param rootNode
     * @param path
     * @return
@@ -756,7 +807,7 @@ public class RepositoryUtility
 
    /**
     * displays popup error message
-    * 
+    *
     * @param msgKey
     */
    public static void showErrorPopup(String msgKey, String param, Exception exception)
@@ -773,7 +824,7 @@ public class RepositoryUtility
 
    /**
     * Executes the search query
-    * 
+    *
     * @param query
     * @return query result
     */
@@ -800,7 +851,7 @@ public class RepositoryUtility
    /**
     * if process attachment folder exist, return it or if not, create and return process
     * attachment folder
-    * 
+    *
     * @param pi
     * @return
     */
@@ -817,7 +868,7 @@ public class RepositoryUtility
 
    /**
     * Helps creating new file name if file with the given name already exist
-    * 
+    *
     * @param processAttachmentsFolder
     * @param docName
     * @param count
@@ -875,7 +926,7 @@ public class RepositoryUtility
 
    /**
     * finds a node under parent node based on the resource name passed in
-    * 
+    *
     * @param node
     * @param resourceName
     * @param forceReload
@@ -905,21 +956,22 @@ public class RepositoryUtility
 
    /**
     * creates new document node
-    * 
     * @param document
-    * @return Document Node
+    * @param parentNode
+    * @return
     */
-   public static DefaultMutableTreeNode createDocumentNode(Document document)
+   public static DefaultMutableTreeNode createDocumentNode(Document document, DefaultMutableTreeNode parentNode)
    {
       DefaultMutableTreeNode node = new DefaultMutableTreeNode();
-      RepositoryDocumentUserObject repositoryDocumentUserObject = new RepositoryDocumentUserObject(node, document);
+      RepositoryDocumentUserObject repositoryDocumentUserObject = new RepositoryDocumentUserObject(node, document,
+            parentNode);
       node.setUserObject(repositoryDocumentUserObject);
       return node;
    }
-   
+
    /**
     * replaces the proxy node with respective true node
-    * 
+    *
     * @param node
     */
    public static DefaultMutableTreeNode replaceProxyNode(DefaultMutableTreeNode node)
@@ -966,11 +1018,11 @@ public class RepositoryUtility
       return newNode;
    }
 
-   
-   
+
+
    /**
     * add reports to favorite list
-    * 
+    *
     * @param document
     */
    public static void addToFavorite(String name, String id)
@@ -990,7 +1042,7 @@ public class RepositoryUtility
 
    /**
     * set favorite reports preferences
-    * 
+    *
     * @param reports
     */
    public static void setFavoriteList(List<String> reports)
@@ -1001,7 +1053,7 @@ public class RepositoryUtility
 
    /**
     * returns favorite reports map HshMap<documentId, Name>
-    * 
+    *
     * @return HshMap<String, String> reports
     */
    public static HashMap<String, String> getFavoriteReports()
@@ -1039,7 +1091,7 @@ public class RepositoryUtility
       return UserPreferencesHelper.getInstance(UserPreferencesEntries.M_BCC, PreferenceScope.USER);
    }
 
-   
+
    /**
     * remove reports from favorite list
     * @param document
@@ -1049,7 +1101,7 @@ public class RepositoryUtility
       removeFromFavorite(document.getId());
    }
 
-   
+
    /**
     *  remove reports from favorite list
     * @param documentId
@@ -1075,7 +1127,7 @@ public class RepositoryUtility
 
    /**
     * returns true if the report is in favorite list
-    * 
+    *
     * @param documentId
     * @return
     */
@@ -1088,10 +1140,10 @@ public class RepositoryUtility
       }
       return false;
    }
-   
+
    /**
     * Create Report Designs node
-    * 
+    *
     * @return
     */
    private static DefaultMutableTreeNode createReportDesignsNode()
@@ -1123,7 +1175,7 @@ public class RepositoryUtility
 
    /**
     * Create Report Designs node
-    * 
+    *
     * @return
     */
    private static DefaultMutableTreeNode createArchivedReportsNode()
@@ -1157,7 +1209,7 @@ public class RepositoryUtility
 
    /**
     * create static predefined report node
-    * 
+    *
     * @return
     */
    private static DefaultMutableTreeNode createPredefinedReportNode()
@@ -1172,7 +1224,7 @@ public class RepositoryUtility
 
    /**
     * updates the process document node with "typed" documents from IN and OUT path
-    * 
+    *
     * @param node
     * @param procesInstance
     * @throws ResourceNotFoundException
@@ -1187,9 +1239,9 @@ public class RepositoryUtility
          node.add(docNode);
       }
    }
-   
+
    /**
-    * 
+    *
     * @param possibilitiesSet
     * @return
     */
@@ -1207,7 +1259,7 @@ public class RepositoryUtility
 
    /**
     * creates new folder node
-    * 
+    *
     * @param folder
     * @return Folder Node
     */
@@ -1219,10 +1271,10 @@ public class RepositoryUtility
       return node;
    }
 
-  
+
    /**
     * creates new Folder Proxy node
-    * 
+    *
     * @param folder
     * @return Folder Node
     */
@@ -1250,7 +1302,7 @@ public class RepositoryUtility
 
    /**
     * creates new virtual node
-    * 
+    *
     * @param folder
     * @return Folder Node
     */
@@ -1274,10 +1326,10 @@ public class RepositoryUtility
       node.setUserObject(repositoryVirtualUserObject);
       return node;
    }
-   
+
    /**
     * creates new document node
-    * 
+    *
     * @param document
     * @return Document Node
     */
@@ -1291,7 +1343,7 @@ public class RepositoryUtility
 
    /**
     * returns latest document
-    * 
+    *
     * @param node
     * @return latest document
     */
@@ -1304,7 +1356,7 @@ public class RepositoryUtility
 
    /**
     * update node with notes nodes
-    * 
+    *
     * @param parentNode
     * @param notesList
     */
@@ -1321,11 +1373,11 @@ public class RepositoryUtility
       }
    }
 
-   
+
    /**
     * This method is temporary and needs to be removed after some time. This is kept here
     * to provided backward compatibility to read version comments from old versions
-    * 
+    *
     * @param document
     * @return
     */
@@ -1345,12 +1397,12 @@ public class RepositoryUtility
       return comment;
    }
 
-   
-   
+
+
    /**
     * This method is temporary and needs to be removed after some time. This is kept here
     * to provided backward compatibility to read description from old versions
-    * 
+    *
     * @param document
     * @return
     */
@@ -1370,10 +1422,10 @@ public class RepositoryUtility
       return description;
    }
 
-   
+
    /**
     * create process attachment node
-    * 
+    *
     * @param processInstance
     * @return
     */
@@ -1381,7 +1433,7 @@ public class RepositoryUtility
    {
       Folder folder = DocumentMgmtUtility.getFolder(DocumentMgmtUtility.getProcessAttachmentsFolderPath(processInstance));
       DefaultMutableTreeNode processAttachmentsNode;
-      
+
       if (null == folder)
       {
          processAttachmentsNode = createFolderProxyNode(
@@ -1402,10 +1454,117 @@ public class RepositoryUtility
       updateProcessAttachmentNode(processAttachmentsNode, processInstance);
       return processAttachmentsNode;
    }
+
+   
+   /**
+    * @param processInstance
+    * @return
+    */
+   private static DefaultMutableTreeNode createCorrespondenceFolderNode(ProcessInstance processInstance)
+   {
+      Folder folder = DocumentMgmtUtility.getFolder(DocumentMgmtUtility.getCorrespondenceFolderPath(processInstance
+            .getOID()));
+      if (folder == null)
+      {
+         return null;
+      }
+      DefaultMutableTreeNode processCorrespondenceNode = createFolderNode(folder);
+      return processCorrespondenceNode;
+   }
+   
+   /**
+    * @param data
+    * @param ai
+    */
+   public static void updateCorrespondenceOutFolder(Map<String, Serializable> data, ActivityInstance ai)
+   {
+      if (CollectionUtils.isEmpty(data))
+      {
+         return;
+      }
+      for (String datakey : data.keySet())
+      {
+         if (CORRESPONDENCE_REQUEST.equals(datakey))
+         {
+            Folder correspondenceOutFolder = getOrCreateCorrespondenceOutFolder(ai);
+            correspondenceOutFolder.getProperties().put("correspondenceMetaData", data.get(datakey));
+            DocumentMgmtUtility.getDocumentManagementService().updateFolder(correspondenceOutFolder);
+         }
+      }
+   }
+
+   /**
+    * @param ai
+    * @return
+    */
+   public static Folder getOrCreateCorrespondenceOutFolder(ActivityInstance ai)
+   {
+      // create Correspondence folder
+      getOrCreateCorrespondenceFolder(ai.getProcessInstance());
+
+      // create Correspondence out Folder
+      String correspondenceOutFolderPath = DocumentMgmtUtility.getCorrespondenceOutFolderPath(ai);
+      Folder correspondenceOutFolder = DocumentMgmtUtility.getDocumentManagementService().getFolder(
+            correspondenceOutFolderPath, 2);
+      if (correspondenceOutFolder == null)
+      {
+         FolderInfo folderInfo = createFolderInfoWithUIProperties();
+         @SuppressWarnings("unchecked")
+         Map<String, Serializable> uiProperties = (Map<String, Serializable>) folderInfo.getProperties().get(
+               UI_PROPERTIES);
+         uiProperties.put(UIProperties.readOnly.name(), true);
+         uiProperties.put(UIProperties.clickable.name(), true);
+         uiProperties.put(UIProperties.type.name(), ResourceType.correspondenceOut.name());
+         return DocumentMgmtUtility.createFolderIfNotExists(correspondenceOutFolderPath, folderInfo);
+      }
+      else
+      {
+         return correspondenceOutFolder;
+      }
+   }
+
+   /**
+    * @param pi
+    * @return
+    */
+   public static Folder getOrCreateCorrespondenceFolder(ProcessInstance pi)
+   {
+      String correspondenceFolderPath = DocumentMgmtUtility.getCorrespondenceFolderPath(pi.getOID());
+      // check if folder is null
+      Folder correspondenceFolder = DocumentMgmtUtility.getFolder(correspondenceFolderPath);
+      if (correspondenceFolder == null)
+      {
+         FolderInfo folderInfo = createFolderInfoWithUIProperties();
+         @SuppressWarnings("unchecked")
+         Map<String, Serializable> uiProperties = (Map<String, Serializable>) folderInfo.getProperties().get(
+               UI_PROPERTIES);
+         uiProperties.put(UIProperties.readOnly.name(), true);
+         return DocumentMgmtUtility.createFolderIfNotExists(correspondenceFolderPath, folderInfo);
+      }
+      else
+      {
+         return correspondenceFolder;
+      }
+   }
+
+   /**
+    * @return
+    */
+   public static FolderInfo createFolderInfoWithUIProperties()
+   {
+      FolderInfo folderInfo = new DmsFolderBean();
+      if (folderInfo.getProperties() == null)
+      {
+         Map<String, HashMap<String, Serializable>> folderProperties = new HashMap<String, HashMap<String, Serializable>>();
+         folderInfo.setProperties(folderProperties);
+      }
+      folderInfo.setProperty(UI_PROPERTIES, new HashMap<String, Serializable>());
+      return folderInfo;
+   }
    
    /**
     * create and return Note node
-    * 
+    *
     * @param note
     * @return
     */
@@ -1420,7 +1579,7 @@ public class RepositoryUtility
 
    /**
     * creates the common document node
-    * 
+    *
     * @return
     */
    private static DefaultMutableTreeNode getCommonDocNode()
@@ -1436,7 +1595,7 @@ public class RepositoryUtility
 
    /**
     * create and return personal document node
-    * 
+    *
     * @return
     */
    private static DefaultMutableTreeNode getPersonalDocNode()
@@ -1475,7 +1634,7 @@ public class RepositoryUtility
 
    /**
     * Populates the expandedFolders List
-    * 
+    *
     * @param node
     * @param expandedFolders
     */
@@ -1500,7 +1659,7 @@ public class RepositoryUtility
 
    /**
     * recursive function to refresh each expanded node
-    * 
+    *
     * @param node
     * @param expandedFolders
     */
@@ -1547,7 +1706,7 @@ public class RepositoryUtility
                for (int i = 0; i < documentCount; i++)
                {
                   doc = (Document) refreshedFolder.getDocuments().get(i);
-                  node.add(createDocumentNode(doc));
+                  createDocumentNode(doc, node);
                }
             }
             ((RepositoryFolderUserObject) node.getUserObject()).setExpanded(true);
@@ -1563,7 +1722,7 @@ public class RepositoryUtility
          if (null != refreshedDocument)
          {
             RepositoryDocumentUserObject repositoryDocumentUserObject = new RepositoryDocumentUserObject(node,
-                  refreshedDocument);
+                  refreshedDocument, null);
             node.setUserObject(repositoryDocumentUserObject);
          }
          else
@@ -1575,7 +1734,7 @@ public class RepositoryUtility
 
    /**
     * removes the node from tree
-    * 
+    *
     * @param node
     */
    private static void removeNode(DefaultMutableTreeNode node)
@@ -1583,7 +1742,7 @@ public class RepositoryUtility
       DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node.getParent();
       parentNode.remove(node);
    }
-   
+
    /**
     * @param key
     * @param params
@@ -1593,8 +1752,8 @@ public class RepositoryUtility
    {
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
       return propsBean.getParamString(key, params);
-   }  
-   
+   }
+
    private static String getRepositoryLabel(RepositoryNodeUserObject userObject, String defaultRepository)
    {
       String label = "";
@@ -1605,15 +1764,15 @@ public class RepositoryUtility
          label = label + POSTFIX_OPEN
                + MessagesViewsCommonBean.getInstance().getString(
                      "views.genericRepositoryView.treeMenuItem.repo.default") + POSTFIX_CLOSE;
-         
+
          userObject.setIcon(ResourcePaths.I_REPOSITORY_DEFAULT);
       }
       return label;
    }
-   
+
    /**
     * Create Private Report Definitions node
-    * 
+    *
     * @return
     */
    private static DefaultMutableTreeNode createPrivateReportDefinitionsNode()
@@ -1642,10 +1801,10 @@ public class RepositoryUtility
       resourceObject.setCanCreateFolder(true);
       return myReportDesignsNode;
    }
-   
+
    /**
     * Create Public Report Definitions node
-    * 
+    *
     * @return
     */
    private static DefaultMutableTreeNode createPublicReportDefinitionsNode()
@@ -1674,18 +1833,18 @@ public class RepositoryUtility
       resourceObject.setCanCreateFolder(true);
       return myReportDesignsNode;
    }
-   
+
    /**
     * Create Role/ORG Report Definitions node
-    * 
+    *
     * @return
     */
    private static List<DefaultMutableTreeNode> createRoleOrgReportDefinitionsNode()
    {
-      
+
        List<Grant> roleOrgReportDefinitionsGrants = DocumentMgmtUtility.getRoleOrgReportDefinitionsGrants();
        List<DefaultMutableTreeNode> roleOrgReportDefinitionsNodes = new ArrayList<DefaultMutableTreeNode>();
-       
+
        for (Grant grant : roleOrgReportDefinitionsGrants)
        {
           String roleOrgReportDefinitionsPath = DocumentMgmtUtility.getRoleOrgReportDefinitionsPath(grant.getQualifiedId());
@@ -1711,16 +1870,16 @@ public class RepositoryUtility
           resourceObject.setCanCreateFile(false);
           resourceObject.setDeletable(false);
           resourceObject.setCanCreateFolder(true);
-          
+
           roleOrgReportDefinitionsNodes.add(roleOrgReportDefinitionsNode);
        }
-      
+
       return roleOrgReportDefinitionsNodes;
    }
-   
+
    /**
     * Create Saved Reports node
-    * 
+    *
     * @return
     */
    private static DefaultMutableTreeNode createSavedReportsNode(String savedReportsPath, String reportType)
@@ -1749,10 +1908,10 @@ public class RepositoryUtility
       resourceObject.setCanUploadFile(false);
       return savedReportsNode;
    }
-   
+
    /**
     * Create Role/Org Saved Reports node
-    * 
+    *
     * @return
     */
    private static List<DefaultMutableTreeNode> createRoleOrgSavedReportsNode(
@@ -1768,7 +1927,7 @@ public class RepositoryUtility
                grant.getQualifiedId(), isAdHoc);
 
          String folderLabel = (isAdHoc) ? I18nFolderUtils.getLabel(I18nFolderUtils.MY_SAVED_REPORTS_V
-                     + I18nFolderUtils.AD_HOC) 
+                     + I18nFolderUtils.AD_HOC)
                : I18nUtils.getGrantName(grant) + " "
                   + I18nFolderUtils.getLabel(I18nFolderUtils.MY_SAVED_REPORTS_V);
 
@@ -1780,10 +1939,10 @@ public class RepositoryUtility
 
       return roleOrgSavedReportsNodes;
    }
-   
+
    /**
-    * 
-    * 
+    *
+    *
     * @param node
     */
    public static void populateFolderContents(DefaultMutableTreeNode node)

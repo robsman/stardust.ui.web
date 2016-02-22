@@ -11,14 +11,12 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.ui.web.common.table.IRowModel;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
@@ -26,21 +24,26 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
  * @author Abhay.Thappan
  *
  */
-public class DeputyMemberDetailDTO implements IRowModel
+@DTOClass
+public class DeputyMemberDetailDTO extends AbstractDTO
 {
-   public User user;
    public String userDisplayName;
+
    public long userOID;
+
    public String avatarImageURI;
 
-   public long validFrom;
-   public long validTo;
+   public Long validFrom = null;
+
+   public Long validTo = null;
 
    public boolean hasDeputies;
+
    public String hasDeputiesLabel;
 
    public boolean selected;
-   public Set<ModelParticipantInfo> participants;
+
+   public List<SelectItemDTO> participants;
 
    /**
     * @param user
@@ -48,19 +51,20 @@ public class DeputyMemberDetailDTO implements IRowModel
     * @param validTo
     * @param participants
     */
-   public DeputyMemberDetailDTO(User user, Date validFrom, Date validTo, Set<ModelParticipantInfo> participants)
+   public DeputyMemberDetailDTO(User user, Date validFrom, Date validTo, List<SelectItemDTO> participants)
    {
-      this.user = user;
-      this.userDisplayName = getUserDisplayName();
-      this.userOID = user.getOID(); 
-      this.avatarImageURI = getAvatarImageURI();
-      if(validFrom != null){
-      this.validFrom = validFrom.getTime();
+      this.userDisplayName = getUserDisplayName(user);
+      this.userOID = user.getOID();
+      this.avatarImageURI = getAvatarImageURI(user);
+      if (validFrom != null)
+      {
+         this.validFrom = validFrom.getTime();
       }
-      if(validTo != null){
-      this.validTo = validTo.getTime();
+      if (validTo != null)
+      {
+         this.validTo = validTo.getTime();
       }
-      setParticipants(participants);
+      this.participants = participants;
    }
 
    /**
@@ -69,22 +73,13 @@ public class DeputyMemberDetailDTO implements IRowModel
     */
    public DeputyMemberDetailDTO(User user, boolean hasDeputies)
    {
-      this.user = user;
-      this.userDisplayName= getUserDisplayName();
-      this.userOID = user.getOID(); 
-      this.avatarImageURI = getAvatarImageURI();
+      this.userDisplayName = getUserDisplayName(user);
+      this.userOID = user.getOID();
+      this.avatarImageURI = getAvatarImageURI(user);
       setHasDeputies(hasDeputies);
    }
 
-   /* (non-Javadoc)
-    * @see org.eclipse.stardust.ui.web.common.table.IRowModel#getStyleClass()
-    */
-   public String getStyleClass()
-   {
-      return null;
-   }
-
-   public String getUserDisplayName()
+   public String getUserDisplayName(User user)
    {
       if (null != user && StringUtils.isEmpty(userDisplayName))
       {
@@ -94,19 +89,11 @@ public class DeputyMemberDetailDTO implements IRowModel
       return userDisplayName;
    }
 
- /*  *//**
-    * @return
-    *//*
-   public DeputyMemberDetailDTO getClone()
-   {
-      DeputyMemberDetailDTO clone = new DeputyMemberDetailDTO(user, validFrom, validTo, participants);
-      return clone;
-   }
-*/
    /**
+    * @param user
     * @return
     */
-   public String getAvatarImageURI()
+   public String getAvatarImageURI(User user)
    {
       if (StringUtils.isEmpty(avatarImageURI))
       {
@@ -129,51 +116,11 @@ public class DeputyMemberDetailDTO implements IRowModel
    @Override
    public boolean equals(Object obj)
    {
-      if (null != this.getUser() && obj instanceof DeputyMemberDetailDTO)
+      if (obj instanceof DeputyMemberDetailDTO)
       {
-         return this.getUser().getAccount().equals(((DeputyMemberDetailDTO) obj).getUser().getAccount());
+         return this.userOID == (((DeputyMemberDetailDTO) obj).userOID);
       }
 
       return false;
-   }
-
-   public User getUser()
-   {
-      return user;
-   }
-
-   public void setUser(User user)
-   {
-      this.user = user;
-   }
-
-    public Set<ModelParticipantInfo> getParticipants()
-   {
-      return participants;
-   }
-
-   public void setParticipants(Set<ModelParticipantInfo> participants)
-   {
-      this.participants = (null != participants) ? participants : new HashSet<ModelParticipantInfo>();
-   }
-
-   public boolean isHasDeputies()
-   {
-      return hasDeputies;
-   }
-
-   public String getHasDeputiesLabel()
-   {
-      return hasDeputiesLabel;
-   }
-
-   public boolean isSelected()
-   {
-      return selected;
-   }
-
-   public void setSelected(boolean selected)
-   {
-      this.selected = selected;
    }
 }

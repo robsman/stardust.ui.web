@@ -1,19 +1,25 @@
 package org.eclipse.stardust.ui.web.rules_manager.store;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifactQuery;
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifacts;
+import org.eclipse.stardust.engine.api.runtime.DeployedRuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  * @author Shrikant.Gangal
@@ -23,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DefaultRulesManagementStrategy implements RulesManagementStrategy
 {
    private final ServiceFactoryLocator serviceFactoryLocator;
+   private static final String RULESARTIFACT_TYPE_ID = "drools-ruleset";
 
    private ServiceFactory serviceFactory;
 
@@ -48,6 +55,8 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    {
       this.serviceFactoryLocator = serviceFactoryLocator;
    }
+   
+   /* Design-time related methods */
 
    @Override
    public List<Document> getAllRuleSets()
@@ -101,6 +110,8 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
       getDocumentManagementService().removeDocument(docId);
    }
    
+   /* Utility methods */
+
    /**
     * 
     */
@@ -139,5 +150,70 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
       }
 
       return serviceFactory;
+   }
+
+   /* Run-time related methods */
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#getAllRuntimeRuleSets()
+    */
+   @Override
+   public DeployedRuntimeArtifacts getAllRuntimeRuleSets(DeployedRuntimeArtifactQuery query)
+   {
+      DeployedRuntimeArtifacts runtimeArtifacts = getServiceFactory().getQueryService().getRuntimeArtifacts(query);
+      return runtimeArtifacts;
+   }
+
+   /* (non-Javadoc)
+	* @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#getRuntimeRuleSet(java.lang.String)
+	*/
+   @Override
+   public DeployedRuntimeArtifacts getRuntimeRuleSet(String ruleSetId)
+   {
+      DeployedRuntimeArtifactQuery query = DeployedRuntimeArtifactQuery.findActive(ruleSetId,
+            RULESARTIFACT_TYPE_ID, new Date());
+      return getServiceFactory().getQueryService().getRuntimeArtifacts(query);
+   }
+	
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#publishRuleSet(java.lang.String)
+    */
+   @Override
+   public DeployedRuntimeArtifact publishRuleSet(long oid, RuntimeArtifact runtimeArtifact)
+   {
+      DeployedRuntimeArtifact runtimeArtifacts = null;
+      if(oid > 0)
+      {
+         runtimeArtifacts = getServiceFactory().getAdministrationService().overwriteRuntimeArtifact(oid, runtimeArtifact);
+      }
+      else
+      {
+         runtimeArtifacts = getServiceFactory().getAdministrationService().deployRuntimeArtifact(runtimeArtifact);   
+      }
+      return runtimeArtifacts;
+   }
+   
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#deleteRuntimeRuleSet(java.lang.String)
+    */
+   @Override
+   public void deleteRuntimeRuleSet(String ruleSetId)
+   {
+	  DeployedRuntimeArtifacts runtimeArtifacts = getRuntimeRuleSet(ruleSetId);
+	  if(null != runtimeArtifacts && runtimeArtifacts.size() > 0)
+	  {
+	     DeployedRuntimeArtifact runtimeArtifact = runtimeArtifacts.get(0);
+	     getServiceFactory().getAdministrationService().deleteRuntimeArtifact(runtimeArtifact.getOid());
+	  }
+   }
+   
+   /**
+    * 
+    * @param oid
+    * @return
+    */
+   public RuntimeArtifact getRuntimeArtifact(long oid)
+   {
+      return getServiceFactory().getAdministrationService().getRuntimeArtifact(oid);
    }
 }

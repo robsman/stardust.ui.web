@@ -1,8 +1,6 @@
 <div class="modal-body">
 	<div id="errorMsgContainer">
-		<div sd-js-error class="msgError">
-			
-		</div>
+		<div sd-message></div>
 	</div>
 	
 	<div ng-if="delegateActivityController.searchParticipantSectionVisible">
@@ -19,7 +17,7 @@
 					<td>
 				      <div sd-participant-selector
 				      		sda-selected-data="delegateActivityController.participantDataSelected"
-				      		sda-multiple="true"
+				      		sda-multiple="false"
 				      		sd-data="delegateActivityController.fetchParticipants(params)">
 				      </div>
 					</td>
@@ -40,13 +38,21 @@
 		<br/>
 		<div>
 			<table sd-data-table="delegateActivityController.participantDataTable" sd-data="delegateActivityController.fetchParticipants(params)"
-			sda-page-size="{{delegateActivityController.sdaPageSize}}"
+			sda-page-size="{{delegateActivityController.sdaPageSize}}" sda-filterable="true"
 			sda-mode="remote" sda-toolbar="false"
 			sda-selectable="row">
 			<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 				<tr>
-					<th sda-name="name" sda-label="{{i18n('views-common-messages.delegation-userOrRole')}}" sda-sortable="false"></th>
-					<th sda-name="type" sda-label="{{i18n('views-common-messages.delegation-type')}}" sda-sortable="false"></th>
+					<th sda-name="name" sda-label="{{i18n('views-common-messages.delegation-userOrRole')}}" sda-sortable="false" sda-filterable="true">
+						<div sda-filter-template>
+							<div sd-text-search-table-filter></div>
+						</div>
+					</th>
+					<th sda-name="type" sda-visible="true" sda-label="{{i18n('views-common-messages.delegation-type')}}" sda-sortable="false" sda-filterable="true">
+						<div sda-filter-template>
+			  				<div sd-multi-select-table-filter sda-options="delegateActivityController.participantTypes" sda-label="name" sda-multiple="false"></div>
+						</div>
+					</th>
 				</tr>
 			</thead>
 			<tbody>

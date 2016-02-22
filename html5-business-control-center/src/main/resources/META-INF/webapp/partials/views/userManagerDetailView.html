@@ -1,79 +1,85 @@
-<div style="padding-left: 20px;" ng-controller="sdUserManagerDetailViewCtrl as ctrl">
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true"
+	ng-controller="sdUserManagerDetailViewCtrl as ctrl">
 	<div class="view-panel-toolbar toolbar-buttons">
 		<div class="view-toolbar-section">
-			<span sd-save sda-on-save="ctrl.save();"></sapn>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="BCC-UserMgrDet"></sapn>
 		</div>
 	</div>
-	<div id="alertMsg" ng-show="ctrl.userAuthorizationMsg" class="sd-panel-summary-bar">
-	   <table><tbody>
-	     <tr>
-	         <td><i class="sc sc-fw sc-2x sc-info-circle"></i></td>
-	         <td>
-	            <span>{{i18n('views-common-messages.views-participantTree-toolbar-highlightUsers-alertMsg')}}</span>
-	            <button class="close" title="Close" type="button" aria-label="Close" ng-click="ctrl.closeAlertMsg()" style="padding-left: 200px">
-	             	<span aria-hidden="true">&times;</span>
-	            </button>
-	         </td>
-	      </tr>
-	   </tbody></table>
-    </div>	
-	<div class="view-panel-toolbar tbl-title"
-		style="color: #708090; font-size: 11px">{{i18n('business-control-center-messages.views-common-details-label')}}</div>
+	<div id="alertMsg" ng-show="ctrl.userAuthorizationMsg"
+		class="sd-panel-summary-bar">
+		<table>
+			<tbody>
+				<tr>
+					<td><i class="pi pi-lg pi-information"></i></td>
+					<td><span>{{i18n('views-common-messages.views-participantTree-toolbar-highlightUsers-alertMsg')}}</span>
+						<button class="close" title="Close" type="button"
+							aria-label="Close" ng-click="ctrl.closeAlertMsg()"
+							style="padding-left: 200px" aid="BCC-UserMgrDet-CloseAuthMsg">
+							<span aria-hidden="true">&times;</span>
+						</button></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-common-details-label')}}</div>
 	<table>
 		<tbody>
 			<tr>
-				<td><label>{{i18n('business-control-center-messages.views-common-column-name')
-						+ i18n('business-control-center-messages.common-colon')}}</label></td>
-				<td><span>{{ctrl.userManagerDetails.userFullName}}</span></td>
+				<td><span class="label-item">{{i18n('business-control-center-messages.views-common-column-name')
+						+ i18n('business-control-center-messages.common-colon')}}</span></td>
+				<td><span class="value-item">{{ctrl.userManagerDetails.userFullName}}</span></td>
 			</tr>
 			<tr>
-				<td><label>{{i18n('business-control-center-messages.views-common-account-label')
-						+ i18n('business-control-center-messages.common-colon')}}</label></td>
-				<td><span>{{ctrl.userManagerDetails.userAccount}}</span></td>
+				<td><span class="label-item">{{i18n('business-control-center-messages.views-common-account-label')
+						+ i18n('business-control-center-messages.common-colon')}}</span></td>
+				<td><span class="value-item">{{ctrl.userManagerDetails.userAccount}}</span></td>
 			</tr>
 			<tr>
-				<td><label>{{i18n('business-control-center-messages.views-common-eMail-label')
-						+ i18n('business-control-center-messages.common-colon')}}</label></td>
-				<td><span>{{ctrl.userManagerDetails.userEmailId}}</span></td>
-			</tr>					
-			<tr>
-				<td><label>{{i18n('business-control-center-messages.views-userManagerDetailView-accountTable-column-directItems')
-						+ i18n('business-control-center-messages.common-colon')}}</label></td>
-				<td><span>{{ctrl.userManagerDetails.directCountItem}}</span></td>
+				<td><span class="label-item">{{i18n('business-control-center-messages.views-common-eMail-label')
+						+ i18n('business-control-center-messages.common-colon')}}</span></td>
+				<td><span class="value-item">{{ctrl.userManagerDetails.userEmailId}}</span></td>
 			</tr>
 			<tr>
-				<td><label>{{i18n('business-control-center-messages.views-userManagerDetailView-accountTable-column-indirectItems')
-						+ i18n('business-control-center-messages.common-colon')}}</label></td>
-				<td><span>{{ctrl.userManagerDetails.inDirectCountItem}}</span></td>
-			</tr>			
+				<td><span class="label-item">{{i18n('business-control-center-messages.views-userManagerDetailView-accountTable-column-directItems')
+						+ i18n('business-control-center-messages.common-colon')}}</span></td>
+				<td><span class="value-item">{{ctrl.userManagerDetails.directCountItem}}</span></td>
+			</tr>
 			<tr>
-				<td><label>{{i18n('business-control-center-messages.views-userManagerDetailView-accountTable-column-rolesCount')
-						+ i18n('business-control-center-messages.common-colon')}}</label></td>
-				<td><span>{{ctrl.userManagerDetails.roleCount}}</span></td>
+				<td><span class="label-item">{{i18n('business-control-center-messages.views-userManagerDetailView-accountTable-column-indirectItems')
+						+ i18n('business-control-center-messages.common-colon')}}</span></td>
+				<td><span class="value-item">{{ctrl.userManagerDetails.inDirectCountItem}}</span></td>
+			</tr>
+			<tr>
+				<td><span class="label-item">{{i18n('business-control-center-messages.views-userManagerDetailView-accountTable-column-rolesCount')
+						+ i18n('business-control-center-messages.common-colon')}}</span></td>
+				<td><span class="value-item">{{ctrl.userManagerDetails.roleCount}}</span></td>
 			</tr>
 		</tbody>
 	</table>
+	<div style="margin-top: 10px;">
+		<ul id="myTab" class="nav nav-tabs" style="margin-bottom: 5px;">
+			<li class="active"><a href="#roleAssignment" data-toggle="tab"
+				ng-click="ctrl.showRoleAssignment()" class="heading" aid="BCC-UserMgrDet-RoleAssignmentTab">
+					{{i18n('business-control-center-messages.views-common-roleAssignment-label')}}
+			</a></li>
+			<li><a href="#activityList" ng-click="ctrl.showActivityList()"
+				data-toggle="tab" class="heading" aid="BCC-UserMgrDet-ActivityListTab">{{i18n('business-control-center-messages.views-common-activityList-label')}}</a></li>
+		</ul>
+		<div id="myTabContent" class="tab-content">
+			<div id="roleAssignment" ng-show="ctrl.activeTab==1">
 
-    <ul id="myTab" class="nav nav-tabs">
-		<li class="active"><a href="#roleAssignment" data-toggle="tab" ng-click="ctrl.showRoleAssignment()">
-				{{i18n('business-control-center-messages.views-common-roleAssignment-label')}}
-		</a></li>
-		<li><a href="#activityList" ng-click="ctrl.showActivityList()" data-toggle="tab">{{i18n('business-control-center-messages.views-common-activityList-label')}}</a></li>
-	</ul>
-	<div id="myTabContent" class="tab-content">
-		<div id="roleAssignment" ng-show="ctrl.activeTab==1">
-
-			<div
-				ng-include="'plugins/html5-business-control-center/partials/views/roleAssignmentTab.html'">
+				<div
+					ng-include="'plugins/html5-business-control-center/partials/views/roleAssignmentTab.html'">
+				</div>
 			</div>
-		</div>
-		<div id="activityList" ng-show="ctrl.activeTab==2">
-			<div ng-if="ctrl.showActivityListTab"
-				 ng-include="'plugins/html5-business-control-center/partials/views/activityListTabForUMD.html'">
+			<div id="activityList" ng-show="ctrl.activeTab==2">
+				<div ng-if="ctrl.showActivityListTab"
+					ng-include="'plugins/html5-business-control-center/partials/views/activityListTabForUMD.html'">
+				</div>
 			</div>
-		</div>
 
+		</div>
 	</div>
-
 </div>
-
+</div>

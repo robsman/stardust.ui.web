@@ -16,36 +16,35 @@
 
 angular.module('admin-ui.services').provider('sdPasswordManagementService', function() {
 
-    this.$get = [ '$resource', 'sgI18nService', function($resource, sgI18nService) {
-	var service = new PasswordManagementService($resource, sgI18nService);
+    this.$get = [ '$resource', 'sgI18nService', 'sdUtilService', function($resource, sgI18nService, sdUtilService) {
+	var service = new PasswordManagementService($resource, sgI18nService, sdUtilService);
 	return service;
     } ];
 });
 
-function PasswordManagementService($resource, sgI18nService) {
-    var REST_BASE_URL = 'services/rest/portal/passwordManagement';
-    var self = this;
+function PasswordManagementService($resource, sgI18nService, sdUtilService) {
+	var REST_BASE_URL = sdUtilService.getBaseUrl() + 'services/rest/portal/passwordManagement';
+	var self = this;
 
-    /**
-     * 
-     */
-    PasswordManagementService.prototype.getPasswordRules = function() {
-	var restUrl = REST_BASE_URL + "/rules";
-	return $resource(restUrl).get().$promise;
-    };
+	/**
+	 * 
+	 */
+	PasswordManagementService.prototype.getPasswordRules = function() {
+		var restUrl = REST_BASE_URL + "/rules";
+		return $resource(restUrl).get().$promise;
+	};
 
-    /**
-     * 
-     */
-    PasswordManagementService.prototype.savePasswordRules = function(passwordRules) {
-	var restUrl = REST_BASE_URL + "/rules";
-	var postData = passwordRules;
-	var departments = $resource(restUrl, {}, {
-	    fetch : {
-		method : 'POST'
-	    }
-	});
-	return departments.fetch({}, postData).$promise;
-    };
-
+	/**
+	 * 
+	 */
+	PasswordManagementService.prototype.savePasswordRules = function(passwordRules) {
+		var restUrl = REST_BASE_URL + "/rules";
+		var postData = passwordRules;
+		var departments = $resource(restUrl, {}, {
+			fetch : {
+				method : 'POST'
+			}
+		});
+		return departments.fetch({}, postData).$promise;
+	};
 }

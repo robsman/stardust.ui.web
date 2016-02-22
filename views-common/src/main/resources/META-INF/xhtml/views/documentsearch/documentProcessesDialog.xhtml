@@ -13,12 +13,14 @@
 				<table cellpadding="0" cellspacing="0" width="100%">
 					<tr>
 						<td style="text-align: right">
-						<pc:automationTag value="auto-COM-SrchDoc-DocSrchTbl-DocProcDlg-CloseBtn"/>
-						<ice:commandButton
+							<pc:automationTag value="auto-COM-SrchDoc-DocSrchTbl-DocProcDlg-CloseBtn"/>
+							<ice:commandLink
 								action="#{bean.processesDialog.closePopup}" immediate="true"
 								title="#{common_msgPropsBean['common.filterPopup.close']}"
-								styleClass="windowClose" onclick="Event.stop(event);">
-							</ice:commandButton></td>
+								styleClass="windowClose pi-cmdLnk" onclick="Event.stop(event);">
+								<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+							</ice:commandLink>
+						</td>
 					</tr>
 				</table>
 			</f:facet>
@@ -34,8 +36,8 @@
 								rendered="#{not empty bean.processList}" style="white-space:nowrap;">
 								<ui:repeat value="#{bean.processList}"
 									var="processWrapper">
-									<h:graphicImage
-										url="/plugins/views-common/images/icons/process.png" />
+									<h:outputText
+										styleClass="pi pi-process pi-lg" />
 									<h:outputText value="&#160;" />
 									<ice:commandLink style="white-space:nowrap;"
 										value="#{processWrapper.processName} (##{processWrapper.processInstance.OID})"

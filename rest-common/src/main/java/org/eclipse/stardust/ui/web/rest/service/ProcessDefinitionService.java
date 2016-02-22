@@ -18,23 +18,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.Activity;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.ParameterMapping;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.Trigger;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DataPathDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentTypeDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.DescriptorColumnUtils.ColumnDataType;
+import org.eclipse.stardust.ui.web.rest.service.utils.DocumentUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.springframework.stereotype.Component;
 /**
  * @author Anoop.Nair
@@ -45,26 +59,51 @@ import org.springframework.stereotype.Component;
 public class ProcessDefinitionService
 {
 
+   private static final String SCAN_TRIGGER = "scan";
+   
 	@Resource
 	private ProcessDefinitionUtils processDefinitionUtils;
 
 	@Resource
 	private ModelUtils modelUtils;
+	
+	@Resource
+	private DocumentUtils documentUtils;
 
 
-	/**
-	 * @return
-	 */
-	public List<ProcessDefinitionDTO> getStartableProcesses()
-	{
-		List<ProcessDefinition> startableProcesses = processDefinitionUtils
-				.getStartableProcesses();
+   /**
+    * @return
+    */
+   public List<ProcessDefinitionDTO> getStartableProcesses(String triggerType)
+   {
+      List<ProcessDefinition> startableProcesses = CollectionUtils.newArrayList();
+      if (StringUtils.isNotEmpty(triggerType))
+      {
+         List<ProcessDefinition> processes = processDefinitionUtils.findStatable(triggerType);
+         for (ProcessDefinition procDef : processes)
+         {
+            List<Trigger> triggers = procDef.getAllTriggers();
+            for (Trigger triggerDetails : triggers)
+            {
+               if (triggerType.equals(triggerDetails.getType()))
+               {
+                  startableProcesses.add(procDef);
+                  break;
+               }
+            }
+         }
 
-		List<ProcessDefinitionDTO> startableProcessesDTO = buildProcessesDTO( startableProcesses, true);
+      }
+      else
+      {
+         startableProcesses = processDefinitionUtils.getStartableProcesses();
+      }
 
-		return startableProcessesDTO;
-	}
+      List<ProcessDefinitionDTO> startableProcessesDTO = buildProcessesDTO(startableProcesses, true);
 
+      return startableProcessesDTO;
+   }
+   
 	/**
 	 * @param onlyFilterable
 	 * @return
@@ -109,7 +148,44 @@ public class ProcessDefinitionService
 
 	   }
 
+   public List<DocumentDataDTO> getAllDocumentData(String processDefinitionId)
+   {
+      List<DocumentDataDTO> allDocumentData = CollectionUtils.newArrayList();
+      Set<String> dataIds = CollectionUtils.newHashSet();
+      ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(processDefinitionId);
+      List<Trigger> triggers = processDefinition.getAllTriggers();
+      for (Trigger triggerDetails : triggers)
+      {
+         if (SCAN_TRIGGER.equals(triggerDetails.getType()))
+         {
+            for (ParameterMapping mapping : triggerDetails.getAllParameterMappings())
+            {
+               dataIds.add(mapping.getDataId());
+            }
+         }
+      }
 
+      if(CollectionUtils.isNotEmpty(dataIds))
+      {
+         DeployedModel model = ModelCache.findModelCache().getModel(processDefinition.getModelOID());
+         List<Data> allData =  model.getAllData();
+         
+         for (Data data : allData)
+         {
+            if (dataIds.contains(data.getId()))
+            {
+               DataDetails dataDetails = (DataDetails) data;
+               DocumentType documentType =  org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getDocumentTypeFromData(model, dataDetails);
+               DocumentDataDTO documentDataDTO = DTOBuilder.build(dataDetails, DocumentDataDTO.class);
+               DocumentTypeDTO documentTypeDTO = DocumentTypeDTOBuilder.build(documentType);
+               documentDataDTO.documentType = documentTypeDTO;
+               allDocumentData.add(documentDataDTO);
+            }
+         }
+      }
+      
+      return allDocumentData;
+   }
 
 
 	/**
@@ -139,6 +215,7 @@ public class ProcessDefinitionService
 				List<ActivityDTO> activitiesDTO = buildActivitiesDTO(processDefinition);
 				processDTO.activities = activitiesDTO;
 			}
+			processDTO.dataPaths = buildDataPathDTO(processDefinition);
 			processDTOList.add(processDTO);
 		}
 		return processDTOList;
@@ -157,26 +234,74 @@ public class ProcessDefinitionService
 			 ActivityDTO activityDTO = DTOBuilder.build(activity, ActivityDTO.class);
 			 activityDTO.auxillary = isAuxiliaryActivity(activity);
 			 activityDTO.name = I18nUtils.getActivityName(activity);
+			 activityDTO.runtimeElementOid = activity.getRuntimeElementOID();
 			 activitiesDTO.add(activityDTO);
 		}
 		return activitiesDTO;
 	}
 
-	/**
-	 * Return a process Definition DTO for a process Definition
-	 * @param processDefinition
-	 * @return
-	 */
-	private ProcessDefinitionDTO buildProcessDTO(
-			ProcessDefinition processDefinition) {
-		String modelName = I18nUtils.getModelName(modelUtils.getModel(processDefinition.getModelOID()));
+   /**
+    * Return a process Definition DTO for a process Definition
+    * @param processDefinition
+    * @return
+    */
+	private ProcessDefinitionDTO buildProcessDTO(ProcessDefinition processDefinition)
+   {
+      String modelName = I18nUtils.getModelName(modelUtils.getModel(processDefinition.getModelOID()));
 
-		ProcessDefinitionDTO processDTO = DTOBuilder.build(processDefinition, ProcessDefinitionDTO.class);
-		processDTO.auxillary = isAuxiliaryProcess(processDefinition);
-		processDTO.modelName = modelName;
-		processDTO.name = I18nUtils.getProcessName(processDefinition);
-		return processDTO;
+      ProcessDefinitionDTO processDTO = DTOBuilder.build(processDefinition, ProcessDefinitionDTO.class);
+      processDTO.auxillary = isAuxiliaryProcess(processDefinition);
+      processDTO.modelName = modelName;
+      processDTO.name = I18nUtils.getProcessName(processDefinition);
+      
+      return processDTO;
+   }
+
+	private List<DataPathDTO> buildDataPathDTO(ProcessDefinition processDefinition)
+	{
+	   List<DataPath> dataPaths = processDefinition.getAllDataPaths();
+	   List<DataPathDTO> dataPathsDTO = CollectionUtils.newArrayList();
+	      for(DataPath dataPath : dataPaths)
+	      {
+	         DataPathDTO dataPathDTO = DTOBuilder.build(dataPath, DataPathDTO.class);
+	         dataPathsDTO.add(dataPathDTO);
+	      }
+	      return dataPathsDTO;
 	}
+   /**
+    * @param procDefIDs
+    * @param onlyFilterable
+    */
+   public List<DescriptorColumnDTO> getCommonDescriptors(List<String> procDefIDs, Boolean onlyFilterable)
+   {
+      List<ProcessDefinition> processDefinitions = ProcessDefinitionUtils.getProcessDefinitions(procDefIDs);
+      DataPath[] descriptors = ProcessDefinitionUtils.getCommonDescriptors(processDefinitions, onlyFilterable);
+      Map<String, DataPath> commonDescriptors = ProcessDefinitionUtils.getDataPathMap(descriptors);
+      List<DescriptorColumnDTO> descriptorCols = createDescriptorColumns(commonDescriptors);
+      return descriptorCols;
+   }
 
+   /**
+    * Returns all the accessible Processes
+    * 
+    * @return
+    */
+   public List<ProcessDefinitionDTO> getAllUniqueProcess(boolean excludeActivities)
+   {
+      List<ProcessDefinition> allAccessibleProcesses = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils
+            .getAllAccessibleProcessDefinitions();
+      return buildProcessesDTO(allAccessibleProcesses, excludeActivities);
+   }
 
+   /**
+    * Returns all the accessible Processes
+    * 
+    * @return
+    */
+   public List<ProcessDefinitionDTO> getAllBusinessRelevantProcesses(boolean excludeActivities)
+   {
+      List<ProcessDefinition> allAccessibleProcesses = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils
+            .getAllBusinessRelevantProcesses();
+      return buildProcessesDTO(allAccessibleProcesses, excludeActivities);
+   }
 }

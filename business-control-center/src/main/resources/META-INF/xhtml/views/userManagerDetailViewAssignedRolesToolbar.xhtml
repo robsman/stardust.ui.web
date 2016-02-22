@@ -11,10 +11,8 @@
 			disabled="#{(userManagerDetail.assignedRolesTableSelectedCount > 0) and (userManagerDetail.manageAuthorization) ? false : true}"
 			action="#{userManagerDetail.removeRoleFromUser}">
 			<pc:automationTag value="auto-BCC-UserMgrDet-RoleAssignedTbl-ToolbarRem" standAlone="false"/>
-			<h:graphicImage
-				value="/plugins/views-common/images/icons/group_delete.png"
-				style="border: none;"
-				styleClass="#{(userManagerDetail.assignedRolesTableSelectedCount > 0) and (userManagerDetail.manageAuthorization) ? '' : 'iceCmdBtn-dis'}"
+			<h:outputText
+				styleClass="#{(userManagerDetail.assignedRolesTableSelectedCount > 0) and (userManagerDetail.manageAuthorization) ? '' : 'iceCmdBtn-dis'} pi pi-delete pi-lg"
 				title="#{userManagerDetail.messages['button.removeRoleFromUser']}" />
 		</ice:commandLink>
 	</ice:panelGrid>

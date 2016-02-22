@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-
+import org.eclipse.stardust.engine.api.dto.QualityAssuranceAdminServiceFacade;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 
@@ -92,5 +92,13 @@ public class ServiceFactoryUtils
    public SessionContext getSessionContext()
    {
       return sessionContext;
+   }
+   
+   /**
+    * @return QualityCheckAdminServiceFacade
+    */
+   public QualityAssuranceAdminServiceFacade getQualityCheckAdminServiceFacade()
+   {
+      return new QualityAssuranceAdminServiceFacade(getServiceFactory());
    }
 }

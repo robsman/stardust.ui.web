@@ -14,10 +14,12 @@
 				<pc:automationTag value="auto-COM-CorrView-AddrPickDlg-Header"/>
 				<ice:outputText value="#{messages_admin['common.confirmation']}"
 					styleClass="headerText" />
-				<ice:commandButton
+				<ice:commandLink
 					title="#{common_msgPropsBean['common.close']}"
 					action="#{correspondenceAddressPickerDialog.close}"
-					immediate="true" styleClass="windowClose" />
+					immediate="true" styleClass="windowClose pi-cmdLnk">
+					<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+				</ice:commandLink>
 			</ice:panelGroup>
 		</f:facet>
 
@@ -46,8 +48,7 @@
 									<ice:panelGroup style="border-bottom: 1px solid #dbdbdb;"
 										styleClass="datePicker">
 										<ice:panelGrid columns="2" styleClass="datePicker">
-											<ice:graphicImage
-												value="/plugins/views-common/images/icons/tick.png"
+											<ice:outputText styClass="pi pi-save pi-lg"
 												rendered="#{contact.selected}" />
 											<ice:graphicImage
 												value="/plugins/views-common/images/spacer.png"

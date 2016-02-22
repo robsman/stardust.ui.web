@@ -119,7 +119,10 @@ define(
 				 * 
 				 */
 				TimerEventIntegrationOverlay.prototype.getEndpointUri = function() {
-					var uri = "timer://timerEndpoint";
+               var processId=this.page.getModelElement().getProcess().id;
+               var eventId=this.page.getModelElement().id;
+               var modelId=this.page.getModel().id;
+               var uri = "timer://"+modelId+"/"+processId+"/"+eventId;
 					var separator = "?";
 
 					if (this.repeatCountInput.val() != null) {

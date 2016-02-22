@@ -17,29 +17,37 @@
 
 	angular.module("bcc-ui").controller(
 			'sdRoleAssignmentCtrl',
-			[ '$q', '$timeout', 'sdRoleAssignmentService', 'sdLoggerService', 'sdCommonViewUtilService',
-					RoleAssignmentCtrl ]);
+			['$q', '$filter', '$timeout', 'sdRoleAssignmentService', 'sdLoggerService', 'sdCommonViewUtilService',
+					'sdLoggedInUserService', 'sdPreferenceService', 'sdDataTableHelperService', RoleAssignmentCtrl]);
 
 	var _q;
 	var _sdRoleAssignmentService;
 	var _sdCommonViewUtilService;
 	var trace;
 	var _timeout;
+	var _sdLoggedInUserService;
+	var _sdPreferenceService;
+	var _sdDataTableHelperService;
+	var _filter;
 
 	/**
 	 * 
 	 */
-	function RoleAssignmentCtrl($q, $timeout, sdRoleAssignmentService, sdLoggerService, sdCommonViewUtilService) {
+	function RoleAssignmentCtrl($q, $filter, $timeout, sdRoleAssignmentService, sdLoggerService,
+			sdCommonViewUtilService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleAssignmentCtrl');
 		_q = $q;
 		_sdRoleAssignmentService = sdRoleAssignmentService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
-		_timeout = $timeout
+		_timeout = $timeout;
+		_sdLoggedInUserService = sdLoggedInUserService;
+		_sdPreferenceService = sdPreferenceService;
+		_sdDataTableHelperService = sdDataTableHelperService;
+		_filter = $filter;
 
 		this.roleAssignmentTable = null;
-		this.columnSelector = 'admin';
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.exportFileNameForRoleAssignment = "RoleAssignment"
-		this.rowSelectionForRoleAssignment = null;
 		this.getRoleAssignments();
 	}
 
@@ -53,7 +61,8 @@
 		_sdRoleAssignmentService.getRoleAssignments().then(function(data) {
 			self.roleAssignments.list = data.list;
 			self.roleAssignments.totalCount = data.totalCount;
-			self.columns = data.roleColumns;
+			self.columns = data.columns;
+			self.columnsLabelMap = data.columnsDefinition;
 			self.showRoleAssignmentTable = true;
 			_timeout(function() {
 				self.createTable = true;
@@ -67,10 +76,16 @@
 	 * 
 	 * @returns
 	 */
-	RoleAssignmentCtrl.prototype.getRoleAssignmentData = function() {
+	RoleAssignmentCtrl.prototype.getRoleAssignmentData = function(options) {
 		var self = this;
-		return self.roleAssignments;
+		var result = {
+			list : self.roleAssignments.list,
+			totalCount : self.roleAssignments.totalCount
+		}
+		
+		return result;
 	};
+
 
 	/**
 	 * 
@@ -101,5 +116,18 @@
 		} else {
 			return 'No';
 		}
+	};
+
+	/**
+	 * 
+	 */
+
+	RoleAssignmentCtrl.prototype.preferenceDelegate = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService
+				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.roleAssignment.selectedColumns";
+		}
+		return preferenceStore;
 	};
 })();

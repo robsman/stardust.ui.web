@@ -24,7 +24,7 @@
       <artifactId>product-parent</artifactId>
       <version>9.9.9-SNAPSHOT</version>
       <relativePath>../../product/product-parent/pom.xml</relativePath>
-   </parent>
+   </parent> 
 
    <properties>
       <skip.i18n-bundle-copy>false</skip.i18n-bundle-copy>

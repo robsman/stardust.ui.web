@@ -38,6 +38,10 @@
 	} ]);
 </script>
 <link type="text/css" rel="stylesheet" href="../../common/css/iPopupDialogStyle.css">
+<link  rel="stylesheet"
+	href="../../html5-common/styles/portal-icons.css" > </link>
+	 <link rel="stylesheet" type="text/css" href="../../modern-skin/modern.css"></link>
+ <link rel="stylesheet" type="text/css"  href="../../modern-skin/modern.font.icons.css"></link>	
 </head>
 
 <body ng-controller="confirmDialogController"
@@ -45,8 +49,7 @@
 
 	<div id="titleBar" class="iPopupDialogTitleBar">
 		<span id="titleText" class="iPopupDialogTitleText">{{language.title}}</span>
-		<input ng-click="cancel()" id="dialogCloseIcon" type="button"
-			title="{{language.close}}" class="iPopupDialogCloseControl" />
+		<span id="dialogCloseIcon" ng-click="cancel()"  class="iPopupDialogCloseButton"><i class="pi pi-dialog-close pi-lg"  title="{{language.close}}" ></i></span>	
 	</div>
 
 	<form name="confirmDialogForm">
@@ -54,8 +57,7 @@
 			<div class="iPopupDialogSpacerDiv"></div>
 			<table border="0">
 				<tr>
-					<td class="iPopupDialogContentTabCol1"><img
-						src="../images/icons/dialog-icon-warning.jpg" /></td>
+					<td class="iPopupDialogContentTabCol1"><i class="pi pi-dialog-warning pi-2x"></i></td>
 					<td class="iPopupDialogContentTabCol2"><span
 						ng-bind-html='language.message | trusted'
 						class="iPopupDialogContentText"></span></td>

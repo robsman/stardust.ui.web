@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.*;
@@ -18,13 +19,15 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Anoop.Nair
@@ -49,12 +52,12 @@ public class ProcessDefinitionResource
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("startable.json")
-	public Response getStartableProcesses()
+	public Response getStartableProcesses(@QueryParam("triggerType") String triggerType)
 	{
 		try
 		{
 			List<ProcessDefinitionDTO> startableProcesses = getProcessDefinitionService()
-					.getStartableProcesses();
+					.getStartableProcesses(triggerType);
 
 			return Response.ok(AbstractDTO.toJson(startableProcesses), MediaType.APPLICATION_JSON).build();
 		}
@@ -85,6 +88,24 @@ public class ProcessDefinitionResource
 		}
 	}
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{processDefinitionId}/scan-trigger-documents")
+   public Response getScanTriggerDocuments(@PathParam("processDefinitionId") String processDefinitionId)
+   {
+      try
+      {
+         List<DocumentDataDTO> documents = getProcessDefinitionService().getAllDocumentData(processDefinitionId);
+
+         return Response.ok(AbstractDTO.toJson(documents), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -103,20 +124,75 @@ public class ProcessDefinitionResource
 		}
 
 	}
-	/**
-	 * @return
-	 */
-	public ProcessDefinitionService getProcessDefinitionService()
-	{
-		return processDefinitionService;
-	}
+	
+   @PUT
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("common-descriptors")
+   public Response getCommonDescriptors(@QueryParam("onlyFilterable") @DefaultValue("false") Boolean onlyFilterable,
+         String postData)
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
 
-	/**
-	 * @param processDefinitionService
-	 */
-	public void setProcessDefinitionService(
-			ProcessDefinitionService processDefinitionService)
-	{
-		this.processDefinitionService = processDefinitionService;
-	}
+      String procDefIDsStr = postJSON.get("procDefIDs").getAsString();
+
+      String[] procDefIDsArr = procDefIDsStr.split(",");
+      List<String> procDefIDs = Arrays.asList(procDefIDsArr);
+      List<DescriptorColumnDTO> commonDescriptors = getProcessDefinitionService().getCommonDescriptors(procDefIDs,
+            onlyFilterable);
+      return Response.ok(AbstractDTO.toJson(commonDescriptors), MediaType.APPLICATION_JSON).build();
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("all-unique-processes")
+   public Response getAllUniqueProcess(@QueryParam("excludeActivities") @DefaultValue("false") Boolean excludeActivities)
+   {
+      try
+      {
+         return Response.ok(AbstractDTO.toJson(getProcessDefinitionService().getAllUniqueProcess(excludeActivities)),
+               MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+         return Response.serverError().build();
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("all-business-processes")
+   public Response getAllBusinessRelevantProcesses(
+         @QueryParam("excludeActivities") @DefaultValue("false") Boolean excludeActivities)
+   {
+      try
+      {
+         return Response.ok(
+               AbstractDTO.toJson(getProcessDefinitionService().getAllBusinessRelevantProcesses(excludeActivities)),
+               MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+         return Response.serverError().build();
+      }
+   }
+   
+   /**
+    * @return
+    */
+   public ProcessDefinitionService getProcessDefinitionService()
+   {
+       return processDefinitionService;
+   }
+
+   /**
+    * @param processDefinitionService
+    */
+   public void setProcessDefinitionService(
+           ProcessDefinitionService processDefinitionService)
+   {
+       this.processDefinitionService = processDefinitionService;
+   }
 }

@@ -19,7 +19,7 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 
 	var supportedAppTypes = [ "webservice", "messageTransformationBean",
 			"interactive", "camelSpringProducerApplication",
-			"camelConsumerApplication" ];
+			"camelConsumerApplication","decoratorApp" ];
 
 	var unSupportedAppTypes = [ "dmsOperation", "messageParsingBean",
 			"messageSerializationBean", "springBean", "mailBean", "jms",
@@ -52,6 +52,7 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 			"messageTransformationBean" : "plugins/bpm-modeler/images/icons/application-message-trans.png",
 			"camelBean" : "plugins/bpm-modeler/images/icons/application-camel.png",
 			"interactive" : "plugins/bpm-modeler/images/icons/applications-blue.png",
+			"decoratorApp" : "plugins/bpm-modeler/images/icons/applications-blue.png",
 			"dmsOperation" : "plugins/bpm-modeler/images/icons/application-dms.png",
 			"messageParsingBean" : "plugins/bpm-modeler/images/icons/application-message-p.png",
 			"messageSerializationBean" : "plugins/bpm-modeler/images/icons/application-message-s.png",

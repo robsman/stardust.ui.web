@@ -10,8 +10,7 @@
 		<ice:commandLink action="#{deputyManagementBean.addMyDeputy}">
 			<pc:automationTag
 				value="auto-COM-DeputyMgmt-MyDeputiesTbl-ToolbarAddDeputy" standAlone="false" />
-			<h:graphicImage style="border: none;"
-				value="/plugins/views-common/images/icons/user_add.png"
+			<h:outputText styleClass="pi pi-deputy pi-lg"
 				title="#{deputyManagementBean.messages['addDeputy.title']}" />
 		</ice:commandLink>
 	</ice:panelGrid>

@@ -6,13 +6,6 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	
 	<ui:composition>
-		<ice:panelGroup>
-			<ui:include
-				src="/plugins/common/views/dialog/confirmationDialog.xhtml">
-				<ui:param name="dialogBean"
-					value="#{spawnProcessDialogBean.confirmationDlg}" />
-			</ui:include>
-		</ice:panelGroup>
 		<ice:panelPopup id="#{spawnProcessDialogBean.beanId}" modal="true"
 			rendered="#{spawnProcessDialogBean.visible}" draggable="true"
 			autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
@@ -21,9 +14,11 @@
 					<pc:automationTag value="auto-COM-SpawnProcDlg-Header"/>
 					<ice:outputText styleClass="headerText"
 						value="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}" />
-					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+					<ice:commandLink title="#{common_msgPropsBean['common.close']}"
 						action="#{spawnProcessDialogBean.closePopup}" immediate="true"
-						styleClass="windowClose" />
+						styleClass="windowClose pi-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+					</ice:commandLink>
 				</ice:panelGroup>
 			</f:facet>
 
@@ -49,7 +44,8 @@
 											value="#{spawnProcessDialogBean.selectedProcess}"
 											readonly="#{false}"
 											style="min-width: 400px;min-height:200px;padding: 2px 5px 5px 2px;vertical-align: middle;">
-											<pc:automationTag value="auto-COM-SpawnProcDlg-SelProcess" standAlone="false"/>
+											<pc:automationTag value="auto-COM-SpawnProcDlg-SelProcess"
+												standAlone="false" />
 											<c:forEach
 												items="#{spawnProcessDialogBean.spawnableProcessItems}"
 												var="source">
@@ -66,14 +62,36 @@
 								</ice:panelGroup>
 
 								<ice:panelGroup styleClass="clearing" />
+							
+								<ice:panelGroup>
+									<ice:selectBooleanCheckbox
+										value="#{spawnProcessDialogBean.showSpawnedWorkItems}"
+										partialSubmit="true">
+										<pc:automationTag
+											value="auto-COM-SpawnProcDlg-SelShowWorkItems"
+											standAlone="false" />
+									</ice:selectBooleanCheckbox>
+									<ice:outputLabel value="#{views_common_msgPropsBean['views.spawnProcessDialog.showWorkItems']}"
+										styleClass="label-form" />
+								</ice:panelGroup>
+								<ice:panelGroup>
+									<ice:selectBooleanCheckbox
+										value="#{spawnProcessDialogBean.activateSpawnedWorkItems}" 
+										partialSubmit="true">
+										<pc:automationTag
+											value="auto-COM-SpawnProcDlg-SelActivateWorkItems"
+											standAlone="false" />
+									</ice:selectBooleanCheckbox>
+									<ice:outputLabel value="#{views_common_msgPropsBean['views.spawnProcessDialog.activateWorkItems']}"
+										styleClass="label-form" />
+								</ice:panelGroup>
 
 							</ice:panelGroup>
 
-						<!-- 	<ice:panelGroup expanded="true"
+							<!-- 	<ice:panelGroup expanded="true"
 								rendered="#{!spawnProcessDialogBean.showStartProcessView}">
 								<ice:panelGrid columns="2">
-									<ice:graphicImage
-										url="/plugins/common/images/dialog-icon-info.jpg"
+									<ice:outputText styleClass="pi pi-dialog-info pi-lg"
 										style="width:20px;heigth:20px;text-align: top;padding:0px;" />
 									<ice:outputText styleClass="panelHeaderTitle"
 										value="#{views_common_msgPropsBean['views.spawnProcessDialog.processesStarted']}" />

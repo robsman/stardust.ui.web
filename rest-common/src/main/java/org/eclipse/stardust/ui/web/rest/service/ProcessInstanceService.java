@@ -10,60 +10,92 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import javax.activation.DataHandler;
 import javax.annotation.Resource;
 
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.Direction;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
-import org.eclipse.stardust.engine.api.dto.Note;
-import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.dto.DataDetails;
+import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.runtime.DmsUtils;
+import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
+import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
+import org.eclipse.stardust.engine.api.ws.DocumentInfoXto;
+import org.eclipse.stardust.engine.api.ws.DocumentTypeXto;
+import org.eclipse.stardust.engine.api.ws.InputDocumentXto;
+import org.eclipse.stardust.engine.api.ws.InputDocumentsXto;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.engine.core.runtime.command.impl.StartProcessWithDocumentsCommand;
+import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
+import org.eclipse.stardust.engine.ws.DocumentContentDataSource;
+import org.eclipse.stardust.engine.ws.WsApiStartProcessUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.AttachToCaseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CreateCaseDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JoinProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.FolderDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookDataPathValueDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
+import org.eclipse.stardust.ui.web.rest.service.helpers.AddressBookDataPathValueFilter;
+import org.eclipse.stardust.ui.web.rest.service.helpers.DefaultDataPathValueFilter;
+import org.eclipse.stardust.ui.web.rest.service.helpers.IDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
-import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
+import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
+import org.eclipse.stardust.ui.web.viewscommon.utils.CorrespondencePanelPreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -80,43 +112,250 @@ public class ProcessInstanceService
    
    @Resource
    private org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils processInstanceUtilsREST;
-   
+
    @Resource
    private ProcessDefinitionUtils processDefinitionUtils;
    
-   public ProcessInstanceDTO startProcess(JsonObject json)
+   @Resource
+   private RepositoryService repositoryService;
+   
+   @Resource
+   private RestCommonClientMessages restCommonClientMessages;
+   
+   public ProcessInstanceDTO startProcess(List<Attachment> attachments)
    {
-      // TODO Auto-generated method stub
-      return null;
+      String processDefinitionId = null;
+      DocumentDataDTO documentDataDTO = null;
+      DocumentInfoDTO documentInfoDTO = null;
+      InputStream inputStream = null;
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      ProcessInstance pi = null;
+      try
+      {
+         for (Attachment attachment : attachments)
+         {
+            DataHandler dataHandler = attachment.getDataHandler();
+            inputStream = dataHandler.getInputStream();
+            if ("processDefinitionId".equals(dataHandler.getName()))
+            {
+               processDefinitionId = inputStream.toString();
+            }
+            else if ("documentData".equals(dataHandler.getName()))
+            {
+               inputStream = dataHandler.getInputStream();
+               Map<String, Type> customTokens = new HashMap<String, Type>();
+               customTokens.put("documentType", new TypeToken<DocumentTypeDTO>()
+               {
+               }.getType());
+               JsonObject data = jsonIo.readJsonObject(inputStream.toString());
+               documentDataDTO = DTOBuilder.buildFromJSON(data, DocumentDataDTO.class, customTokens);
+            }
+            else
+            {
+               List<Attachment> attachmentList = CollectionUtils.newArrayList();
+               attachmentList.add(attachment);
+               documentInfoDTO = FileUploadUtils.parseAttachments(attachmentList).get(0);
+            }
+
+         }
+         ProcessDefinition processDef = processDefinitionUtils.getProcessDefinition(processDefinitionId);
+         Model model = ModelCache.findModelCache().getModel(processDef.getModelOID());
+         final InputDocumentsXto processDocuments = createProcessDocuments(documentDataDTO, documentInfoDTO);
+         StartProcessWithDocumentsCommand command = new StartProcessWithDocumentsCommand(processDefinitionId,
+               model.getModelOID(), null, true,
+               WsApiStartProcessUtils.unmarshalToSerializable(processDocuments, model), null);
+
+         pi = (ProcessInstance) org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils.getWorkflowService()
+               .execute(command);
+         return processInstanceUtilsREST.buildProcessInstanceDTO(pi);
+      }
+      catch (Exception e)
+      {
+         throw new I18NException(restCommonClientMessages.getParamString("processInstance.startProcess.error",
+               processDefinitionId, documentDataDTO.name));
+
+      }
+
    }
 
+   private InputDocumentsXto createProcessDocuments(DocumentDataDTO documentData, DocumentInfoDTO documentInfo)
+   {
+      final InputDocumentsXto inputDocs = new InputDocumentsXto();
+      final InputDocumentXto inputDoc = new InputDocumentXto();
+      DocumentInfoXto docInfo = new DocumentInfoXto();
+      DocumentTypeXto docType = new DocumentTypeXto();
+      if (null != documentData.documentType && null != documentData.documentType.getDocumentTypeId())
+      {
+         docType.setDocumentTypeId(documentData.documentType.getDocumentTypeId());
+         docType.setSchemaLocation(documentData.documentType.getSchemaLocation());
+      }
+      // Specific Documents will be stored at PATH
+      if (!DmsConstants.DATA_ID_ATTACHMENTS.equals(documentData.id))
+      {
+         inputDoc.setGlobalVariableId(documentData.id);
+      }
+      docInfo.setDocumentType(docType);
+      docInfo.setName(documentInfo.name);
+      docInfo.setDateCreated(new Date());
+      docInfo.setContentType(documentInfo.contentType);
+      docInfo.setOwner(processInstanceUtilsREST.getCurrentUser().getAccount());
+      inputDoc.setDocumentInfo(docInfo);
+      inputDoc.setContent(createContent(documentData, documentInfo));
+      inputDocs.getInputDocument().add(inputDoc);
+      return inputDocs;
+   }
+
+   private DataHandler createContent(DocumentDataDTO documentData, DocumentInfoDTO documentInfo)
+   {
+      
+      final DocumentInfo docInfo = DmsUtils.createDocumentInfo(documentInfo.name);
+      docInfo.setContentType(documentInfo.contentType);
+      docInfo.setOwner(processInstanceUtilsREST.getCurrentUser().getAccount());
+      return new DataHandler(new DocumentContentDataSource(docInfo, documentInfo.content));
+   }
    public List<ProcessInstanceDTO> getPendingProcesses(JsonObject json)
    {
       // TODO Auto-generated method stub
       return null;
    }
 
-   public ProcessInstanceDTO removeProcessInstanceDocument(long processInstanceOid,
-         String dataPathId, String documentId)
+   public DocumentDTO splitDocument(long processInstanceOid, String documentId, JsonObject json)
    {
       // TODO Auto-generated method stub
       return null;
    }
-
-   public DocumentDTO splitDocument(long processInstanceOid, String documentId,
-         JsonObject json)
+ 
+   /**
+    * @author Yogesh.Manware
+    * @param processOid
+    * @param attachments
+    * @param dataPathId
+    * @return
+    * @throws Exception
+    */
+   public Map<String, Object> addProcessDocuments(long processOid, List<Attachment> attachments, String dataPathId)
+         throws Exception
    {
-      // TODO Auto-generated method stub
-      return null;
+      Map<String, Object> result = null;
+
+      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
+      // parse attachments
+      List<DocumentInfoDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
+
+      if (DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPathId))
+      {
+         result = repositoryService.createProcessAttachments(uploadedDocuments, processInstance);
+      }
+      else
+      {
+         // check if OUT dataPath exist
+         ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
+               processInstance.getModelOID(), processInstance.getProcessID());
+         ModelCache modelCache = ModelCache.findModelCache();
+         Model model = modelCache.getModel(processInstance.getModelOID());
+         List<DataPath> dataPaths = processDefinition.getAllDataPaths();
+
+         DataDetails dataDetails = null;
+
+         boolean outDataMappingExist = false;
+         for (DataPath dataPath : dataPaths)
+         {
+            if (!dataPath.getId().equals(dataPathId))
+            {
+               continue;
+            }
+            dataDetails = (DataDetails) model.getData(dataPath.getData());
+
+            if (Direction.OUT.equals(dataPath.getDirection()) || Direction.IN_OUT.equals(dataPath.getDirection())
+                  || DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
+            {
+               outDataMappingExist = true;
+               break;
+            }
+         }
+
+         if (!outDataMappingExist)
+         {
+            throw new I18NException(restCommonClientMessages.getParamString("processInstance.outDataPath.error",
+                  dataPathId));
+         }
+
+         // determine DocumentType
+         DocumentType documentType = org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils
+               .getDocumentTypeFromData(model, dataDetails);
+
+         result = new HashMap<String, Object>();
+         List<NotificationDTO> failures = new ArrayList<NotificationDTO>();
+         result.put("failures", failures);
+         List<DocumentDTO> documentDTOs = new ArrayList<DocumentDTO>();
+         result.put("documents", documentDTOs);
+
+         for (DocumentInfoDTO documentInfoDTO : uploadedDocuments)
+         {
+            if (documentType != null)
+            {
+               documentInfoDTO.documentType = documentType;
+            }
+            documentInfoDTO.parentFolderPath = DocumentMgmtUtility.getTypedDocumentsFolderPath(processInstance);
+            try
+            {
+               documentInfoDTO.dataPathId = dataPathId;
+               documentDTOs.add(repositoryService.createDocument(documentInfoDTO, processInstance));
+            }
+            catch (I18NException e)
+            {
+               failures.add(new NotificationDTO(null, documentInfoDTO.name, e.getMessage()));
+            }
+         }
+      }
+      return result;
    }
 
-   public ProcessInstanceDTO addProcessInstanceDocument(long parseLong,
-         String dataPathId, JsonObject json)
+   /**
+    *  @author Yogesh.Manware
+    * @param processOid
+    * @param dataPathId
+    * @param documentId
+    * @return
+    * @throws Exception
+    */
+   public void removeProcessDocument(long processOid, String dataPathId, String documentId)
+         throws Exception
    {
-      // TODO Auto-generated method stub
-      return null;
+      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
+
+      if (DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPathId))
+      {
+         ArrayList<String> documentIds = new ArrayList<String>();
+         documentIds.add(documentId);
+         repositoryService.detachProcessAttachments(documentIds, processInstance);
+      }
+      else
+      {
+         ServiceFactoryUtils.getWorkflowService().setOutDataPath(processOid, dataPathId, null);
+      }
    }
    
+   /**
+    * Returns process attachemtents and specific documents, if supported.
+    * 
+    * @param processInstanceOid
+    * @return
+    */
+   public List<DataPathValueDTO> getProcessInstanceDocuments(long processInstanceOid)
+   {
+      List<DataPathValueDTO> allDPs = getAllDataPathValuesDTO(processInstanceOid);
+      List<DataPathValueDTO> datPaths = new ArrayList<DataPathValueDTO>();
+      for (DataPathValueDTO dp : allDPs)
+      {
+         if (null != dp.documents)
+         {
+            datPaths.add(dp);
+         }
+      }
+
+      return datPaths;
+   }
 
    /**
     * Updates the process priorities
@@ -125,7 +364,7 @@ public class ProcessInstanceService
     * @param oidPriorityMap
     * @return
     */
-   public String updatePriorities( Map<String, Integer> oidPriorityMap)
+   public String updatePriorities(Map<String, Integer> oidPriorityMap)
    {
 
       NotificationMap notificationMap = new NotificationMap();
@@ -154,34 +393,7 @@ public class ProcessInstanceService
       }
       return GsonUtils.toJsonHTMLSafeString(notificationMap);
    }
-   
-   /**
-    * Returns all states
-    * 
-    * @return List
-    */
-   public List<StatusDTO> getAllProcessStates()
-   {
-      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
-      List<StatusDTO> allStatusList = new ArrayList<StatusDTO>();
-      
-      allStatusList.add(new StatusDTO(ProcessInstanceState.CREATED, propsBean
-            .getString("views.processTable.statusFilter.created")));
-      allStatusList.add(new StatusDTO(ProcessInstanceState.ACTIVE, propsBean
-            .getString("views.processTable.statusFilter.active")));
-      
-      allStatusList.add(new StatusDTO(ProcessInstanceState.INTERRUPTED, propsBean
-            .getString("views.processTable.statusFilter.interrupted")));
-      allStatusList.add(new StatusDTO(ProcessInstanceState.ABORTED, propsBean
-            .getString("views.processTable.statusFilter.aborted")));
-      allStatusList.add(new StatusDTO(ProcessInstanceState.COMPLETED, propsBean
-            .getString("views.processTable.statusFilter.completed")));
-      allStatusList.add(new StatusDTO(ProcessInstanceState.ABORTING, propsBean
-            .getString("views.processTable.statusFilter.aborting")));
-      
-      return allStatusList;
-   }
-   
+
    /**
     * Get all process instances count
     * 
@@ -191,7 +403,7 @@ public class ProcessInstanceService
    {
       return processInstanceUtilsREST.getAllCounts();
    }
-   
+
    /**
     * 
     * @param request
@@ -202,7 +414,7 @@ public class ProcessInstanceService
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
       Map<String, String> returnValue = new HashMap<String, String>();
       List<Long> processes = JsonDTO.getAsList(request, Long.class);
-      
+
       try
       {
          processInstanceUtilsREST.recoverProcesses(processes);
@@ -219,10 +431,10 @@ public class ProcessInstanceService
          returnValue.put("success", "false");
          returnValue.put("message", propsBean.getString("common.exception"));
       }
-      
+
       return GsonUtils.toJsonHTMLSafeString(returnValue);
    }
-   
+
    /**
     * 
     * @param request
@@ -233,13 +445,13 @@ public class ProcessInstanceService
       AttachToCaseDTO attachToCaseDTO = GsonUtils.fromJson(request, AttachToCaseDTO.class);
       List<Long> sourceProcessInstanceOids = attachToCaseDTO.sourceProcessOIDs;
       Long targetProcessInstanceOid = Long.parseLong(attachToCaseDTO.targetProcessOID);
-      
+
       NotificationMessageDTO returnValue = processInstanceUtilsREST.attachToCase(sourceProcessInstanceOids,
             targetProcessInstanceOid);
-      
+
       return GsonUtils.toJsonHTMLSafeString(returnValue);
    }
-   
+
    public String createCase(String request)
    {
       CreateCaseDTO createCaseDTO = GsonUtils.fromJson(request, CreateCaseDTO.class);
@@ -249,7 +461,7 @@ public class ProcessInstanceService
 
       return GsonUtils.toJsonHTMLSafeString(returnValue);
    }
-   
+
    /**
     * 
     * @param request
@@ -267,9 +479,10 @@ public class ProcessInstanceService
       }.getType();
 
       @SuppressWarnings("unchecked")
-      List<Long> processes = (List<Long>) GsonUtils.extractList(GsonUtils.extractJsonArray(json, "processes"), listType);
+      List<Long> processes = (List<Long>) GsonUtils
+            .extractList(GsonUtils.extractJsonArray(json, "processes"), listType);
 
-      if ("root".equalsIgnoreCase(scope))
+      if (AbortScope.RootHierarchy.toString().equalsIgnoreCase(scope))
       {
          notificationMap = processInstanceUtilsREST.abortProcesses(AbortScope.RootHierarchy, processes);
       }
@@ -280,36 +493,20 @@ public class ProcessInstanceService
 
       return GsonUtils.toJsonHTMLSafeString(notificationMap);
    }
-   
-   public QueryResultDTO getProcessInstances(Options options)
+
+   public QueryResultDTO getProcessInstances(ProcessInstanceQuery query, Options options)
    {
-      QueryResult<? extends ProcessInstance> queryResult = processInstanceUtilsREST.getProcessInstances(options);
-      return buildProcessListResult(queryResult);
+      QueryResult< ? extends ProcessInstance> queryResult = processInstanceUtilsREST
+            .getProcessInstances(query, options);
+      return processInstanceUtilsREST.buildProcessListResult(queryResult);
    }
-   
-   public String spawnableProcesses(String postedData, String type)
+
+   public String getTargetProcessesForSpawnSwitch()
    {
       try
       {
-         List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
-
-         List<ProcessDefinition> pds = processInstanceUtilsREST.spawnableProcesses(processInstOIDs);
-         Object responseObj = pds;
-         if ("select".equals(type))
-         {
-            List<SelectItemDTO> items = new ArrayList<SelectItemDTO>();
-            for (ProcessDefinition pd : pds)
-            {
-               SelectItemDTO selectItem = new SelectItemDTO();
-               selectItem.label = I18nUtils.getProcessName(pd);
-               selectItem.value = pd.getQualifiedId();
-               items.add(selectItem);
-            }
-
-            responseObj = items;
-         }
-
-         return GsonUtils.toJsonHTMLSafeString(responseObj);
+         List<ProcessDefinition> pds = processInstanceUtilsREST.getTargetProcessesForSpawnSwitch();
+         return GsonUtils.toJsonHTMLSafeString(pds);
       }
       catch (Exception e)
       {
@@ -319,13 +516,13 @@ public class ProcessInstanceService
          return GsonUtils.toJsonHTMLSafeString(exception);
       }
    }
-   
+
    public String checkIfProcessesAbortable(String postedData, String type)
    {
       List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
       return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.checkIfProcessesAbortable(processInstOIDs, type));
    }
-   
+
    public String switchProcess(String processData)
    {
       SwitchProcessDTO processDTO = GsonUtils.fromJson(processData, SwitchProcessDTO.class);
@@ -333,193 +530,258 @@ public class ProcessInstanceService
       return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.switchProcess(processDTO.processInstaceOIDs,
             processDTO.processId, processDTO.linkComment));
    }
-   
+
    public String abortAndJoinProcess(String processData)
    {
       JoinProcessDTO processDTO = GsonUtils.fromJson(processData, JoinProcessDTO.class);
 
       return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.abortAndJoinProcess(
-            Long.parseLong(processDTO.sourceProcessOID), Long.parseLong(processDTO.targetProcessOID), processDTO.linkComment));
+            Long.parseLong(processDTO.sourceProcessOID), Long.parseLong(processDTO.targetProcessOID),
+            processDTO.linkComment));
    }
-   
+
    public String getRelatedProcesses(String processData, boolean matchAny, boolean searchCases)
    {
       List<Long> processInstOIDs = JsonDTO.getAsList(processData, Long.class);
-      
-      return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.getRelatedProcesses(processInstOIDs, matchAny, searchCases));
+
+      return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.getRelatedProcesses(processInstOIDs, matchAny,
+            searchCases));
    }
 
    /**
-    * @param queryResult
+    * 
+    */
+   public List<ColumnDTO> getProcessesColumns()
+   {
+      List<ProcessDefinition> processes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils
+            .getAllBusinessRelevantProcesses();
+      List<ColumnDTO> processColumns = new ArrayList<ColumnDTO>();
+
+      for (ProcessDefinition processDefinition : processes)
+      {
+         processColumns.add(new ColumnDTO(processDefinition.getId(), I18nUtils.getProcessName(processDefinition)));
+      }
+      return processColumns;
+   }
+
+   /**
+    * @return 
+    * 
+    */
+   public ProcessInstanceDTO getProcessByOid(Long oid, boolean fetchDescriptors, boolean withHierarchyInfo)
+   {
+      ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, fetchDescriptors, withHierarchyInfo);
+      ProcessInstanceDTO dto = processInstanceUtilsREST.buildProcessInstanceDTO(process);
+      return dto;
+   }
+
+   /**
+    * @param oid
     * @return
     */
-   private QueryResultDTO buildProcessListResult(QueryResult<?> queryResult)
+   public ProcessInstanceDTO getCorrespondenceProcessInstanceDTO(Long oid)
    {
-      List<ProcessInstanceDTO> list = new ArrayList<ProcessInstanceDTO>();
-
-      for (Object object : queryResult)
-      {
-         if (object instanceof ProcessInstance)
-         {
-            ProcessInstance processInstance = (ProcessInstance) object;
-
-            ProcessInstanceDTO dto = new ProcessInstanceDTO();
-            
-            ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
-                  processInstance.getProcessID());
-            
-            dto.processInstanceRootOID = processInstance.getRootProcessInstanceOID();
-            dto.oid = processInstance.getOID();
-            
-            PriorityDTO priority = new PriorityDTO();
-            priority.value = processInstance.getPriority();
-            priority.setLabel(processInstance.getPriority());
-            priority.setName(processInstance.getPriority());
-            
-            dto.priority = priority;
-            dto.startTime = processInstance.getStartTime().getTime();
-            dto.duration = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getDuration(processInstance);
-            dto.processName = I18nUtils.getProcessName(processDefinition);
-            String startingUserLabel = UserUtils.getUserDisplayLabel(processInstance.getStartingUser());
-            dto.createUser = startingUserLabel;
-            dto.descriptorValues = getDescriptorValues(processInstance, processDefinition);
-            dto.processDescriptorsList = getProcessDescriptor(processInstance, processDefinition);
-            // Update Document Descriptors for process
-            CommonDescriptorUtils.updateProcessDocumentDescriptors(((ProcessInstanceDetails) processInstance).getDescriptors(),
-                  processInstance, processDefinition);
-            if (null != processInstance.getTerminationTime())
-            {
-               dto.endTime = processInstance.getTerminationTime().getTime();
-            }
-            dto.startingUser = startingUserLabel;
-            dto.status = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessStateLabel(processInstance);
-            dto.enableTerminate = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.isAbortable(processInstance);
-            dto.enableRecover = true;
-            dto.checkSelection = false;
-            dto.modifyProcessInstance = AuthorizationUtils.hasPIModifyPermission(processInstance);
-            
-            List<Note> notes=org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(processInstance);
-            if(null!=notes)
-            {
-               dto.notesCount = notes.size();   
-            }
-            dto.caseInstance = processInstance.isCaseProcessInstance();
-            if (dto.caseInstance)
-            {
-               dto.caseOwner = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getCaseOwnerName(processInstance);
-            }
-            
-            dto.oldPriority = dto.priority;
-
-            list.add(dto);
-         }
-      }
-
-      QueryResultDTO resultDTO = new QueryResultDTO();
-      resultDTO.list = list;
-      resultDTO.totalCount = queryResult.getTotalCount();
-
-      return resultDTO;
+      ProcessInstance processInstance = ProcessInstanceUtils.getCorrespondenceProcessInstance(oid);
+      return processInstanceUtilsREST.buildProcessInstanceDTO(processInstance);   
    }
    
-   /*
-    * 
+   /**
+    * @param oid
+    * @return
     */
-   private Map<String, DescriptorDTO> getDescriptorValues(ProcessInstance processInstance, ProcessDefinition processDefinition)
+   public FolderDTO getCorrespondenceFolderDTO(Long oid)
    {
-      if (processInstance != null && processDefinition != null)
-      {
-         List<ProcessDescriptor> processDescriptorsList = CollectionUtils.newList();
-
-         ModelCache modelCache = ModelCache.findModelCache();
-         Model model = modelCache.getModel(processInstance.getModelOID());
-         ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) processInstance;
-         Map<String, Object> descriptorValues = processInstanceDetails.getDescriptors();
-         CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, processInstance, processDefinition);
-         if (processInstanceDetails.isCaseProcessInstance())
-         {
-            processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(
-                  processInstanceDetails.getDescriptorDefinitions(), descriptorValues, processDefinition, true);
-         }
-         else
-         {
-            processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(descriptorValues, processDefinition, true,
-                  true);
-
-         }
-
-         if (!processDescriptorsList.isEmpty())
-         {
-            return getProcessDescriptors(processDescriptorsList);
-         }
-      }
-
-      return new LinkedHashMap<String, DescriptorDTO>();
+      ProcessInstance processInstance = ProcessInstanceUtils.getProcessInstance(oid);
+      String correspondenceFolderPath = DocumentMgmtUtility.getCorrespondenceFolderPath(processInstance.getOID());
+      return repositoryService.getFolder(correspondenceFolderPath, 2, false);
    }
 
    /**
     * 
     */
-   private Map<String, DescriptorDTO> getProcessDescriptors(List<ProcessDescriptor> processDescriptorsList)
+   public AbstractDTO findByStartingActivityOid(Long aOid)
    {
-      Map<String, DescriptorDTO> descriptors = new LinkedHashMap<String, DescriptorDTO>();
-      for (Object descriptor : processDescriptorsList)
-      {
-         if (descriptor instanceof ProcessDocumentDescriptor)
-         {
-            ProcessDocumentDescriptor desc = (ProcessDocumentDescriptor) descriptor;
-
-            List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
-
-            for (DocumentInfo documentInfo : desc.getDocuments())
-            {
-               DocumentDTO documentDTO = new DocumentDTO();
-               documentDTO.name = documentInfo.getName();
-               documentDTO.uuid = documentInfo.getId();
-               documentDTO.contentType = (MimeTypesHelper.detectMimeType(documentInfo.getName(), null).getType());
-               documents.add(documentDTO);
-            }
-
-            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), true, documents);
-            descriptors.put(desc.getId(), descriptorDto);
-         }
-         else
-         {
-            ProcessDescriptor desc = (ProcessDescriptor) descriptor;
-            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null);
-            descriptors.put(desc.getId(), descriptorDto);
-         }
-      }
-      return descriptors;
+      ProcessInstance process =  processInstanceUtilsREST.findByStartingActivityOid(aOid);
+      ProcessInstanceDTO dto =  processInstanceUtilsREST.buildProcessInstanceDTO(process);
+      return dto;
+   }
+   
+   /**
+    * @param processInstanceOid
+    * @return
+    */
+   @SuppressWarnings("unchecked")
+   public List<AddressBookDataPathValueDTO> getAddressBookDTO(long processInstanceOid)
+   {
+      String faxFormat = CorrespondencePanelPreferenceUtils.getCorrespondencePreferenceForUser(
+            processInstanceUtilsREST.getCurrentUser(), UserPreferencesEntries.F_CORRESPONDENCE_NUMBER_FORMAT);
+      
+      return (List<AddressBookDataPathValueDTO>) getDataPathValueDTO(getProcessInstance(processInstanceOid),
+            new AddressBookDataPathValueFilter(faxFormat), null);
    }
 
-   /*
-     * 
-     */
-   private List<ProcessDescriptor> getProcessDescriptor(ProcessInstance processInstance, ProcessDefinition processDefinition)
+   /**
+    * @param processInstanceOid
+    * @return
+    */
+   @SuppressWarnings({"unchecked"})
+   public List<DataPathValueDTO> getAllDataPathValuesDTO(long processInstanceOid)
    {
-      List<ProcessDescriptor> processDescriptorsList = null;
+      return (List<DataPathValueDTO>)getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter(), null);
+   }
+
+   /**
+    * @param processInstanceOid
+    * @param dataPathId
+    * @return
+    */
+   @SuppressWarnings({"unchecked"})
+   public List<DataPathValueDTO> getDataPathValueFor(long processInstanceOid, String dataPathId)
+   {
+      return (List<DataPathValueDTO>) getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter(), dataPathId);
+   }
+   
+   /**
+    * @param processInstance
+    * @param dataPathValueFilter
+    * @return
+    */
+   public List<? extends AbstractDTO> getDataPathValueDTO(ProcessInstance processInstance,
+         IDataPathValueFilter dataPathValueFilter, String dataPathId)
+   {
+      List<? extends AbstractDTO> dataPathDtoList = new ArrayList<AbstractDTO>();
+      ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
+            processInstance.getProcessID());
+
+      if (dataPathValueFilter == null)
+      {
+         dataPathValueFilter = new DefaultDataPathValueFilter();
+      }
+
       if (processDefinition != null)
       {
-         ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) processInstance;
-
-         if (processInstance.isCaseProcessInstance())
+         List<DataPath> dataPaths = new ArrayList<DataPath>();
+         if (StringUtils.isEmpty(dataPathId))
          {
-            processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(
-                  processInstanceDetails.getDescriptorDefinitions(), processInstanceDetails.getDescriptors(), processDefinition,
-                  true);
+            dataPaths = processDefinition.getAllDataPaths();
          }
          else
          {
-            processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(processInstanceDetails.getDescriptors(),
-                  processDefinition, true);
+            dataPaths.add(processDefinition.getDataPath(dataPathId));
+         }
+
+         Set<String> dataPathIds = new HashSet<String>();
+         List<DataPath> inDataPaths = new ArrayList<DataPath>();
+         
+         for (DataPath dataPath : dataPaths)
+         {
+            if (dataPath == null)
+            {
+               trace.debug("There is no datapath one or more datapathIds:");
+               continue;
+            }
+
+            if (dataPath.getDirection().equals(Direction.IN) || dataPath.getDirection().equals(Direction.IN_OUT))
+            {
+               dataPathIds.add(dataPath.getId());
+               inDataPaths.add(dataPath);
+            }
+         }
+
+         Map<String, Serializable> dataValues = ContextPortalServices.getWorkflowService().getInDataPaths(
+               processInstance.getOID(), dataPathIds);
+
+         for (DataPath dataPath : inDataPaths)
+         {
+            Object dataValue = dataValues.get(dataPath.getId());
+            dataPathDtoList.addAll((List) dataPathValueFilter.filter(dataPath, dataValue));
          }
       }
-      else
+      return dataPathDtoList;
+   }
+   
+   public boolean setDataPaths(long processInstanceOid, Map<String, Object> dataPathMap)
+   {
+      try
       {
-         processDescriptorsList = CollectionUtils.newArrayList();
+         ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
+         ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
+               processInstance.getModelOID(), processInstance.getProcessID());
+         List<DataPath> dataPaths = processDefinition.getAllDataPaths();
+         Map<String, DataPath> outDataPathMap = CollectionUtils.newHashMap();
+         Map<String, Object> outDataPathValues = CollectionUtils.newHashMap();
+         trace.info("## Inside Set OUT DataPath ####");
+         trace.info(" ## Process Instance OID "+ processInstanceOid);
+         trace.info("## List of DataPath received at setDataPath method ####");
+         for(Entry<String, Object> path : dataPathMap.entrySet())
+         {
+            trace.info("### Data Path ID ---> "+ path.getKey() + " --> Value ---> " + path.getValue());
+         }
+         for (DataPath dataPath : dataPaths)
+         {
+            if (DescriptorFilterUtils.isDataFilterable(dataPath)
+                  && !DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPath.getId()))
+            {
+               
+               if (dataPathMap.containsKey(dataPath.getId()) && !Direction.IN.equals(dataPath.getDirection()))
+               {
+                  trace.info(" ### Matching OUT DataPath added for Update ---> " + dataPath.getId() + " --> VALUE ---> "+dataPathMap.get(dataPath.getId()) + " --> Mapped Type -->" + dataPath.getMappedType());  
+                  outDataPathMap.put(dataPath.getId(), dataPath);
+               }
+               else
+               {
+                  trace.info(" @@@ Non Matching DataPath Found --->" + dataPath.getId() + " --> Direction --->"+dataPath.getDirection());
+               }
+            }
+            else
+            {
+               trace.error(" Nested or Complex DataPath --> " + dataPath.getId() + " --> Type  "
+                     + dataPath.getMappedType() + " --> Direction -->" + dataPath.getDirection());
+            }
+            
+         }
+         if (CollectionUtils.isNotEmpty(outDataPathMap))
+         {
+            for (Entry<String, DataPath> outPath : outDataPathMap.entrySet())
+            {
+               DataPath outDataPath = outPath.getValue();
+               Object value = dataPathMap.get(outPath.getKey());
+               trace.info(" ## Convert value for DataPath -->"+ outDataPath.getId());
+               outDataPathValues.put(outDataPath.getId(),
+                     DescriptorFilterUtils.convertDataPathValue(outDataPath.getMappedType(), value));
+            }
+            
+            ContextPortalServices.getWorkflowService().setOutDataPaths(processInstance.getOID(), outDataPathValues);
+         }
+         else
+         {
+            throw new I18NException(restCommonClientMessages.getString("processInstance.outDataPath.empty.error"));
+         }
+         return true;
       }
-      return processDescriptorsList;
+      catch (I18NException e)
+      {
+         throw e;
+      }
+      catch (Exception e)
+      {
+         throw new I18NException(restCommonClientMessages.getParamString("processInstance.dataPath.conversionError",
+               String.valueOf(processInstanceOid)));
+      }
    }
 
+   /**
+    * @param processInstanceOid
+    * @return
+    */
+   public ProcessInstance getProcessInstance(long processInstanceOid)
+   {
+      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
+      if (processInstance == null)
+      {
+         throw new I18NException(restCommonClientMessages.getParamString("processInstance.notFound",
+               String.valueOf(processInstanceOid)));
+      }
+      return processInstance;
+   }
 }

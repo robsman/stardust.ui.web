@@ -19,17 +19,16 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotations;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.common.DocumentToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -49,20 +48,20 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    private static final long serialVersionUID = 1296615449302077105L;
    private boolean opened;
    private MIMEType mType = MimeTypesHelper.DEFAULT;
-   private boolean sendFileAllowed = false;
    private MessagesViewsCommonBean propsBean;
    private ToolTip documentToolTip;
    private Boolean detachable;
+   private boolean ParentFolderPropertiesConsidered = false;
 
    /**
     * custom constructor initialing document user object
     *
-    * @param defaultMutableTreeNode
+    * @param node
     * @param document
     */
-   public RepositoryDocumentUserObject(DefaultMutableTreeNode defaultMutableTreeNode, Document document)
+   public RepositoryDocumentUserObject(DefaultMutableTreeNode node, Document document, DefaultMutableTreeNode parentNode)
    {
-      super(defaultMutableTreeNode, document);
+      super(node, document);
       propsBean = MessagesViewsCommonBean.getInstance();
       this.mType = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType());
 
@@ -77,14 +76,21 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       }
      else
       {
-         setLeafIcon(ResourcePaths.I_DOCUMENT_PATH + this.mType.getIconPath());
+         setLeafIcon(this.mType.getIcon());
       }
 
-      defaultMutableTreeNode.setAllowsChildren(false);
+      node.setAllowsChildren(false);
       this.setLeaf(true);
       this.setCanUploadFile(false);
 
       documentToolTip = new DocumentToolTip(null, document);
+      
+      if (parentNode != null) //for refresh operation, parent node may not be provided
+      {
+         parentNode.add(node);
+         // initialize the parameters influenced by parent folder
+         readParentFolderProperties();
+      }
    }
 
    @Override
@@ -202,6 +208,25 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    }
 
    /**
+    * read parent folder properties
+    */
+   private void readParentFolderProperties()
+   {
+      if (!ParentFolderPropertiesConsidered)
+      {
+         DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) this.wrapper.getParent();
+
+         if (parentNode.getUserObject() instanceof RepositoryFolderUserObject)
+         {
+            RepositoryFolderUserObject folderUserObject = (RepositoryFolderUserObject) parentNode.getUserObject();
+            this.setEditable(!folderUserObject.isFolderContentReadOnly());
+            this.setDeletable(!folderUserObject.isFolderContentReadOnly());
+         }
+         ParentFolderPropertiesConsidered = true;
+      }
+   }
+   
+   /**
     * Upload new version
     */
    @Override
@@ -269,20 +294,6 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       }
       this.setEditingName(false);
       RepositoryUtility.refreshNode(this.wrapper);
-   }
-
-   @Override
-   public void sendFile()
-   {
-      Map<String, Object> params = CollectionUtils.newTreeMap();
-      ProcessInstance processInstance = getProcessInstance();
-      if (null != processInstance)
-      {
-         params.put("processInstanceOID", Long.toString(processInstance.getOID()));
-      }
-      params.put("attachment", getDocument());
-      PortalApplication.getInstance().openViewById("correspondenceView", "DocumentID=" + getDocument().getId(),
-            params, null, true);
    }
 
    public Document getDocument()
@@ -370,17 +381,6 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    public boolean isCanCreateNote()
    {
       return false;
-   }
-
-   public void setSendFileAllowed(boolean sfa)
-   {
-      this.sendFileAllowed = sfa;
-   }
-
-   @Override
-   public boolean isSendFileAllowed()
-   {
-      return this.sendFileAllowed;
    }
 
    @Override

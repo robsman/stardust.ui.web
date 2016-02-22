@@ -52,6 +52,8 @@ define(
 
 					controller.initialize(renderingController, reportUID, name, path, isClone);
 					
+					controller.loadCustomTheme();
+					
 					return controller;
 				}
 			};
@@ -480,9 +482,9 @@ define(
 										document.body.style.cursor = "default";
 										jQuery("#reportDefinitionView").css("visibility", "visible");
 								});
-							console.debug('refreshModelData preferencedata success.............');
+							console.debug('refreshModelData preferencedata success...');
 						}).fail(function () {
-							console.debug('refreshModelData preferencedata falied.............');
+							console.debug('refreshModelData preferencedata falied...');
 					});
 				};
 				
@@ -587,8 +589,7 @@ define(
 
 									self.report = report;
 									
-									console.log("Loaded report definition:");
-									console.log(self.report);
+									console.log("Loaded report definition: ", self.report);
 
 									self.initFilters();
 									
@@ -988,9 +989,7 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.changeFirstDimension = function() {
-					console.log("First Dimension");
-					console.log(this.getFirstDimension());
-
+					console.log("First Dimension: ", this.getFirstDimension());
 					this.populateChartTypes();
 					if(this.report.layout.chart){
 						this.report.layout.chart.options.axes.xaxis.label = this
@@ -1193,9 +1192,7 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.saveReport = function() {
-					console.log("*** Save Report ***\n");
-					console.log("Report Content:");
-					console.log(this.getJsonString());
+					console.log("Report Content: ", this.getJsonString());
 
 					var self = this;
 					
@@ -1362,8 +1359,7 @@ define(
 						+ parent.iDnD.getTransferObject().path + '"'
 						+ " parameters=></sd-report-frame>";*/
 					
-					console.log("Object dropped at");
-					console.log(parent.iDnD.getTransferObject());
+					console.log("Object dropped at : " ,parent.iDnD.getTransferObject());
 
 					if (this.report.layout.type == "document") {
 						CKEDITOR.instances["documentTemplateEditor"]
@@ -1392,9 +1388,7 @@ define(
 					var date = new Date(); // Now
 					
 
-					console.log("Start Date");
-					console
-							.log(this.report.scheduling.recurrenceRange.startDate);
+					console.log("Start Date: ", this.report.scheduling.recurrenceRange.startDate);
 
 					if (this.report.scheduling.recurrenceRange.startDate) {
 						date = new Date(
@@ -1468,8 +1462,7 @@ define(
 				 */
 				ReportDefinitionController.prototype.deleteExternalJoinField = function(
 						field) {
-					console.log("Delete");
-					console.log(field);
+					console.log("Delete: ", field);
 
 					for ( var n = 0; n < this.report.dataSet.externalJoins[0].fields.length; ++n) {
 						if (this.report.dataSet.externalJoins[0].fields[n].$$hashKey === field.$$hashKey) {
@@ -1710,7 +1703,7 @@ define(
                                  self.scheduling.nextExecutionDateDay = utils.getWeekdayName(date);
                                  self.updateView();
                               }).fail(function(err){
-                                 console.log("Failed next Execution Date: " + err);
+                                 console.log("Failed next Execution Date: " , err);
                               });
                   }
             };
@@ -2372,7 +2365,38 @@ define(
         		}
         	}
         };
-        
+
+		/*
+		 * 
+		 */
+        ReportDefinitionController.prototype.loadCustomTheme = function() {
+        	var self = this;
+
+			jQuery.ajax({
+				type : 'GET',
+				url : this.getContextName() + "/services/rest/common/html5/api/themes/current/custom",
+				async : true
+			}).done(function(json){
+				var head = document.getElementsByTagName('head')[0];
+				
+				for(var i in json.stylesheets) {
+					var link = document.createElement('link');
+					link.href = self.getContextName() + "/" + json.stylesheets[i];
+					link.rel = 'stylesheet';
+					link.type = 'text/css';
+					head.appendChild(link);
+				}
+			}).fail(function(err){
+				console.debug("Failed in loading custom theme");
+			});
+		};
+
+		/**
+		 *
+		 */
+		ReportDefinitionController.prototype.getContextName = function() {
+			return location.pathname.substring(0, location.pathname.indexOf('/plugins', 1));
+		}
 		}
 
 		function replaceSpecialChars(id){

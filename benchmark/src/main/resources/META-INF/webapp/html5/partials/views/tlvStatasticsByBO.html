@@ -1,0 +1,65 @@
+<div class="view-panel-content">
+	<table sd-data-table="ctrl.dataTableForBO" sda-mode="remote"
+		sd-data="ctrl.getTlvStatsDataByBO(params)" sda-ready="ctrl.showTLVStatasticsByBO"
+		sda-page-size="{{ctrl.tlvBOStatsData.totalCount}}"
+		sda-tree-table>
+		<thead>
+			<tr>
+				<th sda-name="name"
+					sda-label=" ">
+				</th>
+				<th ng-repeat="cat in ctrl.categories" sda-name="{{cat.index}}"
+					sda-label="{{cat.name}}"></th>
+				<th sda-name="completedCount"
+					sda-label="{{i18n('admin-portal-messages.views-common-completed-label')}}">
+				<th sda-name="abortedCount"
+					sda-label="{{i18n('admin-portal-messages.views-common-aborted-label')}}">
+				<th sda-name="totalCount"
+					sda-label="{{i18n('admin-portal-messages.views-common-total-label')}}">
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td sda-tree-column>
+				  <span ng-bind="rowData.name"></span>
+				</td>
+				<td ng-repeat="cat in ctrl.categories" style="text-align: center;">
+					<i class="pi pi-fw pi-1x pi-tlv-status-circle"
+					ng-style="{'color':rowData.benchmarkCategoryCountMap[colData.title].color,'font-size': ctrl.getfontSize(rowData.benchmarkCategoryCountMap[colData.title].count)}"></i>
+					<a href="#"
+						ng-if="rowData.benchmarkCategoryCountMap[colData.title].count > 0"
+						ng-click="ctrl.setDataForBOProcessActivityTable(rowData.benchmarkCategoryCountMap[colData.title].instanceOids)"
+						aid="COM-benchmark-tlvByBO-categoryCount">
+						<span ng-bind="rowData.benchmarkCategoryCountMap[colData.title].count"></span>
+				    </a> 
+				    <span ng-if="rowData.benchmarkCategoryCountMap[colData.title].count == 0" ng-bind="rowData.benchmarkCategoryCountMap[colData.title].count"></span>
+				</td>
+				<td style="text-align: center;">
+				  <a href="#"
+					ng-if="rowData.completedCount > 0"
+					ng-click="ctrl.setDataForBOProcessActivityTable(rowData.completedInstanceOids)"
+					aid="COM-benchmark-tlvByBO-completedCount">
+						<span ng-bind="rowData.completedCount"></span>
+				  </a> 
+				  <span ng-if="rowData.completedCount == 0" ng-bind="rowData.completedCount"></span>
+				</td>
+				<td style="text-align: center;"><a href="#"
+					ng-if="rowData.abortedCount > 0"
+					ng-click="ctrl.setDataForBOProcessActivityTable(rowData.abortedInstanceOids)"
+					aid="COM-benchmark-tlvByBO-abortedCount">
+						<span ng-bind="rowData.abortedCount"></span>
+				</a> <span ng-if="rowData.abortedCount == 0"
+					ng-bind="rowData.abortedCount"></span></td>
+				<td style="text-align: center;">
+				  <a href="#"
+					 ng-if="rowData.totalCount > 0"
+					 ng-click="ctrl.setDataForBOProcessActivityTable(rowData.totalInstanceOids)"
+					 aid="COM-benchmark-tlvByBO-totalCount">
+					<span ng-bind="rowData.totalCount"></span>
+				  </a> 
+				 <span ng-if="rowData.totalCount == 0" ng-bind="rowData.totalCount"></span>
+			   </td>
+			</tr>
+		</tbody>
+	</table>
+</div>

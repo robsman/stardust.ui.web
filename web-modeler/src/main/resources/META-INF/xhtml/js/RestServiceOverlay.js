@@ -6,10 +6,10 @@ define(
                   "bpm-modeler/js/m_typeDeclaration",
                   "bpm-modeler/js/m_parameterDefinitionsPanel",
                   "bpm-modeler/js/m_communicationController",
-                  "bpm-modeler/js/m_codeEditorAce" ],
+                  "bpm-modeler/js/m_codeEditorAce","bpm-modeler/js/m_user" ],
          function(m_utils, m_i18nUtils, m_constants, m_dialog, m_commandsController,
                   m_command, m_model, m_accessPoint, m_typeDeclaration,
-                  m_parameterDefinitionsPanel,m_communicationController, m_codeEditorAce)
+                  m_parameterDefinitionsPanel,m_communicationController, m_codeEditorAce,m_user)
          {
             return {
                create : function(view)
@@ -52,8 +52,12 @@ define(
                            .jQuerySelect("#restServiceOverlay #responseTypeSelect");
                   this.crossDomainInput = m_utils
                            .jQuerySelect("#restServiceOverlay #crossDomainInput");
+                  this.transactedRouteRow = m_utils
+                           .jQuerySelect("#restServiceOverlay #transactedRouteRow");
                   this.transactedRouteInput = m_utils
                            .jQuerySelect("#restServiceOverlay #transactedRouteInput");
+                  this.autoStartupRow = m_utils
+                           .jQuerySelect("#restServiceOverlay #autoStartupRow");
                   this.autoStartupInput = m_utils
                            .jQuerySelect("#restServiceOverlay #autoStartupInput");
                   this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
@@ -737,9 +741,15 @@ define(
                /**
                 * 
                 */
-               RestServiceOverlay.prototype.getQueryString = function()
+               RestServiceOverlay.prototype.getQueryString = function(attributes)
                {
+                  var httpHeadersJson = attributes["stardust:restServiceOverlay::httpHeaders"];
                   var queryString = "";
+                  if (!httpHeadersJson)
+                  {
+                     httpHeadersJson = "[]";
+                  }
+                  httpHeaders = JSON.parse(httpHeadersJson);
 
                   for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n)
                   {
@@ -751,6 +761,8 @@ define(
                      {
                         continue;
                      }
+                     if(this.skipHttpHeader(httpHeaders, accessPoint))
+                        continue;
 
                      if (n > 0)
                      {
@@ -844,12 +856,12 @@ define(
                   return this.view.getModelElement().model;
                };
                
-               RestServiceOverlay.prototype.getHttpHeaderByName=function(key, httpHeaders){
+               RestServiceOverlay.prototype.getHttpHeaderByName=function(field, key, httpHeaders){
                   var response;
                   for (var i = 0; i < httpHeaders.length; i++)
                   {
                      var httpHeader = httpHeaders[i];
-                     if(httpHeader.headerName==key){
+                     if(httpHeader[field]==key){
                         response=httpHeader;
                         break;
                      }
@@ -868,6 +880,18 @@ define(
                   }
                   return response;
                };
+               RestServiceOverlay.prototype.skipHttpHeader = function(httpHeaders, accessPoint){
+                  var httpHeader=this.getHttpHeaderByName("headerName",accessPoint.id,httpHeaders);
+                  if(httpHeader && httpHeader.headerSource=="data")
+                     return true;
+                  
+                  httpHeader=this.getHttpHeaderByName("headerValue",accessPoint.id,httpHeaders);
+                  if(httpHeader && httpHeader.headerSource=="data")
+                     return true;
+                  
+                  return false;
+               }
+               
                
                /**
                 * 
@@ -916,15 +940,14 @@ define(
                         continue;
                      }
                      
-                     var httpHeader=this.getHttpHeaderByName(accessPoint.id,httpHeaders);
-                     if(httpHeader && httpHeader.headerSource=="data")
+                     if(this.skipHttpHeader(httpHeaders, accessPoint))
                         continue;
                      
                      if (this.uriInput.val().indexOf("{" + accessPoint.id + "}") >= 0)
                      {
                         uri = uri.replace("{" + accessPoint.id + "}", "$simple{header."+ accessPoint.id + "}");
                         route += "<setHeader headerName='" + accessPoint.id + "'>";
-                        route += "<javaScript>encodeURIComponent(request.headers.get('"+ accessPoint.id + "'))</javaScript>";
+						route += "<javaScript>encodeURI(request.headers.get('"+ accessPoint.id + "'))</javaScript>";
                         route += "</setHeader>";
                      }
                      else
@@ -942,8 +965,7 @@ define(
                         uri += "=";
                         uri += "$simple{header." + accessPoint.id + "}";
                         route += "<setHeader headerName='" + accessPoint.id + "'>";
-                        route += "<javaScript>encodeURIComponent(request.headers.get('"
-                                 + accessPoint.id + "'))</javaScript>";
+						route += "<javaScript>encodeURI(request.headers.get('" + accessPoint.id + "'))</javaScript>";
                         route += "</setHeader>";
                      }
                   }
@@ -1014,7 +1036,7 @@ define(
                      }else{
                         if(hName){
                            route += "<setHeader headerName='" + hName + "'>";
-                           route += "<simple>$simple{header."+hName+"}</simple>";
+                           route += "<simple>$simple{header."+hValue+"}</simple>";
                            route += "</setHeader>";
                         }
                      }
@@ -1033,7 +1055,6 @@ define(
                   {
                      httpUri = uri;
                   }
-                  
                   route += "<setHeader headerName='CamelHttpUri'>";
                   route += "<simple>" + httpUri + "</simple>";
                   route += "</setHeader>";
@@ -1049,6 +1070,7 @@ define(
                   {
                      route += "<to uri='bean:bpmTypeConverter?method=toXML' />";
                   }
+                  
                   route += "<to uri='http://isoverwritten";
                   
                   if (securityModeSelect === "httpBasicAuth")
@@ -1072,7 +1094,6 @@ define(
                   {
                      route += "<to uri='bean:bpmTypeConverter?method=fromXML' />";
                   }
-
                   return route;
                };
 
@@ -1102,6 +1123,22 @@ define(
                   }
                   return this.httpBasicAuthPwdInput.val();
                };
+               
+               
+               RestServiceOverlay.prototype.getContentType = function(input)
+               {
+                  if (input === "application/json")
+                  {
+                     return "application/json";
+                  }
+                  else if (input === "application/xml")
+                  {
+                     return "application/xml";
+                  }else if(input === "text/plain")
+                  {
+                     return "text/plain";
+                  }
+               }
                RestServiceOverlay.prototype.convertConfigVariableToPassword = function(
                         originePwd)
                {
@@ -1159,6 +1196,12 @@ define(
                   this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
                   this.parameterDefinitionsPanel.setParameterDefinitions(this
                            .getApplication().contexts.application.accessPoints);
+                  this.autoStartupRow.hide();
+                  this.transactedRouteRow.hide();
+                  if(this.isIntegrator()){
+                    this.autoStartupRow.show();
+                    this.transactedRouteRow.show();
+                  }
                   this.inputBodyAccessPointInput.empty();
                   this.inputBodyAccessPointInput.append("<option value='"
                            + m_constants.TO_BE_DEFINED + "'>"
@@ -1196,7 +1239,7 @@ define(
                   this.uriInput
                            .val(this.getApplication().attributes["stardust:restServiceOverlay::uri"]);
                   this.queryStringLabel.empty();
-                  this.queryStringLabel.append(this.getQueryString());
+                  this.queryStringLabel.append(this.getQueryString(this.getApplication().attributes));
                   this.commandSelect
                            .val(this.getApplication().attributes["stardust:restServiceOverlay::command"]);
                   this.requestTypeSelect
@@ -1488,5 +1531,8 @@ define(
                      
                   return true;
                };
+               RestServiceOverlay.prototype.isIntegrator = function(){
+                  return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+               }
             }
          });

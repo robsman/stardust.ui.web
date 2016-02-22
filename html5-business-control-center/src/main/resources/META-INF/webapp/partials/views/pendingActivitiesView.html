@@ -1,0 +1,98 @@
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true" ng-controller="sdPendingActivitiesCtrl as ctrl">
+	<div class="toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="BCC-PendAct-ToolbarRefresh"></span>
+		</div>
+	</div>
+
+
+	<div class="view-panel-content">
+		<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-pendingActivities-title')}}</div>
+
+		<table sd-data-table="ctrl.dataTable" 
+			sd-data="ctrl.getPendingActivities(params)" sda-ready="ctrl.ready"
+			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sda-sortable="true"
+			sda-sort-by="{name : 'overviewLabel', dir : 'asc'}"
+			sda-mode="local" sda-sortable="false"
+			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}"
+			sda-column-selector="{{ctrl.columnSelector}}">
+			<thead>
+				<tr>
+					<th sda-name="overviewLabel" sda-sortable="true" sda-visible="true"
+						sda-fixed="true"
+						sda-label="{{i18n('business-control-center-messages.views-pendingActivities-column-overView')}}">
+					</th>
+					<th ng-repeat="col in ctrl.columns" sda-name="participant{{$index}}"
+						sda-visible="{{$index < 5}}" sda-label="{{col.label}}"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td sda-exporter="rowData.overviewLabel" sda-data-type="string">{{rowData.overviewLabel}}
+					</td>
+					<td ng-repeat="col in ctrl.columns"
+						sda-exporter="ctrl.getExportValue(rowData.statisticsByParticipant[colData.title])"
+						sda-visible="{{$index < 5}}">
+						<div>
+							<b>{{i18n("business-control-center-messages.views-common-column-today")}}
+								: </b> 
+							<a href="#" ng-if="rowData.statisticsByParticipant[colData.title].today > 0"
+								ng-click="ctrl.setDataForActivityTable(rowData.statisticsByParticipant[colData.title].openActivitiesTodayOids)" 
+								title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}"
+								aid="BCC-PendAct-PendActTbl-Today"><span
+								ng-bind="rowData.statisticsByParticipant[colData.title].today"></span>
+							</a>
+							<span
+								ng-if="rowData.statisticsByParticipant[colData.title].today < 1"
+								ng-bind="rowData.statisticsByParticipant[colData.title].today">
+						   </span>
+						</div>
+						<div>
+							<b>{{i18n("business-control-center-messages.views-pendingActivities-column-yesterday")}}
+								: </b><a href="#" ng-if="rowData.statisticsByParticipant[colData.title].yesterday > 0"
+								ng-click="ctrl.setDataForActivityTable(rowData.statisticsByParticipant[colData.title].openActivitiesYesterdayOids)"
+								aid="BCC-PendAct-PendActTbl-Yesterday"
+								title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}">
+								<span
+								ng-bind="rowData.statisticsByParticipant[colData.title].yesterday"></span>
+							</a>
+							<span
+								ng-if="rowData.statisticsByParticipant[colData.title].yesterday < 1"
+								ng-bind="rowData.statisticsByParticipant[colData.title].yesterday">
+						   </span>
+						</div>
+						<div>
+							<b>{{i18n("business-control-center-messages.views-common-column-dayMonth")}}
+								: </b> <span
+								ng-bind="rowData.statisticsByParticipant[colData.title].month"></span>
+						</div>
+						<div>
+							<b>{{i18n("business-control-center-messages.views-common-column-hibernated")}}:</b> 
+							<a href="#"
+								ng-if="rowData.statisticsByParticipant[colData.title].hibernated > 0"
+								ng-click="ctrl.setDataForActivityTable(rowData.statisticsByParticipant[colData.title].openActivitiesHibernateOids)"
+								title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}"
+								aid="BCC-PendAct-PendActTbl-Hibernated">
+								<span ng-bind="rowData.statisticsByParticipant[colData.title].hibernated"></span>
+							</a> 
+							<span
+								ng-if="rowData.statisticsByParticipant[colData.title].hibernated < 1"
+								ng-bind="rowData.statisticsByParticipant[colData.title].hibernated">
+						   </span>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div sd-activity-table="ctrl.activityTable" sda-mode="activityTable"
+		sd-data="ctrl.getActivitiesByOids(params);" sda-extra-columns='["resubmissionTime"]'
+		sda-ready="ctrl.showActivityTable"
+		sda-preference-module="ipp-views-common"
+		sda-preference-id="preference"
+		sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>
+</div>
+</div>

@@ -17,8 +17,9 @@
 
 	angular.module("bcc-ui").controller(
 			'sdRoleManagerDetailViewCtrl',
-			[ '$q', '$scope', '$filter', '$element', 'sdRoleManagerDetailService', 'sdLoggerService',
-					'sdViewUtilService', RoleManagerDetailViewCtrl ]);
+			['$q', '$scope', '$filter', '$element', 'sdRoleManagerDetailService', 'sdLoggerService',
+					'sdViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService', 'sdDataTableHelperService',
+					RoleManagerDetailViewCtrl]);
 	var _q;
 	var _scope;
 	var _filter;
@@ -26,12 +27,15 @@
 	var _sdRoleManagerDetailService;
 	var _sdViewUtilService;
 	var trace;
+	var _sdLoggedInUserService;
+	var _sdPreferenceService;
+	var _sdDataTableHelperService;
 
 	/*
 	 * 
 	 */
 	function RoleManagerDetailViewCtrl($q, $scope, $filter, $element, sdRoleManagerDetailService, sdLoggerService,
-			sdViewUtilService) {
+			sdViewUtilService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleManagerDetailViewCtrl');
 		_q = $q;
 		_scope = $scope;
@@ -39,15 +43,16 @@
 		_element = $element;
 		_sdRoleManagerDetailService = sdRoleManagerDetailService;
 		_sdViewUtilService = sdViewUtilService;
+		_sdLoggedInUserService = sdLoggedInUserService;
+		_sdPreferenceService = sdPreferenceService;
+		_sdDataTableHelperService = sdDataTableHelperService;
 
-		this.columnSelector = 'admin';
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.exportFileNameForAssignedUsers = "AssignedUsers";
 		this.exportFileNameForAssignableUsers = "AssignableUsers";
 		this.assignedUsersTable = null;
 		this.assignableUsersTable = null;
 		this.activityTable = null;
-		this.rowSelectionAssignedUsersTable = null;
-		this.rowSelectionAssignableUsersTable = null;
 		this.showActivityListTab = false;
 		this.activeTab = 1;
 
@@ -79,12 +84,14 @@
 		_sdRoleManagerDetailService.getRoleManagerDetails(self.viewParams.roleId, self.viewParams.departmentOid).then(
 				function(data) {
 					self.roleManagerDetails = data;
-					self.table1 = true;
-					self.table2 = true;
-					if (self.assignedUsersTable != undefined && self.assignableUsersTable != undefined) {
+					if(self.assignedUsersTable != undefined && self.assignableUsersTable != undefined){
 						self.assignedUsersTable.refresh();
 						self.assignableUsersTable.refresh();
+					}else{
+						self.table1 = true;
+						self.table2 = true;
 					}
+					
 				}, function(error) {
 					trace.log(error);
 				});
@@ -104,37 +111,52 @@
 	 * 
 	 * @returns
 	 */
-	RoleManagerDetailViewCtrl.prototype.getAssignedUsers = function() {
+	RoleManagerDetailViewCtrl.prototype.getAssignedUsers = function(options) {
 		var self = this;
+		var deferred = _q.defer();
+		var result = {
+			list : self.roleManagerDetails.assignedUserList,
+			totalCount : self.roleManagerDetails.assignedUserList.length
+		}
+
 		if (self.showLoggedInAssignedUsers) {
 
 			var rows = _filter('filter')(self.roleManagerDetails.assignedUserList, {
 				loggedIn : 'Yes'
 			}, true);
 
-			return rows;
-
-		} else {
-			return self.roleManagerDetails.assignedUserList;
+			result.list = rows;
+			result.totalCount = rows.length;
 		}
+
+		deferred.resolve(result);
+		return deferred.promise;
 	};
 
 	/**
 	 * 
 	 * @returns
 	 */
-	RoleManagerDetailViewCtrl.prototype.getAssignableUsers = function() {
+	RoleManagerDetailViewCtrl.prototype.getAssignableUsers = function(options) {
 		var self = this;
+		var deferred = _q.defer();
+		var result = {
+			list : self.roleManagerDetails.assignableUserList,
+			totalCount : self.roleManagerDetails.assignableUserList.length
+		}
+
 		if (self.showLoggedInAssignableUsers) {
 
 			var rows = _filter('filter')(self.roleManagerDetails.assignableUserList, {
 				loggedIn : 'Yes'
 			}, true);
 
-			return rows;
-		} else {
-			return self.roleManagerDetails.assignableUserList;
+			result.list = rows;
+			result.totalCount = rows.length;
 		}
+
+		deferred.resolve(result);
+		return deferred.promise;
 	};
 
 	/**
@@ -151,7 +173,7 @@
 	RoleManagerDetailViewCtrl.prototype.refreshOnlyActiveTab = function() {
 		var self = this;
 		if (self.activeTab == 1) {
-			self.getRoleManagerDetails();
+			self.refresh();
 		} else {
 			self.activityTable.refresh();
 		}
@@ -176,9 +198,9 @@
 	/**
 	 * 
 	 */
-	RoleManagerDetailViewCtrl.prototype.removeUserFromRole = function(rowSelectionAssignedUsersTable) {
+	RoleManagerDetailViewCtrl.prototype.removeUserFromRole = function() {
 		var self = this;
-		var userIds = this.getSelectedUserIds(rowSelectionAssignedUsersTable);
+		var userIds = this.getSelectedUserIds(self.assignedUsersTable.getSelection());
 		_sdRoleManagerDetailService.removeUserFromRole(userIds, self.viewParams.roleId, self.viewParams.departmentOid)
 				.then(function(data) {
 					self.userAuthorizationMsg = data.userAuthorization;
@@ -192,9 +214,9 @@
 	/**
 	 * 
 	 */
-	RoleManagerDetailViewCtrl.prototype.addUserToRole = function(rowSelectionAssignableUsersTable) {
+	RoleManagerDetailViewCtrl.prototype.addUserToRole = function() {
 		var self = this;
-		var userIds = this.getSelectedUserIds(rowSelectionAssignableUsersTable);
+		var userIds = this.getSelectedUserIds(self.assignableUsersTable.getSelection());
 		_sdRoleManagerDetailService.addUserToRole(userIds, self.viewParams.roleId, self.viewParams.departmentOid).then(
 				function(data) {
 					self.userAuthorizationMsg = data.userAuthorization;
@@ -262,5 +284,32 @@
 		var self = this;
 		self.activeTab = 1;
 
+	};
+	/**
+	 * 
+	 * @param prefInfo
+	 * @returns preferenceStore
+	 */
+	RoleManagerDetailViewCtrl.prototype.preferenceForAssignedUserTable = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService
+				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.userAssigned.selectedColumns";
+		}
+		return preferenceStore;
+	};
+
+	/**
+	 * 
+	 * @param prefInfo
+	 * @returns
+	 */
+	RoleManagerDetailViewCtrl.prototype.preferenceForAssignableUserTable = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService
+				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.userAssignable.selectedColumns";
+		}
+		return preferenceStore;
 	};
 })();

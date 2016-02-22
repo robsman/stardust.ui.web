@@ -10,11 +10,13 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -67,6 +69,26 @@ public abstract class ManagedBeanUtils
       return bean;
    }
    
+   /**
+    * @param name
+    * @return
+    */
+   public static String getContextParam(String name)
+   {
+      if (FacesContext.getCurrentInstance() != null)
+      {
+         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+         return externalContext.getInitParameter(Constants.LOGIN_ADMIN_ROLE_REQUIRED);
+      }
+      else
+      {
+         ServletContext servletContext = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+               .getRequest().getSession().getServletContext();
+         return servletContext.getInitParameter(name);
+      }
+   }
+   
    private ManagedBeanUtils()
    {}
    }
+

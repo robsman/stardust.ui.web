@@ -15,9 +15,11 @@
 					<ice:outputText
 						value="#{views_common_msgPropsBean['views.userDetails.title']}"
 						styleClass="headerText" />
-					<ice:commandButton title="#{views_common_msgPropsBean['common.close']}"
+					<ice:commandLink title="#{views_common_msgPropsBean['common.close']}"
 						action="#{userDetailsBean.closePopup}" immediate="true"
-						styleClass="windowClose" />
+						styleClass="windowClose pi-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+					</ice:commandLink>
 				</ice:panelGroup>
 			</f:facet>
 			<f:facet name="body">
@@ -33,7 +35,10 @@
 						<f:facet name="west">
 							<ice:panelGroup style="width: 128px; height: 128px; border: 1px solid #CCCCCC;">
 								<ice:graphicImage
-									value="#{userDetailsBean.userImageURI}" height="128px" width="128px" />
+									value="#{userDetailsBean.userImageURI}" height="128px" width="128px" 
+									rendered="#{pc:contains(userDetailsBean.userImageURI, '/')}"/>
+								<ice:outputText styleClass="#{userDetailsBean.userImageURI} pi-5x"
+									rendered="#{!pc:contains(userDetailsBean.userImageURI, '/')}"></ice:outputText>
 							</ice:panelGroup>
 						</f:facet>
 						<f:facet name="center">

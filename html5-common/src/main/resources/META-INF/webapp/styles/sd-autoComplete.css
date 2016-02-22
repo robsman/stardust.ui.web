@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 
 .sd-ac-container{
   width:400px;
@@ -6,23 +16,28 @@
 }
 
 .sd-ac-container div[name='sd-ac-tag']{
-  display:inline-table;
-  font-size: 0.8em;
-  padding: 0px 4px 0px 4px;
+  display:inline-block;
+  font-size: 1em;
+  padding: 2px 4px 2px 4px;
   border:solid 1px #ccd5e4;
   background-color:#eff2f7;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor:pointer;
   margin-left:4px;
   margin-top:2px;
   margin-bottom:2px;
 }
 
+.sd-ac-container div[name='sd-ac-tag'] i{
+  padding-left:2px;
+  padding-right:2px;
+}
+
 .sd-ac-container div[name='sd-ac-tag']:after{
   content:'x';
   font-size:0.9em;
   position:relative;
-  top:-1px;
+  top:-8px;
 }
 
 .sd-ac-container div[name='sd-ac-selectList']{
@@ -39,13 +54,19 @@
 
 .sd-ac-container [name='sd-ac-selectList'] div{
   cursor:pointer;
-  font-family:Lato;
   font-size:0.8em;
   padding-left:5px;
   background-color:#fff;
 }
 
+.sd-ac-container [name='sd-ac-selectList'] div:nth-child(odd){
+  cursor:pointer;
+  font-size:0.8em;
+  padding-left:5px;
+  background-color:#f4f4f4;
+}
+
 .sd-ac-item-isActive{
-  background-color:#3B5998 !important;
-  color:#fff;
+  background-color:#ffffe0 !important;
+  color:#000;
 }

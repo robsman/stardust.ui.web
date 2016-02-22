@@ -94,6 +94,19 @@ public class ApplicationTypeChangeCommandHandler
                "carnot:engine:camel::supportsMultipleAccessPoints", true);
       }
    }
+   
+   @OnCommand(commandId = "decoratorApplication.create")
+   public void createDecoratorApp(ModelType model, JsonObject request)
+   {
+      String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
+
+      ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
+            null, applicationName, ModelerConstants.DECORATOR_APP_CONTEXT_TYPE_KEY);
+
+      // Map newly created application to a UUID
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
+      mapper.map(applicationType);
+   }
 
    @OnCommand(commandId = "uiMashupApplication.create")
    public void createUiMashupApp(ModelType model, JsonObject request)

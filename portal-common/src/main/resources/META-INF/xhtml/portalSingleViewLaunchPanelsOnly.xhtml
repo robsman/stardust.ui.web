@@ -16,7 +16,9 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 <script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/js/facesSupport.js" />
 <script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/js/portalSingleViewUtils.js" />	
-	<ui:include src="portalStyleSheets.xhtml" />
+	<ui:include src="portalStyleSheets.xhtml">
+		<ui:param name="type" value="WITHOUT_SKIN" />
+	</ui:include>
 </head>
 <body onload="parent.BridgeUtils.initIframe(window); parent.BridgeUtils.processUrlParams();" style="width: #{ippSingleViewLaunchPanels.launchPanelsWidth};">
 	<ui:include src="portalSingleViewLaunchPanels.xhtml" />
@@ -49,6 +51,9 @@
 	       	<ice:inputHidden id="timerInvoked" value="#{ippSingleViewLaunchPanels.emptyString}"
 	   			valueChangeListener="#{timerManager.processTimerEvent}"
 	   			partialSubmit="true" immediate="true" />
+			<ice:inputHidden id="clientTimeZone" value="#{ippSingleViewLaunchPanels.emptyString}"
+	   			valueChangeListener="#{ippSingleViewLaunchPanels.updateClientTimeZone}"
+	   			partialSubmit="true" immediate="true" />
 
 	   		<!-- To Track Connection Status -->
 	   		<div style="display: none">
@@ -58,6 +63,10 @@
 	   		</div>
 		</ice:form>
 	</div>
+
+	<ui:include src="portalStyleSheets.xhtml">
+		<ui:param name="type" value="ONLY_SKIN" />
+	</ui:include>
 
 	<script id="postScriptsLP" lang="javascript">
 		#{ippSingleViewLaunchPanels.eventScripts}

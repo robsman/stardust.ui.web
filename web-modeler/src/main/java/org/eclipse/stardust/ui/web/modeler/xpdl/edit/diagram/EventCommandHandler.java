@@ -53,6 +53,20 @@ public class EventCommandHandler
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
 
+   @OnCommand(commandId = "resubmission.enable")
+   public void enableResubmission(ModelType model, ActivityType activity, JsonObject request)
+   {
+      EventMarshallingUtils.createResubmissionHandler(activity, request, modelService().uuidMapper());
+   }
+
+   @OnCommand(commandId = "resubmission.disable")
+   public void disableResubmission(ModelType model, ActivityType activity, JsonObject request)
+   {
+      EventHandlerType eventHandler = EventMarshallingUtils.findResubmissionEventHandler(activity);
+      activity.getEventHandler().remove(eventHandler);
+   }
+
+
    @OnCommand(commandId = "excludeUserAction.create")
    public void createExcludeUserAction(ModelType model, ActivityType activity, JsonObject request)
    {
@@ -93,7 +107,10 @@ public class EventCommandHandler
             StartEventSymbol startEventSymbol = updateAndAddSymbol(parentLaneSymbol, request,
                   AbstractElementBuilder.F_CWM.createStartEventSymbol());
 
-            if (implementation == null || !implementation.equalsIgnoreCase("none"))
+            // Create a manual trigger if the implementation is not set to none and
+            // there is no participant assigned to the parent lane.
+            if ((implementation == null || !implementation.equalsIgnoreCase("none"))
+                     && null != parentLaneSymbol.getParticipantReference())
             {
                TriggerType manualTrigger = newManualTrigger(processDefinition) //
                      .accessibleTo(LaneParticipantUtil.getParticipant(parentLaneSymbol))
@@ -135,6 +152,7 @@ public class EventCommandHandler
                   hostActivity, hostingConfig, eventClass);
             if (eventHandler != null)
             {
+               modelService().uuidMapper().map(eventHandler);
                EventMarshallingUtils.updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
             }
 

@@ -4,7 +4,6 @@
 <head>
 <link href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css" rel="stylesheet"
 	type="text/css" />
-<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
 <link  rel="stylesheet" href="plugins/rules-manager/css/rulesmanager.custom.style.css" />
 <link  rel="stylesheet" href="plugins/rules-manager/css/rulesmanager.custom.camino.css" />
 <link  rel="stylesheet" href="plugins/rules-manager/css/rulesmanager.custom.jquery.ui.css" />
@@ -37,11 +36,13 @@ ul.popupSelectorItemList {
 	vertical-align: middle;
 	text-align: center;
 }
-#maxRulesExecutions{
-	width:40px;
-	min-width:40px;
-	max-width:40px;
+
+#maxRulesExecutions {
+	width: 40px;
+	min-width: 40px;
+	max-width: 40px;
 }
+
 table.wrapperTable {
 	width: 100%;
 }
@@ -92,16 +93,23 @@ table.wrapperTable {
 	border: none;
 	padding: none;
 }
+
 #drlEditor {
-        top:10px;
-        width: 80%;
-        height: 100%;
-        margin-bottom: 10px;
-    }
+	top: 10px;
+	width: 80%;
+	height: 100%;
+	margin-bottom: 10px;
+}
+
+.panelIcon {
+	float: right;
+	padding-top: 3px;
+	padding-right: 5px;
+}
 </style>
 </head>
 <body>
-	<div id="ruleSetView" class="panelView">
+	<div id="ruleSetView" class="lightdust panelView">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">
 			<tr>
@@ -114,16 +122,14 @@ table.wrapperTable {
 		</table>
 		<div id="hideGeneralProperties">
 				<div class="clplPanelHeading">
-				<img src="./plugins/common/images/panelHeader-triggerExpand.png"
-					title="Show General Properties" styleClass="headerImg"></img> 
-					<label id="decHideGeneralPropertiesTitle">General Properties</label>
+					<i class="pi pi-trigger-collapsed pi-lg panelIcon" title="Show General Properties"></i>
+					<label id="decHideGeneralPropertiesTitle"> General Properties</label>
 			</div>
 		</div>
 		<div id="showAllProperties">
 			<div id="showGeneralProperties">
 				<div class="clplPanelHeading">
-					<img src="./plugins/common/images/panelHeader-triggerCollapse.png"
-						title="Hide General Properties" styleClass="headerImg"></img>
+						<i class="pi pi-trigger-expanded pi-lg panelIcon" title="Hide General Properties"></i>
 						<label id="decShowGeneralPropertiesTitle">General Properties</label>	
 				</div>
 			</div>
@@ -195,8 +201,7 @@ table.wrapperTable {
 		</div>
 		<div id="ruleSetTabs" class="minimalTabs" style="margin-top: 10px;width:95%;">
 						<ul id="ruleSetTabsList">
-							<li><a href="#dataTab"><img
-									src="plugins/rules-manager/images/icons/database_link.png"></img><span
+							<li><a href="#dataTab"><i class="pi pi-parameters pi-lg"> </i><span
 									class="tabLabel" id="data">Parameters</span> </a>
 							</li>
 							<!-- 
@@ -266,6 +271,5 @@ table.wrapperTable {
 	</div>
 	
 	<script type="text/javascript" src="plugins/rules-manager/js/ruleSetViewMain.js"></script>
-		
 </body>
 </html>

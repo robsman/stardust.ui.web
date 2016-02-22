@@ -61,6 +61,7 @@ public class TIFFDocumentHolder
    private static final String IMAGE_ENCODING = "png";
    private static final Logger trace = LogManager.getLogger(TIFFDocumentHolder.class);
    private final MessagesViewsCommonBean MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
+   private static boolean imageIOPluginsScanned = false;
 
    private int pageIndex;
    private int maxPageIndex;
@@ -373,16 +374,18 @@ public class TIFFDocumentHolder
       final int TIFF_READER_SCAN_RETRY_COUNT_MAX = 1;
       int retryCount = 0;
       Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(TIFF_FORMAT_NAME);      
-      while (!readers.hasNext())
+      while (!readers.hasNext() && !imageIOPluginsScanned)
       {
          if (retryCount < TIFF_READER_SCAN_RETRY_COUNT_MAX)
          {
-            ImageIO.scanForPlugins();            
+            ImageIO.scanForPlugins();
+            imageIOPluginsScanned = true;
             readers = ImageIO.getImageReadersByFormatName(TIFF_FORMAT_NAME);
             retryCount++;
          }
          else
          {
+            imageIOPluginsScanned = true;
             throw new RuntimeException(MESSAGE_BEAN.getString("views.tiffViewer.error.noReaderFound"));
          }
       }

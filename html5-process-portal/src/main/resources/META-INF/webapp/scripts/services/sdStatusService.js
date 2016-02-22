@@ -17,21 +17,117 @@
 	 * 
 	 */
 	angular.module('workflow-ui.services').provider( 'sdStatusService', function() {
-		this.$get = [ '$q', '$resource', function ( $q, $resource) {
-			var service = new StatusService($q, $resource);
+		this.$get = [ '$q', 'sgI18nService', function ( $q, sgI18nService ) {
+			var service = new StatusService( $q, sgI18nService );
 			return service;
 		}];
-	});
-	/**
-	 *
-	 */
-	function StatusService( $q, $resource) {
-		StatusService.prototype.getAllActivityStates = function() {
-			return  $resource('services/rest/portal/activity-instances/allActivityStates').query().$promise;
-		};
 		
+	});
+	
+	var ACTIVITY_STATUSES = null;
+	var PROCESS_STATUSES = null;
+	
+	/**
+	 * 
+	 */
+	function StatusService( $q, sgI18nService ) {
+		
+		if(!ACTIVITY_STATUSES) {
+			ACTIVITY_STATUSES = [
+		             			{
+		             				value : 6,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-aborted')
+		             			},
+		             			{
+		             				value : 8,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-aborting')
+		             			},
+		             			{
+		             				value : 1,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-application')
+		             			},
+		             			{
+		             				value : 2,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-completed')
+		             			},
+		             			{
+		             				value : 0,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-created')
+		             			},
+		             			{
+		             				value : 7,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-hibernated')
+		             			},
+		             			{
+		             				value : 4,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-interrupted')
+		             			},
+		             			{
+		             				value : 5,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-suspended')
+		             			}
+		             	];
+		}
+		
+		if(!PROCESS_STATUSES) {
+			PROCESS_STATUSES = [
+		             			{
+		             				value : -1,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-created')
+		             			},
+		             			{
+		             				value : 0,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-active')
+		             			},
+		             			{
+		             				value : 1,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-aborted')
+		             			},
+		             			{
+		             				value : 2,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-completed')
+		             			},
+		             			{
+		             				value : 3,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-interrupted')
+		             			},
+		             			{
+		             				value : 4,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-aborting')
+		             			},
+		             			
+		             	];
+		}
+		
+		/**
+		 * 
+		 */
+		StatusService.prototype.getAllActivityStates = function() {
+			var deferred = $q.defer();
+			deferred.resolve(ACTIVITY_STATUSES);
+			return deferred.promise;
+		};
+		/**
+		 * 
+		 */
 		StatusService.prototype.getAllProcessStates = function() {
-			return  $resource('services/rest/portal/process-instances/allProcessStates').query().$promise;
+			var deferred = $q.defer();
+			deferred.resolve(PROCESS_STATUSES);
+			return deferred.promise;
 		};
 	};
 })();

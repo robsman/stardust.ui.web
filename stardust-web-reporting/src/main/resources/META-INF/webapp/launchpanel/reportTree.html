@@ -15,6 +15,11 @@
 	href="../css/thirdparty/datatables/extras/TableTools/TableTools.css"></link>
 <link rel="stylesheet" type="text/css"
 	href="../css/thirdparty/datatables/extras/TableTools/TableTools_JUI.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css"></link>
+<link  rel="stylesheet"
+	href="../../html5-common/styles/portal-icons.css" > </link>
+
 <style type="text/css">
 table.formTable td {
 	padding: 3px;
@@ -23,7 +28,7 @@ table.formTable td {
 <script type="text/javascript" src="../js/commonRequire.js"></script>	
 <script type="text/javascript"
 	data-main="../js/ReportManagementOutlineMain"
-	src="../js/libs/require/2.0.5/require.js"></script>
+	src="../../views-common/js/libs/require/2.1.15/require.min.js"></script>
 </head>
 <body>
 	<table style="width: 100%;">
@@ -31,15 +36,15 @@ table.formTable td {
 			<td id="toolbar">
 				<div id="outlineToolbar">
 					<div class="toolDiv">
-						<img id="createReport" src="../images/icons/add.png"
-							title="" />
+						<i id="createReport" class="pi pi-create pi-lg" 
+							title="" ></i>
 					</div>
 					<div class="toolSeparator">
 						<img src="../../common/images/icons/toolbar-separator.png" />
 					</div>					
 					<div class="toolDiv">
-						<img id="refreshReports" src="../images/icons/refresh.png"
-							title = "" />
+						<i id="refreshReports" class="pi pi-refresh pi-lg"
+							title = "" ></i>
 					</div>
 				</div>
 			</td>
@@ -47,10 +52,12 @@ table.formTable td {
 		<tr>
 			<td>
 				<div id="reportTree"
-					style="width: 180px; height: 400px; text-align: left; list-style-type: none; background-color: white;">
+					style="width: 180px; height: 400px; text-align: left; list-style-type: none;">
 				</div>
 			</td>
 		</tr>
 	</table>
+	 <link rel="stylesheet" type="text/css" href="../../modern-skin/modern.css"></link>
+ <link rel="stylesheet" type="text/css"  href="../../modern-skin/modern.font.icons.css"></link>	
 </body>
 </html>

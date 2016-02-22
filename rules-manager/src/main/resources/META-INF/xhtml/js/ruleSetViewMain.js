@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 /**
  * @author Marc Gille
  * @author Robert Sauer
@@ -121,6 +131,12 @@ require([ "require", "jquery", "jquery-ui", "jquery.download", "jquery.form",
 	};
 	
 	BridgeUtils.getTimeoutService()(function(){
-		ruleSetView.initialize(BridgeUtils.View.getActiveViewParams().param("uuid"),options);
+		var uuid,
+			mode;
+		
+		uuid = BridgeUtils.View.getActiveViewParams().param("uuid");
+		mode = BridgeUtils.View.getActiveViewParams().param("mode");
+		ruleSetView.initialize(uuid,options,mode);
+		
 	});
 });

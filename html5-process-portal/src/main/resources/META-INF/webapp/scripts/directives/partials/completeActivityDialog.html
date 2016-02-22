@@ -8,25 +8,13 @@
 
 <div ng-if="activityTableCtrl.completeDialog.confirmationType == 'generic'">
 	<div
-		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-generic-line1')"></div>
-	<div
-		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-generic-line2')"></div>
-	<div
-		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-generic-line3')"></div>
+		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-generic')"></div>
 </div>
-<div
-	ng-if="activityTableCtrl.completeDialog.confirmationType == 'dataMapping'">
-	<div style="margin-bottom: 25px;"
-		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-homogenous')"></div>
-	<form name="dataForm">
-		<fieldset class="well well-sm">
-			<legend class="complete-activity-legend"
-				ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-homogenous-legend')"></legend>
-
-			<div sd-trivial-manual-activity-data
+<div ng-if="activityTableCtrl.completeDialog.confirmationType == 'dataMapping'">
+	
+	<div class="complete-activity-description"  ng-bind="activityTableCtrl.completeDialog.description"  ng-if="activityTableCtrl.completeDialog.description"></div>
+	<div sd-trivial-manual-activity-data
 				sda-data-mappings="activityTableCtrl.completeDialog.dataMappings"
 				sda-out-data="activityTableCtrl.completeDialog.outData"></div>
 
-		</fieldset>
-	</form>
 </div>

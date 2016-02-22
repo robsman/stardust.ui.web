@@ -22,11 +22,12 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
-import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
+import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.UIViewComponentBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
@@ -118,7 +119,7 @@ public class StrandedActivitiesBean extends UIViewComponentBean
          
          // Retrieve invalidated users
          UserQuery userQuery = UserQuery.findAll();
-         userQuery.getFilter().addAndTerm().add(UserQuery.VALID_TO.lessThan(System.currentTimeMillis()))
+         userQuery.getFilter().addAndTerm().add(UserQuery.VALID_TO.lessThan(PortalTimestampProvider.getTimeStampValue()))
             .add(UserQuery.VALID_TO.notEqual(0));
 
          Users users = queryService.getAllUsers(userQuery);

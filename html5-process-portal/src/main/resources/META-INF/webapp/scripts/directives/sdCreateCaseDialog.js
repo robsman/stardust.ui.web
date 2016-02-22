@@ -50,7 +50,8 @@
 					+ ' sda-type="confirm"'
 					+ ' sda-scope="this"'
 					+ ' sda-on-open="createCaseController.onOpenDialog(res)"'
-					+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/createCaseDialog.html"'
+					+ ' sda-template="'
+					+   sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/createCaseDialog.html"'
 					+ ' sda-on-confirm="createCaseController.confirm()"'
 					+ ' sda-confirm-action-label="{{i18n(\'views-common-messages.common-ok\')}}"'
 					+ ' sda-cancel-action-label="{{i18n(\'views-common-messages.common-cancel\')}}"'
@@ -63,7 +64,7 @@
 					+ ' sda-type="alert"'
 					+ ' sda-scope="this">'
 					+ '		<span style="padding-right: 11px;">'
-					+ '			<i style="color: red;" class="glyphicon glyphicon-remove-sign"></i>'
+					+ '			<i class="pi pi-lg pi-dialog-warning msg-error"></i>'
 					+ '		</span>'
 					+ ' 	<span>{{createCaseController.notificationMessage.message}}</span>'
 					+ '</span>',
@@ -245,7 +246,7 @@
 
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while performing Create case.\n Caused by: ' + result);
+					trace.log('An error occurred while performing Create case.\n Caused by: ' , result);
 					deferred.reject(result);
 				});
 
@@ -351,7 +352,8 @@
 			function isActiveProcessInstances() {
 				var isActivePIs = true;
 				angular.forEach(self.processInstances, function(pi) {
-					if (pi.status != 'Active') {
+					// ACTIVE status has value  = 0
+					if (pi.status.value != 0) {
 						isActivePIs = false;
 					}
 				})

@@ -1,6 +1,14 @@
 <div class="deputy-management-wrapper">
-<!-- 	<div class="view-panel-toolbar tbl-title"
-		style="color: #708090; font-size: 11px">{{i18n('business-control-center-messages.views-deputyTeamMemberView-myTeamMembers-title')}}</div> -->
+<div sda-toolbar>
+		<div class="tbl-toolbar-section">
+			<button	ng-disabled="ctrl.usersTable.getSelection() == null" ng-click="ctrl.openCreateOrModifyDeputyDialog('','ADD');"
+				title="{{i18n('business-control-center-messages.views-deputyTeamMemberView-addDeputy-title')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				aid="BCC-DeputyMgmt-MyDeputiesTbl-AddDeputy">
+				<i class="pi pi-create pi-lg" />
+			</button>
+		</div>
+	</div>
 	<table sd-data-table="ctrl.userDeputiesTable"
 		sd-data="ctrl.deputies" sda-mode="local"
 		sda-ready="ctrl.showUserDeputiesTable" sda-selectable="row"
@@ -14,16 +22,37 @@
 					sda-label-key="deputy"
 					sda-sortable="true">
 				</th>
-				<th sda-name="validFrom" sda-label-key="validFrom"></th>
-				<th sda-name="validTo" sda-label-key="validTo"></th>
+				<th sda-name="validFrom"></th>
+				<th sda-name="validTo"></th>
 				<th sda-name="actions" sda-label="{{i18n('business-control-center-messages.views-common-column-actions')}}" ></th>
 		</thead>
 		<tbody>
 			<tr>
-				<td><img alt="" ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}" width="24px" height="24px" style="padding-right: 5px;">{{rowData.userDisplayName}}</td>
-				<td sda-data-type="dateTime" style="text-align: center;"></td>
-				<td sda-data-type="dateTime" style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
+				<td sda-data-type="string"><img alt="" ng-if="ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1" 
+					 ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}" width="24px" height="24px" class="spacing-right">
+					<i class="{{ctrl.getUserImageURL(rowData.avatarImageURI)}} pi-1x" 
+					 ng-if="!(ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1)"  style="margin-right: 5px;"></i>
+					 {{rowData.userDisplayName}}</td>
+				<td sda-data-type="dateTime"></td>
+				<td sda-data-type="dateTime"></td>
+				<td><div style="text-align: left; white-space: nowrap;">
+						<button
+							ng-click="bpmCommon.stopEvent($event);ctrl.openCreateOrModifyDeputyDialog(rowData,'EDIT')"
+							title="{{i18n('business-control-center-messages.views-deputyTeamMemberView-edit')}}"
+							class="button-link tbl-tool-link"
+							aid="BCC-DeputyMgmt-MyDeputiesTbl-EditDeputy">
+							<i class="pi pi-edit pi-lg"></i>
+						</button>
+						<button
+							ng-click="bpmCommon.stopEvent($event);ctrl.removeUserDeputy(rowData.userOID)"
+							title="{{i18n('business-control-center-messages.views-deputyTeamMemberView-remove')}}"
+							class="button-link tbl-tool-link"
+							aid="BCC-DeputyMgmt-MyDeputiesTbl-RemoveDeputy">
+							<i class="pi pi-delete pi-lg msg-error" style="padding-right: 5px"></i>
+						</button>
+						
+						</div>
+				</td>
 			</tr>
 		</tbody>
 	</table>

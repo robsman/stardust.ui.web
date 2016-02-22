@@ -18,9 +18,11 @@
 					styleClass="headerText" />
 				<pc:automationTag value="auto-COM-FileUpdDlg-CloseLink"
 					standAlone="false" />
-				<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+				<ice:commandLink title="#{common_msgPropsBean['common.close']}"
 					action="#{commonFileUploadDialog.closePopup}" immediate="true"
-					styleClass="windowClose" />
+					styleClass="windowClose pi-cmdLnk">
+					<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+				</ice:commandLink>
 			</ice:panelGroup>
 		</f:facet>
 
@@ -71,8 +73,7 @@
 									action="#{commonFileUploadDialog.toggleDescription}">
 									<pc:automationTag value="auto-COM-FileUpdDlg-DescLink"
 										standAlone="false" />
-									<ice:graphicImage
-										value="/plugins/views-common/images/icons/add.png" />
+									<ice:outputText styleClass="pi pi-create pi-lg" />
 								</ice:commandLink>
 								<ice:commandLink
 									action="#{commonFileUploadDialog.toggleDescription}"
@@ -101,8 +102,7 @@
 									action="#{commonFileUploadDialog.toggleComment}">
 									<pc:automationTag value="auto-COM-FileUpdDlg-VerCmtLink"
 										standAlone="false" />
-									<ice:graphicImage
-										value="/plugins/views-common/images/icons/add.png" />
+									<ice:outputText styleClass="pi pi-create pi-lg" />
 								</ice:commandLink>
 								<ice:commandLink
 									value="#{views_common_msgPropsBean['fileUpload.comment.label']}"

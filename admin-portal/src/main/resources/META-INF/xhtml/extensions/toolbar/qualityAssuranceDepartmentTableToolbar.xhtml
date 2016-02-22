@@ -10,9 +10,8 @@
 		disabled="#{qaManagementBean.selectedDepartmentsCount eq 0}">
 		<pc:automationTag value="auto-ADM-QAMgmt-Department-Toolbar-EditQA"
 			standAlone="false" />
-		<h:graphicImage value="/plugins/views-common/images/icons/pencil.png"
-			style="border: none;"
+		<h:outputText 
 			title="#{messages_admin['views.qaManagementView.toolbar.editQA.title']}"
-			styleClass="#{(qaManagementBean.selectedDepartmentsCount eq 0) ? 'iceCmdBtn-dis' : ''}" />
+			styleClass="#{(qaManagementBean.selectedDepartmentsCount eq 0) ? 'iceCmdBtn-dis' : ''} pi pi-edit pi-lg" />
 	</ice:commandLink>
 </f:view>

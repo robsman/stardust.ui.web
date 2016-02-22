@@ -18,8 +18,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.stardust.engine.api.dto.RuntimePermissionsDetails;
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
+import org.eclipse.stardust.engine.api.runtime.RuntimePermissions;
 import org.eclipse.stardust.engine.core.runtime.utils.Authorization2;
 
 /**
@@ -35,7 +36,7 @@ public class PermissionsDetails
 
    private Map<String, List<String>> uiPermissions;
 
-   private RuntimePermissionsDetails generalPermission;
+   private RuntimePermissions generalPermission;
 
    /**
     * @param permissions
@@ -49,6 +50,7 @@ public class PermissionsDetails
     * @param permissionId
     * @return
     */
+   @Deprecated
    public Set<ModelParticipantInfo> getGrants(String permissionId)
    {
       Set<ModelParticipantInfo> externalGrants;
@@ -64,10 +66,55 @@ public class PermissionsDetails
 
       return externalGrants;
    }
+   
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public Set<ModelParticipantInfo> getGrants2(String permissionId)
+   {
+      Set<ModelParticipantInfo> externalGrants;
+
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId) || UiPermissionUtils.isModelPermissionId(permissionId))
+      {
+         externalGrants = generalPermission.getGrants(permissionId);
+      }
+      else
+      {
+         externalGrants = UiPermissionUtils.externalize(uiPermissions.get(permissionId
+               + UiPermissionUtils.SUFFIX_ALLOW));
+      }
+
+      return externalGrants;
+   }
+   
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public Set<ModelParticipantInfo> getDeniedGrants(String permissionId)
+   {
+      Set<ModelParticipantInfo> externalGrants;
+
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId) || UiPermissionUtils.isModelPermissionId(permissionId))
+      {
+         externalGrants = generalPermission.getDeniedGrants(permissionId);
+      }
+      else
+      {
+         externalGrants = UiPermissionUtils.externalize(uiPermissions
+               .get(permissionId + UiPermissionUtils.SUFFIX_DENY));
+      }
+
+      return externalGrants;
+   }
 
    /**
     * @param permissionId
     * @param grants
+    * @deprecated
     */
    public void setGrants(String permissionId, Set<ModelParticipantInfo> grants)
    {
@@ -81,6 +128,54 @@ public class PermissionsDetails
       }
    }
 
+   /**
+    * @param permissionId
+    * @param grants
+    */
+   public void setGrants2(String permissionId, Set<ModelParticipantInfo> grants)
+   {
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId) || UiPermissionUtils.isModelPermissionId(permissionId))
+      {
+         generalPermission.setGrants(permissionId, grants);
+      }
+      else
+      {
+         if (CollectionUtils.isEmpty(grants))
+         {
+            uiPermissions.remove(permissionId + UiPermissionUtils.SUFFIX_ALLOW);
+         }
+         else
+         {
+            uiPermissions.put(permissionId + UiPermissionUtils.SUFFIX_ALLOW, UiPermissionUtils.internalize(grants));
+         }
+      }
+   }
+
+   /**
+    * 
+    * @param permissionId
+    * @param grants
+    */
+   public void setDeniedGrants(String permissionId, Set<ModelParticipantInfo> grants)
+   {
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId) || UiPermissionUtils.isModelPermissionId(permissionId))
+      {
+         //TODO: engine API to delete the preference entry is not exposed
+         generalPermission.setDeniedGrants(permissionId, grants);
+      }
+      else
+      {
+         if (CollectionUtils.isEmpty(grants))
+         {
+            uiPermissions.remove(permissionId + UiPermissionUtils.SUFFIX_DENY);
+         }
+         else
+         {
+            uiPermissions.put(permissionId + UiPermissionUtils.SUFFIX_DENY, UiPermissionUtils.internalize(grants));
+         }
+      }
+   }
+   
    /**
     * @param permissionId
     */
@@ -99,6 +194,7 @@ public class PermissionsDetails
    /**
     * @param permissionId
     * @return
+    * @deprecated
     */
    public boolean hasAllGrant(String permissionId)
    {
@@ -125,6 +221,36 @@ public class PermissionsDetails
       return false;
    }
 
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public boolean hasAllGrant2(String permissionId)
+   {
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId) || UiPermissionUtils.isModelPermissionId(permissionId))
+      {
+         return generalPermission.hasAllGrant(permissionId);
+      }
+      else
+      {
+         List<String> grants = uiPermissions.get(permissionId + UiPermissionUtils.SUFFIX_ALLOW);
+
+         if (grants != null)
+         {
+            if (grants.contains(Authorization2.ALL))
+            {
+               return true;
+            }
+         }
+         else
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+   
    /**
     * @param permissionId
     * @return
@@ -154,12 +280,12 @@ public class PermissionsDetails
       return Collections.unmodifiableMap(permissionMap);
    }
 
-   public RuntimePermissionsDetails getGeneralPermission()
+   public RuntimePermissions getGeneralPermission()
    {
       return generalPermission;
    }
 
-   public void setGeneralPermission(RuntimePermissionsDetails generalPermission)
+   public void setGeneralPermission(RuntimePermissions generalPermission)
    {
       this.generalPermission = generalPermission;
    }

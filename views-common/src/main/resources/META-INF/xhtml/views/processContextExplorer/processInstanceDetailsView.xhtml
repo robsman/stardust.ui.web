@@ -10,6 +10,7 @@
 		<ui:include src="resubmissionActivityNotes.xhtml" />
 		<ui:include src="/plugins/views-common/dialogs/abortActivity.xhtml" />
 		<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
+		<ui:include src="/plugins/views-common/dialogs/relocateActivityDialog.xhtml" />
 		<ui:include src="/plugins/views-common/dialogs/spawnProcessDialog.xhtml" />
 		<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
 		<ui:include src="/plugins/views-common/dialogs/abortProcess.xhtml" />
@@ -44,22 +45,21 @@
 								<ice:outputText
 									value="#{processInstanceDetailsBean.processName}" />
 
-								<ice:commandLink action="#{ippPortalApp.openView}">
+								<ice:commandLink action="#{ippPortalApp.openView}" style="padding-left: 5px;">
 									<pc:automationTag value="auto-COM-PCEOverview-GanttChart" standAlone="false"/>
-									<h:graphicImage
-										value="/plugins/views-common/images/icons/diagram/gantt_diagram.gif"
-										style="border: none;" title="#{messages_bcc['views.processDiagramView.tooltip.viewGanttChart.title']}"/>
+									<h:outputText
+										styleClass="pi pi-gantt-chart pi-lg"
+										title="#{messages_bcc['views.processDiagramView.tooltip.viewGanttChart.title']}"/>
 									<f:param name="viewId" value="ganttChartView" />
 									<f:param name="nested" value="true" />
 									<f:param name="viewParams"
 										value="processInstanceOId=#{processInstanceDetailsBean.processInstance.OID}" />
 								</ice:commandLink>
-								<ice:commandLink action="#{ippPortalApp.openView}">
+								<ice:commandLink action="#{ippPortalApp.openView}" style="padding-left: 5px;">
 									<pc:automationTag value="auto-COM-PCEOverview-ProcessDiag" standAlone="false"/>
-									<h:graphicImage
+									<h:outputText
 										rendered="#{(ippBCCDiagramBean != null) and ippBCCDiagramBean.diagramSupported}"
-										value="/plugins/views-common/images/icons/process_diagram.gif"
-										style="border: none;"
+										styleClass="pi pi-process-diagram pi-lg"
 										title="#{messages_bcc['views.processDiagramView.tooltip.viewDiagram']}" />
 									<f:param name="viewId" value="processDiagramView" />
 									<f:param name="nested" value="true" />
@@ -133,20 +133,43 @@
 			<f:facet name="header">
 				<ice:panelGroup>
 					<ice:outputText value="#{messages_bcc['common.descriptor.title']}">
-						<pc:automationTag value="auto-COM-PCEDescriptor" standAlone="false"/>	
+						<pc:automationTag value="auto-COM-PCEDescriptor"
+							standAlone="false" />
 					</ice:outputText>
 				</ice:panelGroup>
 			</f:facet>
-			<ice:panelGroup>
-				<pc:automationTag value="auto-COM-PCEDescriptorTable"/>
-				<pc:genericDataTable bean="#{processInstanceDetailsBean}"
-					id="descriptorList"
-					table="#{processInstanceDetailsBean.descriptorTable}"
-					sortSupported="true" exportExcel="false" exportCsv="false" />
+			<ice:panelGroup id="tabSetTabs">
+				<ice:panelTabSet id="processInstanceDescriptorTab"
+					selectedIndex="#{processInstanceDetailsBean.selectedTabIndex}">
+					<ice:panelTab rendered="true"
+						label="#{views_common_msgPropsBean['views.processInstanceDetailsView.descriptors.current']}">
+						<ice:panelGroup>
+							<ice:inputHidden id="descriptorViewMsg" />
+							<ui:include
+								src="/plugins/views-common/common/validationMessage.xhtml">
+								<ui:param name="validationMessageBean"
+									value="#{processInstanceDetailsBean.validationMessageBean}" />
+							</ui:include>
+						</ice:panelGroup>
+						<pc:automationTag value="auto-COM-PCEDescriptorTable" />
+						<pc:genericDataTable bean="#{processInstanceDetailsBean}"
+							id="descriptorList"
+							table="#{processInstanceDetailsBean.descriptorTable}"
+							sortSupported="true" exportExcel="false" exportCsv="false" />
+					</ice:panelTab>
+					<ice:panelTab rendered="true"
+						label="#{views_common_msgPropsBean['views.processInstanceDetailsView.descriptors.history']}">
+						<pc:automationTag value="auto-COM-Desc-Event-DataTable" />
+						<pc:genericDataTable exportExcel="true" exportCsv="true"
+							bean="#{processInstanceDetailsBean}" id="descEventList"
+							table="#{processInstanceDetailsBean.descriptorHistoryTable}"
+							sortSupported="true" />
+					</ice:panelTab>
+				</ice:panelTabSet>
 			</ice:panelGroup>
 		</ice:panelCollapsible>
-		
-			<ice:panelCollapsible
+
+		<ice:panelCollapsible
 			expanded="#{processInstanceDetailsBean.linkedProcessPanelExpanded}">
 			<f:facet name="header">
 				<ice:panelGroup>

@@ -55,7 +55,8 @@ public class DocumentVersionDialog extends PopupUIComponentBean
    private String documentName;
 
    private MessagesViewsCommonBean propsBean;
-
+   
+   private JCRVersionTracker jcrVersionTracker;
    /**
     * Default Constructor
     */
@@ -153,9 +154,9 @@ public class DocumentVersionDialog extends PopupUIComponentBean
     */
    public List<DocumentVersion> getDocumentVersionList(Document document)
    {
-      JCRVersionTracker vt = new JCRVersionTracker(document);
+      jcrVersionTracker = new JCRVersionTracker(document);
       List<DocumentVersion> documentVersionList = new ArrayList<DocumentVersion>();
-      Map<Integer, Document> docVersions = vt.getVersions();
+      Map<Integer, Document> docVersions = jcrVersionTracker.getVersions();
       if (docVersions.size() > 0)
       {
          TreeSet<Integer> sortedVersions = new TreeSet<Integer>(docVersions.keySet());
@@ -191,7 +192,9 @@ public class DocumentVersionDialog extends PopupUIComponentBean
    {
       super.closePopup();
       DocumentVersion docVersion = (DocumentVersion) event.getComponent().getAttributes().get("documentVersion");
-      DocumentViewUtil.openJCRDocument(docVersion.getDocument());
+      Document document = docVersion.getDocument();
+      int versionNumber = Float.valueOf(docVersion.getVersionNo()).intValue();
+      DocumentViewUtil.openJCRVersionDocument(null, document, null, jcrVersionTracker, versionNumber);
    }
 
    public String getDocumentName()

@@ -354,14 +354,13 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
          processFilterToolbarItems = new ArrayList<FilterToolbarItem>();
          FilterToolbarItem auxiliaryProcess = new FilterToolbarItem("" + 0, "auxiliaryProcess",
                "processHistory.processTable.showAuxiliaryProcess", "processHistory.processTable.hideAuxiliaryProcess",
-               "process_auxiliary.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+               "pi pi-process-auxiliary pi-lg");
          auxiliaryProcess.setActive(false);
          processFilterToolbarItems.add(auxiliaryProcess);
 
          FilterToolbarItem auxiliaryActivity = new FilterToolbarItem("" + 1, "auxiliaryActivity",
                "processHistory.processTable.showAuxiliaryActivities",
-               "processHistory.processTable.hideAuxiliaryActivities", "activity_auxiliary.png",
-               Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+               "processHistory.processTable.hideAuxiliaryActivities", "pi pi-activity-auxiliary pi-lg");
          auxiliaryActivity.setActive(false);
          processFilterToolbarItems.add(auxiliaryActivity);
 

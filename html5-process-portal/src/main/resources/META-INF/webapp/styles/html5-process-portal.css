@@ -1,4 +1,14 @@
-.sd-participant-selector .sd-ac-container {
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+ .sd-participant-selector .sd-ac-container {
   width:220px;
 }
 
@@ -28,7 +38,7 @@
 
 .sd-delegate-act-srch-participant-div {
 	border: 1px solid;
-	border-color: #D9D9D9;
+	border-color: #D9D9D9 !important;
 	width: 340px;
 	overflow: auto;
 	padding: 7px;
@@ -36,6 +46,7 @@
 /* ********** Abort Activity Dialog ********** */
 .abort-activity-form-content{
 padding-bottom : 10px;
+margin-left : 10px;
 }
 
 .abort-activity-notication-message{
@@ -48,75 +59,58 @@ padding : 5px;;
 
 /* ********** Activity Criticality flags ********** */
 .criticality-flag-RED{
-  color :#F75339;
+  color :#F75339 !important;
 }
 
 .criticality-flag-YELLOW{
-  color :#EDCB47;
+  color :#EDCB47 !important;
 }
 
 .criticality-flag-BLUE{
-  color :#43B1FF;
+  color :#43B1FF !important;
 }
 
 .criticality-flag-GREEN{
-  color:#6CC14F;
+  color:#6CC14F !important;
 }
 
 .criticality-flag-PURPLE{
-  color:#C748F2;
+  color:#C748F2 !important;
 }
 
 .criticality-flag-ORANGE{
-  color:#FFAE3E;
+  color:#FFAE3E !important;
 }
 
 .criticality-flag-PINK{
-  color:#FF59E5;
+  color:#FF59E5 !important;
 }
 
 .criticality-flag-WHITE-WARNING{
-  color:black;
+  color:black !important;
 }
 
 .criticality-flag-WHITE{
-  color:black;
+  color:black !important;
 }
 
 .criticality-flag-NO-COLOR{
-  color:#CFCFCF;
-}
-
-.criticality-flag{
-  font-size: 18px;
+  color:#CFCFCF !important;
 }
 
 /* ********** Process Priority flags ********** */
 
 .priority-flag-high{
-  color :#FC3838;
+  color :#FC3838 !important;
 }
 
 .priority-flag-normal{
-  color :#FFCC00;
+  color :#FFCC00 !important;
 }
 
 .priority-flag-low{
-  color :#3D66E0;
+  color :#3D66E0 !important;
 }
-
-.priority-flag{
-  font-size: 18px;
-}
-/* ********** Process Activity Filter ********** */
-
- .auxillaryGearDisabled{
-   color : gray;
- }
-
- .auxillary-gear{
-  font-size: 18px;
- }
 
 /* ********** Priority and criticality Filter ********** */
 
@@ -129,8 +123,7 @@ padding : 5px;;
 
 .priority-criticality-filter-ac-container div[name='sd-ac-tag']{
     display:inline-table;
-    font-size: 12px;
-    font-family: Lato;
+    font-size: 1.1em;
     padding: 0px 4px 0px 4px;
     border:solid 1px #ccd5e4;
     background-color:#eff2f7;
@@ -165,7 +158,6 @@ padding : 5px;;
 
 .priority-criticality-filter-ac-container [name='sd-ac-selectList'] div{
     cursor:pointer;
-    font-family:Lato;
     font-size:0.8em;
     padding:2px;
     background-color:#fff;
@@ -193,6 +185,9 @@ padding : 5px;;
 	width : 100px;
 }
 
+.notification-icon {
+ 	float:left;
+ }
 
 .sd-abort-noti-dlg .notification-body {
 	padding: 0 25px 25px 25px;
@@ -209,7 +204,6 @@ padding : 5px;;
 
 .sd-abort-dlg .abort-start-section .switch-form-info {
 	margin: 10px 0 10px 0;
-	font-size: .9em;
 }
 
 .sd-abort-dlg .abort-join-section select {
@@ -223,30 +217,19 @@ padding : 5px;;
 
 .sd-abort-dlg .abort-join-section .switch-form-info {
 	margin: 10px 0 10px 0;
-	font-size: .9em;
-}
-.complete-activity-legend {
-    border-style: none;
-    border-width: 0;
-    font-size: 14px;
-    line-height: 4px;
-    margin-bottom: 0px;
-    background :white;
-    width:90px;
 }
 
-.activity-overview-report-field-label {
-	padding-right: 5px;
+.complete-activity-description {
+    margin-bottom: 10px;
 }
 
-.activity-overview-report-field-value {
-	padding-right: 10px;
+.delegate-icon {
+	margin-left: 5px;
 }
-.toolbar-icon {
-	
-}
-.action-column-icon {
-	font-size: 12px;
+
+.delegate-icon-arrow {
+	left: -11px;
+	top: -5px;
 }
 
 #progressBar {
@@ -273,3 +256,8 @@ padding : 5px;;
 	background-color: #91C6D0;
 	height: 20px;
 }
+
+.searchTableLayout td {
+	padding: 3px;
+}
+

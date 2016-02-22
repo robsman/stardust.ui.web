@@ -20,6 +20,7 @@ import java.util.Set;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
@@ -322,19 +323,16 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
    {
       try
       {
+         Map<String, Object> params = CollectionUtils.newTreeMap();
          if (CollectionUtils.isNotEmpty(startedProcessInstances))
          {
-            Map<String, Object> params = CollectionUtils.newTreeMap();
-            ActivityInstanceQuery query = ActivityInstanceQuery.findAlive();
-
-            FilterOrTerm orTerm = query.getFilter().addOrTerm();
+            List<Long> pInstanceOids = new ArrayList<Long>();
 
             for (ProcessInstance pInstance : startedProcessInstances)
             {
-               orTerm.add(ActivityInstanceQuery.PROCESS_INSTANCE_OID.isEqual(pInstance.getOID()));
+               pInstanceOids.add(pInstance.getOID());
             }
-
-            params.put(Query.class.getName(), query);
+            params.put("pInstanceOids", StringUtils.join(pInstanceOids, ','));
             params.put("name", COMMON_MESSAGE_BEAN.getString("views.switchProcessDialog.worklist.title"));
             PortalApplication.getInstance().openViewById("worklistPanel", "id=" + new Date().getTime(), params, null,
                   false);
@@ -348,6 +346,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
       // close Switch Process Dialog
       closeSwitchProcessPopup();
    }
+   
 
    /**
     * return Switched Process Message in Collection (separated by \n)

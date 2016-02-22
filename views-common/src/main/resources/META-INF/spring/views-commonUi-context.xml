@@ -24,15 +24,11 @@
 				include="/plugins/views-common/contentmgmt/extensions/toolbar/notesToolBar.xhtml"
 				requiredView="notesView" />
 
-			--><ippui:toolbarSection name="documentSearchViewToolbar"
-				include="/plugins/views-common/extension/toolbar/documentSearchViewToolbar.xhtml"
-				requiredView="documentSearchView" />
+			-->
 
 			<ippui:toolbarSection name="chatViewToolbar"
 				include="/plugins/views-common/extension/toolbar/chatViewToolbar.xhtml"
-				requiredView="chatView" />							<ippui:toolbarSection name="correspondenceViewToolbar"				include="/plugins/views-common/extension/toolbar/correspondenceViewToolbar.xhtml"				requiredView="correspondenceView" />	
-
-			<ippui:toolbarSection name="repositoryViewToolbar"
+				requiredView="chatView" />							<ippui:toolbarSection name="repositoryViewToolbar"
 				include="/plugins/views-common/extension/toolbar/repositoryViewToolbar.xhtml"
 				requiredView="genericRepositoryView" />
 
@@ -59,13 +55,7 @@
 			<ippui:toolbarSection name="myReportsViewToolbar"
 				include="/plugins/views-common/extension/toolbar/myReportsViewToolbar.xhtml"
 				requiredView="myReportsView" />
-				
-			<ippui:toolbarSection name="authorizationManagerViewToolbar"
-			include="/plugins/views-common/extension/toolbar/authorizationManagerViewToolbar.xhtml"
-			requiredView="authorizationManagerView" />			
-				
-					
-				
+						
 		</ippui:toolbarExtension>
 
 		<!--  VIEWS -->
@@ -74,35 +64,30 @@
 			<!--<ippui:view name="notesView"
 				include="/plugins/views-common/contentmgmt/views/noteContentView.xhtml" />
 
-			--><ippui:view name="genericRepositoryView"
+			-->			<ippui:view name="genericRepositoryView"
 				include="/plugins/views-common/views/doctree/genericRepositoryView.xhtml"
-				controller="genericRepositoryTreeViewBean" />
+				controller="genericRepositoryTreeViewBean">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/repository-view.png" />				</ippui:preferences>			</ippui:view>
 
 			<ippui:view name="myDocumentsTreeView"
 				include="/plugins/views-common/views/mydoctree/myDocumentsTreeView.xhtml"
-				controller="myDocumentsTreeViewBean" />
+				controller="myDocumentsTreeViewBean">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/my-documents-view.png" />				</ippui:preferences>			</ippui:view>
 
 			<ippui:view name="documentView"
 				include="/plugins/views-common/views/document/documentView.xhtml"
-				controller="documentHandlerBean" />
-
-			<ippui:view name="correspondenceView"
-				include="/plugins/views-common/views/correspondence/correspondenceView.xhtml" />
-
-			<ippui:view name="chatView"
+				controller="documentHandlerBean">				<ippui:preferences>					<ippui:preferencePage name="configuration"						include="/plugins/views-common/views/document/imageViewerConfiguration.xhtml" />				</ippui:preferences>
+			</ippui:view>			<ippui:view name="chatView"
 				include="/plugins/views-common/views/chat/chatView.xhtml"
-				controller="chatViewBean" />
+				controller="chatViewBean">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/chat-view.png" />				</ippui:preferences>			</ippui:view>
 
 			<ippui:view name="resourceMgmtTreeView"
 				include="/plugins/views-common/views/resourcemgmttree/resourceMgmtTreeView.xhtml"
-				controller="resourceMgmtTreeViewBean" />
+				controller="resourceMgmtTreeViewBean">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/resource-manager-view.png" />				</ippui:preferences>			</ippui:view>
 
 			<ippui:view name="documentSearchView"
-				include="/plugins/views-common/views/documentsearch/documentSearchView.xhtml"
-				controller="documentSearchBean">
+				include="/plugins/html5-views-common/html5/partials/views/documentSearchView.html">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/icons/page_white_find.png" />
+						include="/does-not-exist/document-search.png" />
 				</ippui:preferences>
 			</ippui:view>
 
@@ -119,7 +104,7 @@
 				controller="processInstanceDetailsBean" identityParams="processInstanceOID">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/icons/process.png" />
+						include="/process-view.png" />
 					<ippui:preferencePage name="configuration"
 						include="/plugins/views-common/views/processContextExplorer/processInstanceDetailConfiguration.xhtml" />
 				</ippui:preferences>
@@ -136,23 +121,10 @@
 			
 			<ippui:view name="myReportsView"
 			include="/plugins/views-common/views/report/myReportsView.xhtml"
-			controller="myReportsViewBean" >			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/chart-pie.png" />			</ippui:preferences>			</ippui:view>
+			controller="myReportsViewBean" >			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/does-not-exist/report-view.png" />			</ippui:preferences>			</ippui:view>
 				
-			<ippui:view name="imageViewerConfig"
-				include="/plugins/views-common/views/document/imageViewerConfiguration.xhtml">
-				<ippui:preferences>
-					<ippui:preferencePage name="configuration"
-						include="/plugins/views-common/views/document/imageViewerConfiguration.xhtml" />
-				</ippui:preferences>
-			</ippui:view>						<ippui:view name="deputyManagementView"			include="/plugins/views-common/deputy/deputyManagementView.xhtml"			controller="deputyManagementBean">	   		<ippui:preferences>				<ippui:preferencePage name="configuration"					include="/plugins/views-common/deputy/deputyManagementView.xhtml" />				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/user-silhouette.png" />			</ippui:preferences>		</ippui:view>
-			
-			<ippui:view name="authorizationManagerView"
-			include="/plugins/views-common/views/authorization/authorizationManagerView.xhtml" controller="authorizationManagerBean"/>			
-		
-<!-- 			<ippui:view name="caseManagerView"
-			include="/plugins/views-common/views/case/caseManagerView.xhtml" controller="authorizationManagerBean"/>	 -->		
-			
-			
+			<ippui:view name="deputyManagementView"			include="/plugins/views-common/deputy/deputyManagementView.xhtml"			controller="deputyManagementBean">	   		<ippui:preferences>				<ippui:preferencePage name="configuration"					include="/plugins/views-common/deputy/deputyManagementView.xhtml" />				<ippui:preferencePage name="icon"					include="/does-not-exist/deputy-management.png" />			</ippui:preferences>		</ippui:view>
+		<ippui:view name="correspondencePanel"			include="/plugins/html5-views-common/html5/partials/views/correspondenceView.html">			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/does-not-exist/correspondence-email.png" />				<ippui:preferencePage name="configuration"					include="/plugins/views-common/user/correspondencePanel.xhtml" />			</ippui:preferences>		</ippui:view>					
 		</ippui:viewsExtension>
 
 

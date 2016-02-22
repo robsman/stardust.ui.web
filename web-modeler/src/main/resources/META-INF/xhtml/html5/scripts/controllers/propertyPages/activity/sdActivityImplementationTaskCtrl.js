@@ -60,7 +60,6 @@
       this.noImplementation = null;
       this.ruleSet = false;
       this.application = false;
-
       if (this.modelElement.taskType == sdModelerConstants.NONE_TASK_TYPE
               || this.modelElement.taskType == sdModelerConstants.MANUAL_TASK_TYPE) {
 
@@ -125,7 +124,7 @@
       var modelsSorted = sdUtilService.convertToSortedArray(this.propertiesPanel
               .getModels(), "name", true);
 
-      var otherModel = i18n('modeler.general.otherModel');
+      var otherModel = i18n('modeler.general.otherModels');
 
       for ( var n in modelsSorted) {
         if (modelsSorted[n] == this.getModel()) {

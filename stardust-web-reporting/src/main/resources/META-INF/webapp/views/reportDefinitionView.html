@@ -13,7 +13,10 @@
 <link rel="stylesheet" type="text/css" href="../css/bpm-reporting.custom.jquery.ui.css" />
 <link rel="stylesheet" type="text/css" href="../css/bpm-reporting.css">
 <link rel="stylesheet" type="text/css" href="../css/bpm-reporting-table.css" />
-
+<link rel="stylesheet" type="text/css" href="../../html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css"></link>
+<link rel="stylesheet" type="text/css" href="../../html5-common/styles/portal-icons.css" > </link>
+<link rel="stylesheet" type="text/css" href="../../modern-skin/modern.css"></link>
+<link rel="stylesheet" type="text/css"  href="../../modern-skin/modern.font.icons.css"></link>
 
 <style type="text/css">
 table.formTable td {
@@ -23,7 +26,7 @@ table.formTable td {
 <script type="text/javascript" src="../js/commonRequire.js"></script>
 <script type="text/javascript"
 	data-main="../js/ReportDefinitionViewMain"
-	src="../js/libs/require/2.0.5/require.js"></script>
+	src="../../views-common/js/libs/require/2.1.15/require.min.js"></script>
 </head>
 <body>
 	<div ng-include="'templates/reportToolbar.html'"></div>
@@ -36,37 +39,37 @@ table.formTable td {
 						<ul id="propertiesTabsList">
 							<li><a href="#dataSourcesTab"><table>
 										<tr>
-											<td><img src="../css/images/database.png"></img>
+											<td><i class="pi pi-database pi-lg"></i>
 											<td><span class="tabLabel" id="dataSet">{{getI18N('reporting.definitionView.dataSourcesTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
 							<li><a href="#dataSetTab"><table>
 										<tr>
-											<td><img src="../css/images/table.png"></img>
+											<td><i class="pi pi-dataset pi-lg"></i>
 											<td><span class="tabLabel" id="dataSet">{{getI18N('reporting.definitionView.dataSetTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
 							<li><a href="#layoutTab"><table>
 										<tr>
-											<td><img src="../css/images/layout.png"></img>
+											<td><i class="pi pi-layout pi-lg"></i>
 											<td><span class="tabLabel" id="layout">{{getI18N('reporting.definitionView.layoutTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
 							<li><a href="#previewTab"><table>
 										<tr>
-											<td><img src="../css/images/chart-bar.png"></img>
+											<td><i class="pi pi-bar-chart pi-lg"></i>
 											<td><span class="tabLabel" id="preview">{{getI18N('reporting.definitionView.previewTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
 							<li><a href="#definitionTab"><table>
 										<tr>
-											<td><img src="../css/images/drive.png"></img>
+											<td><i class="pi pi-storage pi-lg"></i>
 											<td><span class="tabLabel" id="definition">{{getI18N('reporting.definitionView.reportDefinitionTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
 							<li><a href="#schedulingTab"><table>
 										<tr>
-											<td><img src="../css/images/date.png"></img>
+											<td><i class="pi pi-scheduling pi-lg"></i>
 											<td><span class="tabLabel" id="scheduling">{{getI18N('reporting.definitionView.schedulingTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
@@ -184,8 +187,8 @@ table.formTable td {
 									ng-click="showComputedColumnsPanel = false">
 									<table cellpadding="0" cellspacing="0" class="layoutTable">
 										<tr>
-											<td style="padding-right: 5px;"><img
-												src="../css/images/arrow-down.png" /></td>
+											<td style="padding-right: 5px;"><i
+												class="pi pi-trigger-expanded pi-lg"></i></td>
 											<td><span class="heading">{{getI18N('reporting.definitionView.computedColumns.title')}}</span></td>
 										</tr>
 									</table>
@@ -193,8 +196,8 @@ table.formTable td {
 									ng-click="showComputedColumnsPanel = true; byDefaultSelectFirstComputedColumn();">
 									<table cellpadding="0" cellspacing="0" class="layoutTable">
 										<tr>
-											<td style="padding-right: 5px;"><img
-												src="../css/images/arrow-right.png" /></td>
+											<td style="padding-right: 5px;"><i
+												class="pi pi-trigger-collapsed pi-lg"></i></td>
 											<td><span class="heading">{{getI18N('reporting.definitionView.computedColumns.title')}}</span></td>
 										</tr>
 									</table>
@@ -218,8 +221,8 @@ table.formTable td {
 													<tr ng-repeat="column in report.dataSet.computedColumns"
 														class="{{$parent.getComputedColumnStyleClass(column)}}">
 														<td><a id="auto-reporting-dataSourceTab-CompColDelete{{$index}}" href=""
-															ng-click="$parent.deleteComputedColumn(column)"><img
-																src="../css/images/delete.png" /> </a></td>
+															ng-click="$parent.deleteComputedColumn(column)"><i 
+																class="pi pi-delete pi-lg"></i> </a></td>
 														<td><input id="auto-reporting-dataSourceTab-CompColId{{$index}}" type="text" ng-model="column.id"
 															ng-click="$parent.selectComputedColumn(column)" /></td>
 														<td><input id="auto-reporting-dataSourceTab-CompColName{{$index}}" type="text" ng-model="column.name"
@@ -230,8 +233,8 @@ table.formTable td {
 																	value="" ng-hide="column.type">{{getI18N('reporting.definitionView.pleaseSelect.label')}}</option></select></td>
 													</tr>
 													<tr>
-														<td><a id="auto-reporting-dataSourceTab-CompColAdd" href="" ng-click="addComputedColumn()"><img
-																src="../css/images/add.png" /> </a></td>
+														<td><a id="auto-reporting-dataSourceTab-CompColAdd" href="" ng-click="addComputedColumn()"><i
+																class="pi pi-create icon pi-lg"></i> </a></td>
 														<td></td>
 														<td></td>
 														<td></td>
@@ -1398,8 +1401,8 @@ table.formTable td {
 													<td align="center">
 														<table style="margin-top: 15px;">
 															<tr valign="middle">
-																<td style="padding-right: 5px;"><img
-																	src="../images/icons/date.png" /></td>
+																<td style="padding-right: 5px;"><i
+																	class="pi pi-calendar pi-lg"/></td>
 																<td style="color: #8ba7aa;">
 																	<div style="text-align: left;">{{scheduling.nextExecutionDateDay}}</div>
 																	<div id="auto-reporting-schedulingTab-nextExecution" 
@@ -1420,5 +1423,6 @@ table.formTable td {
 			</tr>
 		</table>
 	</div>
+
 </body>
 </html>

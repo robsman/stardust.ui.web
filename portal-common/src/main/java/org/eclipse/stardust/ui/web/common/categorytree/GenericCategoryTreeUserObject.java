@@ -26,9 +26,9 @@ public class GenericCategoryTreeUserObject extends IceUserObject implements Seri
 {
    private static final long serialVersionUID = 1L;
 
-   public static String ICON_FOLDER = "/plugins/common/images/icons/tree_folder_closed.gif";
-   public static String ICON_FOLDER_OPEN = "/plugins/common/images/icons/tree_folder_open.gif";
-   public static String ICON_DOCUMENT = "/plugins/common/images/icons/blue-document.png";
+   public static String ICON_FOLDER = "pi pi-folder pi-lg";
+   public static String ICON_FOLDER_OPEN = "pi pi-folder-open pi-lg";
+   public static String ICON_DOCUMENT = "pi pi-other pi-lg";
    
    private GenericCategory category;
    private GenericItem item;

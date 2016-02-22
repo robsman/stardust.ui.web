@@ -24,14 +24,12 @@ import org.eclipse.stardust.engine.api.runtime.ProcessDefinitions;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.SubprocessSpawnInfo;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
+import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
+import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -61,8 +59,9 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
 
    private SpawnProcessHelper spawnProcessHelper;
    private ProcessInstance sourceProcessInstance;
-   private ConfirmationDialog confirmationDlg;
    private Boolean hasSpawnProcessPermission;
+   private boolean showSpawnedWorkItems;
+   private boolean activateSpawnedWorkItems;
 
    @Override
    public void initialize()
@@ -77,6 +76,17 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
          spawnableProcessItems.add(new SelectItem(pd.getQualifiedId(), I18nUtils.getProcessName(pd)));
       }
       Collections.sort(spawnableProcessItems, new SelectItemComparator());
+
+      setShowSpawnedWorkItems(true);
+      setActivateSpawnedWorkItems(true);
+
+      UserPreferencesHelper userPrefHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_VIEWS_COMMON,
+            PreferenceScope.USER);
+
+      showSpawnedWorkItems = userPrefHelper.getBoolean(UserPreferencesEntries.V_WORKFLOW_EXEC_CONFIG_PANEL,
+            UserPreferencesEntries.F_SHOW_WORK_ITEMS, true);
+      activateSpawnedWorkItems = userPrefHelper.getBoolean(UserPreferencesEntries.V_WORKFLOW_EXEC_CONFIG_PANEL,
+            UserPreferencesEntries.F_ACTIVATE_WORK_ITEMS, false);
    }
 
    /**
@@ -189,7 +199,17 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
             showStartProcessView = false;
             spawnProcessHelper.spawnSubprocessInstances(spawnProcessHelper.getRootProcessInstance().getOID(), infoList);
             spawnProcessHelper.update();
-            openConfirmationDialog();
+           
+            closePopup();
+            
+            if(showSpawnedWorkItems){
+               openActivities();
+            }
+
+            if (activateSpawnedWorkItems)
+            {
+               spawnProcessHelper.activateSpawnedWorkItems();
+            }
 
          }
          else
@@ -205,25 +225,12 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
 
    }
 
-   /**
-    * Confirmation dialog showing Started process
-    */
-   public void openConfirmationDialog()
-   {
-      confirmationDlg = new ConfirmationDialog(DialogContentType.INFO, DialogActionType.YES_NO, null,
-            DialogStyle.COMPACT, this);
-      confirmationDlg.setIncludePath(ResourcePaths.V_SPAWN_PROCESS_CONF_DLG);
-      closePopup();
-      confirmationDlg.openPopup();
-   }
 
    /**
     * 
     */
    public boolean accept()
    {
-      confirmationDlg = null;
-      openActivities();
       return true;
    }
 
@@ -232,7 +239,6 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
     */
    public boolean cancel()
    {
-      confirmationDlg = null;
       return true;
    }
    /**
@@ -315,10 +321,6 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
       this.sourceProcessInstance = sourceProcessInstance;
    }
 
-   public ConfirmationDialog getConfirmationDlg()
-   {
-      return confirmationDlg;
-   }
 
    public boolean isHasSpawnProcessPermission()
    {
@@ -327,6 +329,26 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
          hasSpawnProcessPermission = AuthorizationUtils.hasSpawnProcessPermission();
       }
       return hasSpawnProcessPermission;
-   }  
-   
+   }
+
+   public boolean isShowSpawnedWorkItems()
+   {
+      return showSpawnedWorkItems;
+   }
+
+   public void setShowSpawnedWorkItems(boolean showSpawnedWorkItems)
+   {
+      this.showSpawnedWorkItems = showSpawnedWorkItems;
+   }
+
+   public boolean isActivateSpawnedWorkItems()
+   {
+      return activateSpawnedWorkItems;
+   }
+
+   public void setActivateSpawnedWorkItems(boolean activateSpawnedWorkItems)
+   {
+      this.activateSpawnedWorkItems = activateSpawnedWorkItems;
+   }
+
 }

@@ -13,10 +13,16 @@ package org.eclipse.stardust.ui.web.rest.service.utils;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
-
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifactQuery;
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifacts;
+import org.eclipse.stardust.engine.api.runtime.DeployedRuntimeArtifact;
+import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
@@ -27,7 +33,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 @Component
 public class DocumentUtils
 {
-
+   private static final String CONTENT_TYPE = "text/plain";
+   
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
@@ -36,6 +43,16 @@ public class DocumentUtils
       return serviceFactoryUtils.getDocumentManagementService().getDocument(documentId);
    }
 
+   public byte[] getDocumentContents(String documentId)
+   {
+      return serviceFactoryUtils.getDocumentManagementService().retrieveDocumentContent(documentId);
+   }
+   
+   public Folder getFolder(String path)
+   {
+      return serviceFactoryUtils.getDocumentManagementService().getFolder(path);
+   }
+   
    public int getNumPages(Document document)
    {
       int numPages = 0;
@@ -90,6 +107,111 @@ public class DocumentUtils
       return updatedDocument;
    }
 
+   /**
+    * 
+    * @param folderId
+    * @param fileName
+    * @param contentType
+    * @param byteContents
+    * @return
+    */
+   public Document createDocument(String folderId, String fileName, String contentType, byte[] byteContents)
+   {
+      DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
+      docInfo.setOwner(serviceFactoryUtils.getUserService().getUser().getAccount());
+      if (StringUtils.isNotEmpty(contentType))
+      {
+         docInfo.setContentType(contentType);
+      }
+      else
+      {
+         docInfo.setContentType(CONTENT_TYPE);
+      }
+      Document document = getDocumentManagementService().createDocument(folderId, docInfo, byteContents, null);
+      return document;
+   }
+   
+   /**
+    * 
+    * @param doc
+    * @param byteContents
+    * @param comments
+    * @param overwrite
+    * @return
+    */
+   public Document updateDocument(Document doc, byte[] byteContents, String comments, boolean overwrite)
+   {
+      Document document = getDocumentManagementService().updateDocument(doc, byteContents, "", !overwrite,
+            comments, null, false);
+      return  document;
+   }
+   
+   /**
+    * 
+    * @param doc
+    * @param byteContents
+    * @param comments
+    * @param overwrite
+    * @return
+    */
+   public Document deleteDocument(Document doc, byte[] byteContents, String comments, boolean overwrite)
+   {
+      Document document = getDocumentManagementService().updateDocument(doc, byteContents, "", !overwrite,
+            comments, null, false);
+      return  document;
+   }
+   
+   /**
+    * 
+    * @param oid
+    * @param artifact
+    * @return
+    */
+   public DeployedRuntimeArtifact deployBenchmarkDocument(long oid, RuntimeArtifact artifact)
+   {
+      DeployedRuntimeArtifact runtimeArtifacts = null;
+      if(oid > 0)
+      {
+         runtimeArtifacts = serviceFactoryUtils.getAdministrationService().overwriteRuntimeArtifact(oid, artifact);
+      }
+      else
+      {
+         runtimeArtifacts = serviceFactoryUtils.getAdministrationService().deployRuntimeArtifact(artifact);   
+      }
+      
+      return runtimeArtifacts;
+   }
+   
+   /**
+    * 
+    * @param query
+    * @return
+    */
+   public DeployedRuntimeArtifacts getDeployedBenchmarkDefinitions(DeployedRuntimeArtifactQuery query)
+   {
+      DeployedRuntimeArtifacts runtimeArtifacts = serviceFactoryUtils.getQueryService().getRuntimeArtifacts(query);
+      return runtimeArtifacts;
+   }
+   
+   /**
+    * 
+    * @param oid
+    * @return
+    */
+   public RuntimeArtifact getRuntimeArtifacts(long oid)
+   {
+      return serviceFactoryUtils.getAdministrationService().getRuntimeArtifact(oid);
+   }
+   
+   /**
+    * 
+    * @param oid
+    */
+   public void deleteRuntimeArtifacts(long oid)
+   {
+      serviceFactoryUtils.getAdministrationService().deleteRuntimeArtifact(oid);
+   }
+   
    /**
     * @return
     */

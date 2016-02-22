@@ -24,36 +24,36 @@
 			});
 
 	var iconsForMIME = {
-		'text/xhtml' : 'sc sc-fw sc-document-html-o',
-		'text/html' : 'sc sc-fw sc-document-html-o',
-		'image/jpeg' : 'sc sc-fw  sc-picture',
-		'image/pjpeg' : 'sc sc-fw  sc-picture',
-		'image/gif' : 'sc sc-fw  sc-picture',
-		'image/tiff' : 'sc sc-fw sc-picture',
-		'application/pdf' : 'sc sc-fw sc-document-adobe-o',
-		'text/rtf' : 'glyphicon glyphicon-book',
-		'application/msword' : 'sc sc-fw sc-document-word-o',
-		'video/quicktime' : 'sc sc-fw  sc-document-video-o',
-		'video/x-ms-wmv' : 'sc sc-fw  sc-document-video-o',
-		'video/x-msvideo' : 'sc sc-fw  sc-document-video-o',
-		'application/x-shockwave-flash' : 'sc sc-fw sc-document-flash-o',
-		'audio/x-ms-wma' : 'sc sc-fw  sc-document-audio-o',
-		'audio/mpeg' : 'sc sc-fw  sc-document-audio-o',
-		'application/zip' : 'sc sc-fw sc-document-zip-o',
-		'text/plain' : 'sc sc-fw  sc-document-text-o',
-		'application/vnd.ms-powerpoint' : 'sc sc-fw sc-document-powerpoint-o',
-		'application/vnd.ms-excel' : 'sc sc-fw sc-document-excel-o',
-		'image/png' : 'sc sc-fw sc-picture',
-		'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'sc sc-fw  sc-document-word-o',
-		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'sc sc-fw sc-document-excel-o',
-		'application/vnd.openxmlformats-officedocument.presentationml.presentation' : 'sc sc-fw  sc-document-powerpoint-o',
-		'application/bpmrptdesign' : 'glyphicon glyphicon-book',
-		'application/bpmrpt' : 'glyphicon glyphicon-book',
-		'audio/x-mpeg' : 'sc sc-fw  sc-document-audio-o',
-		'text/csv' : 'sc sc-fw  sc-document-csv-o',
-		'text/css' : 'sc sc-fw sc-document-text-o',
-		'application/octet-stream' : 'sc sc-fw sc-document-o',
-		'text/xml' : 'sc sc-fw sc-document-html-o'
+		'text/xhtml' : 'pi pi-html',
+		'text/html' : 'pi pi-html',
+		'image/jpeg' : 'pi pi-image',
+		'image/pjpeg' : 'pi pi-image',
+		'image/gif' : 'pi pi-image',
+		'image/tiff' : 'pi pi-image',
+		'application/pdf' : 'pi pi-pdf',
+		'text/rtf' : 'pi pi-word',
+		'application/msword' : 'pi pi-word',
+		'video/quicktime' : 'pi pi-video',
+		'video/x-ms-wmv' : 'pi pi-video',
+		'video/x-msvideo' : 'pi pi-video',
+		'application/x-shockwave-flash' : 'pi pi-video',
+		'audio/x-ms-wma' : 'pi pi-audio',
+		'audio/mpeg' : 'pi pi-audio',
+		'application/zip' : 'pi pi-zip',
+		'text/plain' : 'pi pi-text',
+		'application/vnd.ms-powerpoint' : 'pi pi-ppt',
+		'application/vnd.ms-excel' : 'pi pi-csv-excel',
+		'image/png' : 'pi pi-image',
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'pi pi-word',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'pi pi-csv-excel',
+		'application/vnd.openxmlformats-officedocument.presentationml.presentation' : 'pi pi-ppt',
+		'application/bpmrptdesign' : 'pi pi-report',
+		'application/bpmrpt' : 'pi pi-bar-chart',
+		'audio/x-mpeg' : 'pi pi-audio',
+		'text/csv' : 'pi pi-csv-excel',
+		'text/css' : 'pi pi-css',
+		'application/octet-stream' : 'pi pi-other',
+		'text/xml' : 'pi pi-xml-json'
 	};
 	/**
 	 * 
@@ -68,7 +68,7 @@
 
 			if (angular.isUndefined(icon)) {
 				//Default Icon
-				icon = "sc sc-fw  sc-document";
+				icon = "pi pi-other";
 			}
 			return icon;
 		};

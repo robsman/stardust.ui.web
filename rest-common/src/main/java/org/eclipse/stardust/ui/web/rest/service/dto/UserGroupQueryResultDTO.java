@@ -17,4 +17,5 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 public class UserGroupQueryResultDTO extends QueryResultDTO
 {
    public long activeCount;
+   public long allCount;
 }

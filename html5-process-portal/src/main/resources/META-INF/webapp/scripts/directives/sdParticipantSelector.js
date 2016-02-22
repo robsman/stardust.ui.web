@@ -29,10 +29,12 @@
 				require: ['sdData'],
 				scope: {  // Creates a new sub scope
 					dataSelected: '=sdaSelectedData',
-					allowMultiple: '=sdaMultiple'
+					allowMultiple: '=sdaMultiple',
+					autoIdPrefix : '@sdaAidPrefix'
 				},
 				transclude: true,
 				template: '<div sd-auto-complete class="sd-participant-selector"'
+						  + ' sda-clear-on-select="true"'
 						  + ' sda-matches="participantSelectorCtlr.data"' 
 				          + ' sda-match-str="participantSelectorCtlr.matchVal"' 
 				          + ' sda-change="participantSelectorCtlr.getMatches(matchVal)"' 
@@ -42,7 +44,8 @@
 				          + ' sda-selected-matches="dataSelected"'
 				          + ' sda-allow-multiple="allowMultiple"'
 				          + ' sda-tag-pre-class="participantSelectorCtlr.tagPreMapper(item,index)"'
-				          + ' sda-item-pre-class="participantSelectorCtlr.tagPreMapper(item,index)">'
+				          + ' sda-item-pre-class="participantSelectorCtlr.tagPreMapper(item,index)"'
+				      	  + ' sda-aid-prefix="{{autoIdPrefix}}">'
 				          + '</div>',
 				link: function(scope, element, attrs, ctrl) {
 					new ParticipantSelectorLink(scope, element, attrs, ctrl);
@@ -101,22 +104,24 @@
 			
 			function tagPreMapper(item, index) {
 				var tagClass = '';
-
 				switch (item.type) {
 				case 'USER':
-					tagClass = 'sd-particpant-img-tag-user';
+					tagClass = 'pi pi-1x pi-user';
 					break;
 				case 'ROLE':
-					tagClass = 'sd-particpant-img-tag-role';
+					tagClass = 'pi pi-1x pi-role';
+					break;
+				case 'SCOPED_ROLE':
+					tagClass = 'pi pi-1x pi-role';
 					break;
 				case 'ORGANIZATION':
-					tagClass = 'sd-particpant-img-tag-org';
+					tagClass = 'pi pi-1x pi-organization';
 					break;
 				case 'DEPARTMENT':
-					tagClass = 'sd-particpant-img-tag-dept';
+					tagClass = 'pi pi-1x pi-department';
 					break;
 				case 'USERGROUP':
-					tagClass = 'sd-particpant-img-tag-ugrp';
+					tagClass = 'pi pi-1x pi-user-group';
 					break;
 				}
 				return tagClass;

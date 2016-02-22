@@ -1,11 +1,10 @@
 <div class="sd-abort-dlg">
 <div class="section" style="border:none;">
-	<div sd-js-error class="msgError">
-	</div>
+	<div sd-message></div>
 	<div class="abort-start-section">
 		<table class="switch-form">
 			<tr>
-				<td><label class="label-form">* {{i18n('views-common-messages.views-switchProcessDialog-selectProcess')}}</label></td>
+				<td><label class="label-item">* {{i18n('views-common-messages.views-switchProcessDialog-selectProcess')}}</label></td>
 				<td>
 					<div>
 						<select ng-model="switchProcessController.switchProcess.selectedProcess" ng-options="type.name for type in switchProcessController.switchProcess.spawnableProcesses" >
@@ -14,7 +13,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td><label class="label-form">{{i18n('views-common-messages.views-switchProcessDialog-linkComment')}}</label></td>
+				<td><label class="label-item">{{i18n('views-common-messages.views-switchProcessDialog-linkComment')}}</label></td>
 				<td>
 					<textarea ng-model="switchProcessController.switchProcess.linkComment"></textarea>
 				</td>
@@ -24,7 +23,7 @@
 		<table class="switch-form-info">
 			<tr>
 				<td style="padding-right: 11px;">
-					<i class="glyphicon glyphicon-info-sign"></i>
+					<i class="pi pi-information pi-lg"></i>
 				</td>
 				<td>
 					<div ng-bind-html="switchProcessController.switchProcess.switchProcessDialogMsg"></div>

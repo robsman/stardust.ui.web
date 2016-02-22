@@ -29,14 +29,14 @@
 								styleClass="category-tree-category-icon"
 								rendered="#{item.userObject.referencingCategory}">
 								<ice:commandLink action="#{item.userObject.toggleExpansion}" immediate="true">
-									<h:graphicImage value="#{item.userObject.icon}" />
+									<i class="#{item.userObject.icon}" ></i>
 								</ice:commandLink>
 							</ice:panelGroup>
 							<ice:panelGroup style="display: inline"
 								rendered="#{item.userObject.referencingItem}"
 								styleClass="category-tree-view-icon">
 								<ice:commandLink action="#{item.userObject.itemClicked}" immediate="true">
-									<h:graphicImage value="#{item.userObject.icon}" />
+									<i class="#{item.userObject.icon}"></i>
 								</ice:commandLink>
 							</ice:panelGroup>
 						</ice:panelGroup>

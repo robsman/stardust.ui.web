@@ -1,7 +1,7 @@
 /*****************************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This program and
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. self program and
  * the accompanying materials are made available under the terms of the Eclipse Public
- * License v1.0 which accompanies this distribution, and is available at
+ * License v1.0 which accompanies self distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
@@ -9,151 +9,177 @@
  ****************************************************************************************/
 
 /*
- * @author Nikhil.Gahlot
+ * @author Abhay.Thappan
  */
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdAbortProcessDialog', [ 'sdProcessInstanceService', AbortProcess]);
+	angular.module('bpm-common').directive( 'sdAbortProcessDialog', [ 'sdProcessInstanceService','sdLoggerService', 'sdUtilService', 'sdWorkflowPerspectiveConfigService', AbortProcess]);
+
+	var trace;
 	
 	var ABORT_SCOPE = {
-			ROOT : 'root',
-			SUB : 'sub'
+			ROOT :'RootHierarchy',
+			SUB : 'SubHierarchy'
 		};
-
 	/**
-    * 
-    */
-	function AbortProcess(sdProcessInstanceService){
-		
-		return {
+	 * 
+	 */
+	function AbortProcess(sdProcessInstanceService, sdLoggerService, sdUtilService, sdWorkflowPerspectiveConfigService){
+
+		var directiveDefObject = {
 			restrict: 'A',
-			template: '<div  sd-dialog  '+
-							'sda-show="showDialog" '+
-							'sda-type="confirm" '+
-							'sda-title="{{abortProcessCtrl.i18n(\'views-common-messages.views-common-process-abortProcess-label\')}}" '+
-							'sda-scope="this" '+
-							'sda-confirm-action-label="{{abortProcessCtrl.i18n(\'views-common-messages.common-ok\')}}" ' +
-							'sda-cancel-action-label="{{abortProcessCtrl.i18n(\'views-common-messages.common-close\')}}" ' +
-							'sda-on-open="abortProcessCtrl.onConfirm(res)" '+
-							'sda-template="plugins/html5-process-portal/scripts/directives/partials/abortProcessDialogBody.html"> '+
-					 '<\/div> ' +
-					 '<span style="float: left;" ' +
-					 		'sd-dialog="abortProcessCtrl.abortProcessNotification" ' +
-					 		'sda-title="{{abortProcessCtrl.i18n(\'admin-portal-messages.common-notification-title\')}}" '+
-					 		'sda-type="custom" ' +
-					 		'sda-scope="this" ' +
-					 		'sda-template="plugins/html5-process-portal/scripts/directives/partials/abortProcessNotification.html"> ' +
-					 '</span>',
 			scope :{
 				processesToAbort : '=sdaProcessesToAbort',
 				showDialog : '=sdaShowDialog',
 				abortCompleted: '&sdaOnAbortComplete'
 			},
-			controller: [ '$scope', 'sdProcessInstanceService', AbortProcessController]
+			template: '<div  sd-dialog  '+
+							'sda-show="showDialog" '+
+							'sda-type="custom" '+
+							'sda-title="{{abortProcessCtrl.i18n(\'views-common-messages.views-common-process-abortProcess-label\')}}" '+
+							'sda-scope="this" '+
+							'sda-on-open="abortProcessCtrl.onOpenDialog(res)"' +
+							'sda-template="' +
+							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortProcessDialogBody.html"> '+
+					 '<\/div> ',
+			
+			controller: AbortProcessController
 		};
-	};
 
 	/**
-    * 
-    */
-	var AbortProcessController = function( $scope, sdProcessInstanceService){
-		
-		var self = this;
+	 * 
+	 */
+   function AbortProcessController($attrs, $scope, $element){
 
-		this.intialize( $scope, sdProcessInstanceService);
+	    var self = this;
+	    trace = sdLoggerService.getLogger('bpm-common.sdAbortProcessDialog');
+	    
+	   intialize();
+	    
+	    /**
+		 * 
+		 */
+	   function intialize(){
+		    self.abortCompleted = $scope.abortCompleted;
+			self.onOpen = $scope.onOpen;
+
+		    self.i18n = $scope.$parent.i18n;
+		    self.notification = {
+					result : null,
+					error : false
+				};
+				
+			var abortScope =  sdWorkflowPerspectiveConfigService.getAbortProcessScope();
+
+			var isPromptRequired = false;
+
+			if (abortScope == '') {
+				   isPromptRequired = true;
+				   self.configuredScope = ABORT_SCOPE.SUB;
+				} else {
+					self.configuredScope = abortScope;
+				}
+
+			self.abortProcess = {
+					scope : abortScope,
+					processes : [],
+					isPromptRequired : isPromptRequired
+			};
+		    
+		    self.onOpenDialog = onOpenDialog;
+		    self.closeThisDialog = closeThisDialog;
+		    self.resetValues = resetValues;
+		    self.abortProcesses = abortProcesses;
+		    self.confirm = confirm;
+		    self.abortCompleted = abortCompleted;
+		}
+	    
+	   /**
+	    * 
+	    */
+		function onOpenDialog(result) {
+	      self.resetValues();
+		  if (angular.isDefined(self.onOpen)) {
+				self.onOpen();
+			}
+		}
+
+		/**
+		 * 
+		 */
+		function closeThisDialog(scope) {
+			scope.closeThisDialog();
+		}
+
+		
+		 /**
+		 * 
+		 */
+		function resetValues(){
+			this.abortProcess.scope =  this.configuredScope;
+			this.notification.result = {};
+			this.notification.error = false;
+		};
+
+		
+		 /**
+	     * 
+	     */
+		function abortCompleted(scope){
+			// passing the notification to the notification dialog 
+		    scope.abortCompleted({notification:self.notification});
+	    };
 		
 		/**
 		 * 
 		 */
-		AbortProcessController.prototype.abortCompleted = function (){
-			$scope.abortCompleted();
-		};
-		/**
-		 * 
-		 */
-		AbortProcessController.prototype.hideDialog = function (){
-			$scope.showDialog = false;
-		};
-		/**
-		 * 
-		 */
-		AbortProcessController.prototype.openDialog = function (){
-			$scope.showDialog = true;
-		};
-		/**
-		 * 
-		 */
-		AbortProcessController.prototype.getProcesses = function (){
-			this.abortProcess.processes = $scope.processesToAbort;
-		};
-
-		/**
-         * 
-        */
-		AbortProcessController.prototype.showNotification = function (){
-			self.abortProcessNotification.open();
-		};
-
-		$scope.abortProcessCtrl = this;
-	}
-
-	/**
-    * 
-    */
-	AbortProcessController.prototype.intialize = function ( $scope, sdProcessInstanceService){
-
-		this.i18n = $scope.$parent.i18n;
-		this.sdProcessInstanceService = sdProcessInstanceService;
-		this.notification = {
-			result : null,
-			error : false
-		};
-		this.abortProcess = {
-			scope : ABORT_SCOPE.SUB,
-			processes : []
-		};
-	};
-
-	/**
-    * 
-    */
-	AbortProcessController.prototype.abortProcesses = function (){
-		this.getProcesses();
-		return this.sdProcessInstanceService.abortProcesses( this.abortProcess.scope, this.abortProcess.processes);
-	};
-	/**
-    * 
-    */
-	AbortProcessController.prototype.resetValues = function (){
-		this.abortProcess.scope = ABORT_SCOPE.SUB;
-		this.notification.result = {};
-		this.notification.error = false;
-	};
-	
-	/**
-    * 
-    */
-	AbortProcessController.prototype.onConfirm = function(res) {
+		function abortProcesses(processesToAbort){
+			    self.abortProcess.processes = processesToAbort;
+			    return sdProcessInstanceService.abortProcesses( this.abortProcess.scope, this.abortProcess.processes);
+			};
 		
-		var self = this;
-		var promise = res.promise;
-		
-		this.resetValues();
-
-		promise.then(function(data) {
-			self.abortProcesses().then(function(data) {
-				// success
-				self.showNotification();
-				self.abortCompleted();
-				self.notification.result = data;
+		/**
+		 * 
+		 */
+		function confirm(scope) {
+			self.abortProcesses(scope.processesToAbort).then(function(data) {
+			    self.notification.result = data;
+			    if (self.notification.result.failure.length > 0) {
+				trace.debug("Failure in aborting activities ", self.notification.result.failure);
+			    } else {
+				trace.debug("Activities aborted sucessfully.");
+			    }
+			    self.abortCompleted(scope);
+			    
+			    self.closeThisDialog(scope);
+			    
 			}, function(data) {
-				// Failure
-				self.notification.result = {};
-				self.notification.error = true;
-				self.showNotification();
+			    self.notification.result = {};
+			    self.notification.error = true;
+			    self.abortCompleted(scope);
+			    self.closeThisDialog(scope);
+			    trace.error("Error in aborting activities.");
 			});
-		})
-	};
-	
+		}
+		
+	   
+	    /**
+	     * 
+	     */
+		function hideDialog(){
+			$scope.showDialog = false;
+	    };
+	    
+	    /**
+	     * 
+	     */
+	    function openDialog(){
+	    	$scope.showDialog = true;
+	    };
+	    
+	    $scope.abortProcessCtrl = self;
+	}
+       return directiveDefObject;
+	}
 })();

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.AbstractChangeTracker;
 
@@ -19,17 +20,17 @@ public class EventActionChangeTracker extends AbstractChangeTracker
       {
          change.markUnmodified(candidate);
       }
-
-      if ((candidate instanceof EventActionType))
+      if (candidate instanceof EventHandlerType)
       {
-         EventActionType action = (EventActionType) candidate;
-         if (action.getType().getId().equals(PredefinedConstants.EXCLUDE_USER_ACTION))
+         EventHandlerType eventHandler = (EventHandlerType) candidate;
+         if (eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION))
          {
 
             EObject container = null;
             if (candidate.eContainer() instanceof ChangeDescriptionImpl)
             {
-               ChangeDescriptionImpl changeDescription = (ChangeDescriptionImpl) candidate.eContainer();
+               ChangeDescriptionImpl changeDescription = (ChangeDescriptionImpl) candidate
+                     .eContainer();
                container = changeDescription.getOldContainer(candidate);
             }
             else
@@ -37,6 +38,34 @@ public class EventActionChangeTracker extends AbstractChangeTracker
                container = candidate.eContainer();
             }
 
+            if (container instanceof ActivityType)
+            {
+               change.markAlsoModified(container);
+            }
+         }
+      }
+
+      if ((candidate instanceof EventActionType))
+      {
+         EventActionType action = (EventActionType) candidate;
+         boolean isExcludeUserAction = action.getType().getId()
+               .equals(PredefinedConstants.EXCLUDE_USER_ACTION);
+         boolean isDelegateAction = action.getType().getId()
+               .equals(PredefinedConstants.DELEGATE_ACTIVITY_ACTION);
+
+         if (isExcludeUserAction || isDelegateAction)
+         {
+            EObject container = null;
+            if (candidate.eContainer() instanceof ChangeDescriptionImpl)
+            {
+               ChangeDescriptionImpl changeDescription = (ChangeDescriptionImpl) candidate
+                     .eContainer();
+               container = changeDescription.getOldContainer(candidate);
+            }
+            else
+            {
+               container = candidate.eContainer();
+            }
 
             if (container instanceof EventHandlerType)
             {
