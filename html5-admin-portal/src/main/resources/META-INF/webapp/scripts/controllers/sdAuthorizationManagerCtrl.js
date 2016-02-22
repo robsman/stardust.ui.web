@@ -813,12 +813,32 @@
     });
   }
 
+  /**
+   * As our tree is not an sdTree instance nor structured symetrically we are forced to, at times,
+   * hunt up the parent scope for the correct parent permission which 
+   * submenus etc are operating under.
+   * @return {[type]} [description]
+   */
+  AMCtrl.prototype.fishForPermission = function(scope){
+
+      var permission;
+
+      permission  = scope.genItem;
+
+      while( !permission && scope.$parent){
+        scope = scope.$parent;
+        permission  = scope.genItem;
+      }
+
+      return permission;
+  };
+
   // handles removing items from our allow or deny arrays
   AMCtrl.prototype.removeParticipant = function(v, e) {
     var self = this;
     this.resetMessages();
     var scope = angular.element(e.target || e.srcElement).scope();
-    var permission = scope.genItem;
+    var permission = this.fishForPermission(scope);
 
     var allExist = false;
 
@@ -871,7 +891,7 @@
     this.resetMessages();
     var self = this;
     var scope = angular.element(e.target || e.srcElement).scope();
-    var permission = scope.genItem;
+    var permission = this.fishForPermission(scope);
 
     v.item.ref[v.item.target] = [];
 
