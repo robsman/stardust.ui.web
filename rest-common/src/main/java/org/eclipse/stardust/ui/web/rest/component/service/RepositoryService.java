@@ -30,10 +30,6 @@ import org.eclipse.stardust.ui.web.viewscommon.views.document.IResourceDataProvi
  * @version $Revision: $
  * 
  */
-/**
- * @author Yogesh.Manware
- * @version $Revision: $
- */
 public interface RepositoryService
 {
    // *******************************
