@@ -122,24 +122,23 @@
 				</ice:outputText>
 			</ice:commandLink>
 
-			<ice:commandLink actionListener="#{activityDetailsBean.abortAction}"
-				immediate="true" disabled="#{!activityDetailsBean.abortable}" style="margin-left: 5px;">
-				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarAbort" standAlone="false"/>
-				<ice:outputText
-					styleClass="#{!activityDetailsBean.abortable ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort pi-lg"
-					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.abort']}" />
-
-				<ice:commandLink
-					action="#{activityDetailsBean.toggleSwitchProcessIframePopup}"
-					style="padding:0px;" immediate="true"
-					title="#{views_common_msgPropsBean['views.abortProcess.menu.tooltip']}"
-					disabled="#{!activityDetailsBean.abortableProcess}">
-					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSwitchJoin" standAlone="false"/>
+			<div style="display:flex;">
+				<ice:commandLink actionListener="#{activityDetailsBean.abortAction}"
+					immediate="true" disabled="#{!activityDetailsBean.abortable}" style="margin-left: 5px;">
+					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarAbort" standAlone="false"/>
 					<ice:outputText
-						styleClass="#{!activityDetailsBean.abortableProcess ? 'iceCmdBtn-dis' : ''} pi pi-menu-dropdown pi-sm" />
+						styleClass="#{!activityDetailsBean.abortable ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort pi-lg"
+						title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.abort']}" />
+					<div id="ippSwitchAnchor" style="width: 1px; height: 1px;"></div>
 				</ice:commandLink>
-				<div id="ippSwitchAnchor" style="width: 1px; height: 1px;"></div>
-			</ice:commandLink>
+				<ice:commandLink
+						action="#{activityDetailsBean.toggleSwitchProcessIframePopup}"
+						style="padding:0px;" immediate="true"
+						title="#{views_common_msgPropsBean['views.abortProcess.menu.tooltip']}">
+						<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSwitchJoin" standAlone="false"/>
+						<ice:outputText styleClass="pi pi-menu-dropdown pi-sm" style="margin-top:5px;"/>
+				</ice:commandLink>
+			</div>
 
 			<ice:commandLink action="#{activityDetailsBean.openRelocationDialog}"
 				rendered="#{activityDetailsBean.relocationEligible}"
