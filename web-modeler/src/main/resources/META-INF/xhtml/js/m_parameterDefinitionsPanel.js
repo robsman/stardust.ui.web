@@ -851,7 +851,7 @@ define(
 								content += data.name;
 
 								if (this.options.supportsDataPathes) {
-									if (parameterDefinition.dataPath != null) {
+									if (parameterDefinition.dataPath && parameterDefinition.dataPath.length > 0) {
 										content += ".";
 										content += parameterDefinition.dataPath;
 									}
