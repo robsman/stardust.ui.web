@@ -47,6 +47,7 @@ function writeNavigation(nextTitle,prev,next,param) {
     		linkArray[i] = writeNavigation.arguments[i+3];
     	}
 		line();
+		document.write('<hr style="margin:0px">');
 	}
 }
 
@@ -69,13 +70,13 @@ function writeFooter()
 }
 
 function footerCopyright() {
-	document.write('<p>&nbsp;</p><hr>');
+	document.write('<p>&nbsp;</p>');
 	copyright();
 }
 
 function copyright()
 {
-	document.write('<table class="header"><tr><td class="header" align="right">Copyright &#169; 2015 SunGard CSA LLC</td></tr></table>');
+	document.write('<hr><table class="header"><tr><td class="header" align="right">Copyright &#169; 2016 FIS</td></tr></table>');
 }
 
 function writeContact() {
@@ -110,7 +111,7 @@ function line() {
 		}
 		document.write('</td>');
 	}
-	document.write('</tr></table><hr>');
+	document.write('</tr></table>');
 }
 
 // get the stylesheet class with the given name
