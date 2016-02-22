@@ -349,6 +349,14 @@
 			var restUrl = REST_BASE_URL + '/archiveAuditTrailURL';
 			return $resource(restUrl).get().$promise;
 		};
+		
+		/*
+		 * 
+		 */
+		ProcessSearchService.prototype.getOldestAuditTrailEntry = function() {
+			var restUrl = REST_BASE_URL + '/oldestAuditTrailEntry';
+			return $resource(restUrl).get().$promise;
+		};
 
 	}
 	;

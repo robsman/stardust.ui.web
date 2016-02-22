@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest.component.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,6 +43,7 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.IllegalOperationException;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
+import org.eclipse.stardust.engine.api.runtime.RuntimeEnvironmentInfo;
 import org.eclipse.stardust.ui.web.bcc.ProcessSearchProvider;
 import org.eclipse.stardust.ui.web.rest.common.ProcessSearchParameterConstants;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityDTO;
@@ -56,6 +58,7 @@ import org.eclipse.stardust.ui.web.rest.dto.WorklistFilterDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.springframework.stereotype.Component;
 
@@ -281,6 +284,23 @@ public class ProcessActivityUtils
       }
       query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
       return query;
+   }
+   
+   public String getLastArchivedEntry()
+   {
+      String auditTrailOldestPI;
+      RuntimeEnvironmentInfo runtimeEnvironmentInfo = serviceFactoryUtils.getQueryService().getRuntimeEnvironmentInfo();
+      Long lastArchivingTime = runtimeEnvironmentInfo.getLastArchivingTime();
+      if (lastArchivingTime == null)
+      {
+         auditTrailOldestPI = "";
+      }
+      else
+      {
+         Date date = new Date(lastArchivingTime);
+         auditTrailOldestPI = DateUtils.formatDateTime(date);
+      }
+      return auditTrailOldestPI;
    }
 
    /**

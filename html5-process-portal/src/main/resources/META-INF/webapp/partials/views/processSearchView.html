@@ -37,7 +37,14 @@
 										ng-change="procSearchViewCtrl.processChange()"
 										style="width: 100px"
 										aid="BCC-ProcSrch-SearchOption"></select></td>
-									<td><i class="pi pi-information pi-lg"></i></td>
+									<td>
+									<button
+										title="{{i18n('business-control-center-messages.views-processSearchView-auditTrailInfo-label')
+																				+ '\n' + procSearchViewCtrl.oldestAuditTrailEntry}}"
+										class="button-link tbl-tool-link">
+										<i class="pi pi-information pi-lg"></i>
+									</button>
+									</td>
 								</tr>
 							</table>
 						</div>

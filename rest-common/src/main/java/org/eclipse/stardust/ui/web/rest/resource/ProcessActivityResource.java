@@ -110,6 +110,17 @@ public class ProcessActivityResource
       return Response.ok("{\"archiveAuditTrailURL\": \"" + archiveAuditTrailURL + "\"}", MediaType.APPLICATION_JSON)
             .build();
    }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/oldestAuditTrailEntry")
+   public Response getOldestAuditTrailEntry()
+   {
+      String oldestAuditTrailEntry = getProcessActivityService().getProcessActivityUtils().getLastArchivedEntry();
+
+      return Response.ok("{\"oldestAuditTrailEntry\": \"" + oldestAuditTrailEntry + "\"}", MediaType.APPLICATION_JSON)
+            .build();
+   }
 
    /**
     * @param postData

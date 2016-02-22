@@ -116,6 +116,7 @@
 		this.descBoolOptions = {};
 		this.selected = {};
 		this.archiveAuditTrailURL = '';
+		this.oldestAuditTrailEntry = '';
 		
 		this.SEARCH_OPT = "searchOption";
 		this.SEARCH_OPT_PROCESS = "PROC";
@@ -297,6 +298,14 @@
 				function(archiveAuditTrail) {
 					self.archiveAuditTrailURL = archiveAuditTrail.archiveAuditTrailURL;
 					archiveURLDeferred.resolve();
+				});
+		
+		var oldestAuditTrailDeferred = _q.defer();
+		promises.push(oldestAuditTrailDeferred.promise);
+		_sdProcessSearchService.getOldestAuditTrailEntry().then(
+				function(oldestAuditTrail) {
+					self.oldestAuditTrailEntry = oldestAuditTrail.oldestAuditTrailEntry;
+					oldestAuditTrailDeferred.resolve();
 				});
 		
 		this.showProcSearchResult = false;
