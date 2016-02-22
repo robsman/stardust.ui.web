@@ -35,6 +35,8 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.component.service.ParticipantService;
+import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
@@ -59,6 +61,8 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("participants")
+   @RequestDescription("Map of *Participants* (participantQIds), *add* (users to be added), *remove* (users to be removed)*")
+   @ResponseDescription("Map of <participantQIds, newUsers(ParticipantDTO)>")
    public Response modifyParticipant(String postedData)
    {
       Map grantsMap = null;
@@ -95,10 +99,25 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("participants/tree")
+   @RequestDescription("By default query param lazyload is true which means it will not return all its children.")
+   @ResponseDescription("List<ParticipantDTO> json starting from root node which model")
    public Response getParticipantTree(@QueryParam("lazyLoad") @DefaultValue("false") Boolean lazyLoad)
          throws UnsupportedEncodingException
    {
       List<ParticipantDTO> modelParticipants = participantService.getParticipantTree(lazyLoad);
+      return Response.ok(AbstractDTO.toJson(modelParticipants), MediaType.APPLICATION_JSON).build();
+   }
+
+   // get grants for given account id
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("participant/grant{account: (/account)?}")
+   @RequestDescription("The url takes optional path paramater as *account id*, if not provided it will be return the grants for currently loggedIn user")
+   @ResponseDescription("List of ParticipantDTO json")
+   public Response getUserGrants(@PathParam("account") String account) throws UnsupportedEncodingException
+   {
+      List<ParticipantDTO> modelParticipants = participantService.getUserGrants(account);
       return Response.ok(AbstractDTO.toJson(modelParticipants), MediaType.APPLICATION_JSON).build();
    }
    
@@ -107,6 +126,8 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("participants/{participantId}")
+   @RequestDescription("by default query param lazyload is true which means it will not return all its children")
+   @ResponseDescription("subParticipants of provided participant - List<ParticipantDTO> json")
    public Response getSubParticipants(@PathParam("participantId") String participantId,
          @QueryParam("lazyLoad") @DefaultValue("false") Boolean lazyLoad)
          throws UnsupportedEncodingException
@@ -136,6 +157,8 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("department")
+   @RequestDescription("Request is in the form of DepartmentDTO")
+   @ResponseDescription("Modified department in the form ParticipantDTO json")
    public Response createModifyDepartment(String postData,
          @QueryParam("lazyLoad") @DefaultValue("false") Boolean lazyLoad) throws Exception
    {

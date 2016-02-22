@@ -57,4 +57,10 @@ public interface ParticipantService
     */
    public Map<String, List<ParticipantDTO>> modifyParticipant(HashSet<String> participants,
          HashSet<String> usersToBeAdded, HashSet<String> usersToBeRemoved);
+
+   /**
+    * @param account
+    * @return
+    */
+   public List<ParticipantDTO> getUserGrants(String account);
 }

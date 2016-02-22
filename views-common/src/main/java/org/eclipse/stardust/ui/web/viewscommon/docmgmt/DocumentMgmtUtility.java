@@ -1607,6 +1607,15 @@ public class DocumentMgmtUtility
    public static List<Grant> getRoleOrgReportDefinitionsGrants()
    {
       User user = getUser();
+      return getRoleOrgReportDefinitionsGrants(user); 
+   }
+   
+   /**
+    * @param user
+    * @return
+    */
+   public static List<Grant> getRoleOrgReportDefinitionsGrants(User user)
+   {
       List<Grant> allGrants = user.getAllGrants();
       return allGrants; 
    }

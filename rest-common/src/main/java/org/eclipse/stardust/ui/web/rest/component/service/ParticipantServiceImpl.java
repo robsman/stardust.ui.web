@@ -44,19 +44,22 @@ import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
+import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.rest.component.util.ParticipantManagementUtils;
+import org.eclipse.stardust.ui.web.rest.component.util.ParticipantManagementUtils.ParticipantType;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.UserGroupUtils;
-import org.eclipse.stardust.ui.web.rest.component.util.ParticipantManagementUtils.ParticipantType;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ModelDTO;
 import org.eclipse.stardust.ui.web.rest.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
@@ -134,6 +137,87 @@ public class ParticipantServiceImpl implements ParticipantService
       Collections.sort(allParticipantDTOs);
       
       return allParticipantDTOs;
+   }
+   
+   /**
+    *
+    */
+   public List<ParticipantDTO> getUserGrants(String account)
+   {
+      User user = null;
+      if (StringUtils.isNotEmpty(account))
+      {
+         user = serviceFactoryUtils.getUserService().getUser(account);
+      }
+      else
+      {
+         user = SessionContext.findSessionContext().getUser();
+      }
+      return getUserGrants(user);
+   }
+
+   /**
+    * @param user
+    * @return
+    */
+   private List<ParticipantDTO> getUserGrants(User user)
+   {
+      List<ParticipantDTO> grants = new ArrayList<ParticipantDTO>();
+      List<Grant> roleOrgReportDefinitionsGrants = DocumentMgmtUtility.getRoleOrgReportDefinitionsGrants(user);
+
+      for (Grant grant : roleOrgReportDefinitionsGrants)
+      {
+         ParticipantDTO participantDTO = null;
+         QualifiedModelParticipantInfo modelParticipant = ParticipantUtils.getModelParticipant(grant.getQualifiedId());
+
+         // organization or department
+         if (grant.isOrganization())
+         {
+            if (grant.getDepartment() != null)
+            {
+               // specific department
+               if (grant.getQualifiedId().equals(grant.getDepartment().getOrganization().getQualifiedId()))
+               {
+                  participantDTO = getParticipant(grant.getDepartment());
+               }
+               // default department under specific department
+               else
+               {
+                  if (modelParticipant.definesDepartmentScope())
+                  {
+                     participantDTO = getParticipant(modelParticipant, grant.getDepartment(), true);
+                  }
+                  else
+                  {
+                     // implicit organization
+                     participantDTO = getParticipant(modelParticipant, grant.getDepartment(), false);
+                  }
+               }
+            }
+            else
+            {
+               // default department
+               if (modelParticipant.isDepartmentScoped())
+               {
+                  participantDTO = getParticipant(modelParticipant, null, true);
+               }
+               // un-scoped organization
+               else
+               {
+                  participantDTO = getParticipant(modelParticipant, null, false);
+               }
+            }
+         }
+         else
+         {
+            // role 
+            participantDTO = getParticipant(modelParticipant, grant.getDepartment(), false);
+         }
+
+         grants.add(participantDTO);
+      }
+
+      return grants;
    }
    
    /**
