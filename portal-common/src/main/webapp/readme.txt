@@ -1,11 +1,18 @@
-This folder and its content is duplicated to "stardust\ide.wst\org.eclipse.stardust.ide.wst.facet.portal\template\webapp" 
-and needs to be kept updated/synchronised _manually_!
+This folder and its content is packaged in the ipp-portal.war which will be added to the
+"stardust\ide.wst\org.eclipse.stardust.ide.wst.facet.portal\lib" folder during the build.
 
-See CRNT-23890 for more information.
+This web archive will be unpacked if the user creates a Dynamic Web Project with enabled
+IPP Portal facets except the following files:
+<patternset>
+  <exclude name="META-INF/MANIFEST.MF"/>
+  <exclude name="WEB-INF/classes/**"/>
+  <exclude name="WEB-INF/web.xml"/>
+</patternset>
 
-Also, web.xml changes needs to be added manually to (if available/applicable) -
+This patternset is written in the "stardust\ide.wst\org.eclipse.stardust.ide.wst.facet.portal\tools\templates.xml"
+file which may be changed in the meantime. If some further files should be excluded during the RAD creation
+then the templates.xml file must be modified.
+
+Please note web.xml changes needs to be added manually to (if available/applicable) -
 - "components\configure-configs\ipp-portal\properties.xml"
 - "components\configure-configs\stardust-portal\properties.xml"
-
-Some files may have references in "stardust\ide.wst\org.eclipse.stardust.ide.wst.facet.portal\tools\templates.xml"
-and it may need to manually adjust this templates.xml
