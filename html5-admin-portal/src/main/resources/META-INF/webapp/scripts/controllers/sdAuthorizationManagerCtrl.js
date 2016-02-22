@@ -382,7 +382,10 @@
     scope = angular.element(e.srcElement || e.target).scope();
     
     permission.setExpansionState = function(val){
-    	scope.$parent.$parent.isVisible = true;
+      var expansionScope = (this.fishForIsVisible(scope));
+      if(expansionScope){
+        expansionScope.isVisible  =true;
+      }
     }
     
     permission.setIconClass = function(val){
@@ -757,7 +760,7 @@
     
     //set icon for the node to the spinner
     scope.iconClass= "isDeferred";
-    scope.$parent.$parent.isVisible = true;
+    (this.fishForIsVisible(scope)).isVisible  =true;
     
     allow.forEach(function(item){
     	if(item.setExpansionState){
@@ -831,6 +834,25 @@
       }
 
       return permission;
+  };
+
+  /**
+   * As our tree is not an sdTree instance nor structured symetrically we are forced to, at times,
+   * hunt up the parent scope for the correct parent which containing our isVIsible property.
+   * This is leveraged primarily to expand parent nodes on a data-drop.
+   * @return {[type]} [description]
+   */
+  AMCtrl.prototype.fishForIsVisible = function(scope){
+
+      var returnScope;
+
+      returnScope  = scope
+
+      while( !returnScope.hasOwnProperty("isVisible") && returnScope.$parent){
+        returnScope = returnScope.$parent;
+      }
+
+      return returnScope;
   };
 
   // handles removing items from our allow or deny arrays
