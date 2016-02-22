@@ -56,7 +56,9 @@
 		$scope.fileNameChanged = function(elem){
 			$timeout(function(){
 
-				var file;
+				var file,
+					hasDuplicate;
+
 				that.state = "fileSelected";
 				that.files = elem.files;
 
@@ -68,19 +70,28 @@
 				for (var i = 0;i<that.files.length;i++) {
 					file=that.files[i];
 					that.totalSize += file.size;
-					that.curatedFiles.push({
-						"comments" : "",
-						"description" : "",
-						"schemaLocation" : "",
-						"documentTypeId" : "",
-						"fileState" : FileState.BASE,
-						"send" : true,
-						"name" : file.name,
-						"type" : file.type,
-						"size" : file.size,
-						"percentUploaded" : 0, 
-						"blob" : file
+
+					hasDuplicate = that.curatedFiles.some(function(f){
+						return f.name === file.name;
 					});
+					if(!hasDuplicate){
+						
+						that.curatedFiles.push({
+							"comments" : "",
+							"description" : "",
+							"schemaLocation" : "",
+							"documentTypeId" : "",
+							"fileState" : FileState.BASE,
+							"send" : true,
+							"name" : file.name,
+							"type" : file.type,
+							"size" : file.size,
+							"percentUploaded" : 0, 
+							"blob" : file
+						});
+
+					}//duplicate check end
+
 				};//for end
 
 			},0);//timeout invoke end
