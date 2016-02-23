@@ -608,7 +608,7 @@
 			});
 	    };
 
-	    this.fetchDescriptorCols(element, attr, scopeToUse);
+	    this.fetchDescriptorCols(element, attr);
 	    this.fetchAvailableStates();
 	    this.fetchAvailablePriorities();
 
@@ -927,7 +927,7 @@
 	/*
 	 *
 	 */
-	ActivityTableCompiler.prototype.fetchDescriptorCols = function(elem, attr, scopeToUse) {
+	ActivityTableCompiler.prototype.fetchDescriptorCols = function(elem, attr) {
 		var self = this;
 
 		sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
@@ -949,7 +949,7 @@
 				$timeout(function(){
 					//Handle Columns
 					try {
-					self.processTableColumns(elem, attr, self, scopeToUse);
+					self.processTableColumns(elem, attr);
 					self.ready = true;
 					}catch(e) {
 						showError(e, elem);
@@ -1645,8 +1645,9 @@
 	/**
 	 *
 	 */
-	ActivityTableCompiler.prototype.processTableColumns = function(elem, attr, scopeToUse) {
+	ActivityTableCompiler.prototype.processTableColumns = function(elem, attr) {
 		var self = this;
+		var scopeToUse = this.scope.$parent;
 		// Dont Consider sdaVisibleColumns if sdaColumns is set
 		if (attr.sdaVisibleColumns && !attr.sdaColumns) {
 			self.visibleColumns  = $parse(attr.sdaVisibleColumns)(scopeToUse);
