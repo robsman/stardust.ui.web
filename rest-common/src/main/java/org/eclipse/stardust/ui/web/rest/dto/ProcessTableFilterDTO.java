@@ -53,6 +53,9 @@ public class ProcessTableFilterDTO implements FilterDTO
       customTokens.put("rangeLike",
             new TypeToken<List<RangeDTO>>() {
       }.getType());
+      customTokens.put("participants",
+            new TypeToken<List<ParticipantDTO>>() {
+      }.getType());
       return customTokens;
    }
    
