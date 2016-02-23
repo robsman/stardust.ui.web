@@ -80,18 +80,23 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	function processRawMarkup(elem, attr) {
-		processTrivialDataColumn(elem, attr);
-		processDescriptorColumns(elem, attr);
-		processAction(elem, attr);
-		processToolbar(elem, attr);
+		try{
+			processTrivialDataColumn(elem, attr);
+			processDescriptorColumns(elem, attr);
+			processActions(elem, attr);
+			processToolbar(elem, attr);
+		}catch(e) {
+			showError(e, elem);
+			throw e;
+		}
 	}
 
 
 	/*
-	 * 
+	 *
 	 */
 	function processTrivialDataColumn(elem, attr) {
 
@@ -117,7 +122,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	function processDescriptorColumns(elem, attr) {
 		// Process Descriptor columns
@@ -134,9 +139,9 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
-	function processAction(elem, attr) {
+	function processActions (elem, attr) {
 
 		var actionsAttr = attr.sdaActions;
 
@@ -151,15 +156,30 @@
 		} else if( actions === true ) {
 			return true;
 		} else if ( actions ) {
-
+			var allAvailableButtons = [];
 			var actionButtons = elem.find('[sda-column-type="ACTIONS"] > div > button');
+
 			angular.forEach(actionButtons, function(button){
 				var buttonType = button.attributes['sda-action-type'].value;
+				allAvailableButtons.push(buttonType);
 
 				if(actions.indexOf(buttonType) === -1) {
 					button.remove();
 				}
 			});
+
+			//Check if passed action names are correct.
+			var invalidValues = [];
+			angular.forEach( actions, function(button) {
+				if(allAvailableButtons.indexOf(button) === -1) {
+					invalidValues.push(button);
+				}
+			});
+
+			if(invalidValues.length >  0) {
+				throw 'Invalid value in sda-actions : ' + invalidValues;
+			}
+
 		}
 	}
 
@@ -182,13 +202,26 @@
 			return true;
 		} else if ( toolbar ) {
 			var toolBarButtons = elem.find('[sda-toolbar] > div > button');
+			var allAvailableButtons = [];
 
-			angular.forEach(toolBarButtons, function(button){
+			angular.forEach(toolBarButtons, function(button) {
 				var buttonType = button.attributes['sda-toolbar-type'].value;
 				if(toolbar.indexOf(buttonType) === -1) {
 					button.remove();
 				}
+				allAvailableButtons.push(buttonType);
 			});
+
+			//Check if passed toolbar names are correct.
+			var invalidValues = [];
+			angular.forEach(toolbar,function(button) {
+				if(allAvailableButtons.indexOf(button) === -1) {
+					invalidValues.push(button);
+				}
+			});
+			if(invalidValues.length >  0) {
+				throw 'Invalid value in sda-toolbar :' + invalidValues;
+			}
 		}
 	}
 
@@ -199,9 +232,8 @@
 	function ActivityTableCompiler(scope, element, attr, ctrl) {
 		try {
 			this.initialize(attr, scope, $filter, element);
-			this.showError = false;
 		} catch (e) {
-			this.showError(e);
+			showError(e);
 		}
 
 		/*
@@ -916,8 +948,12 @@
 			} else {
 				$timeout(function(){
 					//Handle Columns
+					try {
 					self.processTableColumns(elem, attr, self, scopeToUse);
 					self.ready = true;
+					}catch(e) {
+						showError(e, elem);
+					}
 				});
 			}
 			self.safeApply();
@@ -1563,23 +1599,6 @@
 	/*
 	 *
 	 */
-	ActivityTableCompiler.prototype.showError = function(e) {
-		trace.error('Error on activity table:', e);
-		trace.printStackTrace();
-		this.showError = "true";
-		var errorToShow = 'Unknown Error';
-		if (angular.isString(e)) {
-			errorToShow = e;
-		} else if (e.status != undefined && e.statusText != undefined) {
-			errorToShow = e.status + ' - ' + e.statusText;
-		}
-		this.errorMessage = 'sd-activity-table is unable to process table. Pls. refer browser console for details. Reason: '
-			+ errorToShow;
-	};
-
-	/*
-	 *
-	 */
 	ActivityTableCompiler.prototype.performDefaultDelegate = function(scope, sdActivityInstanceService,
 			sdDialogService, sgI18nService, rowItems) {
 		var self = this;
@@ -1622,6 +1641,7 @@
 		});
 	};
 
+
 	/**
 	 *
 	 */
@@ -1659,6 +1679,17 @@
 			}
 		}
 
+		//Check validity of passed columns
+		if(currentOrder.length !== requiredColumns.length){
+			var incorrectColumns = [];
+			angular.forEach(requiredColumns, function(column){
+					if (currentOrder.indexOf(column) === -1) {
+							incorrectColumns.push(column);
+					}
+			})
+			throw "Invalid value in sda-columns :" +incorrectColumns;
+		}
+
 		// Reordering columnns
 		var table =  elem.find('table[sd-data-table]');
 		for(var colIndex = requiredColumns.length -1; colIndex >=  0; colIndex-- ) {
@@ -1679,6 +1710,24 @@
 			self.definedColumnAtrributes[column.name] = columnDef;
 		});
 	};
+
+
+	 /*
+	 *
+	 */
+	 function showError (e, element) {
+	 	trace.error('Error on activity table:', e);
+	 	trace.printStackTrace();
+	 	var errorToShow = 'Unknown Error';
+	 	if (angular.isString(e)) {
+	 		errorToShow = e;
+	 	} else if (e.status != undefined && e.statusText != undefined) {
+	 		errorToShow = e.status + ' - ' + e.statusText;
+	 	}
+	 	var errorMessage = 'sd-activity-table is unable to process table. Pls. refer browser console for details. Reason: '
+	 	+ errorToShow;
+	 	jQuery('<pre class="tbl-error">' + errorMessage + '</pre>').insertBefore(element);
+	 };
 
 	return directiveDefObject;
     }
