@@ -17,7 +17,7 @@
 	/**
 	 * Request Interceptor for enabling cross domain ajax calls via angular $resource / $http
 	 */
-	angular.module('bpm-ui').factory('corssDomainRequestInterceptor', function() {
+	angular.module('bpm-ui').factory('crossDomainRequestInterceptor', function() {
 		return {
 			'request' : function(config) {
 				config.crossDomain = true;
@@ -28,7 +28,7 @@
 	});
 
 	angular.module('bpm-ui').config(['$httpProvider', function ($httpProvider) {
-    	$httpProvider.interceptors.push('corssDomainRequestInterceptor');
+    	$httpProvider.interceptors.push('crossDomainRequestInterceptor');
     }]);
 
 	/**
