@@ -21,9 +21,10 @@
 						'$rootScope',
 						'sgViewPanelService',
 						'sgPubSubService',
+						'sdEnvConfigService',
 						'sdLoggerService',
-						function($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService) {
-							var service = new ViewUtilService($rootScope, sgViewPanelService, sgPubSubService,
+						function($rootScope, sgViewPanelService, sgPubSubService, sdEnvConfigService, sdLoggerService) {
+							var service = new ViewUtilService($rootScope, sgViewPanelService, sgPubSubService, sdEnvConfigService,
 									sdLoggerService);
 							return service;
 						} ];
@@ -32,7 +33,7 @@
 	/*
 	 * 
 	 */
-	function ViewUtilService($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService) {
+	function ViewUtilService($rootScope, sgViewPanelService, sgPubSubService, sdEnvConfigService, sdLoggerService) {
 		var trace = sdLoggerService.getLogger('bpm-common.sdViewUtilService');
 
 		var viewHandlers = {};
@@ -88,6 +89,21 @@
 		 * 
 		 */
 		ViewUtilService.prototype.openView = function(viewId, viewKey, params, nested) {
+			var eventInterceptor = sdEnvConfigService.getEventInterceptor();
+			if (eventInterceptor && eventInterceptor.openView) {
+				var config = {
+					viewId: viewId,
+					viewKey: viewKey,
+					params: params,
+					nested: nested
+				};
+
+				var continueOperation = eventInterceptor.openView(config);
+				if (!continueOperation) {
+					return false;
+				}
+			}
+
 			var message = {
 				"type" : "OpenView",
 				"data" : {
@@ -98,7 +114,8 @@
 				}
 			};
 
-			window.postMessage(JSON.stringify(message), "*");
+			window.postMessage(JSON.stringify(message), "*")
+			return true;
 		};
 		
 		/**
@@ -184,7 +201,7 @@
 		};
 
 		ViewUtilService.prototype.syncLaunchPanels = function() {
-			BridgeUtils.View.syncLaunchPanels();
+				BridgeUtils.View.syncLaunchPanels();
 		};
 
 		/*

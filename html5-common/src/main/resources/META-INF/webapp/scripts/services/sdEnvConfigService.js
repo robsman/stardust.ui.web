@@ -34,11 +34,25 @@
 		var envConfigs = $injector.has('sdEnvConfig') ? $injector.get('sdEnvConfig') : {};
 		trace.info('EnvConfigs:', envConfigs);
 
+		var eventInterceptor;
+
 		/*
 		 * 
 		 */
 		EnvConfigService.prototype.getBaseUrl = function() {
 			return envConfigs.baseUrl;
-		};	 	
+		};
+
+		/*
+		 * 
+		 */
+		EnvConfigService.prototype.getEventInterceptor = function() {
+			if (!eventInterceptor && envConfigs.eventInterceptor) {
+				eventInterceptor = angular.isString(envConfigs.eventInterceptor) ? 
+						$injector.get(envConfigs.eventInterceptor) : $injector.invoke(envConfigs.eventInterceptor);
+			}
+
+			return eventInterceptor;
+		};
 	};
 })();
