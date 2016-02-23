@@ -152,6 +152,8 @@ public class ParticipantServiceImpl implements ParticipantService
       else
       {
          user = SessionContext.findSessionContext().getUser();
+         // get the true copy of user, above fetches the user from session
+         user = serviceFactoryUtils.getUserService().getUser(user.getAccount());
       }
       return getUserGrants(user);
    }

@@ -13,9 +13,13 @@ package org.eclipse.stardust.ui.web.rest.component.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
+import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.dto.builder.FolderDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUserProvider;
@@ -35,6 +39,11 @@ import org.springframework.stereotype.Component;
 public class ReportingServiceImpl implements ReportingService
 {
    private static final String REPORTS_ROOT_FOLDER = "/reports";
+   private static final String REPORT_DESIGN = "designs";
+   private static final String SAVED_REPORTS = "saved-reports";
+
+   @Resource
+   private ServiceFactoryUtils serviceFactoryUtils;
 
    /**
     * @return
@@ -44,7 +53,7 @@ public class ReportingServiceImpl implements ReportingService
    {
       List<FolderDTO> roleOrgReportDefinitionsNodes = new ArrayList<FolderDTO>();
 
-      Folder participantFolder = DocumentMgmtUtility.getFolder(REPORTS_ROOT_FOLDER);
+      Folder participantFolder = getDMS().getFolder(REPORTS_ROOT_FOLDER, Folder.LOD_LIST_MEMBERS);
       List<Folder> subfolders = participantFolder.getFolders();
       User loggedInUser = IppUserProvider.getInstance().getUser();
 
@@ -61,10 +70,41 @@ public class ReportingServiceImpl implements ReportingService
                continue;
             }
 
+            Folder ReportDesignFolder = DocumentMgmtUtility.getFolder(participantSubFolder, SAVED_REPORTS,
+                  Folder.LOD_LIST_MEMBERS_OF_MEMBERS);
+            Folder savedReportFolder = DocumentMgmtUtility.getFolder(participantSubFolder, REPORT_DESIGN,
+                  Folder.LOD_LIST_MEMBERS_OF_MEMBERS);
+
+            if (ReportDesignFolder == null && savedReportFolder == null)
+            {
+               continue;
+            }
+
             FolderDTO participantFolderDTO = FolderDTOBuilder.build(participantSubFolder);
+            participantFolderDTO.folders = new ArrayList<FolderDTO>();
+            participantFolderDTO.hasChildren = true;
+
+            if (ReportDesignFolder != null)
+            {
+               participantFolderDTO.folders.add(FolderDTOBuilder.build(ReportDesignFolder));
+            }
+
+            if (savedReportFolder != null)
+            {
+               participantFolderDTO.folders.add(FolderDTOBuilder.build(savedReportFolder));
+            }
+
             roleOrgReportDefinitionsNodes.add(participantFolderDTO);
          }
       }
       return roleOrgReportDefinitionsNodes;
+   }
+
+   /**
+    * @return
+    */
+   private DocumentManagementService getDMS()
+   {
+      return serviceFactoryUtils.getDocumentManagementService();
    }
 }

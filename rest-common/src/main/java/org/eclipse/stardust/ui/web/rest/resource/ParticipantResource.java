@@ -113,7 +113,7 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("participant/grant{account: (/account)?}")
-   @RequestDescription("The url takes optional path paramater as *account id*, if not provided it will be return the grants for currently loggedIn user")
+   @RequestDescription("The url takes optional path paramater as an *account id*, if not provided it will be return the grants for currently loggedIn user")
    @ResponseDescription("List of ParticipantDTO json")
    public Response getUserGrants(@PathParam("account") String account) throws UnsupportedEncodingException
    {

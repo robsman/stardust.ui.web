@@ -637,10 +637,21 @@ public class DocumentMgmtUtility
     */
    public static Folder getFolder(Folder parentFolder, String folderName)
    {
+      return getFolder(parentFolder, folderName, Folder.LOD_NO_MEMBERS);
+   }
+   
+   /**
+    * @param parentFolder
+    * @param folderName
+    * @param levelOfDetails
+    * @return
+    */
+   public static Folder getFolder(Folder parentFolder, String folderName, int levelOfDetails)
+   {
       if (null != parentFolder)
       {
          folderName = stripOffSpecialCharacters(folderName);
-         Folder finalFolder = getDocumentManagementService().getFolder(parentFolder.getId());
+         Folder finalFolder = getDocumentManagementService().getFolder(parentFolder.getId(), levelOfDetails);
          List<Folder> folders = finalFolder.getFolders();
 
          for (Folder folder : folders)
