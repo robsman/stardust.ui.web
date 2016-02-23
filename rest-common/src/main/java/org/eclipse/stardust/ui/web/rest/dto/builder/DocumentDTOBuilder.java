@@ -193,7 +193,7 @@ public class DocumentDTOBuilder
             {
                if (documentDTO.owner.equals(userDTO.account))
                {
-                  documentDTO.userDTO = userDTO;
+                  documentDTO.ownerDetails = userDTO;
                }
             }
          }

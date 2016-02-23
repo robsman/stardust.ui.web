@@ -59,7 +59,7 @@ public class DocumentDTO extends AbstractDTO
    @DTOAttribute("owner")
    public String owner;
    
-   public UserDTO userDTO;
+   public UserDTO ownerDetails;
    
    @DTOAttribute("dateCreated.time")
    public Long dateCreated;
