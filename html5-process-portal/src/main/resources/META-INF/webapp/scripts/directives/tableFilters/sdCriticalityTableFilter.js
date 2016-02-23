@@ -29,6 +29,7 @@
 	                            'sda-match-str="criticalityCtrl.matchVal" '+
 	                            'sda-change="criticalityCtrl.getCriticalities(criticalityCtrl.matchVal)" '+
 	                            'sda-text-property="label" '+
+	                            'sda-allow-duplicates="false" ' +
 	                            'sda-container-class="priority-criticality-filter-ac-container" '+
 	                            'sda-item-hot-class="sd-ac-item-isActive" '+
 	                            'sda-selected-matches="criticalityCtrl.like"> ' +
