@@ -202,7 +202,7 @@
 			return true;
 		} else if ( toolbar ) {
 			var toolBarButtons = elem.find('[sda-toolbar] > div > button');
-			var allAvailableButtons = [];
+			var allAvailableButtons = ['columnSelector','export','saveFilters'];
 
 			angular.forEach(toolBarButtons, function(button) {
 				var buttonType = button.attributes['sda-toolbar-type'].value;
