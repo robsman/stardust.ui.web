@@ -31,15 +31,16 @@ body {
 h1 {
 	font-size: 155%;
 	font-weight: bold;
-   padding-top: 28px;
+   padding-top: 35px;
 	padding-bottom: 0px;
    padding-right: 232px;
 	line-height: 30px;
 	background-image: url("images/logo.png");
 	background-repeat: no-repeat;
-	background-position: right top;
+   background-position: right top 6px;
 	border-bottom: 1px solid #d4d4dd;
-	margin-bottom: 25px;
+   margin-top: 0px;
+   margin-bottom: 20px;
 	text-align: left;
 }
 
