@@ -77,6 +77,9 @@ public class RepositoryServiceImpl implements RepositoryService
    
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
+   
+   @Resource
+   private UserService userService;
 
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
@@ -584,17 +587,19 @@ public class RepositoryServiceImpl implements RepositoryService
    public QueryResultDTO SearchDocuments(RepositorySearchRequestDTO searchRequestDTO)
    {
       QueryResult<Document> docs = DocumentSearchUtils.search(searchRequestDTO, getDMS());
-      return buildDocumentSearchResult(docs);
+      return buildDocumentSearchResult(docs, searchRequestDTO);
    }
 
    /**
     * @param docs
+    * @param searchRequestDTO
     * @return
     */
-   private QueryResultDTO buildDocumentSearchResult(QueryResult<Document> docs)
+   private QueryResultDTO buildDocumentSearchResult(QueryResult<Document> docs,
+         RepositorySearchRequestDTO searchRequestDTO)
    {
       QueryResultDTO resultDTO = new QueryResultDTO();
-      resultDTO.list = DocumentDTOBuilder.build(docs, getDMS());
+      resultDTO.list = DocumentDTOBuilder.build(docs, getDMS(), searchRequestDTO.documentDetailLevelDTO, userService);
       resultDTO.totalCount = docs.getTotalCount();
       return resultDTO;
    }

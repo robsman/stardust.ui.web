@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.rest.dto;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.ui.web.rest.dto.core.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.dto.core.DTOClass;
 
@@ -58,6 +59,8 @@ public class DocumentDTO extends AbstractDTO
    @DTOAttribute("owner")
    public String owner;
    
+   public UserDTO userDTO;
+   
    @DTOAttribute("dateCreated.time")
    public Long dateCreated;
    
@@ -77,6 +80,8 @@ public class DocumentDTO extends AbstractDTO
    
    public DocumentTypeDTO documentType;
 
+   public List<Pair<String, String>> documentData;
+   
    public DocumentDTO()
    {
 

@@ -15,6 +15,7 @@ import java.util.List;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentTypeDTO;
+import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 
 /**
  * @author Anoop.Nair
@@ -36,6 +37,8 @@ public class DocumentTypeDTOBuilder
                documentType.getDocumentTypeId().lastIndexOf('}') + 1);
          documentTypeDTO.setName(documentTypeName);
 
+         documentTypeDTO.label = TypedDocumentsUtil.getDocumentTypeLabel(documentType);
+         
          documentTypeDTO.setSchemaLocation(documentType.getSchemaLocation());
       }
 

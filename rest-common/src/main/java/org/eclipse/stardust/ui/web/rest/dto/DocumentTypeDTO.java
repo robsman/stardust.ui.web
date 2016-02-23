@@ -21,6 +21,8 @@ public class DocumentTypeDTO
    private String name;
 
    private String schemaLocation;
+   
+   public String label;
 
    /**
     *

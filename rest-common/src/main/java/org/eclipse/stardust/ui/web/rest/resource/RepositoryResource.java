@@ -148,16 +148,20 @@ public class RepositoryResource
          "\r\n" + 
          "```javascript\r\n" + 
          "{\r\n" + 
-         "  name: \"Repo\",\r\n" + 
-         "  searchType:\"Document\",\r\n" + 
-         "  contentTypeIn:['text/plain'],\r\n" + 
-         "  documentDataTableOption: {\r\n" + 
-         "    filter: {\r\n" + 
-         "      documentName: {\r\n" + 
-         "        textSearch:\"REPO\"\r\n" + 
-         "      }\r\n" + 
+         "    name : \"Repo\",\r\n" + 
+         "    searchType : \"Document\",\r\n" + 
+         "    contentTypeIn : ['text/plain'],\r\n" + 
+         "    documentDataTableOption : {\r\n" + 
+         "        filter : {\r\n" + 
+         "            documentName : {\r\n" + 
+         "                textSearch : \"REPO\"\r\n" + 
+         "            }\r\n" + 
+         "        }\r\n" + 
+         "    },\r\n" + 
+         "    documentDetailLevelDTO : {\r\n" + 
+         "        userDetailsLevel : \"minimal\",\r\n" + 
+         "        DocumentDataDetailsLevel : \"minimal\"\r\n" + 
          "    }\r\n" + 
-         "  }\r\n" + 
          "}\r\n" + 
          "```\r\n" + 
          "\r\n" + 

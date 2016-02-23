@@ -45,4 +45,5 @@ public class RepositorySearchRequestDTO extends AbstractDTO
    public List<String> repositoryIn;
    public String contentLike;
    public String metaDataLike;
+   public DetailLevelDTO documentDetailLevelDTO;
 }
