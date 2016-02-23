@@ -11,10 +11,12 @@
 
 package org.eclipse.stardust.ui.web.rest.resource;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
@@ -36,6 +38,8 @@ import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityPropert
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.service.UserService;
+import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserCountsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserDTO;
@@ -49,6 +53,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * 
@@ -281,4 +286,31 @@ public class UserResource
       }
 
    }
+   
+   /**
+    * This method returns the logged In user
+    * 
+    * @return
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @RequestDescription("Map of UserDetailsLevel and user id list")
+   @ResponseDescription("User DTOs containing the detials")
+   @Path("/details")
+   public Response getUsersDetails(String postedData)
+   {
+      JsonObject json = GsonUtils.readJsonObject(postedData);
+      String userLevelDetails = GsonUtils.extractString(json, "UserDetailsLevel");
+
+      Type listType = new TypeToken<Set<String>>()
+      {
+      }.getType();
+
+      Set<String> userIds = (Set<String>) GsonUtils.extractList(GsonUtils.extractJsonArray(json, "users"), listType);
+      List<UserDTO> userDTOs = userService.getUserDetails(userIds, userLevelDetails);
+
+      return Response.ok(GsonUtils.toJson(userDTOs), MediaType.APPLICATION_JSON).build();
+   }
+   
 }

@@ -21,6 +21,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.query.UserQuery;
+import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
@@ -124,6 +125,51 @@ public class UserService
       userDTO.displayName = UserUtils.getUserDisplayLabel(user);
       userDTO.userImageURI = MyPicturePreferenceUtils.getUsersImageURI(user);
       return userDTO;
+   }
+
+   /**
+    * @param userOID
+    * @param userDetailsLevelStr
+    * @return TODO enhancement may be required to return all details of user based of
+    *         detail level
+    */
+   public List<UserDTO> getUserDetails(Set<String> userIds, String userDetailsLevelStr)
+   {
+      Users users = UserUtils.getUsers(userIds, null, getUserDetailsLevel(userDetailsLevelStr));
+      List<UserDTO> userDTOs = new ArrayList<UserDTO>();
+      for (User user2 : users)
+      {
+         UserDTO userDTO = DTOBuilder.build(user2, UserDTO.class);
+         userDTO.displayName = UserUtils.getUserDisplayLabel(user2);
+         userDTOs.add(userDTO);
+      }
+      return userDTOs;
+   }
+   
+   /**
+    * @param level
+    * @return
+    */
+   private UserDetailsLevel getUserDetailsLevel(String level)
+   {
+      if (UserDetailsLevel.Minimal.getName().equalsIgnoreCase(level))
+      {
+         return UserDetailsLevel.Minimal;
+      }
+      else if (UserDetailsLevel.Core.getName().equalsIgnoreCase(level))
+      {
+         return UserDetailsLevel.Core;
+      }
+      else if (UserDetailsLevel.WithProperties.getName().equalsIgnoreCase(level))
+      {
+         return UserDetailsLevel.WithProperties;
+      }
+      else if (UserDetailsLevel.Full.getName().equalsIgnoreCase(level))
+      {
+         return UserDetailsLevel.Full;
+      }
+
+      return UserDetailsLevel.Minimal;
    }
 
    /**
