@@ -122,8 +122,10 @@ public class ParticipantSearchComponent
       result.list = response;
       
       if (skip != null && pageSize != null && skip < result.totalCount && result.totalCount > pageSize) {
-         long to = pageSize;
-         if (result.totalCount - skip < pageSize) {
+         long to = 0;
+         if (result.totalCount - skip > pageSize) {
+            to = skip + pageSize;
+         }else {
             to = result.totalCount;
          }
          result.list = response.subList(skip, (int) to);
