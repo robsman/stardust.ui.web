@@ -347,15 +347,20 @@
 	/**
 	 * 
 	 */
-	DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function() {
+	DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function(rowData) {
 		var self = this;
 		self.processDefns = {};
 		self.showAttachToProcessDialog = true;
-		if (angular.isArray(self.docSrchRsltTable.getSelection())) {
-			self.documentIds = self.getSelectedRoleIds(self.docSrchRsltTable.getSelection());
-		} else {
-			self.documentIds = [self.docSrchRsltTable.getSelection().documentId];
+		if(rowData != undefined){
+			self.documentIds = [rowData.documentId];
+		}else {
+			if (angular.isArray(self.docSrchRsltTable.getSelection())) {
+				self.documentIds = self.getSelectedRoleIds(self.docSrchRsltTable.getSelection());
+			} else {
+				self.documentIds = [self.docSrchRsltTable.getSelection().documentId];
+			}
 		}
+		
 		_sdDocumentSearchService.getAvailableProcessDefns().then(function(data) {
 			self.processDefns.list = data.list;
 			self.processDefns.totalCount = data.totalCount;
