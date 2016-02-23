@@ -10,7 +10,7 @@
 <script type="text/ng-template" id="tmplRepoUploadDialog">
 
 	<div style="margin:1em;">
-	
+		
 		<div style="display:inline-flex;width:60px">
 			<div ng-show="repoUploadCtrl.state ==='initial' || repoUploadCtrl.state ==='fileSelected'">
 		        <label style="display:inline-block;" for="{{repoUploadCtrl.id}}">
@@ -62,15 +62,17 @@
 	    </div>
 
 	    <span ng-show="repoUploadCtrl.state==='initial' && repoUploadCtrl.mode==='CREATE'" 
-	    	  style="margin-left:1em;">Select files to upload.
+	    	  style="margin-left:1em;">{{repoUploadCtrl.textMap.folderMessageUpload}}
 	   	</span>
 
 	   	<span ng-show="repoUploadCtrl.state==='initial' && repoUploadCtrl.mode==='UPDATE'" 
-	    	  style="margin-left:1em;">Select New Version of Current File.
+	    	  style="margin-left:1em;">{{repoUploadCtrl.textMap.folderMessageVersion}}
 	   	</span>
 
 	   	<span ng-show="repoUploadCtrl.state==='initial' && repoUploadCtrl.mode==='EXPLODE'" 
-	    	  style="margin-left:1em;">Select Zip Archive to Upload.
+	    	  style="margin-left:1em;">
+	    	  <span ng-show="!errorMessage">{{repoUploadCtrl.textMap.folderMessageZip}}</span>
+	    	  <span ng-show="errorMessage">{{errorMessage}}</span>
 	   	</span>
 
 	    <div ng-show="repoUploadCtrl.state !=='initial'" 
@@ -82,7 +84,7 @@
 						ng-click="repoUploadCtrl.selectedFile = file"
 					    ng-class="{'even' : $even,'odd':$odd,'tbl-row-selected':repoUploadCtrl.selectedFile === file}" 
 						ng-repeat="file in repoUploadCtrl.curatedFiles | orderBy : '-name'">
-						<td style="width:90%;">
+						<td style="width:400px;">
 							<button ng-show="file.fileState==1" 
 							        ng-click="file.send=!file.send" 
 							        ng-class="{'pi-add' : file.send, 'pi-delete' : !file.send}" 	
@@ -96,8 +98,8 @@
 							</span>
 							{{file.name}} 
 						</td>
-						<td ng-if="(file.size/1024) < 1024" style="width:10%">{{(file.size/1024)| number:1}} kb</td>
-						<td ng-if="(file.size/1024) >= 1024" style="width:10%">{{(file.size/1048576)| number:1}} mb</td>
+						<td ng-if="(file.size/1024) < 1024" style="width:100px;">{{(file.size/1024)| number:1}} kb</td>
+						<td ng-if="(file.size/1024) >= 1024" style="width:100px">{{(file.size/1048576)| number:1}} mb</td>
 					</tr>
 			</table>
 		</div>
@@ -108,46 +110,49 @@
 			<div ng-show="repoUploadCtrl.mode === 'EXPLODE'">
 				<input ng-model="repoUploadCtrl.overwriteFiles" type="checkbox"/>
 				<label style="display:inline-flex;vertical-align:sub;margin-left:1em;">
-					Overwrite Existing Folder
+					{{repoUploadCtrl.textMap.overwrite}}
 				</label>
 			</div>
 
 			<div ng-show="repoUploadCtrl.mode !== 'EXPLODE'">
 				<div ng-show="repoUploadCtrl.documentTypes.length > 0">
-				<label>Document Type </label>
+				<label>{{repoUploadCtrl.textMap.documentType}}</label>
 					<select ng-model="repoUploadCtrl.documentType" 
-							style="min-width:100px;width:auto;"
+							style="min-width:100px;width:auto;margin-left:1em;"
 							ng-options="type as type.name for type in repoUploadCtrl.documentTypes">
 					</select>
 				</div>
 				<div style="width:45%;display:inline-table;">
-					<label>
-						<i ng-click="descrCollapse = !descrCollapse" 
-						   ng-class="{'pi-trigger-expanded' :  descrCollapse, 'pi-trigger-collapsed' : !descrCollapse}"	
+					<label ng-click="repoUploadCtrl.descrCollapse = !repoUploadCtrl.descrCollapse">
+						<i ng-class="{'pi-trigger-expanded' :  repoUploadCtrl.descrCollapse, 'pi-trigger-collapsed' : !repoUploadCtrl.descrCollapse}"	
 					       class="pi">
 			           	</i> 
-			      		Description
+			      		{{repoUploadCtrl.textMap.description}}
 					</label>
-					<textarea ng-model="repoUploadCtrl.description" style="width:90%;" ng-show="descrCollapse"></textarea>
+					<textarea ng-model="repoUploadCtrl.description" 
+					          style="width:90%;" 
+					          ng-show="repoUploadCtrl.descrCollapse">
+					</textarea>
 				</div>
 				
 				<div style="width:45%;display:inline-table;">
-					<label>
-						<i ng-click="versCollapse = !versCollapse" 
-						   ng-class="{'pi-trigger-expanded' :  versCollapse, 'pi-trigger-collapsed' : !versCollapse}"	
+					<label ng-click="repoUploadCtrl.versCollapse = !repoUploadCtrl.versCollapse">
+						<i ng-class="{'pi-trigger-expanded' :  repoUploadCtrl.versCollapse, 'pi-trigger-collapsed' : !repoUploadCtrl.versCollapse}"	
 					       class="pi">
 			           	</i> 
-						Version Comments
+						{{repoUploadCtrl.textMap.versionComments}}
 					</label>
 					<textarea ng-model="repoUploadCtrl.comments" 
 					          style="width:90%;" 
-					          ng-show="versCollapse">
+					          ng-show="repoUploadCtrl.versCollapse">
 					</textarea>
 				</div>
 
 			    <div>
 			    	<input ng-model="repoUploadCtrl.openOnComplete" type="checkbox"/>
-			    	<label style="display:inline-flex;vertical-align:sub;margin-left:1em;">Open Documents</label>
+			    	<label style="display:inline-flex;vertical-align:sub;margin-left:1em;position:relative;top:-5px;">
+			    	{{repoUploadCtrl.textMap.openDocument}}
+			    	</label>
 			    </div>
 		    </div>
     	</div>
@@ -156,10 +161,14 @@
 			<div class="confirmation-buttonpane">
 				<div class="button-pane cf">
 					<div class="button-alignment">
-				  		<button ng-click="repoUploadCtrl.closeDialog()" class="button">Close</button>
+				  		<button ng-click="repoUploadCtrl.closeDialog()" 
+				  			    class="button">
+				  			    {{repoUploadCtrl.textMap.close}}
+				  		</button>
 				  		<button ng-show="repoUploadCtrl.files.length > 0 && (epoUploadCtrl.state==='initial'||repoUploadCtrl.state==='fileSelected')" 
-				  			    ng-click="repoUploadCtrl.uploadFile(repoUploadCtrl.files)">
-				  			    Upload
+				  			    ng-click="repoUploadCtrl.uploadFile(repoUploadCtrl.files)"
+				  			    class="button">
+				  			    {{repoUploadCtrl.textMap.upload}}
 				  		</button>
 					</div>
 		    	</div>

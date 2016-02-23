@@ -20,10 +20,13 @@
 		"COMPLETE": 4
 	};
 
+	//dependency array
+	fileRepoUploadController.$inject = ["$scope","sdUtilService","$q","$timeout","sdLoggerService","sdViewUtilService","sdI18nService"];
+
 	/**
 	 * Controller function for our directive
 	 */
-	function fileRepoUploadController($scope,sdUtilService,$q,$timeout,sdLoggerService,sdViewUtilService){
+	function fileRepoUploadController($scope,sdUtilService, $q, $timeout, sdLoggerService, sdViewUtilService, sdI18nService){
 
 		var that = this;
 		this.FileState = FileState;
@@ -47,8 +50,21 @@
 		this.id = "sdFileUploadDialog_" + $scope.$id;
 		this.openOnComplete = false;
 		this.trace = sdLoggerService.getLogger('bpm-common.directives.sdFileUploadController');
+		this.versCollapse = true;
+		this.descrCollapse = true;
+		this.i18n = sdI18nService.getInstance('views-common-messages');
 
-		this.title = "Upload New File";//default
+		this.textMap = this.getTextMap(this.i18n);
+
+		if(this.mode === "UPDATE"){
+			this.title = this.textMap.uploadNewVersion;
+		}
+		else if(this.mode==="EXPLODE"){
+			this.title = this.textMap.uploadZipArchive;
+		}
+		else{
+			this.title = this.textMap.fileUpload;
+		}
 
 		//Function has to be on scope so we can call it
 		//from non angular environment as ng-change does not
@@ -62,8 +78,9 @@
 				that.state = "fileSelected";
 				that.files = elem.files;
 
-				//In update mode we only allow one curated file
-				if(that.$scope.repoUploadCtrl.mode==="UPDATE"){
+				//In update or explode mode we only allow one curated file
+				if(that.$scope.repoUploadCtrl.mode==="UPDATE" || 
+				   that.$scope.repoUploadCtrl.mode==="EXPLODE"){
 					while(that.curatedFiles.pop());
 				};
 
@@ -115,6 +132,40 @@
 		},0);
 	}
 	
+	fileRepoUploadController.prototype.getTextMap = function(i18n){
+
+		var textMap = {};
+
+		textMap.multiFileError = i18n.translate("views.genericRepositoryView.uploadDialog.multipleFileError ");
+		textMap.zipOnlyError = i18n.translate("views.genericRepositoryView.uploadDialog.zipOnlyError");
+		textMap.folderMessageUpload = i18n.translate("views.genericRepositoryView.uploadDialog.folderMessage.upload");
+		textMap.folderMessageVersion = i18n.translate("views.genericRepositoryView.uploadDialog.folderMessage.version");
+		textMap.folderMessageZip = i18n.translate("views.genericRepositoryView.uploadDialog.folderMessage.zip");
+		textMap.versionComments = i18n.translate("fileUpload.comment.label");
+		textMap.documentTypes = i18n.translate("fileUpload.documentTypes.label");
+		textMap.description = i18n.translate("fileUpload.description.label");
+		textMap.openDocument = i18n.translate("fileUpload.openDocument.label");
+		textMap.close = i18n.translate("common.close");
+		textMap.uploadNewVersion = i18n.translate("views.myDocumentsTreeView.documentTree.uploadNewVersion");
+		textMap.uploadFile = i18n.translate("views.genericRepositoryView.treeMenuItem.uploadFile");
+		textMap.fileUpload = i18n.translate("views.myDocumentsTreeView.fileUploadDialog.fileUpload");
+		textMap.upload = i18n.translate("views.myDocumentsTreeView.fileUploadDialog.upload");
+		textMap.uploadZipArchive = i18n.translate("views.myDocumentsTreeView.fileUploadDialog.uploadZipArchive");
+		textMap.overwrite = i18n.translate("fileUpload.zip.overwrite");
+		textMap.documentType = i18n.translate("fileUpload.documentTypes.label");
+
+		return textMap;
+
+	};
+
+	fileRepoUploadController.prototype.isZip = function(file){
+		return file.type == "application/x-compressed" ||
+			   file.type == "application/x-compress" ||
+			   file.type == "application/x-zip-compressed" ||
+			   file.type == "application/zip" ||
+			   file.type == "multipart/x-zip";
+	};
+
 	fileRepoUploadController.prototype.openDocumentView = function(docId){
 
 	    var params = {"documentId" : docId};
@@ -126,8 +177,35 @@
 
 	//handle file drops and shunt them through the same folder
 	fileRepoUploadController.prototype.onFileDrop = function(data,e){
-		console.log(data);
-		console.log(e);
+
+		var hasError = false,
+			that = this;
+
+		this.$scope.errorMessage = "";
+
+		//Version update and zip import only allows a single file
+		if(this.$scope.repoUploadCtrl.mode==="UPDATE" || this.$scope.repoUploadCtrl.mode==="EXPLODE"){
+			while(this.curatedFiles.pop());
+
+			if(e.dataTransfer.files.length > 1){
+				this.$scope.errorMessage = this.textMap.multiFileError;
+				hasError = true;
+			}
+
+			if(!this.isZip(e.dataTransfer.files.item(0)) && this.$scope.repoUploadCtrl.mode==="EXPLODE"){
+				this.$scope.errorMessage = this.textMap.zipOnlyError;
+				hasError = true;
+			}
+
+			if(hasError){
+				//force a digest cycle so our error message displays
+				this.$timeout(function(){},0);
+				return;
+			}
+
+
+		};
+
 		this.$scope.fileNameChanged({"files" : e.dataTransfer.files});
 	};
 
@@ -151,6 +229,7 @@
 		this.responseFiles = [];
 		this.currentFile = {};
 		this.state = "initial";
+		this.$scope.errorMessage = "";
 		this.nonFileData = {};
 		this.fileDefer = {};
 		this.comments = "";
@@ -183,56 +262,67 @@
 			modelId,
 			invocations=[];
 			
-
+		
 		this.curatedFiles.forEach(function(file){
+			if(file.send===true){
+				var filePromise,
+					deferred,
+					nonFileData;
 
-			var filePromise,
-				deferred,
-				nonFileData;
+				deferred = that.$q.defer();
+				filePromise = deferred.promise;
+				nonFileData = angular.extend({}, file);
 
-			deferred = that.$q.defer();
-			filePromise = deferred.promise;
-			nonFileData = angular.extend({}, file);
+				//clean up our nonFileData to remove props inherited from the file object
+				//which we don't need. These are just extra form data vars we will send,
+				//the file obj will keep all the local important data itself.
+				delete nonFileData.blob;
+				delete nonFileData.fileState;
+				delete nonFileData.send;
+				delete nonFileData.name;
+				delete nonFileData.type;
+				delete nonFileData.size;
+				delete nonFileData.percentUploaded;
 
-			//clean up our nonFileData to remove props inherited from the file object
-			//which we don't need. These are just extra form data vars we will send,
-			//the file obj will keep all the local important data itself.
-			delete nonFileData.blob;
-			delete nonFileData.fileState;
-			delete nonFileData.send;
-			delete nonFileData.name;
-			delete nonFileData.type;
-			delete nonFileData.size;
-			delete nonFileData.percentUploaded;
+				//add parent path from our inherited scoped context
+				nonFileData.parentFolderPath = that.parentPath;
 
-			//add parent path from our inherited scoped context
-			nonFileData.parentFolderPath = that.parentPath;
+				//add data from our dialog UI, these are global for all files
+				if(that.documentType){
+					nonFileData.schemaLocation = that.documentType.schemaLocation;
+					nonFileData.documentTypeId = that.documentType.documentTypeId;
+				}
+				else{
+					delete nonFileData.schemaLocation;
+					delete nonFileData.documentTypeId;
+				}
 
-			//add data from our dialog UI, these are global for all files
-			if(that.documentType){
-				nonFileData.schemaLocation = that.documentType.schemaLocation;
-				nonFileData.documentTypeId = that.documentType.documentTypeId;
+				if(that.description){
+					nonFileData.description = that.description;
+				}
+				else{
+					delete nonFileData.description;
+				}
+
+				if(that.comments){
+					nonFileData.comments = that.comments;
+				}
+				else{
+					delete nonFileData.comments;
+				}
+
+				promises.push(filePromise);
+
+
+				invocations.push([file,nonFileData,fileKey,deferred]);
+
+				filePromise.then(function(file){
+					file.fileState = FileState.COMPLETE;
+				})
+				["catch"](function(file){
+					file.fileState = FileState.ERROR;
+				});
 			}
-
-			if(that.description){
-				nonFileData.description = that.description;
-			}
-
-			if(that.comments){
-				nonFileData.comments = that.comments;
-			}
-
-			promises.push(filePromise);
-
-
-			invocations.push([file,nonFileData,fileKey,deferred]);
-
-			filePromise.then(function(file){
-				file.fileState = FileState.COMPLETE;
-			})
-			["catch"](function(file){
-				file.fileState = FileState.ERROR;
-			});
 
 		});
 
@@ -332,6 +422,7 @@
     	else if(that.$scope.repoUploadCtrl.mode==="UPDATE"){
     		xhr.open("PUT", that.$scope.url + "/" + that.$scope.repoUploadCtrl.targetDocument, true);
     	}
+    	//Upload zip file
     	else if(that.$scope.repoUploadCtrl.mode==="EXPLODE"){
     		
     		var expUrl = that.sdUtilService.getRootUrl() + 
@@ -346,10 +437,6 @@
 		xhr.send(fd);
 
 	};
-	
-	fileRepoUploadController.$inject = ["$scope","sdUtilService","$q","$timeout","sdLoggerService","sdViewUtilService"];
-	
-	//angular.module("bpm-common.directives").controller("sdFileUploadController",fileUploadController);
 	
 	/**
 	 * Directive function
