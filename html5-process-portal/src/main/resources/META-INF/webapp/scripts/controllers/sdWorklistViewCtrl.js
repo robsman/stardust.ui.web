@@ -55,7 +55,7 @@
 	/**
 	 *
 	 */
-	WorklistViewCtrl.prototype.registerRefreshRequired = function() {
+	WorklistViewCtrl.prototype.autoRefresh = function() {
 		this.refreshRequired = true;
 	};
 

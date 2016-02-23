@@ -80,15 +80,22 @@
 	};
 
 	/*
-	 *
+	 * 
 	 */
 	function processRawMarkup(elem, attr) {
-		//Processing markup
+		processTrivialDataColumn(elem, attr);
+		processDescriptorColumns(elem, attr);
+		processAction(elem, attr);
+		processToolbar(elem, attr);
+	}
 
-		//Process Table - Reting only required columns
-		processTableColumns(elem, attr);
 
-		// Process Trivial Data Column
+	/*
+	 * 
+	 */
+	function processTrivialDataColumn(elem, attr) {
+
+			// Process Trivial Data Column
 		var showTrivialDataColumn = DEFAULT_VALUES.WORKLIST.SHOW_TRIVIAL_DATA_COLUMNS;
 
 		if (attr.sdaMode === DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME) {
@@ -107,7 +114,12 @@
 			var items = toolbar.find('[sda-column-type="TRIVIAL_DATA"]');
 			items.remove();
 		}
+	}
 
+	/*
+	 * 
+	 */
+	function processDescriptorColumns(elem, attr) {
 		// Process Descriptor columns
 		var showDescriptorCoulmns = true; // Default
 		if (attr.sdaDescriptorColumns && attr.sdaDescriptorColumns === 'false') {
@@ -119,58 +131,65 @@
 			var cols = elem.find('[sda-column-type="DESCRIPTOR_COLUMNS"]');
 			cols.remove();
 		}
-	};
+	}
 
+	/*
+	 * 
+	 */
+	function processAction(elem, attr) {
 
-	/**
-	*
-	*/
-	function processTableColumns(elem, attr) {
-		if (!attr.sdaColumns) {
+		var actionsAttr = attr.sdaActions;
+
+		if( angular.isUndefined(actionsAttr) ) {
 			return;
 		}
-		var requiredColumns = $parse(attr.sdaColumns)();
-		var currentOrder = [];
 
-		var headColumns = elem.find('table[sd-data-table] > thead > tr > th');
-		var bodyColumns = elem.find('table[sd-data-table] > tbody > tr > td');
+		var actions = $parse(actionsAttr)();
 
-		// Retaining required columns
-		for(var col = 0 ; col < headColumns.length ; col++ ) {
-			var columnElement = angular.element(headColumns[col]);
+		if ( actions === false ) {
+			elem.find('[sda-column-type="ACTIONS"] > div').remove();
+		} else if( actions === true ) {
+			return true;
+		} else if ( actions ) {
 
-			if(requiredColumns.indexOf(columnElement.attr('sda-name')) === -1) {
-				var bodyElement = angular.element(bodyColumns[col]);
-				columnElement.remove();
-				bodyElement.remove();
-			}else {
-				currentOrder.push(columnElement.attr('sda-name'));
-			}
-		}
+			var actionButtons = elem.find('[sda-column-type="ACTIONS"] > div > button');
+			angular.forEach(actionButtons, function(button){
+				var buttonType = button.attributes['sda-action-type'].value;
 
-		// Reordering columnns
-		var table =  elem.find('table[sd-data-table]');
-		for(var colIndex = requiredColumns.length -1; colIndex >=  0; colIndex-- ) {
-			var presentIndex = currentOrder.indexOf(requiredColumns[colIndex]);
-
-			if(colIndex === presentIndex) {
-				continue;
-			}
-			if(colIndex != presentIndex) {
-				moveColumn(table, presentIndex, colIndex);
-
-			}
+				if(actions.indexOf(buttonType) === -1) {
+					button.remove();
+				}
+			});
 		}
 	}
 
+	/*
+	 *
+	 */
+	function processToolbar(elem, attr) {
 
-	function moveColumn (table, from, to) {
-		var rows = jQuery('tr', table);
-		var cols;
-		rows.each(function() {
-			cols = jQuery(this).children('th, td');
-			cols.eq(from).detach().insertBefore(cols.eq(to));
-		});
+		var toolbarAttr = attr.sdaToolbar;
+
+		if( angular.isUndefined(toolbarAttr) ) {
+			return;
+		}
+
+		var toolbar = $parse(toolbarAttr)();
+
+		if ( toolbar === false ) {
+			elem.find('[sda-toolbar]').remove();
+		} else if( toolbar === true ) {
+			return true;
+		} else if ( toolbar ) {
+			var toolBarButtons = elem.find('[sda-toolbar] > div > button');
+
+			angular.forEach(toolBarButtons, function(button){
+				var buttonType = button.attributes['sda-toolbar-type'].value;
+				if(toolbar.indexOf(buttonType) === -1) {
+					button.remove();
+				}
+			});
+		}
 	}
 
 
@@ -179,7 +198,7 @@
 	 */
 	function ActivityTableCompiler(scope, element, attr, ctrl) {
 		try {
-			this.initialize(attr, scope, $filter);
+			this.initialize(attr, scope, $filter, element);
 			this.showError = false;
 		} catch (e) {
 			this.showError(e);
@@ -188,7 +207,7 @@
 		/*
 		 * Defined here as access required to scope
 		 */
-		if (angular.isDefined(ctrl) && ctrl != null) {
+		if (angular.isDefined(ctrl) && ctrl !== null) {
 			trace.debug("sdData is defined.Activity table will use provided custom source for data.");
 			this.sdDataCtrl = ctrl;
 		}
@@ -203,61 +222,30 @@
 		// Expose controller as a whole on to scope
 		scope.activityTableCtrl = this;
 		sdUtilService.addFunctionProxies(scope.activityTableCtrl);
-	};
+	}
 
 	/**
-	*
-	*/
+	 *
+	 */
 	ActivityTableCompiler.prototype.isToolBarVisible = function( name ) {
-		if(this.toolBarConfig === false) {
-			return false;
-		}
-		if(!name) {
+		var toolBarConfig = this.toolBarConfig;
+
+		if(angular.isUndefined(toolBarConfig) || (toolBarConfig === true)) {
 			return true;
 		}
 
-		return this.isMenuItemVisibile(name);
-	}
-
-	/**
-	*
-	*/
-	ActivityTableCompiler.prototype.isMenuItemVisibile = function( menuItem ) {
-		if(menuItem === "refresh") {
-			return  this.isWorklistMode() && checkCofig(this.toolBarConfig,"refresh");
-		} else if(menuItem === "abort") {
-			return checkCofig(this.toolBarConfig,"abort");
-		} else if (menuItem === "complete") {
-			return  this.isWorklistMode() && checkCofig(this.toolBarConfig,"complete");
-		} else if (menuItem === "delegate") {
-			return checkCofig(this.toolBarConfig,"delegate");
-		} else if (menuItem === "saveFilters") {
-			return checkCofig(this.toolBarConfig,"saveFilters");
-		} else if (menuItem === "export") {
-			return checkCofig(this.toolBarConfig, menuItem);
-		} else if (menuItem === "columnSelector") {
-			return checkCofig(this.toolBarConfig, menuItem);
+		if(toolBarConfig === false) {
+			return false;
 		}
 
-		return true;
+		return this.toolBarConfig.indexOf(name) !== -1;
 	};
 
-
-function checkCofig(toolBarConfig, menuItem) {
-
-	if(!toolBarConfig || toolBarConfig == null) {
-		return true;
-	} else if(!angular.isUndefined(toolBarConfig[menuItem])) {
-		return toolBarConfig[menuItem];
-	}
-
-	return true;
-}
 
 	/*
 	 *
 	 */
-	ActivityTableCompiler.prototype.initialize = function(attr, scope, $filter) {
+	ActivityTableCompiler.prototype.initialize = function(attr, scope, $filter, element) {
 		var scopeToUse = scope.$parent;
 		var self = this;
 		this.scope = scope;
@@ -288,7 +276,7 @@ function checkCofig(toolBarConfig, menuItem) {
 		if (!attr.sdData) {
 			var queryGetter = $parse(attr.sdaQuery);
 			var query = queryGetter(scope);
-			if (query == undefined) {
+			if (query === undefined) {
 				throw 'Query evaluated to "nothing" for activity table.';
 			}
 			this.query = query;
@@ -461,12 +449,59 @@ function checkCofig(toolBarConfig, menuItem) {
 	     *
 	     */
 	    ActivityTableCompiler.prototype.isColumnVisible = function(columnName) {
-	    	var found = $filter('filter')(self.visibleColumns, columnName);
-	    	if (found && found.length === 1) {
+	    	if(!angular.isDefined(this.definedColumnAtrributes)) {
+	    		return contains(this.visibleColumns, columnName);
+	    	}
+	    	var attributes = this.definedColumnAtrributes;
+	    	if(attributes && attributes[columnName] && angular.isDefined(attributes[columnName].visible) ) {
+	    		return this.definedColumnAtrributes[columnName].visible;
+	    	}
+	    	return true;
+	    };
+
+	    /**
+	     *
+	     */
+	    ActivityTableCompiler.prototype.isDefinedSortable = function(columnName, defaultValue) {
+	    	var attributes = this.definedColumnAtrributes;
+	    	if(attributes && attributes[columnName] && angular.isDefined(attributes[columnName].sort) ) {
+	    		return (self.definedColumnAtrributes[columnName].sort === true) ? defaultValue : false;
+	    	}
+	    	return defaultValue;
+	    };
+
+	    /**
+	     *
+	     */
+	    ActivityTableCompiler.prototype.isDefinedFilterable = function(columnName, defaultValue) {
+	    	var attributes = this.definedColumnAtrributes;
+	    	if(attributes && attributes[columnName] && angular.isDefined(attributes[columnName].filter) ) {
+	    		return (this.definedColumnAtrributes[columnName].filter === true) ? defaultValue : false;
+	    	}
+	    	return defaultValue;
+	    };
+
+	    /**
+	     *
+	     */
+	    ActivityTableCompiler.prototype.isDefinedFixed = function(columnName, defaultValue) {
+	    	var attributes = this.definedColumnAtrributes;
+	    	if(attributes && attributes[columnName] && angular.isDefined(attributes[columnName].fixed) ) {
+	    		return this.definedColumnAtrributes[columnName].fixed;
+	    	}
+	    	return defaultValue;
+	    };
+
+	    /**
+	     *
+	     */
+	    function contains( list, value) {
+	    	var found = $filter('filter')(list, value);
+	    	if (found && found.length > 0) {
 	    		return true;
 	    	}
 	    	return false;
-	    };
+	    }
 
 	    /**
 	     *
@@ -509,9 +544,9 @@ function checkCofig(toolBarConfig, menuItem) {
 	    	var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
 
 	    	var options = {
-		    			title : title,
-						dialogActionType : 'YES_NO'
-					};
+	    			title : title,
+	    			dialogActionType : 'YES_NO'
+	    	};
 
 	    	var defer = sdDialogService.confirm(scope, sgI18nService.translate('processportal.views-worklistPanel-resubmit-confirm'), options);
 
@@ -541,14 +576,14 @@ function checkCofig(toolBarConfig, menuItem) {
 			});
 	    };
 
-	    this.fetchDescriptorCols(attr);
+	    this.fetchDescriptorCols(element, attr, scopeToUse);
 	    this.fetchAvailableStates();
 	    this.fetchAvailablePriorities();
 
 	    //Refreshing when Item is activated //remove on completion of server push
-	    this.registerRefreshHandler = $parse(attr.sdaRegisterRefreshRequired);
-	    ActivityTableCompiler.prototype.registerRefreshRequired = function(){
-	    	 this.registerRefreshHandler(scopeToUse);
+	    this.refreshHandler = $parse(attr.sdaAutoRefresh);
+	    ActivityTableCompiler.prototype.registerRefresh = function(){
+	    	 this.refreshHandler(scopeToUse);
 	    }
 
 	    /*
@@ -710,7 +745,8 @@ function checkCofig(toolBarConfig, menuItem) {
 	 *
 	 */
 	ActivityTableCompiler.prototype.customizeWithAttributeValues = function(attr, scope, scopeToUse) {
-		// Process Title
+		var self = this;
+
 		var titleExpr = "";
 		if (attr.sdaTitle) {
 			titleExpr = attr.sdaTitle;
@@ -765,27 +801,11 @@ function checkCofig(toolBarConfig, menuItem) {
 			this.intialSort = sortGetter(scopeToUse);
 		}
 
-		if (attr.sdaVisibleColumns) {
-			this.visibleColumns  = $parse(attr.sdaVisibleColumns)();
-		} else if(!attr.sdaVisibleColumns  && attr.sdaColumns) {
-			this.visibleColumns  =$parse(attr.sdaColumns)();
-		}
-		//Check to see if required column and visible columns have valid values
-		if(attr.sdaVisibleColumns && attr.sdaColumns) {
-			var requiredColumns = JSON.parse(attr.sdaColumns.replace(/'/g, '"'));
-			angular.forEach(this.visibleColumns, function(visibleColumn) {
-					if(requiredColumns.indexOf(visibleColumn) == -1) {
-						throw 'sdaVisibleColumns cant contain columns not present in sdaColumns';
-					}
-			});
-		}
-
-		this.toolBarConfig = {};
 		if (attr.sdaToolbar) {
-			var toolBarConfigGetter =  $parse(attr.sdaToolbar);
-			this.toolBarConfig = toolBarConfigGetter(scopeToUse);
+			this.toolBarConfig =  $parse(attr.sdaToolbar)();
 		}
 	};
+
 
 	/*
 	 *
@@ -875,7 +895,7 @@ function checkCofig(toolBarConfig, menuItem) {
 	/*
 	 *
 	 */
-	ActivityTableCompiler.prototype.fetchDescriptorCols = function(attr) {
+	ActivityTableCompiler.prototype.fetchDescriptorCols = function(elem, attr, scopeToUse) {
 		var self = this;
 
 		sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
@@ -894,9 +914,12 @@ function checkCofig(toolBarConfig, menuItem) {
 			if (attr.sdaReady) {
 				self.descriptorsReady = true;
 			} else {
-				self.ready = true;
+				$timeout(function(){
+					//Handle Columns
+					self.processTableColumns(elem, attr, self, scopeToUse);
+					self.ready = true;
+				});
 			}
-
 			self.safeApply();
 		});
 	};
@@ -971,7 +994,7 @@ function checkCofig(toolBarConfig, menuItem) {
 			trace.debug("Activate :",rowItem.activityOID);
 			this.activateAndOpenView(rowItem);
 		}
-		this.registerRefreshRequired();
+		this.registerRefresh();
 	};
 
 	/*
@@ -1074,8 +1097,8 @@ function checkCofig(toolBarConfig, menuItem) {
 	 *
 	 */
 	ActivityTableCompiler.prototype.openCorrespondenceView = function(folder) {
-    sdCommonViewUtilService.openCorrespondenceView(folder);
-  };
+		sdCommonViewUtilService.openCorrespondenceView(folder);
+	};
 
 	/*
 	 *
@@ -1599,6 +1622,64 @@ function checkCofig(toolBarConfig, menuItem) {
 		});
 	};
 
+	/**
+	 *
+	 */
+	ActivityTableCompiler.prototype.processTableColumns = function(elem, attr, scopeToUse) {
+		var self = this;
+		// Dont Consider sdaVisibleColumns if sdaColumns is set
+		if (attr.sdaVisibleColumns && !attr.sdaColumns) {
+			self.visibleColumns  = $parse(attr.sdaVisibleColumns)(scopeToUse);
+		}
+
+		if (!attr.sdaColumns) {
+			return;
+		}
+		var columns = $parse(attr.sdaColumns)(scopeToUse);
+		var requiredColumns = [];
+		var currentOrder = [];
+
+		angular.forEach(columns, function(column){
+			requiredColumns.push(column.name);
+		});
+
+		var headColumns = elem.find('table[sd-data-table] > thead > tr > th');
+		var bodyColumns = elem.find('table[sd-data-table] > tbody > tr > td');
+
+		// Retaining required columns
+		for(var col = 0 ; col < headColumns.length ; col++ ) {
+			var columnElement = angular.element(headColumns[col]);
+
+			if(requiredColumns.indexOf(columnElement.attr('sda-name')) === -1) {
+				var bodyElement = angular.element(bodyColumns[col]);
+				columnElement.remove();
+				bodyElement.remove();
+			}else {
+				currentOrder.push(columnElement.attr('sda-name'));
+			}
+		}
+
+		// Reordering columnns
+		var table =  elem.find('table[sd-data-table]');
+		for(var colIndex = requiredColumns.length -1; colIndex >=  0; colIndex-- ) {
+			var presentIndex = currentOrder.indexOf(requiredColumns[colIndex]);
+
+			if(colIndex === presentIndex) {
+				continue;
+			}
+			if(colIndex != presentIndex) {
+				moveColumn(table, presentIndex, colIndex);
+			}
+		}
+
+		this.definedColumnAtrributes = {};
+		angular.forEach(columns, function(column) {
+			var columnDef = angular.copy(column);
+			delete columnDef.name;
+			self.definedColumnAtrributes[column.name] = columnDef;
+		});
+	};
+
 	return directiveDefObject;
     }
 
@@ -1617,4 +1698,17 @@ function checkCofig(toolBarConfig, menuItem) {
     	});
     	return newColumns;
     }
+
+    /**
+     *
+     */
+    function moveColumn (table, from, to) {
+    	var rows = jQuery('tr', table);
+    	var cols;
+    	rows.each(function() {
+    		cols = jQuery(this).children('th, td');
+    		cols.eq(from).detach().insertBefore(cols.eq(to));
+    	});
+    }
+
 })();
