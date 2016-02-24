@@ -11,7 +11,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common.directives').directive('sdDialog', ['sdLoggerService', '$compile', '$document', 'sdUtilService', DialogDirectiveFn]);
+	angular.module('bpm-common.directives').directive('sdDialog', ['sdLoggerService', '$compile', '$document', 'sdEnvConfigService', 'sdUtilService', DialogDirectiveFn]);
 	
 	/*
 	 * Directive class
@@ -33,7 +33,7 @@
 	 * 		sda-modal (String)
 	 *      sda-enable-key-events (@) (boolean)
 	 */
-	function DialogDirectiveFn(sdLoggerService, $compile, $document, sdUtilService) {
+	function DialogDirectiveFn(sdLoggerService, $compile, $document, sdEnvConfigService, sdUtilService) {
 		var trace = sdLoggerService.getLogger('bpm-common.directives.sdDialog');
 		
 		var SUPPORTED_TYPES = {
@@ -141,7 +141,7 @@
 				self.useTransclude = !angular.isDefined($scope.template);
 				
 				// modal or no modal
-				self.modal = $attrs.sdaModal;
+				self.modal = $attrs.sdaModal == 'false' ? false : true;
 				
 				// Dialog type. Default is 'custom'
 				self.dialogType = $attrs.sdaType;
@@ -250,6 +250,17 @@
 			
 			// Opens the dialog
 			function openDialog() {
+				if (self.modal && $attrs.sdaEventInfo != undefined && $attrs.sdaEventInfo != null && $attrs.sdaEventInfo != '') {
+					var eventInterceptor = sdEnvConfigService.getEventInterceptor();
+					if (eventInterceptor && eventInterceptor.openDialog) {
+						var config = $parse($attrs.sdaEventInfo)(self.dialogScope);
+						var continueOperation = eventInterceptor.openDialog(config);
+						if (!continueOperation) {
+							return false;
+						}
+					}
+				}
+
 				// create a new defer on open
 				self.deferred = $q.defer();
 
