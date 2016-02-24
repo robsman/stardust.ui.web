@@ -15,7 +15,7 @@
 			<label class="label-item">{{i18n('processportal.launchPanels-worklists-showEmptyWorklist')}}</label>
 		</div>
 		<div>
-			<ul sd-tree sda-event-callback="ctrl.eventCallback(data,e)" sda-icon-callback="ctrl.iconCallback(item)">
+			<ul sd-tree="ctrl.onTreeInit(api)" sda-event-callback="ctrl.eventCallback(data,e)" sda-icon-callback="ctrl.iconCallback(item)">
 				<li sd-tree-node sda-label="ctrl.getLabel(item.name, item.activityCount)" sda-node-id="item.uuid"
 					sda-is-leaf="!item.children || item.children.length == 0"
 					ng-repeat="item in ctrl.workflowMyAssignments">

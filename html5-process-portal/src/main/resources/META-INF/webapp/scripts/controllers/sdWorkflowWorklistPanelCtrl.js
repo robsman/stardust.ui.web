@@ -18,7 +18,7 @@
 			'sdWorkflowWorklistPanelCtrl',
 			[ 'sdWorkflowWorklistService', 'sdLoggerService', 'sdViewUtilService',
 					'sdI18nService', 'sdActivityInstanceService', 'sdDialogService', 'sdCommonViewUtilService',
-					'$scope', 'sgPubSubService', 'sdSidebarService', WorkflowWorklistPanelCtrl ]);
+					'$scope', 'sgPubSubService', 'sdSidebarService', '$timeout', WorkflowWorklistPanelCtrl ]);
 	var _sdWorkflowWorklistService;
 	var _sdViewUtilService;
 	var trace;
@@ -27,11 +27,12 @@
 	var _sdDialogService;
 	var _sdCommonViewUtilService;
 	var _scope;
+	var _timeout;
 	/**
 	 *
 	 */
 	function WorkflowWorklistPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService, 
-			sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope, sgPubSubService, sdSidebarService) {
+			sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope, sgPubSubService, sdSidebarService, $timeout) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowWorklistPanelCtrl');
 		_sdWorkflowWorklistService = sdWorkflowWorklistService;
 		_sdViewUtilService = sdViewUtilService;
@@ -40,7 +41,7 @@
 		_sdDialogService = sdDialogService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_scope = $scope;
-		
+		_timeout = $timeout;
 		this.showEmptyWorklists = false;
 		
 		this.collapsePanelHandle = null;
@@ -77,6 +78,12 @@
 		var self = this;
 		_sdWorkflowWorklistService.getUserAssignments(showEmptyWorklist).then(function(data) {
 			self.workflowMyAssignments = data.list;
+			// Added this logic to expand the parent node by default.
+			_timeout(function(){
+				self.workflowMyAssignments.forEach(function(view){
+		          self.treeApi.expandNode(view.uuid);
+		        });
+		      },0);
 		}, function(error) {
 			trace.error(error);
 		});
@@ -192,5 +199,14 @@
 	WorkflowWorklistPanelCtrl.prototype.iconCallback = function(item) {
     		    return item.icon;
 		  };
+		  
+	/**
+	 * Getting tree API handler.
+	 * @param api
+	 */	  
+     WorkflowWorklistPanelCtrl.prototype.onTreeInit = function(api){
+		 var self = this;
+		 self.treeApi = api;
+	  };
 
 })();
