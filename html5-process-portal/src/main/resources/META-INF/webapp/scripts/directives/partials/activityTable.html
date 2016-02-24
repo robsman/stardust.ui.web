@@ -438,7 +438,7 @@
 		sda-scope="this" sda-cancel-action-label="{{i18n('views-common-messages.common-close')}}"
 		sda-template="{{activityTableCtrl.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/completeActivityNotfication.html')}}">
 	</div>
-	<div sd-dialog
+	<div sd-dialog="activityTableCtrl.updatePriorityNotificationDlg"
 		sda-show="activityTableCtrl.updatePriorityNotification.visible"
 		sda-type="custom" sda-title="{{i18n('views-common-messages.common-notification-title')}}"
 		sda-scope="this"
