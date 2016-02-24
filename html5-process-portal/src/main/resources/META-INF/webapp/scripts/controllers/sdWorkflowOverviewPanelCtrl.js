@@ -35,6 +35,7 @@
 		_sdWorklistConstants = sdWorklistConstants;
 		this.userInfo = sdLoggedInUserService.getUserInfo();
 		this.collapsePanelHandle = null;
+		this.dateId = "-";
 		var self = this;
 		
 		sgPubSubService.subscribe("sdActivePerspectiveChange", function(){
