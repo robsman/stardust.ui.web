@@ -201,7 +201,9 @@
 		};
 
 		ViewUtilService.prototype.syncLaunchPanels = function() {
+			if(window.BridgeUtils) {
 				BridgeUtils.View.syncLaunchPanels();
+			}
 		};
 
 		/*

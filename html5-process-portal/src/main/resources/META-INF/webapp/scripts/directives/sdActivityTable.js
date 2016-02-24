@@ -838,6 +838,13 @@
 		}
 	};
 
+	/*
+	 *
+	 */
+	ActivityTableCompiler.prototype.prependBaseUrl = function(url) {
+		return sdUtilService.getBaseUrl() + url;
+	};
+
 
 	/*
 	 *
