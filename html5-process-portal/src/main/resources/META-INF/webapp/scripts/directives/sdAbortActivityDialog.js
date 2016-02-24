@@ -36,7 +36,8 @@
 							'sda-scope="this" '+
 							'sda-on-open="abortActivityCtrl.onOpenDialog(res)"' +
 							'sda-template="' +
-							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortActivityDialogBody.html"> '+
+							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortActivityDialogBody.html" '+
+							'sda-event-info="{dialogId: \'abortActivity\', params: activitiesToAbort}">' + 
 					 '<\/div> ',
 			
 			controller: AbortActivityController

@@ -44,6 +44,7 @@
 							+ ' sda-on-open="delegateActivityController.onOpenDialog(res)"'
 							+ ' sda-template="'
 							+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html"'
+							+ ' sda-event-info="{dialogId: \'delegateActivity\', params: activityList}"'
 							+ ' class="view-tool-link">'
 						+ '</span>',
 				controller: DelegateActivityDialogController
