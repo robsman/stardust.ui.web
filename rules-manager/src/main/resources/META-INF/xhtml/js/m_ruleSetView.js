@@ -245,6 +245,7 @@ define(
 												m_utils.jQuerySelect("#parameterDefinitionDirectionSelect").attr("disabled","disabled");
 												m_utils.jQuerySelect("#primitiveDataTypeSelect").attr("disabled","disabled");
 												m_utils.jQuerySelect("#dataTypeSelect").attr("disabled","disabled");
+												m_utils.jQuerySelect("#structuredDataTypeSelect").attr("disabled","disabled");
 												
 												//on click the parameter definition table re-enables its UI so we have to
 												//monitor for those events and disable after the fact.
@@ -255,6 +256,7 @@ define(
 													m_utils.jQuerySelect("#parameterDefinitionDirectionSelect").attr("disabled","disabled");
 													m_utils.jQuerySelect("#primitiveDataTypeSelect").attr("disabled","disabled");
 													m_utils.jQuerySelect("#dataTypeSelect").attr("disabled","disabled");
+													m_utils.jQuerySelect("#structuredDataTypeSelect").attr("disabled","disabled");
 												})
 											}
 										}
