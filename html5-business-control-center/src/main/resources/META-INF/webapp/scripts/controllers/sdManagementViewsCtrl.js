@@ -4,10 +4,10 @@
   var app;
   
   //TODO:need our view service and i18n service
-  cntrl.$inject=["sdManagementViewsService", "sdViewUtilService", "sgI18nService"];
+  cntrl.$inject=["sdManagementViewsService", "sdViewUtilService", "sgI18nService", "$timeout"];
   
   //constructor
-  function cntrl(sdManagementViewsService, sdViewUtilService, sgI18nService){
+  function cntrl(sdManagementViewsService, sdViewUtilService, sgI18nService, $timeout){
     var that = this;
     
     this.treeApi = {};
@@ -16,8 +16,17 @@
     
     sdManagementViewsService.getViews()
     .then(function(data){
+
       data = that.internationalizeText(data);
       that.views = data;
+
+      //expand root nodes
+      $timeout(function(){
+        that.views.forEach(function(v){
+          that.treeApi.expandNode(v.id);
+        });
+      },0);
+
     });
     
   }
