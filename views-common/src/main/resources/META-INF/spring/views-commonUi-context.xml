@@ -60,11 +60,7 @@
 
 		<!--  VIEWS -->
 		<ippui:viewsExtension>
-
-			<!--<ippui:view name="notesView"
-
-			-->			<ippui:view name="categoryTree" 				include="/plugins/html5-business-control-center/partials/views/allManagementViews.html"/>						<ippui:view name="genericRepositoryView"				include="/plugins/html5-views-common/html5/partials/views/genericRepositoryView.html">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/repository-view.png" />				</ippui:preferences>			</ippui:view>
-
+			<ippui:view name="genericRepositoryView"				include="/plugins/html5-views-common/html5/partials/views/genericRepositoryView.html">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/repository-view.png" />				</ippui:preferences>			</ippui:view>
 			<ippui:view name="myDocumentsTreeView"				include="/plugins/html5-views-common/html5/partials/views/myDocumentsTreeView.html">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/my-documents-view.png" />				</ippui:preferences>			</ippui:view>			
 			<ippui:view name="documentView"
 				include="/plugins/views-common/views/document/documentView.xhtml"
