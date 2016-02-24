@@ -1105,7 +1105,8 @@ define(
 						// May be data paths themselves can have parameter
 						// indicating whether
 						// they are read only or not?
-						if (this.currentParameterDefinition.dataFullId && (-1 != this.currentParameterDefinition.dataFullId.indexOf("PROCESS_ATTACHMENTS"))) {
+						if ((this.currentParameterDefinition.id==="PROCESS_ATTACHMENTS") && 
+							(this.currentParameterDefinition.dataFullId && (-1 != this.currentParameterDefinition.dataFullId.indexOf("PROCESS_ATTACHMENTS")))) {
 							this.parameterDefinitionNameInput.attr("disabled", true);
 							this.parameterDefinitionDirectionSelect.attr("disabled", true);
 							this.parameterDefinitionDataSelect.attr("disabled",true);
