@@ -78,9 +78,12 @@
 			
 			<div sda-toolbar>
 				<div>
-					<span class="pi pi-search search-box-icon"></span>
+					<span ng-show="!hasFocus && (!myFilter || myFilter.length===0)" class="pi pi-search search-box-icon"></span>
 					<input  type="text"  
 					        ng-keypress="($event.which === 13)?ctrl.filterTree(myFilter):0" 
+					        ng-init="myFilter=''"
+					        ng-focus="hasFocus=true"
+					        ng-blur="hasFocus=false"
 					        required="required"
 					        ng-model="myFilter" 
 					        class="search"
