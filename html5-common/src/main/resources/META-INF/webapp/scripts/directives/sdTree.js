@@ -811,10 +811,16 @@
 	            //on the parent TreeNode directive to communicate back to the 
 	            //users controller.
 	            scope.invokeCallback = function(name,e){
+
 	              if(e && e.preventDefault){
 	                e.preventDefault();
 	                e.stopImmediatePropagation();
 	                e.stopPropagation();
+	              }
+
+	              //ignore mouse click events on our editable input field
+	              if((e.srcElement || e.target).nodeName === "INPUT" && name==="node-click"){
+	              	return;
 	              }
 
 	              //All invokes will return a defer as part of the return object
