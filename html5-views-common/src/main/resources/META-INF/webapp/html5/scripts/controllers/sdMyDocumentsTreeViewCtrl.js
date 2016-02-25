@@ -14,7 +14,9 @@
 	function sdMyDocumentsTreeViewCtrl(sdReportsService, sdI18nService){
 
 		var that = this;
+		
 		var i18n = sdI18nService.getInstance('views-common-messages');
+		this.header = i18n.translate("views.myDocumentsTreeView.header");
 
 		sdReportsService.getCurrentUser()
 		.then(function(user){

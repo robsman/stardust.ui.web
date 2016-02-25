@@ -17,7 +17,7 @@
 
 	angular.module('workflow-ui').controller('sdWorklistViewCtrl',
 			['$scope', '$parse', 'sdUtilService', 'sdViewUtilService', '$interval',
-			'sdWorklistViewConfigService', 'sdLoggerService', WorklistViewCtrl]);
+			'sdWorklistViewConfigService', 'sdLoggerService', 'sdI18nService', WorklistViewCtrl]);
 
 	var  _$interval = null ;
 	var _sdWorklistViewConfigService = null;
@@ -28,8 +28,10 @@
 	 */
 	function WorklistViewCtrl($scope, $parse, sdUtilService,
 											sdViewUtilService, $interval, sdWorklistViewConfigService,
-											sdLoggerService) {
+											sdLoggerService, sdI18nService) {
 		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents, this);
+
+		var i18n;
 
 		_$interval = $interval;
 		_sdWorklistViewConfigService = sdWorklistViewConfigService;
@@ -37,6 +39,9 @@
 		trace  = sdLoggerService.getLogger('workflow-ui.sdWorklistViewCtrl');
 
 		this.initialize();
+
+		i18n = sdI18nService.getInstance('views-common-messages');
+		this.header = i18n.translate("views.worklistViewPanel.header");
 
 		this.registerForAutoRefresh();
 

@@ -1,5 +1,10 @@
-<div ng-controller="sdMyDocumentsTreeViewCtrl as sdMyDocumentsTreeViewCtrl" 
-     sg-stretch-to-bottom class="view-panel">
+<div ng-controller="sdMyDocumentsTreeViewCtrl as sdMyDocumentsTreeViewCtrl" sg-stretch-to-bottom class="view-panel">
+
+	<header>
+        <div class="view-panel-toolbar heading ng-binding">
+          {{sdMyDocumentsTreeViewCtrl.header}}
+        </div>
+    </header>
 	
 	<div sd-document-repository 
 		 sda-menu-hook="sdMyDocumentsTreeViewCtrl.menuHook(menuItems,treeNode)"

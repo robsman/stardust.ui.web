@@ -67,16 +67,18 @@
 	
 	<!-- sdDialog Directives End -->
 	
-	<i style="position:absolute;font-size:1.5em;cursor:pointer;" 
+	<i style="position:absolute;font-size:1.5em;cursor:pointer;top:7px;" 
 	   ng-click="ctrl.showBenchmarks = !ctrl.showBenchmarks" 
 	   ng-class="{'pi-arrow-d': ctrl.showBenchmarks,'pi-arrow-r': !ctrl.showBenchmarks}"
 	   class="pi pi-fw pi-arrow-d">
 	</i>
-	
-	<span style="margin:2em;" class="header">
-		{{ctrl.textMap.benchmarkDefinitions}}
-	</span>
 
+	<header style="position:relative;left:2em;">
+        <div class="view-panel-toolbar heading ng-binding">
+          {{ctrl.textMap.benchmarkDefinitions}}
+        </div>
+    </header>
+    
 	<div sd-file-upload-dialog 
 	     sda-on-init="ctrl.onUploadDialogInit(api)"
 	     sda-file-key="file"

@@ -1,5 +1,11 @@
 <div ng-controller="sdResourceMgmtTreeViewCtrl as sdResourceMgmtTreeViewCtrl" sg-stretch-to-bottom class="view-panel">
 	
+	<header>
+		<div class="view-panel-toolbar heading ng-binding">
+			{{sdResourceMgmtTreeViewCtrl.header}}
+		</div>
+	</header>
+
 	<div sd-document-repository 
 		 sda-menu-hook="sdResourceMgmtTreeViewCtrl.menuHook(menuItems,treeNode)"
 	     sda-root-path="'/artifacts'">

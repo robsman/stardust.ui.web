@@ -3,12 +3,17 @@
 	'use strict';
 	
 	//inject our dependencies for the controller
-	sdMyReportsViewCtrl.$inject = ["sdReportsService"];
+	sdMyReportsViewCtrl.$inject = ["sdReportsService", "sdI18nService"];
 	
-	function sdMyReportsViewCtrl(sdReportsService){
-		var that = this;
+	function sdMyReportsViewCtrl(sdReportsService, sdI18nService){
+		var that = this,
+			i18n;
+
 		this.paths= null;
-		
+
+		i18n = sdI18nService.getInstance('views-common-messages');
+		this.header = i18n.translate("views.myReportsView.header");
+
 		this.path = sdReportsService.getReportPaths()
 		.then(function(paths){
 			that.paths = paths;

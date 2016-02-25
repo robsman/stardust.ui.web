@@ -13,7 +13,7 @@
     this.treeApi = {};
     this.sdViewUtilService = sdViewUtilService;
     this.i18n = sgI18nService.translate;
-    
+    this.header = this.i18n("business-control-center-messages.views-categoryTree-header");
     sdManagementViewsService.getViews()
     .then(function(data){
 

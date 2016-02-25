@@ -3,11 +3,13 @@
 	'use strict';
 	
 	//inject our dependencies for the controller
-	sdResourceMgmtTreeViewCtrl.$inject = [];
+	sdResourceMgmtTreeViewCtrl.$inject = ["sdI18nService"];
 	
-	function sdResourceMgmtTreeViewCtrl(){
+	function sdResourceMgmtTreeViewCtrl(sdI18nService){
 		this.path="/documents,/realms";
-	}
+		this.i18n = sdI18nService.getInstance("views-common-messages");
+		this.header = this.i18n.translate("views.resourceMgmtTreeView.header");
+	};
 
 	sdResourceMgmtTreeViewCtrl.prototype.menuHook = function(menuItems,treeNode){
 

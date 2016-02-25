@@ -1,7 +1,13 @@
 <div sg-stretch-to-bottom class="view-panel">
 
 	<div ng-controller="sdManagementViewsCtrl as ctrl">
-      
+
+      <header>
+        <div class="view-panel-toolbar heading ng-binding">
+          {{ctrl.header}}
+        </div>
+      </header>
+
       <ul sd-tree="ctrl.onTreeInit(api)"
           sda-icon-callback="ctrl.iconCallback(item)"
           sda-event-callback = "ctrl.treeEventCallback(data,e)">

@@ -1,5 +1,12 @@
-<div sg-stretch-to-bottom class="view-panel">
+
+<div ng-controller="sdGenericRepositoryViewCtrl as genRepoCtrl" sg-stretch-to-bottom class="view-panel">
 	
+	<header>
+		<div class="view-panel-toolbar heading ng-binding">
+			{{genRepoCtrl.documentsHeader}}
+		</div>
+	</header>
+
 	<div sd-document-repository 
 		 sda-searchable="true"
 	     sda-root-path="'/'">

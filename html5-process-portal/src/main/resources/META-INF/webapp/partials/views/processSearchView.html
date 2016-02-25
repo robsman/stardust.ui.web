@@ -1,13 +1,13 @@
 <div sg-stretch-to-bottom class="view-panel">
 	<div class="ng-hide" ng-show="true" ng-controller="sdProcessSearchViewCtrl as procSearchViewCtrl">
-		<div style="margin-top: 20px;" class="view-panel-toolbar">
+		<div class="view-panel-toolbar">
 			<a href="#" ng-show="procSearchViewCtrl.showSearchCriteria"
 				ng-click="procSearchViewCtrl.showSearchCriteria = false" aid="BCC-ProcSrch-HideCriteria">
 				<table cellpadding="0" cellspacing="0" class="searchTableLayout">
 					<tr>
 						<td style="padding-right: 5px;"><i
 							class=" pi pi-trigger-expanded pi-lg"></i></td>
-						<td><span class="heading">{{(i18n('business-control-center-messages.views-processSearchView-searchCriteria-label')).toUpperCase()}}</span></td>
+						<td><header class="heading">{{(i18n('business-control-center-messages.views-processSearchView-searchCriteria-label')).toUpperCase()}}</header></td>
 					</tr>
 				</table>
 			</a> <a href="#" ng-show="!procSearchViewCtrl.showSearchCriteria"
