@@ -97,15 +97,12 @@
 									<td><input type="checkbox"
 										ng-model="docSearchViewCtrl.query.documentSearchCriteria.showAll"
 										ng-change="docSearchViewCtrl.getFileTypes()"
-										style="vertical-align: middle"
-										aid="COM-SrchDoc-FileType-ShowAll" /> <label
-										class="label-item"
-										style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-showAll-label')}}</label>
+										aid="COM-SrchDoc-FileType-ShowAll" /> 
+										<label class="label-item" style="vertical-align: middle;">{{i18n('views-common-messages.views-documentSearchView-showAll-label')}}</label>
 									</td>
 									<td><a href="#"
 										ng-click="docSearchViewCtrl.advancedFileTypes()"
-										style="margin-left: 70px" aid="COM-SrchDoc-FileType-Advanced">
-											{{i18n('views-common-messages.views-documentSearchView-advanced-label')}}&nbsp;&raquo;</a></td>
+										style="margin-left: 70px; vertical-align: super;" aid="COM-SrchDoc-FileType-Advanced">{{i18n('views-common-messages.views-documentSearchView-advanced-label')}}&nbsp;&raquo;</a></td>
 								</tr>
 							</table>
 							<table
@@ -149,19 +146,18 @@
 								<tr>
 									<td><input type="checkbox"
 										ng-model="docSearchViewCtrl.query.documentSearchCriteria.searchContent"
-										aid="COM-SrchDoc-ContTxt-SrchContent" /> <label
-										class="label-item"
-										style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-searchContent-label')}}</label>
+										aid="COM-SrchDoc-ContTxt-SrchContent" />
+										<label class="label-item" style="vertical-align: middle;">{{i18n('views-common-messages.views-documentSearchView-searchContent-label')}}</label>
 									</td>
 									<td><input type="checkbox"
 										ng-model="docSearchViewCtrl.query.documentSearchCriteria.searchData"
-										aid="COM-SrchDoc-ContTxt-SrchData" /> <label
-										class="label-item"
-										style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-searchData-label')}}</label>
+										aid="COM-SrchDoc-ContTxt-SrchData" />
+										<label class="label-item" style="vertical-align: middle;">{{i18n('views-common-messages.views-documentSearchView-searchData-label')}}</label>
 									</td>
 									<td><a href="#"
 										ng-click="docSearchViewCtrl.setShowAdvancedTextSearch()"
-										aid="COM-SrchDoc-ContTxt-AdvTxtSrch">
+										aid="COM-SrchDoc-ContTxt-AdvTxtSrch"
+										style="vertical-align: super;">
 											{{i18n('views-common-messages.views-documentSearchView-advanced-label')}}&nbsp;&raquo; </a></td>
 								</tr>
 							</table>
