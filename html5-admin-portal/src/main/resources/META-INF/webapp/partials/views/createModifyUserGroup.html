@@ -7,7 +7,7 @@
 		</div>
 		<table cellpadding="4">
 			<tr>
-				<td><label>{{"*  " + i18n('admin-portal-messages.views-common-id-label')+
+				<td><label class="label-item">{{"*  " + i18n('admin-portal-messages.views-common-id-label')+
 						i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><input name="id" type="text" sd-focus ng-disabled="ctrl.mode == 'MODIFY_USER'"
 					ng-model="ctrl.newUserGroup.id" required aid="ADM-UserGrpMgmt-CreateModifyUserGroup-id">
@@ -17,7 +17,7 @@
 					</div></td>
 			</tr>
 			<tr>
-				<td><label>{{"*  " + i18n('admin-portal-messages.views-common-name-label')+
+				<td><label class="label-item">{{"*  " + i18n('admin-portal-messages.views-common-name-label')+
 						i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><input name="name" type="text"
 					ng-model="ctrl.newUserGroup.name" required aid="ADM-UserGrpMgmt-CreateModifyUserGroup-name">
@@ -27,23 +27,23 @@
 					</div></td>
 			</tr>
 			<tr>
-				<td><label>{{i18n('admin-portal-messages.views-common-validFrom-label')+
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-common-validFrom-label')+
 						i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div sd-date-time-picker ng-model-onblur
 					ng-model="ctrl.newUserGroup.validFrom"
 					sda-aid-prefix="ADM-UserGrpMgmt-CreateModifyUserGroup-ValidFrom"/></td>
 			</tr>
 			<tr>
-				<td><label>{{i18n('admin-portal-messages.views-common-validTo-label')+
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-common-validTo-label')+
 						i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div sd-date-time-picker ng-model-onblur
 					ng-model="ctrl.newUserGroup.validTo"
 					sda-aid-prefix="ADM-UserGrpMgmt-CreateModifyUserGroup-ValidTo"/></td>
 			</tr>
 			<tr>
-				<td><label>{{i18n('admin-portal-messages.views-common-descr-label')+
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-common-descr-label')+
 						i18n('admin-portal-messages.common-colon')}}</label></td>
-				<td><textarea rows="4" cols="20"
+				<td><textarea rows="4" cols="20" style="margin-top:5px;"
 						ng-model="ctrl.newUserGroup.description"
 						aid="ADM-UserGrpMgmt-CreateModifyUserGroup-Description"></td>
 			</tr>

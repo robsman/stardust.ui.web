@@ -64,22 +64,22 @@
 			<div sd-message></div>
 			<table>
 				<tr>
-					<td>* {{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-id')}} {{i18n('admin-portal-messages.common-colon')}}</td>
+					<td><label class="label-item">* {{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-id')}} {{i18n('admin-portal-messages.common-colon')}}</label></td>
 					<td>
 						<input name="id" ng-model="ctrl.realmToCreate.id" required aid="ADM-RealmMgmt-CreateDlg-Id"/>
 						<span class="msg-error" ng-show="realmForm.id.$error.required && ctrl.submitted" ng-bind="i18n('html5-common.required-value')"></span>
 					</td>
 				</tr>
 				<tr>
-					<td>* {{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-name')}} {{i18n('admin-portal-messages.common-colon')}}</td>
+					<td><label class="label-item">* {{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-name')}} {{i18n('admin-portal-messages.common-colon')}}</label></td>
 					<td>
 						<input name="name" ng-model="ctrl.realmToCreate.name" required aid="ADM-RealmMgmt-CreateDlg-Name"/>
 						<span class="msg-error" ng-show="realmForm.name.$error.required && ctrl.submitted" ng-bind="i18n('html5-common.required-value')"></span>
 					</td>
 				</tr>
 				<tr>
-					<td>{{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-descr')}} {{i18n('admin-portal-messages.common-colon')}}</td>
-					<td><input ng-model="ctrl.realmToCreate.description" aid="ADM-RealmMgmt-CreateDlg-Description" /></td>
+					<td><label class="label-item">{{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-descr')}} {{i18n('admin-portal-messages.common-colon')}}</label></td>
+					<td><input ng-model="ctrl.realmToCreate.description" aid="ADM-RealmMgmt-CreateDlg-Description"/></td>
 				</tr>
 			</table>
 		</form>
