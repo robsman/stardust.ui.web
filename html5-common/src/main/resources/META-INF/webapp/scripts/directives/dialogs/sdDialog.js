@@ -321,7 +321,7 @@
 				    'position':'absolute',
 				    'top': 200,
 				    'left': 400,
-				    'width': 300
+				    'width': 'auto'
 				 });
 			}
 			
