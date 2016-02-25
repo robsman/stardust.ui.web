@@ -310,18 +310,28 @@
 					       if (height === 0) {
 				        		return;
 				        	}
-				        	// Now determine and set correct position for the dialog.
-				        	var w = jQuery(window);
-				        	dialogContent.css({
-							    'position':'absolute',
-							    'top':Math.abs(((w.height() - dialogContent.outerHeight()) / 2) + w.scrollTop()),
-							    'left':Math.abs(((w.width() - dialogContent.outerWidth()) / 2) + w.scrollLeft())
-							 });
+				        	alignAtCenter(dialogContent);
 					    },
 					    TIMER_INTERVAL,
 					    false
 					)});
 		        });
+                // center aligning dialog by default 
+				dialogContent.css({
+				    'position':'absolute',
+				    'top': 200,
+				    'left': 400,
+				    'width': 300
+				 });
+			}
+			
+			function alignAtCenter(dialogContent){
+				var w = jQuery(window);
+	        	dialogContent.css({
+				    'position':'absolute',
+				    'top':Math.abs(((w.height() - dialogContent.outerHeight()) / 2) + w.scrollTop()),
+				    'left':Math.abs(((w.width() - dialogContent.outerWidth()) / 2) + w.scrollLeft())
+				 });
 			}
 
 			/*
