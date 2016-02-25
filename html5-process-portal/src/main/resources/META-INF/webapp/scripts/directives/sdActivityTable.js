@@ -797,6 +797,8 @@
 				this.preferenceId = 'worklist-process-columns';
 			} else if (this.query.participantQId) {
 				this.preferenceName = "{ipp-participant}" + this.query.participantQId;
+			} else if (this.query.pInstanceOids) {
+				this.preferenceName = "processInstances"
 			}
 
 			if(!this.preferenceName) {
