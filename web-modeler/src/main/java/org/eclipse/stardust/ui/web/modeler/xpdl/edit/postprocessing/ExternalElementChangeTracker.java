@@ -16,9 +16,9 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.change.impl.ChangeDescriptionImpl;
+import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
-import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.impl.DataSymbolTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
@@ -29,8 +29,6 @@ import org.eclipse.stardust.model.xpdl.xpdl2.Extensible;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.modeling.repository.common.Connection;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
-
-import org.springframework.stereotype.Component;
 
 /**
  * @author Barry.Grotjahn
@@ -125,26 +123,7 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
                   {
                      if (((IIdentifiableModelElement) element).getSymbols().isEmpty())
                      {
-                        if (element instanceof RoleType
-                              && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element)
-                              && !isUsedInActivity((IModelParticipant) element))
-                        {
-                           model.getRole().remove(element);
-                           modified = true;
-                        }
-                        else if (element instanceof ConditionalPerformerType
-                              && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
-                        {
-                           model.getConditionalPerformer().remove(element);
-                           modified = true;
-                        }
-                        else if (element instanceof OrganizationType
-                              && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
-                        {
-                           model.getOrganization().remove(element);
-                           modified = true;
-                        }
-                        else if (candidate instanceof ProcessDefinitionType
+                        if (candidate instanceof ProcessDefinitionType
                               && element instanceof DataType)
                         {
                            model.getData().remove(element);
