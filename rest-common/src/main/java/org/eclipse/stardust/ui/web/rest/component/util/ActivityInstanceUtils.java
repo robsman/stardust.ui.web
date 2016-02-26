@@ -278,7 +278,7 @@ public class ActivityInstanceUtils
             dto.dataMappings = cache.get(cacheKey);
 
             // Get (IN_)OUT Data
-            dto.inOutData = new LinkedHashMap<String, Serializable>();
+            dto.inOutData = new LinkedHashMap<String, Object>();
             Map<String, Serializable> dataValues = getAllInDataValues(ai, context);
             for (Entry<String, Serializable> entry : dataValues.entrySet())
             {

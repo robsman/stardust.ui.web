@@ -24,5 +24,5 @@ public class TrivialActivityInstanceDTO extends ActivityInstanceDTO
    
    public List<PathDTO> dataMappings;
    
-   public Map<String, Serializable> inOutData;
+   public Map<String, Object> inOutData;
 }

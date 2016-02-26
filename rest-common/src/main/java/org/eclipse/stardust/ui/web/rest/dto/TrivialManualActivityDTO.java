@@ -21,5 +21,5 @@ import java.util.Map;
 public class TrivialManualActivityDTO
 {
    public List<PathDTO> dataMappings;
-   public Map<String, Serializable> inOutData;
+   public Map<String, Object> inOutData;
 }
