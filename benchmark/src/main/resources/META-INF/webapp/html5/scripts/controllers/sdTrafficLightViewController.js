@@ -63,13 +63,15 @@
 
 		this.processes = [ {
 			'id' : 'ALL_PROCESSES',
-			'name' : 'All Processes'
+			'name' : 'All Processes',
+			 order : 0
 		} ];
 
 		this.selectedProcesses = [ this.processes[0] ];
 		this.benchmarkDefinitions = [ {
 			'oid' : 'ALL_BENCHMARKS',
-			'name' : 'All Benchmarks'
+			'name' : 'All Benchmarks',
+			 order : 0
 		} ];
 		this.selectedBenchmarks = [ this.benchmarkDefinitions[0].oid ];
 		this.getRuntimeBenchmarkDefinitions();
