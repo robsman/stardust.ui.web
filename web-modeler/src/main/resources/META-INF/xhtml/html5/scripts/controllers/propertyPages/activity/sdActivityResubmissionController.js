@@ -62,11 +62,13 @@
 	 * 
 	 */
 	ActivityResubmissionController.prototype.updateEnableResubmissionOption = function() {
+		
 		if (this.enableResubmission) {
 			this.propertiesPanel.submitEnableResubmissionCommand({
 				useData : false
 			});
 		} else {
+			this.modelElement.resubmissionHandler = null;
 			this.propertiesPanel.submitDisableResubmissionCommand({});
 		}
 	};
