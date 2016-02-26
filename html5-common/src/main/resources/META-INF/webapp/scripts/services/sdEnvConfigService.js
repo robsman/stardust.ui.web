@@ -28,13 +28,28 @@
 	 * 
 	 */
 	function EnvConfigService($injector, sdLoggerService) {
-		
+
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdEnvConfigService');
 
-		var envConfigs = $injector.has('sdEnvConfig') ? $injector.get('sdEnvConfig') : {};
-		trace.info('EnvConfigs:', envConfigs);
+		var isConfigured, envConfigs, eventInterceptor;
 
-		var eventInterceptor;
+		initialize();
+
+		/*
+		 * 
+		 */
+		function initialize() {
+			isConfigured = $injector.has('sdEnvConfig');
+			envConfigs = $injector.has('sdEnvConfig') ? $injector.get('sdEnvConfig') : {};
+			trace.info('EnvConfigs:', envConfigs);
+		}
+
+		/*
+		 * 
+		 */
+		EnvConfigService.prototype.isConfigured = function() {
+			return isConfigured;
+		};
 
 		/*
 		 * 
@@ -53,6 +68,15 @@
 			}
 
 			return eventInterceptor;
+		};
+
+		/*
+		 * 
+		 */
+		EnvConfigService.prototype.getNavPath = function(id) {
+			if (envConfigs.navPaths) {
+				return envConfigs.navPaths[id];
+			}
 		};
 	};
 })();

@@ -99,9 +99,19 @@
 				};
 
 				var continueOperation = eventInterceptor.openView(config);
-				if (!continueOperation) {
-					return false;
+				if (continueOperation) {
+					// Check if View is available
+					var hml5ViewId = sdEnvConfigService.getNavPath(viewId);
+					if (hml5ViewId) {
+						var html5ViewParams = jQuery.extend({}, params);
+						html5ViewParams.custom = jQuery.extend({}, params);
+		
+						sgViewPanelService.open(hml5ViewId, true, html5ViewParams);
+						return true;
+					}
 				}
+
+				return false;
 			}
 
 			var message = {
