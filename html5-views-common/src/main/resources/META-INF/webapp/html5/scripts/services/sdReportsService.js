@@ -9,43 +9,62 @@
 	};
 	
 	
-	sdReportsService.prototype.getReportPaths = function(){
+	sdReportsService.prototype.getReportPaths = function(myDocumentsFolderPath){
 		
 		var deferred = this.$q.defer(),
 			paths =[],
-			that;
-		
-		//this will always exist as such...
-		//paths.push("reports/designs");
-		
-
-
-		//TODO: Need list of fully qualified participant IDs
-		//For each fully qualified participant create a path as such...
-		//.../reports/{fullyQualifeidParticipantId}/designs
-		//Add them all in a bot hasynch requests in a $q.all method
-		//and then resovle paths
+			upathKey;
 		
 		//1: Add the fixed path we do know
-		paths={
-			"reports/designs" : "Private Report Definitions",
-		}
+		paths={"reports/designs" : "Private Report Definitions"}
 
-		//2: Add the computed path for the users documents
-		this.getCurrentUser()
-		.then(function(user){
-
-			var upathKey = user.myDocumentsFolderPath + "/reports/designs"
-			paths[upathKey] = "Public Report Definitions";
-			deferred.resolve(paths);
-
-		})
-		["catch"](function(){
-			deferred.reject();
-		});
+		//2:Now compute the one we dont
+		upathKey = myDocumentsFolderPath + "/reports/designs"
+		paths[upathKey] = "Public Report Definitions";
+		deferred.resolve(paths);
 
 		return deferred.promise;
 		
+	};
+
+	sdReportsService.prototype.getPersonalReports = function(){
+
+		var url = this.rootUrl + "/services/rest/portal/reports/personal";
+		var deferred = this.$q.defer();
+
+		this.$http({
+			"method" : "GET",
+			"url" : url
+		})
+		.then(function(res){
+			deferred.resolve(res.data);
+		})
+		["catch"](function(err){
+			deferred.reject(err);
+		});
+
+		return deferred.promise;
+
+	};
+
+	sdReportsService.prototype.getRoleOrgReportDefinitionGrants = function(userId){
+
+		var url = this.rootUrl + "/services/rest/portal/participant/grant/" + userId;
+		var deferred = this.$q.defer();
+
+		this.$http({
+			"method" : "GET",
+			"url" : url
+		})
+		.then(function(res){
+			deferred.resolve(res.data);
+		})
+		["catch"](function(err){
+			deferred.reject(err);
+		});
+
+		return deferred.promise;
+
 	};
 
 	sdReportsService.prototype.getCurrentUser = function(){

@@ -3,21 +3,36 @@
 	'use strict';
 	
 	//inject our dependencies for the controller
-	sdMyReportsViewCtrl.$inject = ["sdReportsService", "sdI18nService"];
+	sdMyReportsViewCtrl.$inject = ["sdReportsService", "sdI18nService", "$q"];
 	
-	function sdMyReportsViewCtrl(sdReportsService, sdI18nService){
+	function sdMyReportsViewCtrl(sdReportsService, sdI18nService, $q){
 		var that = this,
 			i18n;
 
 		this.paths= null;
+		this.grants = [];
+		this.personalReports = [];
 
 		i18n = sdI18nService.getInstance('views-common-messages');
 		this.header = i18n.translate("views.myReportsView.header");
 
-		this.path = sdReportsService.getReportPaths()
-		.then(function(paths){
-			that.paths = paths;
+		sdReportsService.getCurrentUser()
+		.then(function(user){
+			var promises =[];
+			promises.push(sdReportsService.getRoleOrgReportDefinitionGrants(user.id));
+			promises.push(sdReportsService.getPersonalReports());
+			promises.push(sdReportsService.getReportPaths(user.myDocumentsFolderPath));
+			return $q.all(promises);
+		})
+		.then(function(vals){
+			that.grants = vals[0];
+			that.personalReports = vals[1];
+			that.paths = vals[2];
+		})
+		["catch"](function(err){
+			//TODO:err handling
 		});
+
 	}
 
 	sdMyReportsViewCtrl.prototype.menuHook = function(menuItems,treeNode){
