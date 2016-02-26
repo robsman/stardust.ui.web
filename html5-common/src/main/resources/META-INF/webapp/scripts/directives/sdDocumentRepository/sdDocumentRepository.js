@@ -459,9 +459,11 @@
     
     var that = this;
     var treeFolder;
+    var repoId;
 
     //property tied to the upload dialog directive must be updated
-    this.selectedFolderPath = folder.path;
+    repoId = folder.uuid.split("}{")[0] + "}";
+    this.selectedFolderPath = repoId + "/" + folder.path;
 
     //supplying an ID here (which is tied the dialog via an attribute binding)
     //will singal the dialog that this is a new file version upload rather than
@@ -701,7 +703,7 @@
   docRepoController.prototype.createDocument = function(parentFolderNode){
 
     var that = this;
-    var name = this.$filter('date')(new Date(), 'yyyy-MM-dd HH-mm-ss');
+    var name = this.$filter('date')(new Date(), 'yyyy-MM-dd HH-mm-ss') + ".html";
     var parentPath;
     var repoId;
 

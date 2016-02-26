@@ -277,6 +277,10 @@
 
     var deferred = this.$q.defer();
     var url= this.documentRoot;
+
+    //Remove double slashes from path CRNT-39783
+    path = path.replace("//","/");
+    
     var data = { 
       "name" : name,
       "content" : "",

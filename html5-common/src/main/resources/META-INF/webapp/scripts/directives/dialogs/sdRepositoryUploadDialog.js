@@ -284,8 +284,9 @@
 				delete nonFileData.size;
 				delete nonFileData.percentUploaded;
 
-				//add parent path from our inherited scoped context
-				nonFileData.parentFolderPath = that.parentPath;
+				//add parent path from our inherited scoped context, be sure to
+				//remove double slashes as engine does not like that CRNT-39783
+				nonFileData.parentFolderPath = that.parentPath.replace("//","/");
 
 				//add data from our dialog UI, these are global for all files
 				if(that.documentType){
