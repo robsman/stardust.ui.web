@@ -816,39 +816,6 @@
 		return fontSize;
 	};
 
-	TrafficLightViewController.prototype.addFavorite = function(res) {
-		var favoriteData = {};
-		var self = this;
-		favoriteData.selectedProcesses = self.selectedProcesses;
-		favoriteData.selectedBenchmarks = self.selectedBenchmarks;
-		favoriteData.selectedDrillDown = self.selectedDrillDown;
-		favoriteData.showBusinessObjects = self.showBusinessObjects;
-		favoriteData.showGroupByObjects = self.showGroupByObjects;
-		if (self.showBusinessObjects) {
-			favoriteData.selectedBusinessObject = self.selectedBusinessObject;
-			favoriteData.selectedBusinessObjectInstances = self.selectedBusinessObjectInstances;
-			favoriteData.selectedBOType = self.selectedBOType;
-		}
-
-		if (self.showGroupByObjects) {
-			favoriteData.selectedRelatedBusinessObject = self.selectedRelatedBusinessObject;
-			favoriteData.selectedRelatedBusinessObjectInstances = self.selectedRelatedBusinessObjectInstances;
-		}
-
-		favoriteData.selectedDateType = self.selectedDateType;
-		favoriteData.dayOffset = self.dayOffset;
-
-		_sdFavoriteViewService.addFavorite("trafficLightViewNew", self.tlvReportName, favoriteData).then(
-				function(data) {
-					if (!data.success) {
-						self.showFavoriteOverriteMsg = true;
-						self.errorMsg = data.errorMsg;
-					}
-					trace.log(data);
-				}, function(error) {
-					trace.log(error);
-				});
-	};
 
 	/**
 	 * 
@@ -884,6 +851,8 @@
 						_sdViewUtilService.updateViewInfo("trafficLightViewNew", "", {
 							"preferenceName" : self.favoriteName
 						});
+					}else{
+						self.tlvReportName = self.favoriteName;
 					}
 					trace.log(data);
 					self.showDeleteButton = true;
@@ -955,5 +924,13 @@
 				}, function(error) {
 					trace.log(error);
 				});
+	};
+	/**
+	 * 
+	 */
+	TrafficLightViewController.prototype.saveFavoritePopupClose = function(){
+		var self = this;
+		self.tlvReportName = self.favoriteName;
+		self.saveFavoritePopup.close();
 	};
 })();

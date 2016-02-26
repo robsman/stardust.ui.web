@@ -14,14 +14,10 @@
 	</div>
 	<div ng-show="ctrl.showTLVCriteria">
 		<form name="ctrl.tlvCriteriaForm">
-			<table>
-			  <tr>
-			     <td><div class="msg-error"
-				ng-show="ctrl.tlvCriteriaForm.$error.benchmarksNotIdentical">
-				{{ctrl.errorMsg}}</div></td>
-			  </tr>
+		 <div class="msg-error" ng-show="ctrl.tlvCriteriaForm.$error.benchmarksNotIdentical">{{ctrl.errorMsg}}</div>
+		 <table>
 			<tr>
-				<td style="vertical-align: top;"><label class="label-item">{{i18n('benchmark-messages.views-trafficLightView-processes-label')}}</label></td>
+				<td style="vertical-align: top;width: 84px;"><label class="label-item">{{i18n('benchmark-messages.views-trafficLightView-processes-label')}}</label></td>
 				<td><select size="5"
 					style="padding: 0;"
 					multiple="multiple" ng-model="ctrl.selectedProcesses"
@@ -32,14 +28,16 @@
                     <select size="5"
 					style="padding: 0;"
 					multiple="multiple" ng-model="ctrl.selectedBenchmarks"
-					ng-options="opt.oid as opt.name for opt in ctrl.benchmarkDefinitions"
 					aid="COM-benchmark-tlv-selectBenchmarks">
+					<option ng-repeat="opt in ctrl.benchmarkDefinitions" title="{{opt.name}}" value="{{opt.oid}}">{{opt.name}}</option>
 				</select></td>
 			</tr>
+			</table>
+			<table>
 			<tr>
-				<td><label style="margin-top: 10px;" class="label-item">{{i18n('benchmark-messages.views-trafficLightView-drilldown-label')}}</label></td>
+				<td style="width: 84px;"><label class="label-item">{{i18n('benchmark-messages.views-trafficLightView-drilldown-label')}}</label></td>
 				<td><select size="1"
-					style="padding: 0;height: 20px; margin-top: 10px;"
+					style="padding: 0;height: 20px;"
 					ng-model="ctrl.selectedDrillDown"
 					ng-change="ctrl.drillDownChange()"
 					aid="COM-benchmark-tlv-selectDrilDown">
@@ -47,8 +45,10 @@
 					<option value="BUSINESS_OBJECT">{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</option>
 				</select></td>
 			</tr>
+			</table>
+			<table>
 			<tr ng-if="ctrl.showBusinessObjects">
-			       <td><label style="display: inline;" class="label-item">{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</label></td>
+			       <td style="width: 84px;"><label style="display: inline;" class="label-item">{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</label></td>
 					<td><select size="1"
 					        style="height: 20px; padding: 0;"
 					        ng-model="ctrl.selectedBusinessObject"
@@ -67,12 +67,14 @@
                     	sda-allow-multiple="true"
                     	sda-clear-on-select="true"
                     	sda-aid-prefix="COM-benchmark-tlv-businessObjectInstances"
-                    	style="margin-left: 10px; margin-top: 10px;"></div>
+                    	style="margin-left: 10px;"></div>
 			       </td>
 			    </tr>
+			    </table>
+			    <table>
 			     <tr ng-if="ctrl.showGroupByObjects">
-			        <td>
-			          <label style="display: inline;" class="label-item">{{i18n('benchmark-messages.views-trafficLightView-groupBy-label')}}</label></td>
+			        <td style="width: 84px;">
+			          <label class="label-item">{{i18n('benchmark-messages.views-trafficLightView-groupBy-label')}}</label></td>
 				      <td><select size="1" ng-model="ctrl.selectedRelatedBusinessObject" style="height: 20px; padding: 0;"
 						ng-options="businessObject as businessObject.label for businessObject in ctrl.relatedBusinessObjects"
 						ng-change="ctrl.getRelatedBOInstances()"
@@ -89,11 +91,13 @@
                     	sda-allow-multiple="true"
                     	sda-clear-on-select="true"
                     	sda-aid-prefix="COM-benchmark-tlv-relatedBusinessObjectInstances"
-                    	style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px;"></div>
+                    	style="margin-left: 10px;margin-top:10px;margin-bottom:10px;"></div>
 			     	 </td>
 			    </tr>
+			    </table>
+			    <table>
 				<tr>
-				  <td><label class="label-item">{{i18n('benchmark-messages.views-trafficLightView-date-label')}}</label></td>
+				  <td style="width: 84px;"><label class="label-item">{{i18n('benchmark-messages.views-trafficLightView-date-label')}}</label></td>
 				  <td><select size="1"
 						ng-model="ctrl.selectedDateType" style="height: 20px; padding: 0;"
 						aid="COM-benchmark-tlv-selectDateType">
@@ -104,7 +108,7 @@
 				  <td><label style="margin-left: 10px; display: inline; vertical-align: top;" class="label-item">{{i18n('benchmark-messages.views-trafficLightView-offset-label')}}</label>
 				      <input ng-model="ctrl.dayOffset" type="number" style="width: 50px; padding-right: 5px;text-align: left;" aid="COM-benchmark-tlv-dayOffset">
 				      <label style="display: inline;" class="label-item">{{i18n('benchmark-messages.views-trafficLightView-day-label')}}</label>
-				  <div ng-if="ctrl.showBusinessObjects" style="display: inline; margin-left:20px;">
+				  <div ng-if="ctrl.showBusinessObjects" style="display: inline; margin-left:10px;">
 					<label style="display: inline;" class="label-item">{{i18n('benchmark-messages.views-trafficLightView-show-label')}}</label>
 					<select size="1" style="width: auto; padding: 0; height: 20px;"
 						ng-model="ctrl.selectedBOType"
@@ -151,7 +155,7 @@
 			sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>
 	</div>
 	
-	<div sd-dialog="ctrl.SaveFavoritePopup" sd-show-overlay="true"
+	<div sd-dialog="ctrl.saveFavoritePopup" sd-show-overlay="true"
 		sda-show="ctrl.showSaveDashboardPopup"
 		sda-type="custom"
 		sda-title="{{i18n('benchmark-messages.views-trafficLightView-saveFavorite-label')}}"
