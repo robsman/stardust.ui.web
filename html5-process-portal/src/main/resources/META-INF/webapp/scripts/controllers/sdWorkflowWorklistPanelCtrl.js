@@ -52,7 +52,7 @@
 			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
 				if(self.syncPanel == true){
 					self.syncPanel = false;
-					self.refreshMyAssignmentPanel(self.showEmptyWorklists);
+					self.refreshMyAssignmentPanel(self.showEmptyWorklists, false);
 				}
 				
 			}
@@ -61,22 +61,22 @@
 		sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){
 			var activePerspective = sdSidebarService.getActivePerspectiveName();
 			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
-				self.refreshMyAssignmentPanel(self.showEmptyWorklists);
+				self.refreshMyAssignmentPanel(self.showEmptyWorklists, false);
 			}else{
 				self.syncPanel = true;
 			}				
 		});
 
-		this.getUserAssignments(this.showEmptyWorklists);
+		this.getUserAssignments(this.showEmptyWorklists, false);
 
 	}
 
 	/**
 	 *
 	 */
-	WorkflowWorklistPanelCtrl.prototype.getUserAssignments = function(showEmptyWorklist) {
+	WorkflowWorklistPanelCtrl.prototype.getUserAssignments = function(showEmptyWorklist, reload) {
 		var self = this;
-		_sdWorkflowWorklistService.getUserAssignments(showEmptyWorklist).then(function(data) {
+		_sdWorkflowWorklistService.getUserAssignments(showEmptyWorklist, reload).then(function(data) {
 			self.workflowMyAssignments = data.list;
 			// Added this logic to expand the parent node by default.
 			_timeout(function(){
@@ -92,8 +92,8 @@
 	/**
 	 *
 	 */
-	WorkflowWorklistPanelCtrl.prototype.refreshMyAssignmentPanel = function(showEmptyWorklist) {
-		this.getUserAssignments(showEmptyWorklist);
+	WorkflowWorklistPanelCtrl.prototype.refreshMyAssignmentPanel = function(showEmptyWorklist, reload) {
+		this.getUserAssignments(showEmptyWorklist, reload);
 	};
 	
 	/**
@@ -103,7 +103,7 @@
 		var self = this;
 		if(self.syncPanel){
 			self.syncPanel = false;
-			self.getUserAssignments(self.showEmptyWorklists);
+			self.getUserAssignments(self.showEmptyWorklists, false);
 		}		
 	};
 

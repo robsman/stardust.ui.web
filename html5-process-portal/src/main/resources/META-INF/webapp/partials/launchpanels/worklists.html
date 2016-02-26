@@ -3,13 +3,13 @@
 		sda-title="{{i18n('processportal.launchPanels-worklists-title')}}">
 	<div>
 		<a href="#"
-			ng-click="ctrl.refreshMyAssignmentPanel(ctrl.showEmptyWorklists)"
+			ng-click="ctrl.refreshMyAssignmentPanel(ctrl.showEmptyWorklists, true)"
 			style="float: right;" aid="auto-PP-LP-MyAssign-ColPnl-Refresh"> <i
 			class="pi pi-refresh pi-lg"></i>
 		</a>
 		<div>
 			<input type="checkbox" ng-model="ctrl.showEmptyWorklists"
-				ng-change="ctrl.getUserAssignments(ctrl.showEmptyWorklists)"
+				ng-change="ctrl.getUserAssignments(ctrl.showEmptyWorklists, false)"
 				class="sel-chkbox"
 				aid="auto-PP-LP-MyAssign-ShowHideChkbox" /> 
 			<label class="label-item">{{i18n('processportal.launchPanels-worklists-showEmptyWorklist')}}</label>

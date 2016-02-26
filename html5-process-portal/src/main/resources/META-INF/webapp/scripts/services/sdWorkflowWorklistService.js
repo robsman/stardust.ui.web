@@ -35,13 +35,13 @@
 		/**
 		 * 
 		 */
-		WorkflowWorklistService.prototype.getUserAssignments = function(showEmptyWorklist) {
+		WorkflowWorklistService.prototype.getUserAssignments = function(showEmptyWorklist, reload) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:showEmptyWorklist";
+			var restUrl = REST_BASE_URL + "/:showEmptyWorklist/:reload";
 
 			var urlTemplateParams = {};
 			urlTemplateParams.showEmptyWorklist = showEmptyWorklist;
-
+			urlTemplateParams.reload = reload;
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
 		

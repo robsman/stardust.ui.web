@@ -377,10 +377,10 @@ public class WorklistResource
    
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{showEmptyWorklist}")
-   public Response getWorklistAssignemnt(@PathParam("showEmptyWorklist") boolean showEmptyWorklist) throws PortalException
+   @Path("/{showEmptyWorklist}/{reload}")
+   public Response getWorklistAssignemnt(@PathParam("showEmptyWorklist") boolean showEmptyWorklist, @PathParam("reload") boolean reload) throws PortalException
    {
-   QueryResultDTO result = worklistService.getWorklistAssignemnt(showEmptyWorklist);
+   QueryResultDTO result = worklistService.getWorklistAssignemnt(showEmptyWorklist, reload);
    return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
    }
    
