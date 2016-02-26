@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -286,7 +287,11 @@ public class ActivityInstanceUtils
                {
                   if (entry.getKey().equals(pathDto.id))
                   {
-                     dto.inOutData.put(entry.getKey(), entry.getValue());
+                     Object value = entry.getValue();
+                     if (value instanceof Date) {
+                        value = ((Date) value).getTime();
+                     }
+                     dto.inOutData.put(entry.getKey(), value);
                      break;
                   }
                }
