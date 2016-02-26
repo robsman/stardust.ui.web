@@ -663,8 +663,7 @@ public class WorklistUtils
             labelName = label.getLabel();
          }
 
-         child.name = label.getWrappedLabel() + ": ";
-         child.tooltip = label.getLabel();
+         child.name = label.getLabel();
          child.icon = getParticipantIcon(participantInfo);
          child.id = participantInfo.getQualifiedId();
          child.activityCount = getActivityCount(participantInfo, userParticipantId);
@@ -701,8 +700,7 @@ public class WorklistUtils
       WorklistParticipantDTO parent = null;
       parent = new WorklistParticipantDTO();
       ParticipantLabel label = ModelHelper.getParticipantLabel(participantInfo);
-      parent.name = label.getWrappedLabel() + ": ";
-      parent.tooltip = label.getLabel();
+      parent.name = label.getLabel();
       parent.icon = getParticipantIcon(participantInfo);
       parent.id = userParticipantId;
       parent.children = new ArrayList<WorklistParticipantDTO>();

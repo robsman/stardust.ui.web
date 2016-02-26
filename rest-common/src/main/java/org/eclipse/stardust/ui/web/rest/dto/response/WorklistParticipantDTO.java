@@ -32,8 +32,6 @@ public class WorklistParticipantDTO extends AbstractDTO implements Comparable<Wo
 
    public String icon; // used in case My Assignments Panel
 
-   public String tooltip;
-
    public String name;
 
    public String viewKey;

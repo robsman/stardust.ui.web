@@ -16,12 +16,12 @@
 		</div>
 		<div>
 			<ul sd-tree="ctrl.onTreeInit(api)" sda-event-callback="ctrl.eventCallback(data,e)" sda-icon-callback="ctrl.iconCallback(item)">
-				<li sd-tree-node sda-label="ctrl.getLabel(item.name, item.activityCount)" sda-node-id="item.uuid"
+				<li sd-tree-node sda-label="ctrl.getLabel(item.name, item.activityCount)" sda-node-id="item.uuid" sda-title="item.name"
 					sda-is-leaf="!item.children || item.children.length == 0"
 					ng-repeat="item in ctrl.workflowMyAssignments">
 					<ul>
 						<li sd-tree-node ng-repeat="item in item.children"
-							sda-label="ctrl.getLabel(item.name, item.activityCount)" sda-is-leaf="!item.children || item.children.length == 0"
+							sda-label="ctrl.getLabel(item.name, item.activityCount)" sda-title="item.name" sda-is-leaf="!item.children || item.children.length == 0"
 							sda-node-id="item.uuid"></li>
 					</ul>
 				</li>

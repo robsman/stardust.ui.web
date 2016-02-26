@@ -155,7 +155,8 @@
 	 * @returns
 	 */
 	WorkflowWorklistPanelCtrl.prototype.getLabel = function(name, activityCount) {
-		return name + _sdI18nService.translate("processportal.launchPanels.worklists.items", "", [ activityCount ]);
+		name = name.length > 30 ? name.substring(0,30) + "..." : name;
+		return name +':' + _sdI18nService.translate("processportal.launchPanels.worklists.items", "", [ activityCount ]);
 	};
     /**
      *
