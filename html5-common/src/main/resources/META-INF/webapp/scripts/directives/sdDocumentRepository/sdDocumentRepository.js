@@ -991,7 +991,7 @@
 
               parent.children = children.sort(ctrl.sortByName);
               ctrl.data.push(parent);
-
+              ctrl.data.sort(ctrl.sortByName);
             });
         });
       }
