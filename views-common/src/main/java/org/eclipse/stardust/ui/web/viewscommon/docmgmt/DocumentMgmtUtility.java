@@ -502,7 +502,17 @@ public class DocumentMgmtUtility
     */
    public static Folder createFolderIfNotExists(String folderPath)
    {
-      Folder folder = getDocumentManagementService().getFolder(folderPath, Folder.LOD_NO_MEMBERS);
+      return createFolderIfNotExists(folderPath, Folder.LOD_NO_MEMBERS);
+   }
+   
+   /**
+    * @param folderPath
+    * @param detailLevel
+    * @return
+    */
+   public static Folder createFolderIfNotExists(String folderPath, int detailLevel)
+   {
+      Folder folder = getDocumentManagementService().getFolder(folderPath, detailLevel);
     
          if (null == folder)
          {
@@ -527,6 +537,7 @@ public class DocumentMgmtUtility
             return folder;
          }
    }
+   
 
    /**
     * returns documents attached to provided process instance
