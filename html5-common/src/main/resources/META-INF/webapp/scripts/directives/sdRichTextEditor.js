@@ -45,6 +45,7 @@
 	        scope : {
 	        	position : '@sdaPosition',
 	        	readOnly : '@sdaReadOnly',
+	        	height: '@sdaHeight',
 	        	customToolbar: '&sdaCustomToolbar',
 	        	onBlur : '&sdaOnBlur',
 	        	onMode: '&sdaOnModeChange'
@@ -54,6 +55,9 @@
 	            var ck = CKEDITOR.replace(elm[0]);
 	            ck.config.readOnly = $scope.readOnly || false;
 	            ck.config.toolbarLocation =$scope.position || 'bottom';
+	            if ($scope.height) {
+	            	ck.config.height = $scope.height;
+	            }
 	            if ($scope.customToolbar) {
 		            ck.config.toolbar = predefinedToolbars[$scope.customToolbar()] || $scope.customToolbar();
 	            }	            
