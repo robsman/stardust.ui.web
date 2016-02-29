@@ -591,6 +591,39 @@ public class DocumentMgmtUtility
    }
    
    /**
+    * @param folderPath
+    * @param detailLevel
+    * @return
+    */
+   public static Folder createFolderIfNotExists(String folderPath, int detailLevel)
+   {
+      Folder folder = getDocumentManagementService().getFolder(folderPath, detailLevel);
+    
+         if (null == folder)
+         {
+            // folder does not exist yet, create it
+            String parentPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
+            String childName = folderPath.substring(folderPath.lastIndexOf('/') + 1);
+
+            if (StringUtils.isEmpty(parentPath))
+            {
+               // top-level reached
+               return getDocumentManagementService().createFolder("/", DmsUtils.createFolderInfo(childName));
+            }
+            else
+            {
+               Folder parentFolder = createFolderIfNotExists(parentPath);
+               return getDocumentManagementService().createFolder(parentFolder.getId(),
+                     DmsUtils.createFolderInfo(childName));
+            }
+         }
+         else
+         {
+            return folder;
+         }
+   }
+   
+   /**
     * returns documents attached to provided process instance
     * 
     * @param processInstance

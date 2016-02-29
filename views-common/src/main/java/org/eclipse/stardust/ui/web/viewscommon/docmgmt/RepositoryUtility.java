@@ -1867,7 +1867,7 @@ public class RepositoryUtility
    private static List<DefaultMutableTreeNode> createRoleOrgReportsNode(boolean savedReport)
    {
       List<DefaultMutableTreeNode> roleOrgReportDefinitionsNodes = new ArrayList<DefaultMutableTreeNode>();
-      Folder participantFolder = DocumentMgmtUtility.createFolderIfNotExists(REPORTS_ROOT_FOLDER);
+      Folder participantFolder = DocumentMgmtUtility.createFolderIfNotExists(REPORTS_ROOT_FOLDER, Folder.LOD_LIST_MEMBERS);
       List<Folder> subfolders = participantFolder.getFolders();
       User loggedInUser = IppUserProvider.getInstance().getUser();
 
