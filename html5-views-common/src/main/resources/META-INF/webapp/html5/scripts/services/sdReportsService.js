@@ -9,6 +9,8 @@
 	};
 	
 	
+	//Retrieve personal and private reports for the user, these are created as either
+	//a personal report template or a global report template in the Reporting view.
 	sdReportsService.prototype.getReportPaths = function(myDocumentsFolderPath){
 		
 		var deferred = this.$q.defer(),
@@ -16,17 +18,21 @@
 			upathKey;
 		
 		//1: Add the fixed path we do know
-		paths={"reports/designs" : "Private Report Definitions"}
+		paths={"reports/designs" : "Personel Report Definitions"}
 
-		//2:Now compute the one we dont
+		//2:Now compute the one we don't
 		upathKey = myDocumentsFolderPath + "/reports/designs"
-		paths[upathKey] = "Public Report Definitions";
+		paths[upathKey] = "Private Report Definitions";
 		deferred.resolve(paths);
 
 		return deferred.promise;
 		
 	};
 
+	//Retrieve reports created as 'Report Defininition for a Role or Organization'
+	//This will return an array with two object, item 0 is reports design folders
+	//which should be flattened out at the top level, item 1 will need to go under a
+	//saved reports folder.
 	sdReportsService.prototype.getPersonalReports = function(){
 
 		var url = this.rootUrl + "/services/rest/portal/reports/personal";

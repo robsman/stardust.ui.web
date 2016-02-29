@@ -269,6 +269,21 @@
     
   };
   
+  docRepoController.prototype.sortByName = function(a,b){
+
+    var name1 = (a.name)?a.name.toUpperCase():a.path,
+        name2 = (b.name)?b.name.toUpperCase():b.path;
+
+    if(a.nodeType !== b.nodeType){
+      if(a.nodeType==="folder"){return -1;}
+      else{return 1;}
+    }
+    else if(name1===name2){return 0;}
+    else if(name1 < name2){return -1;}
+    else{return 1;}
+
+  };
+
   docRepoController.prototype.eventCallback = function(data,e){
     
     var that = this;
@@ -284,7 +299,7 @@
           this.documentService.getChildren(resourceId)
           .then(function(root){
             var children = that.treeifyChildren(root);
-            data.valueItem.children = children;
+            data.valueItem.children = children.sort(that.sortByName);
             data.valueItem.isInitialized=true;
             data.deferred.resolve();
           });
@@ -299,7 +314,7 @@
             rootFolder.id = rootFolder.uuid;
             rootFolder.name = "Root";
             rootFolder.isInitialized = true;
-            rootFolder.children = that.treeifyChildren(rootFolder);
+            rootFolder.children = that.treeifyChildren(rootFolder).sort(that.sortByName);
             data.valueItem.isInitialized=true;
             data.valueItem.children=[rootFolder];
             data.deferred.resolve();
@@ -611,7 +626,7 @@
     this.documentService.getChildren(folderId)
     .then(function(root){
       children = that.treeifyChildren(root);
-      targetNode.nodeItem.children = children;
+      targetNode.nodeItem.children = children.sort(that.sortByName);
       deferred.resolve();
     });
 
@@ -949,7 +964,7 @@
               "id" : data.uuid
             }
 
-            parent.children = children;
+            parent.children = children.sort(ctrl.sortByName);
             ctrl.data.push(parent);
 
           });//then end
@@ -959,8 +974,30 @@
       }
       //We have a hash map whose key will be the path and value will be the name for the node.
       else if(angular.isObject(v1)){
-        for(key in v1){
+        var v1Keys = Object.keys(v1).sort();
+        v1Keys.forEach(function(key){
+          ctrl.documentService.getChildren(key)
+            .then(function(data){
 
+              var children = ctrl.treeifyChildren(data);
+              var parent = {
+                "uuid" : data.uuid,
+                "name" : v1[key], 
+                "path" : data.path, 
+                "hasChildren" : true,
+                "nodeType" : "folder",
+                "id" : data.uuid
+              }
+
+              parent.children = children.sort(ctrl.sortByName);
+              ctrl.data.push(parent);
+
+            });
+        });
+      }
+      ctrl.data.sort(ctrl.sortByName);
+        /*
+        for(key in v1){
           (function(path){
             ctrl.documentService.getChildren(key)
             .then(function(data){
@@ -981,8 +1018,7 @@
             });
           })(key);
         }
-      }
-
+      }*/
 
     });
     

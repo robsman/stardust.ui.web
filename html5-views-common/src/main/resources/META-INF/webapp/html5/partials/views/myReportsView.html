@@ -1,7 +1,7 @@
 
 <div ng-controller="sdMyReportsViewCtrl as sdMyReportsViewCtrl" 
      sg-stretch-to-bottom
-     class="view-panel">
+     class="view-panel my-reports-view">
 
 	<header>
         <div class="view-panel-toolbar heading">
@@ -9,7 +9,7 @@
         </div>
     </header>
 
-	<ul class="sd-tree sdMyReportsViewCtrl">
+	<ul style="position:relative;height:calc(100% - 40px);" class="sd-tree sdMyReportsViewCtrl">
 	
 		<li>
 			<div class="title-section">
@@ -23,6 +23,8 @@
 						<span>Reports</span>
 					</a>
 					<ul ng-show="expandR1">
+
+						<!--Report Definitions Sub Node-->
 						<li>
 							<div class="title-section">
 								<div class="expand-section">
@@ -48,6 +50,34 @@
 								</div>
 							</div>
 						</li>
+						
+						<!--Saved Reports Sub Node-->
+						<li>
+							<div class="title-section">
+								<div class="expand-section">
+									<i ng-click="expandR3=!expandR3" 
+									   ng-class="{'pi-arrow-r' : !expandR3, 'pi-arrow-d' : expandR3}"
+									   class="pi">
+									</i>
+									<a href class="tree-node">
+										<i class="js-icon pi pi-folder"></i>
+										<span>Saved Reports</span>
+									</a>
+									<ul ng-show="expandR3">
+										<li>
+
+											<div sd-document-repository 
+												 style="position:relative;top:-4px;left:-8px;"
+												 sda-menu-hook="sdMyReportsViewCtrl.menuHook(menuItems,treeNode)"
+											     sda-root-path="sdMyReportsViewCtrl.savedReportsPaths">
+											</div>
+
+										</li>
+									</ul>
+								</div>
+							</div>
+						</li>
+
 					</ul>
 				</div>
 			</div>

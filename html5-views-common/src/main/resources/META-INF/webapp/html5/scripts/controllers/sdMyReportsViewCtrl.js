@@ -9,7 +9,8 @@
 		var that = this,
 			i18n;
 
-		this.paths= null;
+		this.paths = null;
+		this.savedReportsPaths = null;
 		this.grants = [];
 		this.personalReports = [];
 
@@ -18,22 +19,65 @@
 
 		sdReportsService.getCurrentUser()
 		.then(function(user){
-			var promises =[];
-			promises.push(sdReportsService.getRoleOrgReportDefinitionGrants(user.id));
-			promises.push(sdReportsService.getPersonalReports());
-			promises.push(sdReportsService.getReportPaths(user.myDocumentsFolderPath));
+			var promises =[
+				sdReportsService.getRoleOrgReportDefinitionGrants(user.id),
+				sdReportsService.getPersonalReports(),
+				sdReportsService.getReportPaths(user.myDocumentsFolderPath)
+			];
 			return $q.all(promises);
 		})
 		.then(function(vals){
-			that.grants = vals[0];
-			that.personalReports = vals[1];
-			that.paths = vals[2];
+
+			var paths = angular.extend({},vals[2]);;
+			var grants = vals[0];
+			var personalReports ={};
+			var savedReports ={};
+
+			//report design folders
+			vals[1].forEach(function(item){
+				var subFolder = item.folders[0];
+				var grantName;
+				grantName = grants.filter(function(grant){
+					return grant.qualifiedId === item.name;
+				})
+				grantName =(grantName.length===1)?grantName[0].name:item.name;
+				personalReports[subFolder.path]=grantName;
+			});
+
+			paths = angular.extend(paths,personalReports);
+			
+			//hash map of paths
+			that.paths = paths;
+
+			//TODO:Saved Reports
+			that.savedReportsPaths = {};
+			
+
 		})
 		["catch"](function(err){
 			//TODO:err handling
 		});
 
 	}
+
+	//The personal reports request returns our folder paths but not with the 
+	//info we need for our friendly display name.
+	sdMyReportsViewCtrl.prototype.buildPersonalReportsPaths = function(grants,reports){
+		var persRptPaths = {};
+
+		//TODO: for each item in reports need to look up the proper name from the grants array
+		//and assing that key:value as an entry in persRptPaths
+		
+		//Wrong imlementation
+		/*
+		grants.forEach(function(grant){
+			var key = "/reports/designs/" + grant.qualifiedId;
+			grantPaths.push({ key : grant.name});
+			persRptPaths[key] = 
+		});
+		*/
+		return persRptPaths;
+	};
 
 	sdMyReportsViewCtrl.prototype.menuHook = function(menuItems,treeNode){
 
