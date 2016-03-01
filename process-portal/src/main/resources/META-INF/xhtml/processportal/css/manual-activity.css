@@ -211,6 +211,10 @@
 	border: 1px solid #990000 !important;
 }
 
+input[type="checkbox"].panel-input-highlight {
+	outline: 1px solid #990000 !important;
+}
+
 .panel-input-dateTime-date {
 	width: 100px;
 }
