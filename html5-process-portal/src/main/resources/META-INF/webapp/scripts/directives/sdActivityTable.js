@@ -22,7 +22,7 @@
 	    [ '$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService',
 		    'sdWorklistService', 'sdActivityInstanceService', 'sdProcessInstanceService', 'sdProcessDefinitionService',
 		    'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter', 'sgI18nService',
-		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService','sdWorklistConstants',
+		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService','sdWorklistConstants', '$sce',
 		    ActivityTableDirective ]);
 
     /*
@@ -31,7 +31,7 @@
     function ActivityTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService,
 	    sdWorklistService, sdActivityInstanceService, sdProcessInstanceService, sdProcessDefinitionService, sdCriticalityService,
 	    sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout, sdLoggedInUserService,
-	    sdDialogService, sdCommonViewUtilService, sdWorklistConstants) {
+	    sdDialogService, sdCommonViewUtilService, sdWorklistConstants, $sce) {
 
 	var trace = sdLoggerService.getLogger('bpm-common.sdActivityTable');
 
@@ -273,7 +273,13 @@
 		return this.toolBarConfig.indexOf(name) !== -1;
 	};
 
-
+	/**
+	 *
+	 */
+	ActivityTableCompiler.prototype.trustAsHtml = function(htmlStr) {
+		return $sce.trustAsHtml(htmlStr);
+	};
+	  
 	/*
 	 *
 	 */
