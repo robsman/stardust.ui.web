@@ -30,23 +30,42 @@
 
 			var paths = angular.extend({},vals[2]);;
 			var grants = vals[0];
+			var grantMap = {};
 			var personalReports ={};
 			var savedReports ={};
 
-			//report design folders
-			vals[1].forEach(function(item){
-				var subFolder = item.folders[0];
+			//Make a hashmap of our grants to speed up access as we will need
+			//to resolve every report parent folder.
+			grants.forEach(function(grant){
+				grantMap[grant.qualifiedId] = grant;
+			});
+			
+			//Caluclate each hashMap path key and name for personal reports.
+			vals[1].designs.forEach(function(item){
+
 				var grantName;
-				grantName = grants.filter(function(grant){
-					return grant.qualifiedId === item.name;
-				})
-				grantName =(grantName.length===1)?grantName[0].name:item.name;
-				personalReports[subFolder.path]=grantName;
+				var parsedQID;
+
+				parsedQID = item.path.split("/")[2];
+				grantName = grantMap[parsedQID].name;
+				personalReports[item.path]=grantName;
+
 			});
 
-			paths = angular.extend(paths,personalReports);
-			
-			//hash map of paths
+			//Caluclate each hashMap path key and name for saved reports.
+			vals[1]["saved-reports"].forEach(function(item){
+
+				var grantName;
+				var parsedQID;
+
+				parsedQID = item.path.split("/")[2];
+				grantName = grantMap[parsedQID].name;
+				savedReports[item.path]=grantName;
+
+			});
+
+			//hash map of all paths
+			paths = angular.extend({},paths,personalReports,savedReports);
 			that.paths = paths;
 
 			//TODO:Saved Reports
