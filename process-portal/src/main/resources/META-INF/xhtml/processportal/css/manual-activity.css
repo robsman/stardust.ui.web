@@ -41,10 +41,7 @@
 }
 
 .panel-validation-summary-bar-img {
-	background: url("../../common/images/icons/exclamation.png") no-repeat 0;
-	padding-left: 20px;
-	padding-top: 2px;
-	padding-bottom: 1px;
+	color: #990000;
 }
 
 .panel-validation-summary-bar-text
@@ -183,8 +180,17 @@
 .panel-label {
 	color: #708090;
 	font-weight: normal;
-	padding: 3px 5px 3px 0;
 	white-space: nowrap;
+}
+
+.panel-label-padded {
+	padding: 3px 5px 3px 0;
+}
+
+.panel-label-mandatory-mark {
+	color: #990000 !important;
+	font-size: 16px !important;
+	padding-right: 5px;
 }
 
 .panel-wrapper {
@@ -200,6 +206,10 @@
 
 .panel-input-number {
 	text-align: right;
+}
+
+.panel-input-highlight {
+	border: 1px solid #990000 !important;
 }
 
 .panel-input-dateTime-date {

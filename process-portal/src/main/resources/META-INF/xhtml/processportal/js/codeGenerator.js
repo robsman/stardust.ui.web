@@ -104,8 +104,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var showExpr = this.formElemName + ".$invalid";
 			var elemValidationBar = htmlElement.create("div", {parent: elemMain, 
 				attributes: {class: "panel-validation-summary-bar", "ng-show": showExpr}});
-			htmlElement.create("span", {parent: elemValidationBar, attributes: {class: "panel-validation-summary-bar-img"}});
-			htmlElement.create("span", {parent: elemValidationBar, value: this.getI18NLabel("validation.err", "Form contains error(s)."), 
+			htmlElement.create("span", {parent: elemValidationBar, attributes: {class: "fa fa-exclamation-triangle panel-validation-summary-bar-img"}});
+			htmlElement.create("span", {parent: elemValidationBar, value: this.getI18NLabel("validation.err", "Please correct the fields highlighted below."), 
 				attributes: {class: "panel-validation-summary-bar-text"}});
 		}
 		
@@ -267,12 +267,24 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			if (options == undefined) {
 				options = {};
 			}
+			
+			var isMandatory = false;
+			if (path.properties["InputPreferences_mandatory"] != undefined && 
+					path.properties["InputPreferences_mandatory"] == "true") {
+				isMandatory = true;
+			}
 
 			var elemMain = htmlElement.create("div", {parent: parent});
 			
 			if (options.noLabel == undefined || !options.noLabel) {
+				var labelDiv = htmlElement.create("div", {parent: elemMain}); 
+				var panelLabelClasses = "panel-label" + isMandatory ? "" : "panel-label-padded";
 				var elemLabel = htmlElement.create("label", 
-						{parent: elemMain, value: this.getLabel(path), attributes: {class: "panel-label"}});
+						{parent: labelDiv, value: this.getLabel(path), attributes: {class: panelLabelClasses}});
+				if (isMandatory) {
+					htmlElement.create("label", 
+							{parent: labelDiv, value: "*", attributes: {class: "panel-label-mandatory-mark"}});
+				}
 			}
 
 			var elem;
@@ -330,8 +342,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 					elem.attributes["ng-model-onblur"] = null;
 
-					if (path.properties["InputPreferences_mandatory"] != undefined && 
-							path.properties["InputPreferences_mandatory"] == "true") {
+					if (isMandatory) {
 						validations.push({type: "ng-required", value: true, msg: this.getI18NLabel("validation.err.Required", "Required")});
 					}
 
@@ -500,14 +511,15 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				//var ngFormName = options.ngFormName ? options.ngFormName : this.formElemName;
 				for (var i = 0; i < validations.length; i++) {
 					elem.attributes[validations[i].type] = validations[i].value;
-					var showExpr = ngFormName + "[" + formId + "].$error." + validations[i].type.split("-")[1];
-					htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
-						attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
+					if (validations[i].type !== 'ng-required') {
+						var showExpr = ngFormName + "[" + formId + "].$error." + validations[i].type.split("-")[1];
+						htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
+							attributes: {class: "panel-invalid-msg ", "ng-show": showExpr}});
+					}
 				}
 
-				var showExpr = ngFormName + "[" + formId + "].$invalid";
-				htmlElement.create("span", {parent: elemMain, 
-					attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
+				var highlightExpr = ngFormName + "[" + formId + "].$invalid";
+				elem.attributes['ng-class'] =  "{'panel-input-highlight' : " + highlightExpr + "}"
 			}
 		}
 
