@@ -84,7 +84,7 @@
 		//Root folders may not be renamed or deleted so remove those items.
 		var isRoot = treeNode.path.match(/\//g).length === 1;
 
-		if(isRoot===true){
+		if(isRoot===true || treeNode.nodeType==="folder"){
 			menuItems = menuItems.filter(function(v){
 				return  (v.indexOf("(rename,")===-1) &&  
 						(v.indexOf("(delete,")===-1)

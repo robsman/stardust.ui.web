@@ -996,29 +996,6 @@
         });
       }
       ctrl.data.sort(ctrl.sortByName);
-        /*
-        for(key in v1){
-          (function(path){
-            ctrl.documentService.getChildren(key)
-            .then(function(data){
-
-              var children = ctrl.treeifyChildren(data);
-              var parent = {
-                "uuid" : data.uuid,
-                "name" : v1[path], 
-                "path" : data.path, 
-                "hasChildren" : true,
-                "nodeType" : "folder",
-                "id" : data.uuid
-              }
-
-              parent.children = children;
-              ctrl.data.push(parent);
-
-            });
-          })(key);
-        }
-      }*/
 
     });
     

@@ -134,6 +134,7 @@
         <li sd-tree-node
             sda-menu-items="(,)"
             sda-node-id="child.id"
+            sda-is-leaf="child.nodeType=='document'"
             sda-label="(child.nodeType=='folder' || child.nodeType=='document')?child.name:child.id"
             ng-repeat="child in root.children">
           
