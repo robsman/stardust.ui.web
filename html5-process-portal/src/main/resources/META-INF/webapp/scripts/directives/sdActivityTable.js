@@ -279,7 +279,7 @@
 	ActivityTableCompiler.prototype.trustAsHtml = function(htmlStr) {
 		return $sce.trustAsHtml(htmlStr);
 	};
-	  
+
 	/*
 	 *
 	 */
@@ -308,10 +308,10 @@
 
 		this.openDocumentTemplateUrl =
 			this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/documentPopoverActivityTable.html');
-		
+
 		this.abortMenuTemplateUrl =
 			this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/abortActivityMenuPopover.html');
-		
+
 		this.abortMenuPopover = {
 				toolbar : false
 		};
@@ -649,7 +649,7 @@
 	    		processesToAbort.push(item.processInstance);
 	    	});
 	    	self.processesToAbort = processesToAbort;
-	    
+
 	    };
 
 	    /*
@@ -693,7 +693,7 @@
 	     */
 	    self.openSwitchDialog = function() {
 	    	self.showSwitchProcessDialog = true;
-	    	self.abortMenu.popover = false;
+	    	self.abortMenuPopover.toolbar = false;
 	    };
 
 	    /**

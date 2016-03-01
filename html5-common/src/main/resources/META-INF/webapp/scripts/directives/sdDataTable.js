@@ -37,7 +37,7 @@
 	// Skipping Row Highlighting in case event triggered from below elements.
 	var ACTION_TAG_NAMES = ["INPUT","BUTTON","A"];
 	var PROXY_ACTION_TAG_NAMES = ["I","SPAN"];
-	
+
 	/*
 	 *
 	 */
@@ -126,7 +126,7 @@
 					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" '+
 						'ng-click="$dtApi.toggleColumnSelector()" sda-is-open="$dtApi.showSelectColumns" ' +
 						 'sd-popover sda-template="\'columnSelector.html\'" '+
-						 'sda-trigger="outsideClick" sda-placement="bottom-left auto" '+
+						 'sda-trigger="outsideClick" sda-placement="auto bottom" '+
 						' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}">\n' +
 						'<i class="pi pi-column-selector pi-lg"></i>\n' +
 					'</button>\n' +
@@ -139,7 +139,7 @@
 						'<i class="pi pi-export pi-lg"></i>\n' +
 					'</button>\n' +
 					'<span ng-if="$dtApi.enableExportCSV" class="tbl-tool-link" sd-popover sda-template="\'exportAsCSV.html\'" '+
-					  'sda-trigger="outsideClick" sda-placement="bottom-left auto">\n' +
+					  'sda-trigger="outsideClick" sda-placement="auto bottom">\n' +
 						'<i class="pi pi-menu-dropdown"></i>\n' +
 					'</span>'+
 					'<script id="exportAsCSV.html" type="text/ng-template">'+
