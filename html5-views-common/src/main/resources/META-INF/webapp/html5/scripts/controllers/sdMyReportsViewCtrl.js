@@ -79,25 +79,13 @@
 
 	}
 
-	//The personal reports request returns our folder paths but not with the 
-	//info we need for our friendly display name.
-	sdMyReportsViewCtrl.prototype.buildPersonalReportsPaths = function(grants,reports){
-		var persRptPaths = {};
-
-		//TODO: for each item in reports need to look up the proper name from the grants array
-		//and assing that key:value as an entry in persRptPaths
-		
-		//Wrong imlementation
-		/*
-		grants.forEach(function(grant){
-			var key = "/reports/designs/" + grant.qualifiedId;
-			grantPaths.push({ key : grant.name});
-			persRptPaths[key] = 
-		});
-		*/
-		return persRptPaths;
-	};
-
+	/**
+	 * Hook into the sdDocumentRepository directive to allow us
+	 * to override the default menu options available.
+	 * @param  {[Array]} menuItems [description]
+	 * @param  {[type]} treeNode  [description]
+	 * @return {[type]}           [description]
+	 */
 	sdMyReportsViewCtrl.prototype.menuHook = function(menuItems,treeNode){
 
 		//Root folders may not be renamed or deleted so remove those items.
@@ -106,7 +94,8 @@
 		if(isRoot===true || treeNode.nodeType==="folder"){
 			menuItems = menuItems.filter(function(v){
 				return  (v.indexOf("(rename,")===-1) &&  
-						(v.indexOf("(delete,")===-1)
+						(v.indexOf("(delete,")===-1) &&
+						(v.indexOf("(createFile,")===-1);
 			});
 		}
 
