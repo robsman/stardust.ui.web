@@ -12,7 +12,7 @@
 </div>
 <div ng-if="activityTableCtrl.completeDialog.confirmationType == 'dataMapping'">
 	
-	<div class="complete-activity-description"  ng-bind="activityTableCtrl.completeDialog.description"  ng-if="activityTableCtrl.completeDialog.description"></div>
+	<div class="complete-activity-description"  ng-bind-html="activityTableCtrl.completeDialog.description"  ng-if="activityTableCtrl.completeDialog.description"></div>
 	<div sd-trivial-manual-activity-data
 				sda-data-mappings="activityTableCtrl.completeDialog.dataMappings"
 				sda-out-data="activityTableCtrl.completeDialog.outData"></div>
