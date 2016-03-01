@@ -11,7 +11,9 @@
 package org.eclipse.stardust.ui.web.rest.component.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -49,10 +51,12 @@ public class ReportingServiceImpl implements ReportingService
     * @return
     */
    @Override
-   public List<FolderDTO> getPersonalReports()
+   public Map<String, List<FolderDTO>> getPersonalReports()
    {
-      List<FolderDTO> roleOrgReportDefinitionsNodes = new ArrayList<FolderDTO>();
-
+      Map<String, List<FolderDTO>> roleOrgReportDefinitionsNodes = new HashMap<String, List<FolderDTO>>(); 
+      roleOrgReportDefinitionsNodes.put(REPORT_DESIGN, new ArrayList<FolderDTO>());
+      roleOrgReportDefinitionsNodes.put(SAVED_REPORTS, new ArrayList<FolderDTO>());
+      
       Folder participantFolder = getDMS().getFolder(REPORTS_ROOT_FOLDER, Folder.LOD_LIST_MEMBERS);
       List<Folder> subfolders = participantFolder.getFolders();
       User loggedInUser = IppUserProvider.getInstance().getUser();
@@ -70,9 +74,9 @@ public class ReportingServiceImpl implements ReportingService
                continue;
             }
 
-            Folder ReportDesignFolder = DocumentMgmtUtility.getFolder(participantSubFolder, SAVED_REPORTS,
+            Folder ReportDesignFolder = DocumentMgmtUtility.getFolder(participantSubFolder, REPORT_DESIGN,
                   Folder.LOD_LIST_MEMBERS_OF_MEMBERS);
-            Folder savedReportFolder = DocumentMgmtUtility.getFolder(participantSubFolder, REPORT_DESIGN,
+            Folder savedReportFolder = DocumentMgmtUtility.getFolder(participantSubFolder, SAVED_REPORTS,
                   Folder.LOD_LIST_MEMBERS_OF_MEMBERS);
 
             if (ReportDesignFolder == null && savedReportFolder == null)
@@ -80,21 +84,22 @@ public class ReportingServiceImpl implements ReportingService
                continue;
             }
 
-            FolderDTO participantFolderDTO = FolderDTOBuilder.build(participantSubFolder);
-            participantFolderDTO.folders = new ArrayList<FolderDTO>();
-            participantFolderDTO.hasChildren = true;
-
             if (ReportDesignFolder != null)
             {
+               FolderDTO participantFolderDTO = FolderDTOBuilder.build(participantSubFolder);
+               participantFolderDTO.folders = new ArrayList<FolderDTO>();
+               participantFolderDTO.hasChildren = true;
                participantFolderDTO.folders.add(FolderDTOBuilder.build(ReportDesignFolder));
+               roleOrgReportDefinitionsNodes.get(REPORT_DESIGN).add(participantFolderDTO);
             }
-
             if (savedReportFolder != null)
             {
+               FolderDTO participantFolderDTO = FolderDTOBuilder.build(participantSubFolder);
+               participantFolderDTO.folders = new ArrayList<FolderDTO>();
+               participantFolderDTO.hasChildren = true;
                participantFolderDTO.folders.add(FolderDTOBuilder.build(savedReportFolder));
+               roleOrgReportDefinitionsNodes.get(SAVED_REPORTS).add(participantFolderDTO);
             }
-
-            roleOrgReportDefinitionsNodes.add(participantFolderDTO);
          }
       }
       return roleOrgReportDefinitionsNodes;

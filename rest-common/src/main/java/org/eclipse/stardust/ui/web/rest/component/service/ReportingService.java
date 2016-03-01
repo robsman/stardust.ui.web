@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest.component.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO;
 
@@ -24,5 +25,5 @@ public interface ReportingService
    /**
     * @return
     */
-   List<FolderDTO> getPersonalReports();
+   Map<String, List<FolderDTO>> getPersonalReports();
 }
