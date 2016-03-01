@@ -34,6 +34,10 @@
 	var EXPORT_LIMIT = 10000;
 	var EXPORT_BATCH_SIZE = 250;
 
+	// Skipping Row Highlighting in case event triggered from below elements.
+	var ACTION_TAG_NAMES = ["INPUT","BUTTON","A"];
+	var PROXY_ACTION_TAG_NAMES = ["I","SPAN"];
+	
 	/*
 	 *
 	 */
@@ -155,7 +159,7 @@
 					'<script id="columnSelector.html" type="text/ng-template">\n'+
 						 '<div>'+
 							 '<div class="popup-dlg-hdr">\n' +
-								'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
+								'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' +
 								'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()">\n' +
 									'<i class="pi pi-close pi-lg" />\n' +
 								'</button>\n' +
@@ -2146,10 +2150,13 @@
 		function enableRowSelection() {
 			if (rowSelectionMode) {
 				theTable.find('> tbody').on('click', '> tr', function(event) {
-					/*if(["TD","TR"].indexOf(event.target.tagName) === -1 ) {
+					if(ACTION_TAG_NAMES.indexOf(event.target.tagName) !== -1 ) {
 						return;
-					}*/
-
+					}else if(PROXY_ACTION_TAG_NAMES.indexOf(event.target.tagName) !== -1 ) {
+						if(ACTION_TAG_NAMES.indexOf(event.target.parentElement.tagName) !== -1 ) {
+							return;
+						}
+					}
 					var count = getPageDataCount();
 					if (count > 0) {
 						processRowSelection(this);

@@ -123,7 +123,7 @@
 							</span>
 					</span>
 					<a  href="#" aid="PP-ProcessTable-OpenProcessHistory"
-						ng-click="bpmCommon.stopEvent($event); processTableCtrl.openProcessHistory(rowData);"
+						ng-click=" processTableCtrl.openProcessHistory(rowData);"
 						class="button-link tbl-tool-link"> {{rowData.processName}}
 					</a>
 				</td>
@@ -162,12 +162,12 @@
 
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
-						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openProcessHistory(rowData);" aid="PP-ProcessTable-OpenProcessHistoryAction"
+						<button ng-click="processTableCtrl.openProcessHistory(rowData);" aid="PP-ProcessTable-OpenProcessHistoryAction"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
 							<i class="pi pi-process pi-lg"></i>
 						</button>
 
-						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openAbortDialog(rowData);"
+						<button ng-click="processTableCtrl.openAbortDialog(rowData);"
 						    ng-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortAction"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-tool-link tbl-tool-joined-link">
 							<i class="pi pi-process-abort pi-lg" ></i>
@@ -178,7 +178,7 @@
 						    title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
 						    sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
 			                sda-placement="bottom-right auto" sda-trigger="outsideClick"
-							ng-click="processTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);">
+							ng-click="processTableCtrl.openAbortPopover($event, rowData); ">
 							<i class="pi pi-menu-dropdown"></i>
 						</button>
 
@@ -193,23 +193,24 @@
 						<!-- View chart -->
 						<button class="button-link tbl-tool-link"   aid="PP-ProcessTable-OpenGrantChart"
 							title="{{i18n('business-control-center-messages.views-processSearchView-tooltip-viewGanttChart')}}"
-							ng-click="processTableCtrl.openChart(rowData); bpmCommon.stopEvent($event);">
+							ng-click="processTableCtrl.openChart(rowData); ">
 							<i class="pi pi-gantt-chart pi-lg" ></i>
 						</button>
 
-						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openNotes(rowData);"
+						<button ng-click=" processTableCtrl.openNotes(rowData);"
 						    aid="PP-ProcessTable-OpenNotes"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
 							<i class="pi pi-notes-empty pi-lg" ng-if ="rowData.notesCount === 0" ></i>
 							<i class="pi pi-notes pi-lg" ng-if ="rowData.notesCount > 0" ></i>
 						</button>
-
-						<button ng-click="processTableCtrl.openProcessDocumentsPopover(rowData);" aid="PP-ProcessTable-OpenProcessDocuments"
-							sda-trigger="outsideClick"
-							sd-popover sda-template="processTableCtrl.processDocumentsPopover.url" sda-placement ="left auto"
-							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
-							<i class="pi pi-process-documents pi-lg"></i>
-						</button>
+						
+						<span sd-popover sda-trigger="outsideClick" sda-placement ="left auto"
+							 sda-template="processTableCtrl.processDocumentsPopover.url" >
+							<button ng-click="processTableCtrl.openProcessDocumentsPopover(rowData);" aid="PP-ProcessTable-OpenProcessDocuments"
+								title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
+								<i class="pi pi-process-documents pi-lg"></i>
+							</button>
+						</span>
 					</div>
 				</td>
 			</tr>
