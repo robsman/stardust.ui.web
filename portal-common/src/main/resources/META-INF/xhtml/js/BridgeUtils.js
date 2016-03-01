@@ -1368,7 +1368,7 @@ if (!window["BridgeUtils"].FrameManager) {
 					messages.push(message);
 				}
 			} catch (e) {
-	        		alert("Failed handling before unload event: " + e, "e");
+				BridgeUtils.log("Failed handling before unload event: " + e, "e");
 			}
 
 			if (currentBeforeUnload) {
@@ -1393,7 +1393,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			try {
 				onPageUnload(window, event, 'after');
 			} catch (e) {
-	        		alert("Failed handling after unload event: " + e, "e");
+				BridgeUtils.log("Failed handling after unload event: " + e, "e");
 			}
 
 			if (currentUnload) {
@@ -1422,14 +1422,29 @@ if (!window["BridgeUtils"].FrameManager) {
 
 		    var messages = new Array();
 		    if (0 < openContentFrames.length) {
-			if ('before' == phaseId) {
-				messages.push(1 == openContentFrames.length //
-						? "Currently there is 1 open content frame. If you proceed to load another page any unsaved content will be lost."
-		                    : "Currently there are " + openContentFrames.length + " open content frames. If you proceed to load another page any unsaved content will be lost.");
-		        } else if ('after' == phaseId) {
-				alert("Unsaved content of " + openContentFrames.length + " content frame(s) will be lost.");
-		        }
-		    }
+				if ('before' == phaseId) {
+					
+					messages.push(1 == openContentFrames.length //
+							? i18n.translate('portal-common-messages.portal-common-js-oneIframeOpen-warning', 
+				    				'Currently there is 1 open content frame. If you proceed to load another page any unsaved content will be lost.')
+			                : i18n.translate('portal-common-messages.portal-common-js-multipleIframesOpen-warning-prefix', 
+			                	'Currently there are') + " "  
+					    		+ openContentFrames.length 
+					    		+ " "
+					    		+ i18n.translate('portal-common-messages.portal-common-js-multipleIframesOpen-warning-postfix', 
+					    				'open content frames. If you proceed to load another page any unsaved content will be lost.'));
+			        } else if ('after' == phaseId) {
+						alert(i18n.translate(
+										'portal-common-messages.portal-common-js-unsavedContent-lost-prefix',
+										'Unsaved content of')
+								+ " "
+								+ openContentFrames.length
+								+ " "
+								+ i18n.translate(
+												'portal-common-messages.portal-common-js-unsavedContent-lost-postfix',
+												'content frame(s) will be lost.'));
+			        }
+			}
 
 		    if (0 < messages.length) {
 			BridgeUtils.log('Leaving was not permitted.');
