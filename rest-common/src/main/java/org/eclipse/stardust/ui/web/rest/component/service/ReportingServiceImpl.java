@@ -86,19 +86,11 @@ public class ReportingServiceImpl implements ReportingService
 
             if (ReportDesignFolder != null)
             {
-               FolderDTO participantFolderDTO = FolderDTOBuilder.build(participantSubFolder);
-               participantFolderDTO.folders = new ArrayList<FolderDTO>();
-               participantFolderDTO.hasChildren = true;
-               participantFolderDTO.folders.add(FolderDTOBuilder.build(ReportDesignFolder));
-               roleOrgReportDefinitionsNodes.get(REPORT_DESIGN).add(participantFolderDTO);
+               roleOrgReportDefinitionsNodes.get(REPORT_DESIGN).add(FolderDTOBuilder.build(ReportDesignFolder));
             }
             if (savedReportFolder != null)
             {
-               FolderDTO participantFolderDTO = FolderDTOBuilder.build(participantSubFolder);
-               participantFolderDTO.folders = new ArrayList<FolderDTO>();
-               participantFolderDTO.hasChildren = true;
-               participantFolderDTO.folders.add(FolderDTOBuilder.build(savedReportFolder));
-               roleOrgReportDefinitionsNodes.get(SAVED_REPORTS).add(participantFolderDTO);
+               roleOrgReportDefinitionsNodes.get(SAVED_REPORTS).add(FolderDTOBuilder.build(savedReportFolder));
             }
          }
       }
