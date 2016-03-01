@@ -16,39 +16,34 @@
 (function() {
     'use strict';
 
-    angular.module('bpm-common').directive('sdPopover', [PopoverDirective]);
+    angular.module('bpm-common').directive('sdPopover', ['$compile', PopoverDirective]);
 
     /**
      *
      */
-    function resolveTemplate(tElement, tAttrs) {
+    function PopoverDirective($compile) {
+        return {
+            restrict: 'AE',
+            compile: function(tElement, tAttrs) {
+                for (var atr in tAttrs) {
+                    if (tAttrs.$attr[atr] && tAttrs.$attr[atr].indexOf('sda-template') === 0) {
+                        tElement.removeAttr('sda-template');
+                        tElement.attr('uib-popover-template', tAttrs[atr]);
+                    } else if (tAttrs.$attr[atr] && tAttrs.$attr[atr].indexOf('sda-') === 0) {
+                        tElement.removeAttr(tAttrs.$attr[atr]);
+                        tElement.attr(tAttrs.$attr[atr].replace('sda-', 'popover-'), tAttrs[atr]);
+                    }
+                }
 
-        var template = [];
-        for (var atr in tAttrs) {
-            if (tAttrs.$attr[atr] && tAttrs.$attr[atr].indexOf('sda-text') == 0) {
-                template.push("uib-popover = " + tAttrs[atr]);
-            } else if (tAttrs.$attr[atr] && tAttrs.$attr[atr].indexOf('sda-template') == 0) {
-                template.push('uib-popover-template = "' + tAttrs[atr] + '"');
-            } else if (tAttrs.$attr[atr] && tAttrs.$attr[atr].indexOf('sda-') == 0) {
-                template.push(tAttrs.$attr[atr].replace('sda-', 'popover-') + ' = "' + tAttrs[atr] + '"')
+                tElement.removeAttr('sd-popover'); // necessary to avoid infinite compile loop
+                return {
+                    post: function(scope, element, attr, ctrl) {
+                        var fn = $compile(element);
+                        fn(scope);
+                    }
+                };
             }
-        }
-
-        var popoverTemplate = '<span ' + template.join(' ') + '> <ng-transclude></ng-transclude>' + '</span>';
-
-        return popoverTemplate;
+        };
     }
 
-    /**
-     *
-     */
-	function PopoverDirective () {
-		return {
-			restrict : 'AE',
-			template : resolveTemplate,
-			transclude : true,
-			replace : true
-		};
-	}
-	
 })();

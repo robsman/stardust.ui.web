@@ -66,8 +66,9 @@ var html5Deps = function() {
 			    'sdRichTextEditor':['html5-common/scripts/directives/sdRichTextEditor'],
 			    'sdTree' : ['html5-common/scripts/directives/sdTree'],
 			    'sdFolderTree' : ['html5-common/scripts/directives/sdFolderTree/sdFolderTree'],
-			    'sdProcessDocumentTree': ['html5-common/scripts/directives/sdProcessDocumentsTree/sdProcessDocumentsTree']
-			    
+			    'sdProcessDocumentTree': ['html5-common/scripts/directives/sdProcessDocumentsTree/sdProcessDocumentsTree'],
+			    'uiBootstrap':['html5-common/libs/ui-bootstrap/ui-bootstrap-tpls-1.2.1.min']	 
+
 			},
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
@@ -77,7 +78,8 @@ var html5Deps = function() {
 				},
 				'angularResource' : ['angularjs'],
 				'bootstrap' : ['jquery'],
-				'html5CommonMain' : [ 'angularjs', 'portalApplication'],
+				'uiBootstrap' : ['bootstrap','jquery','angularjs'],
+				'html5CommonMain' : [ 'angularjs', 'portalApplication','uiBootstrap'],
 				'sdEventBusService' : [ 'html5CommonMain' ],
 				'httpInterceptorProvider' : [ 'html5CommonMain' ],
 				'sdLoggerService' : [ 'html5CommonMain' ],

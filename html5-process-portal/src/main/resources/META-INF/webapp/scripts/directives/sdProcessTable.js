@@ -114,7 +114,7 @@
 				}
 
 				this.processDocumentsPopover = {
-						url : sdUtilService.getBaseUrl()  + 'plugins/html5-process-portal/scripts/directives/partials/documentPopoverProcesssTable.html'
+						url : sdUtilService.getBaseUrl()  + 'plugins/html5-process-portal/scripts/directives/partials/documentPopoverProcessTable.html'
 				}
 
 				this.abortProcessPopover = {

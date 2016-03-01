@@ -8,28 +8,28 @@
 			   <i class="pi pi-abort pi-lg"></i>
 			</button>
 
-			<button class="button-link tbl-tool-link" ng-disabled="processTableCtrl.dataTable.getSelection() < 1"
-			  title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}" aid="PP-ProcessTable-AbortAllPopover"
-			  sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
-			  sda-is-open="processTableCtrl.abortProcessPopover.visible"
-			  sda-placement="bottom-right auto" sda-trigger="outsideClick"
-				ng-click="processTableCtrl.openAbortPopover( );">
-				<i class="pi pi-menu-dropdown"></i>
+			<button class="button-link tbl-tool-link" ng-disabled="processTableCtrl.dataTable.getSelection().length < 1"
+				    title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}" aid="PP-ProcessTable-AbortAllPopover"
+				   sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
+				   sda-is-open="processTableCtrl.abortProcessPopover.visible"  sda-placement="bottom-left auto" sda-trigger="outsideClick"
+				   ng-click="processTableCtrl.openAbortPopover( );">
+					<i class="pi pi-menu-dropdown"></i>
 			</button>
 
 			<button ng-click="processTableCtrl.recoverProcess(this, processTableCtrl.dataTable.getSelection())" aid="PP-ProcessTable-RecoverAll"
-			  title="{{i18n('views-common-messages.common-tooltip-recover')}}"
-				ng-disabled="processTableCtrl.dataTable.getSelection() < 1" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
-				 <div class="pi-badge">
-				         <i class="pi pi-recover pi-lg" ></i>
-				  </div>
+				    title="{{i18n('views-common-messages.common-tooltip-recover')}}"
+				    ng-disabled="processTableCtrl.dataTable.getSelection() < 1" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
+					<div class="pi-badge">
+					         <i class="pi pi-recover pi-lg" ></i>
+					 </div>
 			</button>
-			<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1"  title="{{i18n('views-common-messages.views-case-tooltip-menu')}}"
-				    class="button-link tbl-toolbar-item tbl-tool-link" aid="PP-ProcessTable-CaseMenu" sda-trigger="outsideClick"
-				    sd-popover sda-template="processTableCtrl.caseMenuPopover.url" sda-is-open="processTableCtrl.caseMenuPopover.visible"
-				    sda-placement="bottom-right auto">
-				  <i class="pi pi-case pi-lg"></i>
-	              <i class="pi pi-bottom pi-menu-dropdown pi-sm" ></i>
+			<button ng-disabled="processTableCtrl.dataTable.getSelection().length < 1"
+							title="{{i18n('views-common-messages.views-case-tooltip-menu')}}"
+							class="button-link tbl-toolbar-item tbl-tool-link" aid="PP-ProcessTable-CaseMenu" sda-trigger="outsideClick"
+				   	 sd-popover sda-template="processTableCtrl.caseMenuPopover.url" sda-is-open="processTableCtrl.caseMenuPopover.visible"
+				   	 sda-placement="bottom-left auto">
+				 			 <i class="pi pi-case pi-lg"></i>
+	             <i class="pi pi-bottom pi-menu-dropdown pi-sm" ></i>
 			</button>
 
 			<button ng-disabled="!processTableCtrl.isPriorityChanged();" ng-click="processTableCtrl.savePriorityChanges();"
@@ -203,11 +203,9 @@
 							<i class="pi pi-notes-empty pi-lg" ng-if ="rowData.notesCount === 0" ></i>
 							<i class="pi pi-notes pi-lg" ng-if ="rowData.notesCount > 0" ></i>
 						</button>
-						
-						<span sd-popover sda-trigger="outsideClick" sda-placement ="left auto"
-							 sda-template="processTableCtrl.processDocumentsPopover.url" >
-							<button ng-click="processTableCtrl.openProcessDocumentsPopover(rowData);" aid="PP-ProcessTable-OpenProcessDocuments"
-								title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
+						<button ng-click="processTableCtrl.openProcessDocumentsPopover(rowData);" aid="PP-ProcessTable-OpenProcessDocuments"
+								title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link" sd-popover sda-trigger="outsideClick" sda-placement ="left auto"
+							  sda-template="processTableCtrl.processDocumentsPopover.url">
 								<i class="pi pi-process-documents pi-lg"></i>
 							</button>
 						</span>

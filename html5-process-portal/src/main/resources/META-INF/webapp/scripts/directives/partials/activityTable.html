@@ -27,11 +27,11 @@
 			</button>
 			<button ng-if="activityTableCtrl.isActivityTableMode();" aid="PP-ActivityTable-AbortPopover"
 					ng-click="activityTableCtrl.openAbortPopover()" ng-disabled="activityTableCtrl.dataTable.getSelection() < 1"
-					class="button-link tbl-toolbar-item tbl-tool-link" sda-toolbar-type="abort"
-					style="position:relative;" 
-					sd-popover sda-template="activityTableCtrl.abortMenuTemplateUrl" sda-placement ="bottom-right auto" sda-trigger="outsideClick"
+					class="button-link tbl-toolbar-item tbl-tool-link" sda-toolbar-type="abort" 
+					sd-popover sda-template="activityTableCtrl.abortMenuTemplateUrl" sda-placement ="auto" sda-trigger="outsideClick"
 					sda-is-open="activityTableCtrl.abortMenuPopover.toolbar"
 			        title ="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}">
+					
 					<i class="pi pi-menu-dropdown"></i>
 			</button>
 			<button ng-disabled="!activityTableCtrl.isPriorityChanged();" aid="PP-ActivityTable-SavePriority" ng-if="activityTableCtrl.priorityEditable"
