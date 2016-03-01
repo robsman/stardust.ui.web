@@ -300,6 +300,15 @@
 		this.preferenceModule = "";
 		this.preferenceId = "";
 
+		this.openDocumentTemplateUrl =
+			this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/documentPopoverActivityTable.html');
+		
+		this.abortMenuTemplateUrl =
+			this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/abortActivityMenuPopover.html');
+		
+		this.abortMenuPopover = {
+				toolbar : false
+		};
 		// Process Query
 		if (!attr.sdaQuery && !attr.sdData) {
 			throw 'Query attribute has to be specified if sdData is not specified.';
@@ -377,7 +386,6 @@
 				});
 			}
 		}
-		this.documentPopoverHandle = null;
 	    // Process TableHandle and then set data table instance
 	    this.tableHandleExpr = 'activityTableCtrl.dataTable';
 
@@ -621,11 +629,12 @@
 	    /*
 	     *
 	     */
-	    self.openAbortPopover = function(event, rowItem) {
+	    self.openAbortPopover = function(rowItem) {
 	    	var selectedItems = [];
 	    	if (angular.isDefined(rowItem) && rowItem !=null) {
 	    		selectedItems = [ rowItem ];
 	    	} else {
+	    		self.abortMenuPopover.toolbar = true;
 	    		selectedItems = self.dataTable.getSelection();
 	    	}
 
@@ -634,7 +643,7 @@
 	    		processesToAbort.push(item.processInstance);
 	    	});
 	    	self.processesToAbort = processesToAbort;
-	    	self.popoverDirective.show(event,151);
+	    
 	    };
 
 	    /*
@@ -654,6 +663,7 @@
 	     */
 	    self.openJoinDialog = function() {
 	    	self.showJoinProcessDialog = true;
+	    	self.abortMenu.popover = false;
 	    };
 
 	    /*
@@ -677,6 +687,7 @@
 	     */
 	    self.openSwitchDialog = function() {
 	    	self.showSwitchProcessDialog = true;
+	    	self.abortMenu.popover = false;
 	    };
 
 	    /**
@@ -1097,7 +1108,7 @@
 	/*
 	 *
 	 */
-	ActivityTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem, $event) {
+	ActivityTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem) {
 	  var self = this;
 	  self.processPopover = {
 	    data: rowItem
@@ -1127,9 +1138,9 @@
 	  $q.all([promise1, promise2]).finally(function() {
 	    rowItem.contentLoaded = true;
 	    self.processPopover.data = rowItem;
-	    self.documentPopoverHandle.show($event, 151);
 	  });
 	}
+
 
 	/*
 	 *

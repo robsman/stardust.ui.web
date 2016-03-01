@@ -60,7 +60,7 @@
 			var self = this;
 
 			/*
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.safeApply = function() {
 				sdUtilService.safeApply(scope);
@@ -96,7 +96,6 @@
 
 				// Set custom values
 				this.customizeWithAttributeValues(attr, scope, scopeToUse);
-				this.documentPopoverHandle = null;
 				// Process TableHandle and then set data table instance
 				this.tableHandleExpr = 'processTableCtrl.dataTable';
 
@@ -109,7 +108,20 @@
 					result : {}
 				};
 
-				
+				this.caseMenuPopover = {
+						url : sdUtilService.getBaseUrl()  + 'plugins/html5-process-portal/scripts/directives/partials/caseMenuPopover.html',
+						visible : false
+				}
+
+				this.processDocumentsPopover = {
+						url : sdUtilService.getBaseUrl()  + 'plugins/html5-process-portal/scripts/directives/partials/documentPopoverProcesssTable.html'
+				}
+
+				this.abortProcessPopover = {
+						url : sdUtilService.getBaseUrl()  + 'plugins/html5-process-portal/scripts/directives/partials/abortProcessMenuPopover.html',
+						visible : false
+				}
+
 				var unregister = scope.$watch(self.tableHandleExpr, function(newVal, oldVal) {
 					if (newVal != undefined && newVal != null && newVal != oldVal) {
 						if (attr.sdProcessTable) {
@@ -166,7 +178,7 @@
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.customizeWithAttributeValues = function(attr, scope, scopeToUse) {
 				// Process Title
@@ -215,7 +227,7 @@
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.isColumnVisible = function(columnName) {
 				var found = $filter('filter')(self.visbleColumns, columnName);
@@ -224,16 +236,16 @@
 				}
 				return false;
 			};
-			
+
 			/**
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.refresh = function() {
 				this.dataTable.refresh(true);
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.showNotificationAndRefresh = function(notifications){
 				this.notification = notifications;
@@ -241,11 +253,11 @@
 				if(!sdUtilService.isEmpty(this.notification.result)){
 					this.dataTable.refresh(true);
 				}
-				
+
 			}
 
 /*			*//**
-			 * 
+			 *
 			 *//*
 			ProcessTableCompiler.prototype.preferenceDelegate = function(prefInfo) {
 				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, this.processTablePrefModule,
@@ -262,7 +274,7 @@
 			}*/
 
 			/**
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.fetchPage = function(options) {
 				var deferred = $q.defer();
@@ -303,7 +315,7 @@
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.fetchDescriptorCols = function() {
 				var self = this;
@@ -331,7 +343,7 @@
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.fetchAvailableStates = function() {
 				var self = this;
@@ -341,7 +353,7 @@
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.getDescriptorExportText = function(descriptors) {
 				var descriptorsToExport = [];
@@ -354,7 +366,7 @@
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.getDescriptorValueForExport = function(descriptorData) {
 				var exportValue;
@@ -383,9 +395,9 @@
 					self.availablePriorities = data;
 				});
 			};
-			
+
 			/*
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.isPriorityChangedForRow = function(id) {
 			    for (name in this.changedPriorities) {
@@ -425,7 +437,7 @@
 			};
 
 			/*
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.savePriorityChanges = function() {
 				var self = this;
@@ -462,7 +474,7 @@
 			};
 
 			/*
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.isPriorityChanged = function() {
 				for (name in this.changedPriorities) {
@@ -490,12 +502,12 @@
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			ProcessTableCompiler.prototype.openChart = function(rowItem) {
 				sdCommonViewUtilService.openGanttChartView(rowItem.oid,true);
 			};
-			
+
 			/*
 			 *
 			 */
@@ -527,7 +539,7 @@
 								options.title = sgI18nService.translate('portal-common-messages.common-error', 'ERROR');
 								sdDialogService.error(scope, message, options);
 							}
-						
+
 						},
 						function() {
 							var options = { title : sgI18nService.translate('portal-common-messages.common-error', 'ERROR') };
@@ -537,7 +549,7 @@
 			};
 
 			/*
-			 * 
+			 *
 			 */
 			self.onAbortPopoverConfirm = function() {
 				this.refresh();
@@ -592,6 +604,7 @@
 			 */
 			ProcessTableCompiler.prototype.openJoinDialog = function() {
 				this.showJoinProcessDialog = true;
+				this.abortProcessPopover.visible = false;
 			}
 
 			/*
@@ -616,6 +629,7 @@
 			 */
 			ProcessTableCompiler.prototype.openSwitchDialog = function() {
 				this.showSwitchProcessDialog = true;
+				this.abortProcessPopover.visible = false;
 			}
 
 			/*
@@ -637,7 +651,7 @@
 					var item = value;
 					self.processesToAttachCase.push(item);
 				}
-
+				self.caseMenuPopover.visible = false
 				self.showAttachToCaseDialog = true;
 			}
 
@@ -677,6 +691,7 @@
 					self.processesToCreateCase.push(item);
 				}
 
+				this.caseMenuPopover.visible = false;
 				self.showCreateCaseDialog = true;
 			}
 
@@ -693,11 +708,11 @@
 					}, true);
 				}
 			};
-			
+
 			/**
-			 * 
+			 *
 			 */
-			ProcessTableCompiler.prototype.openAbortPopover = function(event, rowItem) {
+			ProcessTableCompiler.prototype.openAbortPopover = function(rowItem) {
 				var self = this;
 				if (angular.isDefined(rowItem)) {
 					self.processesToAbort = [ rowItem ];
@@ -707,7 +722,7 @@
 						self.processesToAbort = selectedItems;
 					}
 				}
-				self.popoverDirective.show(event,151);
+				self.processDocumentsPopover.visible = true;
 			}
 
 			/*
@@ -739,17 +754,17 @@
 			// Expose controller as a whole on to scope
 			scope.processTableCtrl = self;
 		}
-		
+
 		/**
 		 * TODO - check if duplication in ActivityTableCompiler can be avoided
 		 */
 		ProcessTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem, $event) {
 			var self = this;
-			
+
 			self.processPopover = {
 					data : rowItem
 			}
-		
+
 			rowItem.contentLoaded = false;
 			sdProcessInstanceService.getProcessInstanceDocuments(rowItem.oid).then(function (dataPathValues) {
 				rowItem.supportsProcessAttachments = rowItem.supportsProcessAttachments;
@@ -761,18 +776,20 @@
 						rowItem.specificDocuments.push(dataPathValue);
 					}
 				});
-				
+
 				rowItem.contentLoaded = true;
 				self.processPopover.data = rowItem;
-				self.documentPopoverHandle.show($event,151);
+				self.processDocumentsPopover.visible = true;
+
 			});
 		};
-		
+
 		/**
 		 * TODO - check if duplication in ActivityTableCompiler can be avoided
 		 */
 		ProcessTableCompiler.prototype.openDocumentsView = function(docId) {
 		   sdCommonViewUtilService.openDocumentView(docId);
+		   this.processDocumentsPopover.visible = false;
 		};
 
 		/**
@@ -780,6 +797,7 @@
 		 */
 		ProcessTableCompiler.prototype.openAllProcessDocumentViews = function(rowItem) {
 			var self = this;
+			this.processDocumentsPopover.visible = false;
 			if (rowItem.processAttachments) {
 				jQuery.each(rowItem.processAttachments.documents, function(_, doc) {
 					self.openDocumentsView(doc.uuid);

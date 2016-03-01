@@ -20,15 +20,17 @@
 			         </i>
 			</button>
 			<button ng-disabled="activityTableCtrl.dataTable.getSelection() < 1" aid="PP-ActivityTable-AbortAll"
-					ng-click="activityTableCtrl.$openAbortDialog(activityTableCtrl.dataTable.getSelection())" sda-toolbar-type="abort"
+					ng-click="activityTableCtrl.$openAbortDialog(activityTableCtrl.dataTable.getSelection())" sda-toolbar-type="abort" 
 			        title="{{i18n('processportal.toolbars-worklistView-tooltip-abort')}}" class="button-link tbl-toolbar-item tbl-tool-link "
 			        ng-class="{'tbl-tool-joined-link' : activityTableCtrl.isActivityTableMode()}">
 			   		<i class="pi pi-abort pi-lg"></i>
 			</button>
 			<button ng-if="activityTableCtrl.isActivityTableMode();" aid="PP-ActivityTable-AbortPopover"
-					ng-click="activityTableCtrl.openAbortPopover($event,null,141)" ng-disabled="activityTableCtrl.dataTable.getSelection() < 1"
+					ng-click="activityTableCtrl.openAbortPopover()" ng-disabled="activityTableCtrl.dataTable.getSelection() < 1"
 					class="button-link tbl-toolbar-item tbl-tool-link" sda-toolbar-type="abort"
-					style="position:relative;"
+					style="position:relative;" 
+					sd-popover sda-template="activityTableCtrl.abortMenuTemplateUrl" sda-placement ="bottom-right auto" sda-trigger="outsideClick"
+					sda-is-open="activityTableCtrl.abortMenuPopover.toolbar"
 			        title ="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}">
 					<i class="pi pi-menu-dropdown"></i>
 			</button>
@@ -380,7 +382,8 @@
 						<button ng-if="activityTableCtrl.isActivityTableMode();" class="button-link tbl-tool-link" aid="PP-ActivityTable-AbortPopoverAction" sda-action-type="abort"
 						  	    ng-disabled="!rowData.abortProcess || rowData.isCaseInstance"
 							    title ="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
-							    ng-click="activityTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);" >
+							    sd-popover sda-template="activityTableCtrl.abortMenuTemplateUrl" sda-placement ="bottom auto" sda-trigger="outsideClick"
+							    ng-click="activityTableCtrl.openAbortPopover(rowData); bpmCommon.stopEvent($event);" >
 								<i class="pi pi-menu-dropdown"></i>
 						</button>
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openNotes(rowData);" aid="PP-ActivityTable-OpenNotesAction" sda-action-type="notes"
@@ -413,11 +416,10 @@
 									sda-width="400px" sda-height="70px"
 									sda-aid-prefix="RelocationDialog-confirm"></div>
 						</button>
-						<button ng-click="activityTableCtrl.openProcessDocumentsPopover(rowData, $event);"
-								aid="PP-ActivityTable-OpenProcessDocuments" sda-action-type="processDocuments"
-							    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
-								title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
-								<i class="pi pi-process-documents pi-lg"></i>
+						<button ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance" title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}"
+								ng-click="activityTableCtrl.openProcessDocumentsPopover(rowData)" class="button-link tbl-tool-link"
+								sd-popover sda-template="activityTableCtrl.openDocumentTemplateUrl" sda-placement ="left auto" sda-trigger="outsideClick">
+	  		  					<i class="pi pi-process-documents pi-lg"></i>
 						</button>
 					</div>
 				</td>
@@ -458,92 +460,6 @@
 	    sda-scope="this"
 	    sda-template="{{activityTableCtrl.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html')}}">
    </div>
-
-	<span sd-popover="activityTableCtrl.popoverDirective" id="abortMenu">
-		<div class="popover-body">
-			<div>
-				<button ng-disabled="activityTableCtrl.processesToAbort.length < 1" ng-click="activityTableCtrl.openSwitchDialog()"
-					class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
-				   {{i18n('views-common-messages.views-switchProcessDialog-Menu-abortandstart')}}
-				</button>
-			</div>
-			<div>
-				<button ng-disabled="activityTableCtrl.processesToAbort.length != 1" ng-click="activityTableCtrl.openJoinDialog()"
-					class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
-				   {{i18n('views-common-messages.views-switchProcessDialog-Menu-abortandjoin')}}
-				</button>
-			</div>
-		</div>
-	</span>
-	<span sd-popover="activityTableCtrl.documentPopoverHandle"
-		id="processDocuments">
-		<div class="popover-body" style="text-align: left; min-width: 120px;">
-			<div ng-show="activityTableCtrl.processPopover.data.contentLoaded">
-				<div
-					ng-if="activityTableCtrl.processPopover.data.supportsProcessAttachments">
-					<div class="label-item">
-						{{i18n('processportal.toolbars-workflowActions-processDocuments-processAttachments')}}
-					</div>
-					<div
-						ng-show="activityTableCtrl.processPopover.data.processAttachments.documents.length > 0">
-						<div
-							ng-repeat="doc in activityTableCtrl.processPopover.data.processAttachments.documents">
-							<div sd-open-document-link sda-name="doc.name"
-								sda-mime-type="doc.contentType" sda-document-id="doc.uuid">
-							</div>
-						</div>
-					</div>
-					<div
-						ng-hide="activityTableCtrl.processPopover.data.processAttachments.documents.length > 0">
-						{{i18n('processportal.toolbars-workflowActions-processDocuments-noProcessAttachments')}}
-					</div>
-				</div>
-				<div
-					ng-if="activityTableCtrl.processPopover.data.specificDocuments.length > 0">
-					<div class="label-item">
-						{{i18n('processportal.toolbars-workflowActions-processDocuments-specificDocuments')}}
-					</div>
-					<div
-						ng-repeat="map in activityTableCtrl.processPopover.data.specificDocuments">
-
-						<div ng-if="map.documents.length > 0" ng-repeat="doc in map.documents">
-								<div sd-open-document-link sda-name="map.dataPath.name"
-									sda-mime-type="doc.contentType" sda-document-id="doc.uuid">
-								</div>
-						</div>
-
-						<div ng-if="map.documents.length < 1">
-							<span>&lt{{map.dataPath.name}}&gt</span>
-						</div>
-					</div>
-				</div>
-				<div
-					ng-if="activityTableCtrl.processPopover.data.correspondences.length > 0">
-					<div class="label-item">
-						{{sdI18n('processportal.toolbars.workflowActions.processDocuments.correspondence')}}
-					</div>
-					<div
-						ng-repeat="folder in activityTableCtrl.processPopover.data.correspondences">
-						<a href="#"
-							ng-click="activityTableCtrl.openCorrespondenceView(folder)">{{folder.name}}</a>
-					</div>
-				</div>
-				<div
-					ng-if="activityTableCtrl.processPopover.data.processAttachments.documents.length > 0 || activityTableCtrl.processPopover.data.specificDocuments.documents.length > 0
-					|| activityTableCtrl.processPopover.data.correspondences.length > 0">
-					<a href=""
-						ng-click="activityTableCtrl.openAllProcessDocumentViews(activityTableCtrl.processPopover.data);">{{i18n('processportal.toolbars-workflowActions-processDocuments-openAllDocuments')}}</a>
-				</div>
-				<div
-					ng-if="!activityTableCtrl.processPopover.data.supportsProcessAttachments && activityTableCtrl.processPopover.data.specificDocuments.length == 0
-					&& (!activityTableCtrl.processPopover.data.correspondences || activityTableCtrl.processPopover.data.correspondences.length == 0)">
-					{{i18n('processportal.toolbars-workflowActions-processDocuments-noProcessDocuments')}}
-				</div>
-			</div>
-			<div ng-hide="activityTableCtrl.processPopover.data.contentLoaded">
-				{{i18n('views-common-messages.common-loading')}}</div>
-		</div>
-	</span>
 
 	<div sd-join-process-dialog sda-show-dialog="activityTableCtrl.showJoinProcessDialog" sda-on-confirm="activityTableCtrl.joinCompleted"
 	     sda-process-instances="activityTableCtrl.processesToAbort" >

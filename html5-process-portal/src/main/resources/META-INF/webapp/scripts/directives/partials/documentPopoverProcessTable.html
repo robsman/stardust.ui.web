@@ -1,0 +1,54 @@
+<div class="processDocumentPopover">
+	<div ng-show="processTableCtrl.processPopover.data.contentLoaded">
+		<div
+			ng-if="processTableCtrl.processPopover.data.supportsProcessAttachments">
+			<div class="label-item">
+				{{i18n('processportal.toolbars-workflowActions-processDocuments-processAttachments')}}
+			</div>
+			<div
+				ng-show="processTableCtrl.processPopover.data.processAttachments.documents.length > 0">
+				<div
+					ng-repeat="doc in processTableCtrl.processPopover.data.processAttachments.documents">
+					<div sd-open-document-link sda-name="doc.name"
+						sda-mime-type="doc.contentType" sda-document-id="doc.uuid">
+					</div>
+				</div>
+			</div>
+			<div
+				ng-hide="processTableCtrl.processPopover.data.processAttachments.documents.length > 0">
+				{{i18n('processportal.toolbars-workflowActions-processDocuments-noProcessAttachments')}}
+			</div>
+		</div>
+		<div
+			ng-if="processTableCtrl.processPopover.data.specificDocuments.length > 0">
+			<div class="label-item">
+				{{i18n('processportal.toolbars-workflowActions-processDocuments-specificDocuments')}}
+			</div>
+			<div
+				ng-repeat="map in processTableCtrl.processPopover.data.specificDocuments">
+				<div ng-if="map.documents.length > 0">
+					<div ng-if="map.documents.length > 0"
+						ng-repeat="doc in map.documents">
+						<div sd-open-document-link sda-name="map.dataPath.name"
+							sda-mime-type="doc.contentType" sda-document-id="doc.uuid">
+						</div>
+					</div>
+				</div>
+				<div ng-if="map.documents.length < 1">
+					<span>&lt{{map.dataPath.name}}&gt</span>
+				</div>
+			</div>
+		</div>
+		<div
+			ng-if="processTableCtrl.processPopover.data.processAttachments.documents.length > 0 || processTableCtrl.processPopover.data.specificDocuments.documents.length > 0">
+			<a href="#"
+				ng-click="processTableCtrl.openAllProcessDocumentViews(processTableCtrl.processPopover.data)">{{i18n('processportal.toolbars-workflowActions-processDocuments-openAllDocuments')}}</a>
+		</div>
+		<div
+			ng-if="!processTableCtrl.processPopover.data.supportsProcessAttachments && processTableCtrl.processPopover.data.specificDocuments.length == 0">
+			{{i18n('processportal.toolbars-workflowActions-processDocuments-noProcessDocuments')}}
+		</div>
+	</div>
+	<div ng-hide="processTableCtrl.processPopover.data.contentLoaded">
+		{{i18n('views-common-messages.common-loading')}}</div>
+</div>

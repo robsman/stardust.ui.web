@@ -27,7 +27,7 @@
 	var rootURL;
 	var _sdLoggedInUserService;
 	/*
-	 * 
+	 *
 	 */
 	function NotesCtrl($scope, sdNotesService, sdLoggerService, sdViewUtilService, sdUtilService, sdLoggedInUserService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdNotesCtrl');
@@ -43,13 +43,15 @@
 
 		this.initialize();
 
+		this.notePreviewToolTipUrl = sdUtilService.getRootUrl() + "/plugins/html5-process-portal/partials/views/notePreviewToolTip.html";
+
 		// Register for View Events
 		_sdViewUtilService.registerForViewEvents(_scope, this.handleViewEvents, this);
 
 	}
 
 	/**
-	 * 
+	 *
 	 * @param event
 	 */
 	NotesCtrl.prototype.handleViewEvents = function(event) {
@@ -61,7 +63,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	NotesCtrl.prototype.initialize = function() {
 		var self = this;
@@ -69,7 +71,7 @@
 		self.getNotes();
 	};
 	/**
-	 * 
+	 *
 	 */
 	NotesCtrl.prototype.getNotes = function() {
 		var self = this;
@@ -91,7 +93,7 @@
 
 	};
 	/**
-	 * 
+	 *
 	 * @param options
 	 * @returns
 	 */
@@ -101,7 +103,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	NotesCtrl.prototype.addNote = function() {
 		var self = this;
@@ -110,11 +112,11 @@
 	};
 
 	/**
-	 * 
+	 *
 	 * @param info
 	 */
 	NotesCtrl.prototype.onSelect = function(info) {
-		var self = this;		
+		var self = this;
 		if(self.viewParams.createNote === true){
 			self.addNote();
 			delete self.viewParams.createNote;
@@ -128,7 +130,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 * @param userImageURI
 	 * @returns
 	 */
@@ -137,7 +139,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 * @returns {Boolean}
 	 */
 	NotesCtrl.prototype.saveNote = function() {
@@ -165,7 +167,7 @@
 		}
 	};
 	/**
-	 * 
+	 *
 	 */
 	NotesCtrl.prototype.cancelNote = function() {
 		var self = this;

@@ -68,20 +68,13 @@
 		<tbody>
 			<tr>
 				<td sda-exporter="rowData.documentName">
-					<table>
-						<tbody>
-							<tr style="vertical-align: top;">
-								<td><i
-									class="{{docSearchViewCtrl.getGlyphiconClass(rowData.fileType)}}"></i></td>
-								<td><a href="#"
-									ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.documentId);" data-placement="right" aid="COM-SrchDoc-DocSrchTbl-DocName">
-										<div sd-tool-tip
-											sda-tool-tip-url="'plugins/html5-views-common/html5/partials/views/documentDetailToolTip.html'"
-											sda-title="rowData.documentName"></div>
-								</a></td>
-							</tr>
-						</tbody>
-					</table>
+				 <i class="{{docSearchViewCtrl.getGlyphiconClass(rowData.fileType)}} spacing-right"></i>
+				 <span sd-popover sda-placement="right auto"
+						sda-trigger="mouseenter" sda-template="'plugins/html5-views-common/html5/partials/views/documentDetailToolTip.html'">
+						<a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.documentId);" aid="COM-SrchDoc-DocSrchTbl-DocName">
+							{{rowData.documentName}} 
+						</a>
+				</span>
 				</td>
 				<td sda-data-type="dateTime"></td>
 				<td sda-data-type="dateTime"></td>

@@ -11,7 +11,7 @@
 // Define Custom Modules
 angular.module('bpm-common.services', []);
 
-angular.module('bpm-common.directives', []);
+angular.module('bpm-common.directives', ['ui.bootstrap']);
 
 angular.module('bpm-common.init', []).run(['$rootScope', 'sdUtilService', function($rootScope, sdUtilService) {
 	$rootScope.bpmCommon = {
