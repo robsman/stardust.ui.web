@@ -101,8 +101,20 @@ public class PortalConfigurationPanel extends UIComponentBean
       {
          availableSkins.add(new SelectItem(theme.getThemeId(), theme.getThemeName()));
       }
+      //Checking if the scope is partition
+      if(PortalConfiguration.getInstance().getPrefScopesHelper()
+      .getSelectedPreferenceScope().equals(PreferenceScope.PARTITION)){
+         
+         UserPreferencesHelper userPrefsHelper1 = UserPreferencesHelper.getInstance(M_PUBLIC,
+               PortalConfiguration.getInstance().getPrefScopesHelper()
+                     .getSelectedPreferenceScope());
+         selectedSkin = userPrefsHelper1.getSingleString(V_PORTAL_CONFIG, F_SKIN);
+      }else{
+         selectedSkin = userPrefsHelper.getSingleString(V_PORTAL_CONFIG, F_SKIN);
+      }
       
-      selectedSkin = userPrefsHelper.getSingleString(V_PORTAL_CONFIG, F_SKIN);
+      
+      
 
       // OTHERS OPTIONS
       maxTabsDisplay = getIntUserPreferencesValue(userPrefsHelper,
@@ -167,9 +179,20 @@ public class PortalConfigurationPanel extends UIComponentBean
       UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(M_PORTAL,
             PortalConfiguration.getInstance().getPrefScopesHelper()
                   .getSelectedPreferenceScope());
-
+      userPrefsHelper.setString(V_PORTAL_CONFIG, F_DEFAULT_PERSPECTIVE, selectedPerspective);
+      //userPrefsHelper.setString(V_PORTAL_CONFIG, F_TABS_MAX_TABS_DISPLAY, String.valueOf(maxTabsDisplay));
+      userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_PAGE_SIZE, String.valueOf(pageSize));
+      userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_MAX_PAGES, String.valueOf(paginatorMaxPages));
+      userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_FAST_STEP, String.valueOf(paginatorFastStep));
+      
       if (userProvider.getUser().isAdministrator())
       {
+         if(PortalConfiguration.getInstance().getPrefScopesHelper()
+                     .getSelectedPreferenceScope().equals(PreferenceScope.PARTITION)){
+            userPrefsHelper = UserPreferencesHelper.getInstance(M_PUBLIC,
+                  PortalConfiguration.getInstance().getPrefScopesHelper()
+                        .getSelectedPreferenceScope());
+         }                
          if (!StringUtils.isEmpty(selectedSkin))
          {
             userPrefsHelper.setString(V_PORTAL_CONFIG, F_SKIN, selectedSkin);
@@ -178,13 +201,8 @@ public class PortalConfigurationPanel extends UIComponentBean
          {
             userPrefsHelper.resetValue(V_PORTAL_CONFIG, F_SKIN);
          }
-      }
-      userPrefsHelper.setString(V_PORTAL_CONFIG, F_DEFAULT_PERSPECTIVE, selectedPerspective);
-      //userPrefsHelper.setString(V_PORTAL_CONFIG, F_TABS_MAX_TABS_DISPLAY, String.valueOf(maxTabsDisplay));
-      userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_PAGE_SIZE, String.valueOf(pageSize));
-      userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_MAX_PAGES, String.valueOf(paginatorMaxPages));
-      userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_FAST_STEP, String.valueOf(paginatorFastStep));
-      
+      }      
+           
       PortalApplication.getInstance().refreshSkin();
       
       MessageDialog.addInfoMessage(MessagePropertiesBean.getInstance().getString(

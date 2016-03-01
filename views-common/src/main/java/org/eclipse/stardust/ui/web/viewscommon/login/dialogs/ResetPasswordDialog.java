@@ -19,6 +19,9 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.common.config.Parameters;
+import org.eclipse.stardust.engine.api.runtime.CredentialProvider;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
+import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -26,8 +29,6 @@ import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.PopupDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.common.TechnicalUserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 
 /**
@@ -41,11 +42,15 @@ public class ResetPasswordDialog extends PopupDialog
    protected static final Logger trace = LogManager.getLogger(ResetPasswordDialog.class);
 
    private static final String FORM_ID = "resetPwdForm";
+
    private static final String COMMON_MESSAGE_ID = "resetPwdCommonMsg";
 
    private String account;
+
    private String realm;
+
    private String domain;
+
    private String partition;
 
    public ResetPasswordDialog()
@@ -70,15 +75,8 @@ public class ResetPasswordDialog extends PopupDialog
    {
       boolean success = false;
 
-      SessionContext sessionCtx;
-
-      Map<String, String> loginProperties = getLoginProperties();
-
-      // Login With Technical User
       try
       {
-         sessionCtx = TechnicalUserUtils.login(loginProperties);
-
          // Reset Password
          if (trace.isDebugEnabled())
          {
@@ -99,14 +97,16 @@ public class ResetPasswordDialog extends PopupDialog
             url = expandUriTemplate(url, req);
             Parameters.instance().set("Security.Password.ResetServletUrl", url);
          }
-         trace.info("About to call reset pwd for " + account + ", props: " + loginProperties);
-         sessionCtx.getServiceFactory().getUserService().generatePasswordResetToken(realm, account);
+         UserService userService = ServiceFactoryLocator.get(CredentialProvider.PUBLIC_LOGIN).getUserService();
+         // setting the realm to default if realm is null.
+         if(realm == null){
+            realm = Parameters.instance().getString(SecurityProperties.DEFAULT_REALM, "");
+         }
+         userService.generatePasswordResetToken(realm, account);
          if (trace.isDebugEnabled())
          {
             trace.debug("Reset Pwd Success for - " + account);
          }
-
-         TechnicalUserUtils.logout(sessionCtx);
          success = true;
       }
       catch (Exception e)
@@ -141,13 +141,11 @@ public class ResetPasswordDialog extends PopupDialog
       }
       if (uri.contains("${request.serverPort}"))
       {
-         uri = uri
-               .replace("${request.serverPort}", Integer.toString(req.getServerPort()));
+         uri = uri.replace("${request.serverPort}", Integer.toString(req.getServerPort()));
       }
       if (uri.contains("${request.serverLocalPort}"))
       {
-         uri = uri.replace("${request.serverLocalPort}",
-               Integer.toString(req.getLocalPort()));
+         uri = uri.replace("${request.serverLocalPort}", Integer.toString(req.getLocalPort()));
       }
       if (uri.contains("/${request.contextPath}"))
       {

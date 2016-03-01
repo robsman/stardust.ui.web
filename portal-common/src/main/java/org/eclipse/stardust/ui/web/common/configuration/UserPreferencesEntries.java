@@ -18,7 +18,7 @@ package org.eclipse.stardust.ui.web.common.configuration;
 public interface UserPreferencesEntries
 {
    public static final String M_PORTAL = "ipp-portal-common";
-   
+   public static final String M_PUBLIC = "public";
    public static final String V_PORTAL_CONFIG = "configuration";
    
    public static final String F_SKIN = "prefs.skin";
@@ -27,4 +27,6 @@ public interface UserPreferencesEntries
    public static final String F_PAGINATOR_PAGE_SIZE = "prefs.pageSize";
    public static final String F_PAGINATOR_MAX_PAGES = "prefs.paginatorMaxPages";
    public static final String F_PAGINATOR_FAST_STEP = "prefs.paginatorFastStep";
+   
+   public static final String PARTITION_F_SKIN = "public.configuration.prefs.skin";
 }

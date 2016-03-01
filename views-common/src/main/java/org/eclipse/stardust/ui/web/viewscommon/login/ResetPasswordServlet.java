@@ -21,13 +21,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.stardust.common.config.Parameters;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.api.runtime.CredentialProvider;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.engine.api.web.ServiceFactoryLocator;
+import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 
 public class ResetPasswordServlet extends HttpServlet
 {
@@ -35,30 +35,8 @@ public class ResetPasswordServlet extends HttpServlet
     * 
     */
    private static final long serialVersionUID = -8452274833668988165L;
-   public static final String TECH_USER_ACCOUNT = "motu";
-   public static final String TECH_USER_PASSWORD = "motu";
 
    private final static String DEFAULT_LOGIN_PAGE = "plugins/views-common/login.iface";
-
-   private ServiceFactory serviceFactory;
-   private String user;
-   private String password;
-
-   @Override
-   public void init() throws ServletException
-   {
-      super.init();
-      Parameters parameters = Parameters.instance();
-
-      user = parameters.getString(Constants.TECH_USER_PARAM_ACCOUNT);
-      password = parameters.getString(Constants.TECH_USER_PARAM_PASSWORD);
-      if (StringUtils.isEmpty(user) || StringUtils.isEmpty(password))
-      {
-         user = TECH_USER_ACCOUNT;
-         password = TECH_USER_PASSWORD;
-      }
-      
-   }
 
    @Override
    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
@@ -67,7 +45,7 @@ public class ResetPasswordServlet extends HttpServlet
       resp.setContentType("text/html");
       try
       {
-         String oid = req.getParameter("oid");
+         String account = req.getParameter("account");
          String partition = req.getParameter("partition");
          String realm = req.getParameter("realm");
          String token = req.getParameter("token");
@@ -77,10 +55,10 @@ public class ResetPasswordServlet extends HttpServlet
          {
             properties.put(SecurityProperties.PARTITION, partition);
          }
-         serviceFactory = ServiceFactoryLocator.get(user, password, properties);
-         User user = serviceFactory.getUserService().getUser(new Integer(oid));
+
+         UserService userService = ServiceFactoryLocator.get(CredentialProvider.PUBLIC_LOGIN).getUserService();
          properties = getLoginProperties(partition, realm);
-         serviceFactory.getUserService().resetPassword(user.getAccount(), properties, token);
+         userService.resetPassword(account, properties, token);
          out.println("Password generated and sent to registered Email Id</br>");
       }
       catch (Exception e)

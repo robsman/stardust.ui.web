@@ -20,12 +20,15 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.eclipse.stardust.common.config.Parameters;
+import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.CredentialProvider;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
+import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
+import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries;
-import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
-import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
@@ -34,7 +37,6 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalPluginSkinResourceResolver;
-import org.eclipse.stardust.ui.web.viewscommon.common.TechnicalUserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.login.InfinityStartup;
 import org.eclipse.stardust.ui.web.viewscommon.login.util.LoginUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultPreferenceProviderUtils;
@@ -43,15 +45,16 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.icesoft.faces.context.effects.JavascriptContext;
 
-
 public class LoginDialogBean implements Serializable, InitializingBean
 {
    private static final long serialVersionUID = -2703702864230398366L;
-   
+
    protected static final Logger trace = LogManager.getLogger(LoginDialogBean.class);
 
    private final static String DEFAULT_LOGIN_PAGE = "plugins/views-common/login.iface";
+
    public static final String DEFAULT_LOGIN_SKIN_CSS_NAME = "login.css";
+
    public static final String LOGIN_SKIN_CSS_PARAM = "Carnot.Login.Skin.StyleSheet";
 
    private String account;
@@ -63,48 +66,45 @@ public class LoginDialogBean implements Serializable, InitializingBean
    private String domain;
 
    private String partition;
-   
+
    boolean promptForPartition;
 
    boolean promptForRealm;
 
    boolean promptForDomain;
-   
+
    ChangePasswordDialog changePwdDialog;
+
    ResetPasswordDialog resetPwdDialog;
 
    private static final String FORM_ID = "loginForm";
-   
+
    private static final String MESSAGE_ID = "commonMessage";
 
    public static final String BEAN_ID = "ippLoginDialog";
-   
+
    private boolean principalLogin;
-   
+
    private String loginStyleSheetName;
-   
+
    private String pluginLoginStyleSheetPath;
-   
+
    private String loginHeader;
-   
+
    public LoginDialogBean()
    {
-	  changePwdDialog = new ChangePasswordDialog();
-	  resetPwdDialog = new ResetPasswordDialog();
-	  
-	  principalLogin = ApplicationContext.isPrincipalLogin();
-	  
-      this.promptForPartition = Parameters.instance().getBoolean(
-            SecurityProperties.PROMPT_FOR_PARTITION, false);
-      this.promptForRealm = Parameters.instance().getBoolean(
-            SecurityProperties.PROMPT_FOR_REALM, false);
-      this.promptForDomain = Parameters.instance().getBoolean(
-            SecurityProperties.PROMPT_FOR_DOMAIN, false);
+      changePwdDialog = new ChangePasswordDialog();
+      resetPwdDialog = new ResetPasswordDialog();
+
+      principalLogin = ApplicationContext.isPrincipalLogin();
+
+      this.promptForPartition = Parameters.instance().getBoolean(SecurityProperties.PROMPT_FOR_PARTITION, false);
+      this.promptForRealm = Parameters.instance().getBoolean(SecurityProperties.PROMPT_FOR_REALM, false);
+      this.promptForDomain = Parameters.instance().getBoolean(SecurityProperties.PROMPT_FOR_DOMAIN, false);
 
       if (promptForPartition)
       {
-         partition = Parameters.instance().getString(
-               SecurityProperties.DEFAULT_PARTITION, "");
+         partition = Parameters.instance().getString(SecurityProperties.DEFAULT_PARTITION, "");
       }
       if (promptForRealm)
       {
@@ -116,11 +116,11 @@ public class LoginDialogBean implements Serializable, InitializingBean
       }
 
       String tenant = FacesUtils.getRequestParameter("tenant");
-      if(StringUtils.isNotEmpty(tenant))
+      if (StringUtils.isNotEmpty(tenant))
       {
          partition = tenant;
       }
-      
+
       loginStyleSheetName = Parameters.instance().getString(LoginDialogBean.LOGIN_SKIN_CSS_PARAM,
             LoginDialogBean.DEFAULT_LOGIN_SKIN_CSS_NAME);
    }
@@ -132,14 +132,12 @@ public class LoginDialogBean implements Serializable, InitializingBean
    {
       try
       {
-         // Login with technical user and read the skin preference from partition
-         SessionContext sessionCtx = TechnicalUserUtils.login(getLoginProperties());
-         UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_PORTAL,
-               PreferenceScope.PARTITION);
-         String skinPreference = userPrefsHelper.getSingleString(UserPreferencesEntries.V_PORTAL_CONFIG,
-               UserPreferencesEntries.F_SKIN);
+         AdministrationService as = ServiceFactoryLocator.get(CredentialProvider.PUBLIC_LOGIN)
+               .getAdministrationService();
+         Preferences preferences = as.getPreferences(PreferenceScope.PARTITION, UserPreferencesEntries.M_PUBLIC,
+               "preference");
+         String skinPreference = (String) preferences.getPreferences().get(UserPreferencesEntries.PARTITION_F_SKIN);
          trace.info("Read login skin preference from partition -" + skinPreference);
-         TechnicalUserUtils.logout(sessionCtx);
          // If no preference is set, check if default is provided by spring configuration
          skinPreference = StringUtils.isNotEmpty(skinPreference) ? skinPreference : DefaultPreferenceProviderUtils
                .getDefaultSkinPreference();
@@ -171,8 +169,9 @@ public class LoginDialogBean implements Serializable, InitializingBean
                for (String filePath : entry.getValue())
                {
                   String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-                  //No need to append initial '/' as already present on UI
-                  pluginLoginStyleSheetPath = Constants.PLUGIN_ROOT_FOLDER_PATH.substring(1) + entry.getKey() + "/" + fileName;
+                  // No need to append initial '/' as already present on UI
+                  pluginLoginStyleSheetPath = Constants.PLUGIN_ROOT_FOLDER_PATH.substring(1) + entry.getKey() + "/"
+                        + fileName;
                }
             }
          }
@@ -182,15 +181,15 @@ public class LoginDialogBean implements Serializable, InitializingBean
          trace.error("Technical User login failed for reading skin preference" + e);
       }
    }
-   
+
    /**
     * @return
     */
    public static LoginDialogBean getInstance()
    {
-	   return (LoginDialogBean)FacesUtils.getBeanFromContext("ippLoginDialog");
+      return (LoginDialogBean) FacesUtils.getBeanFromContext("ippLoginDialog");
    }
-   
+
    public String getLoginHeader()
    {
       if (StringUtils.isEmpty(loginHeader))
@@ -242,7 +241,7 @@ public class LoginDialogBean implements Serializable, InitializingBean
       }
       return Collections.unmodifiableMap(properties);
    }
-   
+
    /**
     * @return
     */
@@ -278,18 +277,18 @@ public class LoginDialogBean implements Serializable, InitializingBean
          {
             SessionContext sessionCtx = SessionContext.findSessionContext();
             sessionCtx.login(account, password, getLoginProperties());
-            
+
             if (trace.isDebugEnabled())
             {
                trace.debug("User " + getAccount() + " successfully logged in.");
             }
 
             // Change Pwd Dialog
-            if(sessionCtx.getUser().isPasswordExpired()) 
+            if (sessionCtx.getUser().isPasswordExpired())
             {
-            	changePwdDialog.initAccount(getAccount());
-            	changePwdDialog.openPopup();
-            	return null;
+               changePwdDialog.initAccount(getAccount());
+               changePwdDialog.openPopup();
+               return null;
             }
             else
             {
@@ -312,7 +311,7 @@ public class LoginDialogBean implements Serializable, InitializingBean
          password = null;
       }
    }
-   
+
    /**
     * @throws IOException
     */
@@ -321,7 +320,7 @@ public class LoginDialogBean implements Serializable, InitializingBean
       String returnUrl = FacesUtils.getQueryParameterValue(InfinityStartup.RETURN_URL_PARAM);
 
       if (!StringUtils.isEmpty(returnUrl))
-      { 
+      {
          // When returnUrl contains login.iface, clear current session and redirect to
          // login Page
          if (returnUrl.contains(DEFAULT_LOGIN_PAGE))
@@ -345,22 +344,23 @@ public class LoginDialogBean implements Serializable, InitializingBean
             landingPage += "#uicommand=" + uicommand;
          }
 
-         // "FacesUtils.sendRedirect(landingPage);" does not work, hence use JavascriptContext
+         // "FacesUtils.sendRedirect(landingPage);" does not work, hence use
+         // JavascriptContext
          String jsCall = "window.location.replace('" + landingPage + "');";
          JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), jsCall);
 
          return null;
       }
-      
+
       return outcome;
    }
-   
+
    public String getNavigationOutcome()
    {
       String applicationId = ApplicationContext.findApplicationContext().getApplicationId();
       return !StringUtils.isEmpty(applicationId)
-         ? Constants.LOGGED_INTO_PREFIX + applicationId
-         : Constants.WORKFLOW_SUCCESS;
+            ? Constants.LOGGED_INTO_PREFIX + applicationId
+            : Constants.WORKFLOW_SUCCESS;
    }
 
    public String getDomain()
@@ -410,7 +410,7 @@ public class LoginDialogBean implements Serializable, InitializingBean
 
    public ChangePasswordDialog getChangePwdDialog()
    {
-	   return changePwdDialog;
+      return changePwdDialog;
    }
 
    public ResetPasswordDialog getResetPwdDialog()
@@ -432,6 +432,5 @@ public class LoginDialogBean implements Serializable, InitializingBean
    {
       this.pluginLoginStyleSheetPath = pluginLoginStyleSheetPath;
    }
-   
-   
+
 }
