@@ -627,12 +627,12 @@
 	          'ng-class="{\'pi-arrow-r\':!isVisible && !isLeaf,',
 	          '\'pi-arrow-d\':isVisible }" class="pi"></i>',
 	          '</div>',
-	          '<a href="" ' + dragdropStr + ' title="{{' + attrs.sdaTitle + '}}" ng-model="nodeItem"  ng-click="invokeCallback(\'node-click\',$event)"  class="tree-node">',
+	          '<a  ' + menuStr + ' href="" ' + dragdropStr + ' title="{{' + attrs.sdaTitle + '}}" ng-model="nodeItem"  ng-click="invokeCallback(\'node-click\',$event)"  class="tree-node">',
 	          '<i ng-class="getIconClass() + \' \' + iconClass" class="js-icon pi pi-badge">' +
 	          	'<i class="pi pi-badge-bg"></i>' +
 	          	'<i class="pi pi-badge-icon"></i>' +
 	          '</i>',
-	          '<span ' + menuStr + ' ng-show="!allowEdit">',
+	          '<span ng-show="!allowEdit">',
 	              "{{" + attrs.sdaLabel + "}}",
 	          "</span>",
 	          '<input ng-keypress="keyMonitor($event)" ng-blur="invokeCallback(\'node-rename-commit\',$event,this)" ',
