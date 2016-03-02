@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdUserManagerDetailViewCtrl',
 			['$q', '$scope', '$element', 'sdUserManagerDetailService', 'sdLoggerService', 'sdViewUtilService',
-					'sdLoggedInUserService', 'sdPreferenceService', 'sdDataTableHelperService',
+					'sdLoggedInUserService', 'sdPreferenceService',
 					UserManagerDetailViewCtrl]);
 	var _q;
 	var _scope;
@@ -28,12 +28,11 @@
 	var trace;
 	var _sdLoggedInUserService;
 	var _sdPreferenceService;
-	var _sdDataTableHelperService;
 	/*
 	 * 
 	 */
 	function UserManagerDetailViewCtrl($q, $scope, $element, sdUserManagerDetailService, sdLoggerService,
-			sdViewUtilService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
+			sdViewUtilService, sdLoggedInUserService, sdPreferenceService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdUserManagerDetailViewCtrl');
 		_q = $q;
 		_scope = $scope;
@@ -42,7 +41,6 @@
 		_sdViewUtilService = sdViewUtilService;
 		_sdLoggedInUserService = sdLoggedInUserService;
 		_sdPreferenceService = sdPreferenceService;
-		_sdDataTableHelperService = sdDataTableHelperService;
 
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.exportFileNameForAssignedRoles = "AssignedRoles";
@@ -80,8 +78,8 @@
 		_sdUserManagerDetailService.getUserManagerDetails(self.viewParams.userOid).then(function(data) {
 			self.userManagerDetails = data;
 			if(self.assignedRolesTable != undefined && self.assignableRolesTable != undefined){
-				self.assignedRolesTable.refresh();
-				self.assignableRolesTable.refresh();
+				self.assignedRolesTable.refresh(true);
+				self.assignableRolesTable.refresh(true);
 			}else{
 				self.showAssignedRolesTable = true;
 				self.showAssignableRolesTable = true;
@@ -157,8 +155,8 @@
 	 */
 	UserManagerDetailViewCtrl.prototype.removeRoleFromUser = function() {
 		var self = this;
-		var roleIds = self.getSelectedRoleIds(self.assignedRolesTable.getSelection());
-		_sdUserManagerDetailService.removeRoleFromUser(roleIds, self.viewParams.userOid).then(function(data) {
+		var roles = self.getSelectedRoles(self.assignedRolesTable.getSelection());
+		_sdUserManagerDetailService.removeRoleFromUser(roles, self.viewParams.userOid).then(function(data) {
 			self.userAuthorizationMsg = data.userAuthorization;
 			self.refresh();
 		}, function(error) {
@@ -171,9 +169,9 @@
 	 */
 	UserManagerDetailViewCtrl.prototype.addRoleToUser = function() {
 		var self = this;
-		var roleIds = self.getSelectedRoleIds(self.assignableRolesTable.getSelection());
+		var roles = self.getSelectedRoles(self.assignableRolesTable.getSelection());
 
-		_sdUserManagerDetailService.addRoleToUser(roleIds, self.viewParams.userOid).then(function(data) {
+		_sdUserManagerDetailService.addRoleToUser(roles, self.viewParams.userOid).then(function(data) {
 			self.userAuthorizationMsg = data.userAuthorization;
 			self.refresh();
 		}, function(error) {
@@ -187,12 +185,15 @@
 	 * @param selectedRoles
 	 * @returns
 	 */
-	UserManagerDetailViewCtrl.prototype.getSelectedRoleIds = function(selectedRoles) {
-		var roleIds = [];
+	UserManagerDetailViewCtrl.prototype.getSelectedRoles = function(selectedRoles) {
+		var roles = [];
 		for ( var roleIndex in selectedRoles) {
-			roleIds.push(selectedRoles[roleIndex].roleId);
+			roles.push({ 
+				        'roleId':selectedRoles[roleIndex].roleId, 
+				        'departmentOid': selectedRoles[roleIndex].departmentOid
+				      });
 		}
-		return roleIds;
+		return roles;
 	};
 
 	/**

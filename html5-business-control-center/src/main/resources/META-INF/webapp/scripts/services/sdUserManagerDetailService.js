@@ -61,11 +61,11 @@
 		/**
 		 * 
 		 */
-		UserManagerDetailService.prototype.removeRoleFromUser = function(roleIds, userOid) {
+		UserManagerDetailService.prototype.removeRoleFromUser = function(roles, userOid) {
 			var restUrl = REST_BASE_URL + "/:type/:userOid";
 
 			var postData = {
-				roleIds : roleIds
+				roles : roles
 			};
 
 			var removeRoleFromUser = $resource(restUrl, {
@@ -87,10 +87,10 @@
 		 * 
 		 */
 
-		UserManagerDetailService.prototype.addRoleToUser = function(roleIds, userOid) {
+		UserManagerDetailService.prototype.addRoleToUser = function(roles, userOid) {
 			var restUrl = REST_BASE_URL + "/:type/:userOid";
 			var postData = {
-				roleIds : roleIds
+				roles : roles
 			};
 
 			var addRoleToUser = $resource(restUrl, {
