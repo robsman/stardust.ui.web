@@ -168,7 +168,7 @@
     textMap.rename = i18n.translate("views.genericRepositoryView.treeMenuItem.rename");
     textMap.delete = i18n.translate("views.genericRepositoryView.treeMenuItem.delete");
     textMap.createSubFolder = i18n.translate("views.genericRepositoryView.treeMenuItem.createSubFolder");
-    textMap.createNewDoc = i18n.translate("views.genericRepositoryView.treeMenuItem.createNewDoc");
+    textMap.createNewTextFile = i18n.translate("views.genericRepositoryView.treeMenuItem.createNewTextFile");
     textMap.uploadFile = i18n.translate("views.genericRepositoryView.treeMenuItem.uploadFile");
     textMap.sendToZip = i18n.translate("views.genericRepositoryView.treeMenuItem.sendToZip");
     textMap.uploadZip = i18n.translate("views.genericRepositoryView.treeMenuItem.uploadZip");
@@ -440,7 +440,7 @@
     //Virtual Root folders directly below the repository level
     else if (menuData.item.path==="/"){
       menuItems.push("(createSubFolder," + this.textMap.createSubFolder + ")");
-      menuItems.push("(createFile," + this.textMap.createNewDoc + ")");
+      menuItems.push("(createFile," + this.textMap.createNewTextFile + ")");
       menuItems.push("(uploadFile," + this.textMap.uploadFile + ")");
       menuItems.push("(uploadZipFile," + this.textMap.uploadZip + ")");
       menuItems.push("(downloadFolder," + this.textMap.sendToZip + ")");
@@ -452,7 +452,7 @@
       menuItems.push("(rename," + this.textMap.rename + ")");
       menuItems.push("(delete," + this.textMap.delete + ")");
       menuItems.push("(createSubFolder," + this.textMap.createSubFolder + ")");
-      menuItems.push("(createFile," + this.textMap.createNewDoc + ")");
+      menuItems.push("(createFile," + this.textMap.createNewTextFile + ")");
       menuItems.push("(uploadFile," + this.textMap.uploadFile + ")");
       menuItems.push("(uploadZipFile," + this.textMap.uploadZip + ")");
       menuItems.push("(downloadFolder," + this.textMap.sendToZip + ")");
@@ -463,7 +463,7 @@
     else if(menuData.item.nodeType==="repoFolderRoot"){
 
       menuItems.push("(createSubFolder," + this.textMap.createSubFolder + ")");
-      menuItems.push("(createFile," + this.textMap.createNewDoc + ")");
+      menuItems.push("(createFile," + this.textMap.createNewTextFile + ")");
       menuItems.push("(uploadFile," + this.textMap.uploadFile + ")");
       menuItems.push("(refreshFolder," + this.textMap.refresh + ")");
       menuItems.push("(securityFolder," + this.textMap.security  + ")");
