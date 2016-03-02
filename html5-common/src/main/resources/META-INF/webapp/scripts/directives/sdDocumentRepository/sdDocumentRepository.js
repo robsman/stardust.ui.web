@@ -799,6 +799,11 @@
   
   docRepoController.prototype.renameDocument = function(docId,newName,nodeItem){
     var that = this;
+
+    if(newName===nodeItem.name){
+      return;
+    }
+    
     this.documentService.renameDocument(docId,newName)
     .then(function(doc){
       nodeItem.name = doc.name;
