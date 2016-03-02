@@ -191,7 +191,7 @@ padding : 5px;;
 
 .sd-abort-noti-dlg .notification-body {
 	padding: 0 25px 25px 25px;
-} 
+}
 
 .sd-abort-dlg .abort-start-section select {
 	width: 95px;
@@ -267,3 +267,13 @@ padding : 5px;;
     width : auto;
 }
 
+.tma-row {
+	padding-top: 3px;
+	padding-left: 5px;
+}
+
+.tma-input {
+	width: 120px;
+	padding-left: 5px;
+	text-align: left;
+}

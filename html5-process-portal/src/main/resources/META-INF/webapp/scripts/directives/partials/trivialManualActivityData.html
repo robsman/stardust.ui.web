@@ -1,29 +1,29 @@
 <table>
 	<tbody>
-		<tr ng-repeat="mapping in dataCtrl.dataMappings" ng-form="subForm" style="line-height: 30px;">
+		<tr ng-repeat="mapping in dataCtrl.dataMappings" ng-form="subForm">
 			<td style="white-space: nowrap;">{{mapping.name}} </td>
-			<td style="width: 5px;">:</td>
-			<td> 
+			<td >
+				<div class="tma-row">
 				<!-- Enum -->
 				<select ng-if="mapping.isEnum" aid="PP-TrivialManualActivity-SelectEnum"
-				    ng-change="dataCtrl.onChange();"
+				  ng-change="dataCtrl.onChange();"
 					ng-model="dataCtrl.outData[mapping.id]"
 					ng-init="dataCtrl.outData[mapping.id] = dataCtrl.outData[mapping.id] || mapping.enumValues[0]"
 					ng-options="enumVal for enumVal in mapping.enumValues">
-				</select> 
+				</select>
 				<!--Text -->
-				<input type="text"
+				<input type="text" class="tma-input"
 					ng-change="dataCtrl.onChange();" aid="PP-TrivialManualActivity-EnterText"
 					ng-if="mapping.typeName == 'java.lang.String'"
-					ng-model="dataCtrl.outData[mapping.id]" /> 
-				<!-- Boolean -->	
-				<input type="checkbox"  aid="PP-TrivialManualActivity-SelectCheckBox"
-					ng-change="dataCtrl.onChange();"
+					ng-model="dataCtrl.outData[mapping.id]" />
+				<!-- Boolean -->
+				<input type="checkbox"
+					ng-change="dataCtrl.onChange();" aid="PP-TrivialManualActivity-SelectCheckBox"
 					ng-if="mapping.typeName == 'java.lang.Boolean'" ng-model-on-blur
 					ng-model="dataCtrl.outData[mapping.id]"></input>
 				<!-- Integer -->
 				<div ng-if="mapping.typeName == 'java.lang.Integer'">
-					<input name="integerField" sd-validate="integer" ng-model-on-blur aid="PP-TrivialManualActivity-EnterInteger"
+					<input name="integerField" class="tma-input" sd-validate="integer" ng-model-on-blur aid="PP-TrivialManualActivity-EnterInteger" style="text-align:left"
 						ng-change="dataCtrl.onChange();"
 						type="number" ng-model="dataCtrl.outData[mapping.id]" />
 					<div
@@ -33,7 +33,7 @@
 				</div>
 				<!--Date -->
 				<div ng-if="mapping.typeName == 'java.util.Date'">
-					<input type="text" name="dateField" sd-date-picker 
+					<input type="text" name="dateField" sd-date-picker class="tma-input"
 						aid="PP-TrivialManualActivity-EnterDate"
 						sda-milliseconds="true" ng-change="dataCtrl.onChange();"
 						sda-change-year="true" ng-model-on-blur sda-data-type="date"
@@ -43,15 +43,16 @@
 				</div>
 				<!-- Money -->
 				<div  ng-if="mapping.typeName == 'java.lang.Double'">
-					<input name="doubleField"  ng-model-on-blur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
+					<input name="doubleField" class="tma-input"
+						ng-model-on-blur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
 						ng-change="dataCtrl.onChange();" aid="PP-TrivialManualActivity-EnterDouble"
 					    ng-model="dataCtrl.outData[mapping.id]" />
 					<div
 						ng-show="subForm.doubleField.$error.pattern"
-						class="msg-error">{{i18n('html5-common.double-error')}} 
+						class="msg-error">{{i18n('html5-common.double-error')}}
 					</div>
 				</div>
-				
+				</div>
 			</td>
 		</tr>
 	</tbody>
