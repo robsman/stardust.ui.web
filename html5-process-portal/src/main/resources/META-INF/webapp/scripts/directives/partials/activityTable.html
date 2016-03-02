@@ -379,7 +379,7 @@
 						</button>
 						<button ng-if="activityTableCtrl.isActivityTableMode();" class="button-link tbl-tool-link" aid="PP-ActivityTable-AbortPopoverAction" sda-action-type="abort"  ng-disabled="!rowData.abortProcess || rowData.isCaseInstance"
 							    title ="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
-							    sd-popover sda-template="activityTableCtrl.abortMenuTemplateUrl" sda-placement ="bottom auto" sda-trigger="outsideClick"
+							    sd-popover sda-template="activityTableCtrl.abortMenuTemplateUrl" sda-placement ="bottom auto"
 							    ng-click="activityTableCtrl.openAbortPopover(rowData);" >
 								<i class="pi pi-menu-dropdown"></i>
 						</button>
@@ -413,12 +413,10 @@
 									sda-width="400px" sda-height="70px"
 									sda-aid-prefix="RelocationDialog-confirm"></div>
 						</button>
-						<span sd-popover sda-template="activityTableCtrl.openDocumentTemplateUrl" sda-placement ="left auto" sda-trigger="outsideClick">
 							<button ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance" title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}"
-									ng-click="activityTableCtrl.openProcessDocumentsPopover(rowData)" class="button-link tbl-tool-link">
+							sd-popover sda-template="activityTableCtrl.openDocumentTemplateUrl" sda-placement ="left auto" 	ng-click="activityTableCtrl.openProcessDocumentsPopover(rowData)" class="button-link tbl-tool-link">
 		  		  					<i class="pi pi-process-documents pi-lg"></i>
 							</button>
-						</span>
 					</div>
 				</td>
 			</tr>

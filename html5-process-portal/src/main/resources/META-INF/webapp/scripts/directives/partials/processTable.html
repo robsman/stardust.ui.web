@@ -11,7 +11,7 @@
 			<button class="button-link tbl-tool-link" ng-disabled="processTableCtrl.dataTable.getSelection().length < 1"
 				    title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}" aid="PP-ProcessTable-AbortAllPopover"
 				   sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
-				   sda-is-open="processTableCtrl.abortProcessPopover.visible"  sda-placement="bottom auto" sda-trigger="outsideClick"
+				   sda-is-open="processTableCtrl.abortProcessPopover.visible"  sda-placement="bottom auto"
 				   ng-click="processTableCtrl.openAbortPopover( );">
 					<i class="pi pi-menu-dropdown"></i>
 			</button>
@@ -25,7 +25,7 @@
 			</button>
 			<button ng-disabled="processTableCtrl.dataTable.getSelection().length < 1"
 							title="{{i18n('views-common-messages.views-case-tooltip-menu')}}"
-							class="button-link tbl-toolbar-item tbl-tool-link" aid="PP-ProcessTable-CaseMenu" sda-trigger="outsideClick"
+							class="button-link tbl-toolbar-item tbl-tool-link" aid="PP-ProcessTable-CaseMenu"
 				   	 sd-popover sda-template="processTableCtrl.caseMenuPopover.url" sda-is-open="processTableCtrl.caseMenuPopover.visible"
 				   	 sda-placement="bottom auto">
 				 			 <i class="pi pi-case pi-lg"></i>
@@ -177,7 +177,7 @@
 						<button class="button-link tbl-tool-link" ng-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortPopoverAction"
 						    title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
 						    sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
-			                sda-placement="bottom auto" sda-trigger="outsideClick"
+			                sda-placement="bottom auto"
 							ng-click="processTableCtrl.openAbortPopover($event, rowData); ">
 							<i class="pi pi-menu-dropdown"></i>
 						</button>
@@ -204,7 +204,7 @@
 							<i class="pi pi-notes pi-lg" ng-if ="rowData.notesCount > 0" ></i>
 						</button>
 						<button ng-click="processTableCtrl.openProcessDocumentsPopover(rowData);" aid="PP-ProcessTable-OpenProcessDocuments"
-								title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link" sd-popover sda-trigger="outsideClick" sda-placement ="left auto"
+								title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link" sd-popover  sda-placement ="left auto"
 							  sda-template="processTableCtrl.processDocumentsPopover.url">
 								<i class="pi pi-process-documents pi-lg"></i>
 							</button>

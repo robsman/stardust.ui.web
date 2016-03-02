@@ -125,7 +125,7 @@
 					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" '+
 						'ng-click="$dtApi.toggleColumnSelector()" sda-is-open="$dtApi.showSelectColumns" ' +
 						 'sd-popover sda-template="\'columnSelector.html\'" '+
-						 'sda-trigger="outsideClick" sda-placement="auto bottom-left" '+
+						 'sda-placement="auto bottom-left" '+
 						' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}">\n' +
 						'<i class="pi pi-column-selector pi-lg"></i>\n' +
 					'</button>\n' +
@@ -138,7 +138,7 @@
 						'<i class="pi pi-export pi-lg"></i>\n' +
 					'</button>\n' +
 					'<span ng-if="$dtApi.enableExportCSV" class="tbl-tool-link" sd-popover sda-template="\'exportAsCSV.html\'" '+
-					  'sda-trigger="outsideClick" sda-placement="auto bottom-left">\n' +
+					  'sda-placement="auto bottom-left">\n' +
 						'<i class="pi pi-menu-dropdown"></i>\n' +
 					'</span>'+
 					'<script id="exportAsCSV.html" type="text/ng-template">'+
