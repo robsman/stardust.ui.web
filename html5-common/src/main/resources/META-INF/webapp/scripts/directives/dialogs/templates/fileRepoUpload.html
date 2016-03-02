@@ -9,12 +9,17 @@
 
 <script type="text/ng-template" id="tmplRepoUploadDialog">
 
-	<div style="margin:1em;">
+	<div style="margin:1em;width:500px;" 
+	     sd-data-drop 
+		 sda-drop="repoUploadCtrl.onFileDrop($data,$event)">
 		
 		<div style="display:inline-flex;width:60px">
 			<div ng-show="repoUploadCtrl.state ==='initial' || repoUploadCtrl.state ==='fileSelected'">
 		        <label style="display:inline-block;" for="{{repoUploadCtrl.id}}">
-					<i sd-data-drop sda-drop="repoUploadCtrl.onFileDrop($data,$event)" class="glyphicon sc-3x glyphicon-folder-open"></i>
+
+					<i style="cursor:pointer"
+					   class="pi pi-3x pi-folder-open">
+					</i>
 		
 					
 					<input ng-if="repoUploadCtrl.mode === 'CREATE'" 
@@ -76,7 +81,7 @@
 	   	</span>
 
 	    <div ng-show="repoUploadCtrl.state !=='initial'" 
-	         style="width:500px;max-height:200px;display:inline-flex;position:relative;vertical-align:top;">
+	         style="width:435px;max-height:200px;display:inline-flex;position:relative;vertical-align:top;">
 
 		    <table  class="dataTable tbl" 
 		            style="display:block;max-height:200px;width:100%;overflow:auto;">
@@ -84,7 +89,7 @@
 						ng-click="repoUploadCtrl.selectedFile = file"
 					    ng-class="{'even' : $even,'odd':$odd,'tbl-row-selected':repoUploadCtrl.selectedFile === file}" 
 						ng-repeat="file in repoUploadCtrl.curatedFiles | orderBy : '-name'">
-						<td style="width:400px;">
+						<td style="width:335px;">
 							<button ng-show="file.fileState==1" 
 							        ng-click="file.send=!file.send" 
 							        ng-class="{'pi-add' : file.send, 'pi-delete' : !file.send}" 	
@@ -98,8 +103,8 @@
 							</span>
 							{{file.name}} 
 						</td>
-						<td ng-if="(file.size/1024) < 1024" style="width:100px;">{{(file.size/1024)| number:1}} kb</td>
-						<td ng-if="(file.size/1024) >= 1024" style="width:100px">{{(file.size/1048576)| number:1}} mb</td>
+						<td ng-if="(file.size/1024) < 1024" style="width:100px;">{{(file.size/1024)| number:1}} KB</td>
+						<td ng-if="(file.size/1024) >= 1024" style="width:100px">{{(file.size/1048576)| number:1}} MB</td>
 					</tr>
 			</table>
 		</div>

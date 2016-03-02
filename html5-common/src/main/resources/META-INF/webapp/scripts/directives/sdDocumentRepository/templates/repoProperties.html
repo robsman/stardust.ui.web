@@ -4,7 +4,12 @@
   .repo-props label {
     display:inline-block;
   }
-  
+   .repo-props input{
+      vertical-align: text-bottom;
+  }
+  div.repo-props{
+    max-width: 500px;
+  }
   
 </style>
 <div class="repo-props">
@@ -24,10 +29,12 @@
 
 </div>
 
-<label>Capabilities</label>
-<hr style="margin:0;"/>
+<p>
+  <label style="font-size:small;" class="header">Capabilities</label>
+  <hr style="margin:0;"/>
+</p>
   
-<div>
+<div class="repo-props">
       <div style="display:inline-table;min-width:120px;">
         <input ng-checked="ctrl.selectedRepo.isFullTextSearchSupported" 
              type="checkbox" 

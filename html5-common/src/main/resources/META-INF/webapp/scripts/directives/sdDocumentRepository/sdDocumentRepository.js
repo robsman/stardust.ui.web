@@ -249,14 +249,23 @@
 
   docRepoController.prototype.iconCallback = function(data,e){
     
-    var classes=["fa"];
+    var classes=["fa"],
+        srcScope;
 
     if(this.matches.indexOf(data) > -1){
       classes.push("match");
     }
 
     if(data.nodeType=="folder" || data.nodeType == "repoFolderRoot"){
-      classes.push("pi-folder");
+      
+      srcScope = this.treeApi.childNodes[data.id];
+      if(srcScope.isVisible===true){
+        classes.push("pi-folder-open")
+      }
+      else{
+        classes.push("pi-folder");
+      }
+      
     }
     else if(data.nodeType=="document"){
       classes.push(this.getDocumentClass(data));
@@ -354,7 +363,7 @@
         this.openBindRepoDialog();
         break;
       case "menu-setDefault" :
-        this.setRepositoryAsDefault(data.valueItem.id);
+        this.setRepositoryAsDefault(data.valueItem);
         break;
       case "menu-unbindRepo":
         this.unbindRepository(data);
@@ -417,13 +426,12 @@
     else if(menuData.item.nodeType=="Repo"){
 
       //TODO:double check this logic
-      if(menuData.item.isDefault===false){
+      if(menuData.item.isDefualt===false){
         menuItems.push("(setDefault," + this.textMap.makeDefault + ")");
-        menuItems.push("(unbindRepo," + this.textMap.unbindRepo + ")");
       }
 
       menuItems.push("(repoProperties, " + this.textMap.properties + ")");
-       menuItems.push("(unbindRepo, " + this.textMap.unbindRepo + ")");
+      menuItems.push("(unbindRepo, " + this.textMap.unbindRepo + ")");
     }
     else if(menuData.item.nodeType=="folder"){
 
@@ -793,12 +801,27 @@
     });
   };
   
-  docRepoController.prototype.setRepositoryAsDefault = function(repoId){
-    this.documentService.makeRepositoryDefault(repoId)
+  docRepoController.prototype.setRepositoryAsDefault = function(repo){
+
+    var that = this,
+        tempRepo;
+
+    this.documentService.makeRepositoryDefault(repo.id)
     .then(function(){
-      //successdialog
-      alert("repo is now default");
+      repo.isDefualt=true;
+      repo.labelModifier = " (" + that.textMap.default + ")";
+      that.repositories.forEach(function(id){
+        tempRepo = that.treeApi.childNodes[id].nodeItem;
+        if(tempRepo.id !== repo.id){
+          tempRepo.isDefualt = false;
+          tempRepo.labelModifier = "";
+        }
+      })
+    })
+    ["catch"](function(err){
+      alert("Error occurred setting defualt repository.");
     });
+
   };
   
   docRepoController.prototype.openRepoPropertyDialog = function(){
@@ -936,6 +959,7 @@
         .then(function(data){
           data[0].children.forEach(function(elem){
             elem.nodeType = "Repo";
+            elem.labelModifier = (elem.isDefualt===true)? " (" + ctrl.textMap.default + ")" : "";
             elem.children=[];
             ctrl.repositories.push(elem.id);
           });
