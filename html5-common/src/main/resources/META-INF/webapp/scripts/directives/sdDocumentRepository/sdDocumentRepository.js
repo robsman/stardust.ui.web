@@ -257,7 +257,7 @@
     }
 
     if(data.nodeType=="folder" || data.nodeType == "repoFolderRoot"){
-      
+
       srcScope = this.treeApi.childNodes[data.id];
       if(srcScope.isVisible===true){
         classes.push("pi-folder-open")
@@ -726,7 +726,7 @@
   docRepoController.prototype.createDocument = function(parentFolderNode){
 
     var that = this;
-    var name = this.$filter('date')(new Date(), 'yyyy-MM-dd HH-mm-ss') + ".html";
+    var name = this.$filter('date')(new Date(), 'yyyy-MM-dd HH-mm-ss') + ".txt";
     var parentPath;
     var repoId;
 
@@ -788,6 +788,7 @@
     this.documentService.renameDocument(docId,newName)
     .then(function(doc){
       nodeItem.name = doc.name;
+      nodeItem.contentType = doc.contentType;
     });
   };
   

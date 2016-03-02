@@ -24,9 +24,9 @@
 
   /**Bootstrap Section Ends**/
   
-  documentRepoService.$inject = ["$q","$timeout","$location","$http", "sdUtilService"];
+  documentRepoService.$inject = ["$q","$timeout","$location","$http", "sdUtilService", "sdMimeTypeService"];
   
-  function documentRepoService($q, $timeout, $location, $http, sdUtilService){
+  function documentRepoService($q, $timeout, $location, $http, sdUtilService, sdMimeTypeService){
 
     var absUrl;
 
@@ -34,7 +34,8 @@
     this.$q = $q;
     this.$timeout = $timeout;
     this.$http = $http;
-
+    this.sdMimeTypeService = sdMimeTypeService;
+    
     //TODO:remove
     this.docRepo = [{"id":"System","name":"Jackrabbit","type":"Content Repository API for Java(TM) Technology Specification 2.0","version":"2.6.1","transactionSupported":false,"versioningSupported":false,"writeSupported":false}]; 
     
@@ -286,7 +287,8 @@
       "content" : "",
       "description" : "",
       "parentFolderPath" : path,
-      "properties" : {}
+      "properties" : {},
+      "contentType" : "text/plain"
     };
     this.$http({
       "method" : "POST",
@@ -349,7 +351,11 @@
 
       var deferred = this.$q.defer();
       var url= this.documentRoot + "/" + docId;
+      var contentType;
       var data = { "name" : newName};
+
+      contentType = this.sdMimeTypeService.getMimeTypeFromFileName(newName);
+      data.contentType = contentType;
 
       this.$http({
         "method" : "PUT",

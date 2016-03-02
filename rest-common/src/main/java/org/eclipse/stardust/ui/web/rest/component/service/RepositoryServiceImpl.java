@@ -524,6 +524,11 @@ public class RepositoryServiceImpl implements RepositoryService
          }
          document.setName(documentInfoDTO.name);
       }
+      
+      //check if content-type has changed
+      if((documentInfoDTO.contentType != null) && !document.getContentType().equals(documentInfoDTO.contentType)){
+    	 document.setContentType(documentInfoDTO.contentType);
+      }
 
       return DocumentDTOBuilder.build(updateDocument(document, documentInfoDTO), getDMS());
    }
