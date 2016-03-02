@@ -46,7 +46,7 @@
 							<span ng-if="rowData.statsByParticipant[colData.title].totalCount == 0"
 								ng-bind="rowData.statsByParticipant[colData.title].totalCount"></span>
 							<a ng-if="rowData.statsByParticipant[colData.title].totalCount > 0"  aid="BCC-PostponedActvities-ShowAllActivities"
-								href="#" ng-click="bpmCommon.stopEvent($event); ctrl.showAllActivities(rowData.statsByParticipant[colData.title])">
+								href="#" ng-click="ctrl.showAllActivities(rowData.statsByParticipant[colData.title])">
 								{{rowData.statsByParticipant[colData.title].totalCount}}</a>
 						</div>
 						<div>
@@ -61,7 +61,7 @@
 								<span ng-if="rowData.statsByParticipant[colData.title].exceededDurationCount == 0"
 								ng-bind="rowData.statsByParticipant[colData.title].exceededDurationCount"></span>
 								<a ng-if="rowData.statsByParticipant[colData.title].exceededDurationCount > 0" aid="BCC-PostponedActvities-ShowExceededDurationActivities"
-								href="#" ng-click="bpmCommon.stopEvent($event); ctrl.showExceededActivities(rowData.statsByParticipant[colData.title])">
+								href="#" ng-click="ctrl.showExceededActivities(rowData.statsByParticipant[colData.title])">
 								{{rowData.statsByParticipant[colData.title].exceededDurationCount}}</a>
 						</div>
 					</td>

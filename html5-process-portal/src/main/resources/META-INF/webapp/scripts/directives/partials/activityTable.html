@@ -380,7 +380,7 @@
 						<button ng-if="activityTableCtrl.isActivityTableMode();" class="button-link tbl-tool-link" aid="PP-ActivityTable-AbortPopoverAction" sda-action-type="abort"  ng-disabled="!rowData.abortProcess || rowData.isCaseInstance"
 							    title ="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
 							    sd-popover sda-template="activityTableCtrl.abortMenuTemplateUrl" sda-placement ="bottom auto" sda-trigger="outsideClick"
-							    ng-click="activityTableCtrl.openAbortPopover(rowData); bpmCommon.stopEvent($event);" >
+							    ng-click="activityTableCtrl.openAbortPopover(rowData);" >
 								<i class="pi pi-menu-dropdown"></i>
 						</button>
 						<button ng-click="activityTableCtrl.$openNotes(rowData);" aid="PP-ActivityTable-OpenNotesAction" sda-action-type="notes"

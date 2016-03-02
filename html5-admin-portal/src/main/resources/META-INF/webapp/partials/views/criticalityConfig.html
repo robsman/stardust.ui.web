@@ -71,29 +71,29 @@
 				<tr>
 					<td sda-data-type="int" >
 						<input ng-if="ctrl.rowEditable(rowData)" type="number" ng-model="rowData.rangeFrom"
-						       class="criticality-config-input" ng-click="bpmCommon.stopEvent($event);"
+						       class="criticality-config-input" 
 						       aid="ADM-CriticalityConfig-Categories-Table-EditRangeFrom"/>
 						<span ng-if="!ctrl.rowEditable(rowData)" ng-bind="rowData.rangeFrom"></span>
 					</td>
 					<td sda-data-type="int">
 						<input ng-if="ctrl.rowEditable(rowData)" type="number" ng-model="rowData.rangeTo"
-                   class="criticality-config-input" ng-click="bpmCommon.stopEvent($event);"
+                   class="criticality-config-input" 
 						aid="ADM-CriticalityConfig-Categories-Table-EditRangeTo"/>
 						<span ng-if="!ctrl.rowEditable(rowData)" ng-bind="rowData.rangeTo"></span>
 					</td>
 					<td>
 						<input ng-if="ctrl.rowEditable(rowData)" type="text" ng-model="rowData.label"
-						      class="criticality-config-input" ng-click="bpmCommon.stopEvent($event);"
+						      class="criticality-config-input" 
 						       aid="ADM-CriticalityConfig-Categories-Table-Editlabel"/>
 						<span ng-if="!ctrl.rowEditable(rowData)" ng-bind="rowData.label"></span>
 					</td>
 					<td>
 						<span sd-criticality-icon-selector ng-model="rowData.color" sda-edit-mode="ctrl.rowEditable(rowData)"
-						      ng-click="bpmCommon.stopEvent($event);" aid="ADM-CriticalityConfig-Categories-Table-EditColor"></span>
+						       aid="ADM-CriticalityConfig-Categories-Table-EditColor"></span>
 					</td>
 					<td>
 						<span sd-criticality-icon-count-selector ng-model="rowData.count" sda-icon="rowData.color"
-						      sda-edit-mode="ctrl.rowEditable(rowData)" ng-click="bpmCommon.stopEvent($event);"
+						      sda-edit-mode="ctrl.rowEditable(rowData)" 
 						      aid="ADM-CriticalityConfig-Categories-Table-EditCount"></span>
 					</td>
 

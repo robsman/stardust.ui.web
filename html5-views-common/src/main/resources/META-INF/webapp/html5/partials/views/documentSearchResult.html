@@ -71,7 +71,7 @@
 				 <i class="{{docSearchViewCtrl.getGlyphiconClass(rowData.fileType)}} spacing-right"></i>
 				 <span sd-popover sda-placement="right auto"
 						sda-trigger="mouseenter" sda-template="'plugins/html5-views-common/html5/partials/views/documentDetailToolTip.html'">
-						<a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.documentId);" aid="COM-SrchDoc-DocSrchTbl-DocName">
+						<a href="#" ng-click="docSearchViewCtrl.openDocumentView(rowData.documentId);" aid="COM-SrchDoc-DocSrchTbl-DocName">
 							{{rowData.documentName}} 
 						</a>
 				</span>
@@ -106,14 +106,14 @@
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
 						<button
-							ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openProcessDialog(rowData); "
+							ng-click="docSearchViewCtrl.openProcessDialog(rowData); "
 							title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-tooltip-process')}}"
 							class="button-link tbl-tool-link"
 							aid="COM-SrchDoc-DocSrchTbl-ActionsOpenProc">
 							<i class="pi pi-process pi-lg"></i>
 						</button>
 						<button
-							ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openAttachToProcessDialog(rowData);"
+							ng-click="docSearchViewCtrl.openAttachToProcessDialog(rowData);"
 							title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}"
 							class="button-link tbl-tool-link"
 							aid="COM-SrchDoc-DocSrchTbl-ActionsAttachDocToProc">
@@ -122,7 +122,7 @@
 						<sd-document-download sda-document-id="rowData.documentId"
 							sda-document-name="rowData.documentName" sda-aid-prefix="COM-SrchDoc-DocSrchTbl-ActionsDownload"></sd-document-download>
 						<button
-							ng-click="bpmCommon.stopEvent($event);docSearchViewCtrl.setShowDocumentVersions(rowData.documentId,rowData.documentName);"
+							ng-click="docSearchViewCtrl.setShowDocumentVersions(rowData.documentId,rowData.documentName);"
 							title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-versionHistory')}}"
 							class="button-link tbl-tool-link"
 							aid="COM-SrchDoc-DocSrchTbl-ActionsVersionHistory">
