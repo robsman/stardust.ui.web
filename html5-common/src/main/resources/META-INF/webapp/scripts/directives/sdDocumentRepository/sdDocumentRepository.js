@@ -420,18 +420,32 @@
 
     var menuItems=[];
 
+    //Virtual root at top level when repositories are present
     if(menuData.item.nodeType=="RootRepo"){
       menuItems.push("(bind,"+ this.textMap.bindRepo +")");
     }
+    //Repository nodes
     else if(menuData.item.nodeType=="Repo"){
 
       //TODO:double check this logic
       if(menuData.item.isDefualt===false){
         menuItems.push("(setDefault," + this.textMap.makeDefault + ")");
+        //cant undbind default repo
+        menuItems.push("(unbindRepo, " + this.textMap.unbindRepo + ")");
       }
 
       menuItems.push("(repoProperties, " + this.textMap.properties + ")");
-      menuItems.push("(unbindRepo, " + this.textMap.unbindRepo + ")");
+      
+    }
+    //Virtual Root folders directly below the repository level
+    else if (menuData.item.path==="/"){
+      menuItems.push("(createSubFolder," + this.textMap.createSubFolder + ")");
+      menuItems.push("(createFile," + this.textMap.createNewDoc + ")");
+      menuItems.push("(uploadFile," + this.textMap.uploadFile + ")");
+      menuItems.push("(uploadZipFile," + this.textMap.uploadZip + ")");
+      menuItems.push("(downloadFolder," + this.textMap.sendToZip + ")");
+      menuItems.push("(refreshFolder," + this.textMap.refresh + ")");
+      menuItems.push("(securityFolder," + this.textMap.security  + ")");
     }
     else if(menuData.item.nodeType=="folder"){
 
