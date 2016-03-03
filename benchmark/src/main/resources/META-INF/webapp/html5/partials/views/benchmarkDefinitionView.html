@@ -1,7 +1,22 @@
 <style>
+
 	a.tbl-toolbar-item > i {
 		font-size:13.333px;
 	}
+
+	.benchmarkDefinitionMain ul.sd-tree .title-section span {
+	    padding: 4px;
+	    overflow-wrap: break-word;
+	    text-overflow: ellipsis;
+	    white-space: nowrap;
+	    overflow: hidden;
+	    display: inline-block;
+	    margin: 0;
+	    padding: 0;
+	    max-width: 145px;
+	    line-height: 1em;
+	}
+
 </style>
 
 <!-- BenchMark Definitions CRUD View -->
@@ -73,7 +88,7 @@
 	   class="pi pi-fw pi-arrow-d">
 	</i>
 
-	<header style="position:relative;left:2em;">
+	<header style="position:relative;margin-left:2em;">
         <div class="view-panel-toolbar heading ng-binding">
           {{ctrl.textMap.benchmarkDefinitions}}
         </div>
@@ -308,6 +323,7 @@
 				      <li sd-tree-node 
 				          sda-is-leaf = "model.processDefinitions.length == 0"
 				          sda-label="model.name" 
+				          sda-title="model.name"
 				          sda-node-id="model.nodeId" 
 				          ng-repeat="model in ctrl.models">
 				        <ul>
@@ -315,6 +331,7 @@
 				          	  ng-show="ctrl.showAllTreeNodes===true || process.auxillary===false"
 				              sda-is-leaf="process.activities.length==0"
 				              sda-label="process.name"
+				              sda-title="process.name"
 				              sda-node-id="process.nodeId"
 				              ng-repeat="process in model.processDefinitions">
 				            <ul>
@@ -323,6 +340,7 @@
 				                  sda-is-leaf="true"
 				                  sda-draggable="true"
 				                  sda-label="activity.name"
+				                  sda-title="activity.name"
 				                  sda-node-id="activity.nodeId"
 				                  ng-repeat="activity in process.activities">
 				              </li><!-- activity structure ends -->
