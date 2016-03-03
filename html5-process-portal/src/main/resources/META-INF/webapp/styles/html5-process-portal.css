@@ -270,6 +270,7 @@ padding : 5px;;
 .tma-row {
 	padding-top: 3px;
 	padding-left: 5px;
+  white-space: nowrap;
 }
 
 .tma-input {
