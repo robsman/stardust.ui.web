@@ -628,7 +628,7 @@
 	          '\'pi-arrow-d\':isVisible }" class="pi"></i>',
 	          '</div>',
 	          '<a href="" ' + dragdropStr + ' title="{{' + attrs.sdaTitle + '}}" ng-model="nodeItem"  ng-click="invokeCallback(\'node-click\',$event)"  class="tree-node">',
-	          '<i ng-class="getIconClass() + \' \' + iconClass" class="js-icon pi pi-badge">' +
+	          '<i oncontextmenu="return false;" onmouseup="angular.element(this).scope().triggerMenu(event);" ng-class="getIconClass() + \' \' + iconClass" class="js-icon pi pi-badge">' +
 	          	'<i class="pi pi-badge-bg"></i>' +
 	          	'<i class="pi pi-badge-icon"></i>' +
 	          '</i>',
@@ -754,6 +754,31 @@
 	              scope.repeater.rhs =attrs.sdaTreeChildren;
 	            }
 	            
+	            //Forwarding function to allow right clicks on our node icon to trigger
+	            //our sdSimpleMenu without adding a second sdSimpleMenu on our icon.
+	            scope.triggerMenu = function(e){
+
+	            	var forwardedEvent;
+	            	e.preventDefault();
+	          		e.stopPropagation();
+	          		
+	          		if(e.button==2){
+
+	          			try{
+	          				//this will throw in IE
+		          			forwardedEvent = new MouseEvent("mouseup",{"button":2});
+		          		}
+		          		catch(ex){
+		          			//handle IE, this works for firefox as well but FF actually implements MouseEvent
+		          			forwardedEvent = document.createEvent("MouseEvent");
+							forwardedEvent.initMouseEvent("mouseup",true,true,window,0,0,0,0,0,false,false,false,false,2,null);
+		          		}
+
+		          		(e.srcElement || e.target).nextSibling.dispatchEvent(forwardedEvent);
+	          		}
+	            	return false;
+	            };
+
 	            //Wrapper for our iconclass callback function specified
 	            //by the user.
 	            scope.getIconClass = function(d){
