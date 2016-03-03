@@ -1309,7 +1309,7 @@ define(
 							"&name=" + techRule.name + 
 							"&uuid=" + techRule.uuid + 
 							"&ruleSetUuid=" + ruleSet.uuid + 
-							"&parentUUID=" + ruleSet.uuid,
+							"&parentUUID=" + ruleSet.uuid +
 							"&mode=DESIGN",
 							techRule.uuid);
 					
