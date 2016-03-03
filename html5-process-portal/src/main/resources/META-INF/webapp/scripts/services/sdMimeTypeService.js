@@ -47,8 +47,17 @@
 		'image/gif' : {'icon' : 'pi pi-image', 
 					   'rx' : /\.(gif)$/i},
 
+		'image/bmp' : {'icon' : 'pi pi-image', 
+					   'rx' : /\.(bmp|dib)$/i},
+
 		'image/tiff' : {'icon' : 'pi pi-image', 
 					    'rx' : /\.(tiff|tif)$/i},
+
+		'application/json' : {'icon' : 'pi pi-html', 
+							  'rx' : /\.(json)$/i},
+
+		'application/javascript' : {'icon' : 'pi pi-html', 
+									'rx' : /\.(js)$/i},
 
 		'application/pdf' : {'icon' : 'pi pi-pdf', 
 							 'rx' : /\.(pdf)$/i},
@@ -81,7 +90,7 @@
 							 'rx' : /\.(zip|zipx)$/i},
 
 		'text/plain' : {'icon' : 'pi pi-text', 
-						'rx' : /\.()$/i},
+						'rx' : /\.(txt|text)$/i},
 
 		'application/vnd.ms-powerpoint' : {'icon' : 'pi pi-ppt', 
 										   'rx' : /\.(ppt|pot|pps|pptx|pptm|potx|potm|ppam|ppsx|ppsm|sldx|sldm)$/i},
