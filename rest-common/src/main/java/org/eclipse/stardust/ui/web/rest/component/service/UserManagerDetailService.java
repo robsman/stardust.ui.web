@@ -26,6 +26,7 @@ import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserAuthorizationStatusDTO;
+import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailRoleDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailsDTO;
 import org.springframework.stereotype.Component;
 
@@ -47,13 +48,13 @@ public class UserManagerDetailService
 
    /**
     * 
-    * @param roleIds
+    * @param roles
     * @param userOid
     * @return
     */
-   public UserAuthorizationStatusDTO addRoleToUser(List<String> roleIds, String userOid)
+   public UserAuthorizationStatusDTO addRoleToUser(List<UserManagerDetailRoleDTO> roles, String userOid)
    {
-      boolean userAuthorization = userManagerDetailUtils.addRoleToUser(roleIds, userOid);
+      boolean userAuthorization = userManagerDetailUtils.addRoleToUser(roles, userOid);
       UserAuthorizationStatusDTO userAuthorizationStatus = new UserAuthorizationStatusDTO();
       userAuthorizationStatus.userAuthorization = userAuthorization;
       return userAuthorizationStatus;
@@ -61,13 +62,13 @@ public class UserManagerDetailService
 
    /**
     * 
-    * @param roleIds
+    * @param roles
     * @param userOid
     * @return
     */
-   public UserAuthorizationStatusDTO removeRoleFromUser(List<String> roleIds, String userOid)
+   public UserAuthorizationStatusDTO removeRoleFromUser(List<UserManagerDetailRoleDTO> roles, String userOid)
    {
-      boolean userAuthorization = userManagerDetailUtils.removeRoleFromUser(roleIds, userOid);
+      boolean userAuthorization = userManagerDetailUtils.removeRoleFromUser(roles, userOid);
       UserAuthorizationStatusDTO userAuthorizationStatus = new UserAuthorizationStatusDTO();
       userAuthorizationStatus.userAuthorization = userAuthorization;
       return userAuthorizationStatus;

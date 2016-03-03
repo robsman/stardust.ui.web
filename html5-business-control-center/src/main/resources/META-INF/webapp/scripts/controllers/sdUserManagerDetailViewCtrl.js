@@ -155,8 +155,8 @@
 	 */
 	UserManagerDetailViewCtrl.prototype.removeRoleFromUser = function() {
 		var self = this;
-		var roleIds = self.getSelectedRoleIds(self.assignedRolesTable.getSelection());
-		_sdUserManagerDetailService.removeRoleFromUser(roleIds, self.viewParams.userOid).then(function(data) {
+		var roles = self.getSelectedRoles(self.assignedRolesTable.getSelection());
+		_sdUserManagerDetailService.removeRoleFromUser(roles, self.viewParams.userOid).then(function(data) {
 			self.userAuthorizationMsg = data.userAuthorization;
 			self.refresh();
 		}, function(error) {
@@ -169,9 +169,9 @@
 	 */
 	UserManagerDetailViewCtrl.prototype.addRoleToUser = function() {
 		var self = this;
-		var roleIds = self.getSelectedRoleIds(self.assignableRolesTable.getSelection());
+		var roles = self.getSelectedRoles(self.assignableRolesTable.getSelection());
 
-		_sdUserManagerDetailService.addRoleToUser(roleIds, self.viewParams.userOid).then(function(data) {
+		_sdUserManagerDetailService.addRoleToUser(roles, self.viewParams.userOid).then(function(data) {
 			self.userAuthorizationMsg = data.userAuthorization;
 			self.refresh();
 		}, function(error) {
@@ -185,12 +185,15 @@
 	 * @param selectedRoles
 	 * @returns
 	 */
-	UserManagerDetailViewCtrl.prototype.getSelectedRoleIds = function(selectedRoles) {
-		var roleIds = [];
+	UserManagerDetailViewCtrl.prototype.getSelectedRoles = function(selectedRoles) {
+		var roles = [];
 		for ( var roleIndex in selectedRoles) {
-			roleIds.push(selectedRoles[roleIndex].roleId);
+			roles.push({ 
+				        'roleId':selectedRoles[roleIndex].roleId, 
+				        'departmentOid': selectedRoles[roleIndex].departmentOid
+				      });
 		}
-		return roleIds;
+		return roles;
 	};
 
 	/**

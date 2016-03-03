@@ -40,6 +40,7 @@ import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserAuthorizationStatusDTO;
+import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailRoleDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailsDTO;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,9 +95,9 @@ public class UserManagerDetailResource
 
       try
       {
-         List<String> roleIds = populateRoleIds(postData);
+         List<UserManagerDetailRoleDTO> roles = populateRoles(postData);
 
-         UserAuthorizationStatusDTO userAuthorizationStatus = userManagerDetailService.removeRoleFromUser(roleIds,
+         UserAuthorizationStatusDTO userAuthorizationStatus = userManagerDetailService.removeRoleFromUser(roles,
                userOid);
          return Response.ok(userAuthorizationStatus.toJson(), MediaType.APPLICATION_JSON).build();
       }
@@ -120,9 +121,9 @@ public class UserManagerDetailResource
 
       try
       {
-         List<String> roleIds = populateRoleIds(postData);
+         List<UserManagerDetailRoleDTO> roles = populateRoles(postData);
 
-         UserAuthorizationStatusDTO userAuthorizationStatus = userManagerDetailService.addRoleToUser(roleIds, userOid);
+         UserAuthorizationStatusDTO userAuthorizationStatus = userManagerDetailService.addRoleToUser(roles, userOid);
          return Response.ok(userAuthorizationStatus.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
@@ -140,22 +141,22 @@ public class UserManagerDetailResource
     * @return
     */
 
-   private List<String> populateRoleIds(String postData)
+   private List<UserManagerDetailRoleDTO> populateRoles(String postData)
    {
       JsonMarshaller jsonIo = new JsonMarshaller();
       JsonObject postJSON = jsonIo.readJsonObject(postData);
 
-      JsonArray roleIdsArray = postJSON.getAsJsonArray("roleIds");
-      Type type = new TypeToken<List<String>>()
+      JsonArray rolesArray = postJSON.getAsJsonArray("roles");
+      Type type = new TypeToken<List<UserManagerDetailRoleDTO>>()
       {
       }.getType();
-      List<String> roleIds = new ArrayList<String>();
-      if (null != roleIdsArray)
+      List<UserManagerDetailRoleDTO> roles = new ArrayList<UserManagerDetailRoleDTO>();
+      if (null != rolesArray)
       {
-         roleIds = new Gson().fromJson(roleIdsArray.toString(), type);
+         roles = new Gson().fromJson(rolesArray.toString(), type);
 
       }
-      return roleIds;
+      return roles;
    }
 
    /**

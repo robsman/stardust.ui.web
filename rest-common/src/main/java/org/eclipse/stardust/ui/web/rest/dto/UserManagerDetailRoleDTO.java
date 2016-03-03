@@ -28,9 +28,10 @@ public class UserManagerDetailRoleDTO extends AbstractDTO
 
    public String itemsPerUser;
 
+   public long departmentOid;
 
    public UserManagerDetailRoleDTO(String roleName, String roleId, long itemsCount, long roleAccount,
-         long itemsPerUser)
+         long itemsPerUser, long departmentOid)
    {
       super();
       this.name = roleName;
@@ -38,5 +39,13 @@ public class UserManagerDetailRoleDTO extends AbstractDTO
       this.items = Long.toString(itemsCount);
       this.account = Long.toString(roleAccount);
       this.itemsPerUser = Long.toString(itemsPerUser);
+      this.departmentOid = departmentOid;
    }
+
+   public UserManagerDetailRoleDTO()
+   {
+      super();
+   }
+   
+ 
 }

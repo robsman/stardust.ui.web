@@ -29,6 +29,7 @@ import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
@@ -123,8 +124,12 @@ public class UserManagerDetailUtils
       {
          for (RoleItem roleItem : roles)
          {
+            long departmentOid = -1;
+            if(roleItem.getRole().getDepartment() != null){
+               departmentOid = roleItem.getRole().getDepartment().getOID(); 
+            }
             roleList.add(new UserManagerDetailRoleDTO(roleItem.getRoleName(), roleItem.getRole().getId(), roleItem
-                  .getWorklistCount(), roleItem.getUserCount(), roleItem.getEntriesPerUser()));
+                  .getWorklistCount(), roleItem.getUserCount(), roleItem.getEntriesPerUser(), departmentOid));
          }
       }
       return roleList;
@@ -161,16 +166,16 @@ public class UserManagerDetailUtils
    /**
     * Adds selected roles to User
     */
-   public boolean addRoleToUser(List<String> roleIds, String userOid)
+   public boolean addRoleToUser(List<UserManagerDetailRoleDTO> roles2, String userOid)
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       boolean userAuthorizationChanged = false;
       List<RoleItem> roles = CollectionUtils.newArrayList();
       UserItem user = facade.getUserItem(Long.parseLong(userOid));
 
-      for (String roleId : roleIds)
+      for (UserManagerDetailRoleDTO role : roles2)
       {
-         roles.add(getRoleItem(roleId, facade));
+         roles.add(getRoleItem(role, facade));
       }
 
       // If logged-in user has at least 1 non-team lead grant, then all participants
@@ -235,29 +240,34 @@ public class UserManagerDetailUtils
     * @param departmentOid
     * @return
     */
-   private RoleItem getRoleItem(String roleId, WorkflowFacade facade)
+   private RoleItem getRoleItem(UserManagerDetailRoleDTO role, WorkflowFacade facade)
    {
-      ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(roleId, null);
-      RoleItem roleItem = facade.getRoleItem(participant);
+      ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(role.roleId, null);
+      Department department = null;
+      if(role.departmentOid != -1){
+         department = facade.getAdministrationService().getDepartment(role.departmentOid);  
+      }   
+      QualifiedModelParticipantInfo modelParticipantInfo =(QualifiedModelParticipantInfo)( (department == null) ? participant : department.getScopedParticipant(participant)); 
+      RoleItem roleItem = facade.getRoleItem(modelParticipantInfo);
       return roleItem;
    }
 
    /**
     * 
-    * @param roleIds
+    * @param roles2
     * @param userOid
     * @return
     */
-   public boolean removeRoleFromUser(List<String> roleIds, String userOid)
+   public boolean removeRoleFromUser(List<UserManagerDetailRoleDTO> roles2, String userOid)
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       boolean userAuthorizationChanged = false;
       List<RoleItem> roles = CollectionUtils.newArrayList();
       UserItem user = facade.getUserItem(Long.parseLong(userOid));
 
-      for (String roleId : roleIds)
+      for (UserManagerDetailRoleDTO role : roles2)
       {
-         roles.add(getRoleItem(roleId, facade));
+         roles.add(getRoleItem(role, facade));
 
       }
 
