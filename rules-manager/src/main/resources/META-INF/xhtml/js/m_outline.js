@@ -611,44 +611,46 @@ define(
 											m_ruleSetCommandDispatcher.commandStack().purgeStacks();
 											outline.lastSavedAt=new Date();
 											hasUnsavedModifications = false;
-											jQuery.each(data,function(){
-												var rsRef;
-												if(this.operation==="DELETE"){
-													if(this.success===true){
-														RuleSet.deleteRuleSet(this.uuid);
+											if(jQuery.isArray(data)){
+												jQuery.each(data,function(){
+													var rsRef;
+													if(this.operation==="DELETE"){
+														if(this.success===true){
+															RuleSet.deleteRuleSet(this.uuid);
+														}
+														else{
+															rsRef=RuleSet.getRuleSets();
+															if(rsRef.hasOwnProperty(this.uuid)){
+																rsRef=rsRef[this.uuid];
+																rsRef.state.isDeleted=false;
+																/*push our node back into the tree*/
+																createRuleSetNode(this);
+																failures.push(this);
+															}
+														}
 													}
-													else{
+													else if(this.operation==="SAVE"){
 														rsRef=RuleSet.getRuleSets();
 														if(rsRef.hasOwnProperty(this.uuid)){
 															rsRef=rsRef[this.uuid];
-															rsRef.state.isDeleted=false;
-															/*push our node back into the tree*/
-															createRuleSetNode(this);
-															failures.push(this);
+															if(this.success===true){
+																rsRef.state.isPersisted=true;
+																rsRef.state.isDirty=false;
+															}
+															else{
+																failures.push(this);
+															}
 														}
 													}
-												}
-												else if(this.operation==="SAVE"){
-													rsRef=RuleSet.getRuleSets();
-													if(rsRef.hasOwnProperty(this.uuid)){
-														rsRef=rsRef[this.uuid];
-														if(this.success===true){
-															rsRef.state.isPersisted=true;
-															rsRef.state.isDirty=false;
-														}
-														else{
-															failures.push(this);
-														}
-													}
-												}
-											});
+												});
+											}
 
 											window.parent.EventHub.events.publish("CONTEXT_UPDATED");
 
 											console.log("FAILURES...");
 											console.log(failures);
 										},
-										failure : function(data) {
+										error : function(data) {
 											JQuery.each(refRsArray,function(){
 												if(this.state.isDeleted===true){
 													this.state.isDeleted===false;
