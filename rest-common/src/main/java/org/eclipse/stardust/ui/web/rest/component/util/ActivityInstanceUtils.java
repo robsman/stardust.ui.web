@@ -75,9 +75,9 @@ import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ColumnDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
-import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.OpenActivitiesDynamicUserObjectDTO;
 import org.eclipse.stardust.ui.web.rest.dto.PathDTO;
 import org.eclipse.stardust.ui.web.rest.dto.PendingActivitiesStatisticsDTO;
@@ -95,6 +95,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.springframework.stereotype.Component;
 
@@ -639,7 +640,7 @@ public class ActivityInstanceUtils
                .getInstance().getString("views.common.notActivatable")));
          return notification;
       }
-      ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.activate(ai);
+      ai = serviceFactoryUtils.getWorkflowService().activate(ai.getOID());
       notification.addSuccess(new NotificationDTO(activityOID, ai.getActivity().getName(), null));
       return notification;
    }
