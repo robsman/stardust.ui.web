@@ -25,5 +25,8 @@ public class CompletedActivitiesStatisticsDTO extends AbstractDTO
    public UserDTO teamMember;
 
    public Map<String,CompletedActivityPerformanceDTO> statisticsByProcess;
+   
+   //sdDataTable doesn't support sorting on cascaded object hence adding below variable to support sort. 
+   public String displayName;
 
 }

@@ -288,6 +288,7 @@ public class ActivityStatisticsUtils
             userDTO.displayName = I18nUtils.getUserLabel(tl.user.getUser()) + " (" + tl.teamName + ")";
             resultDTO.teamMember = userDTO;
             resultDTO.statisticsByProcess = statsByProcess;
+            resultDTO.displayName =  userDTO.displayName;
             resultList.add(resultDTO);
          }
       }
@@ -326,6 +327,7 @@ public class ActivityStatisticsUtils
          UserDTO userDTO = DTOBuilder.build(userItem.getUser(), UserDTO.class);
          userDTO.displayName = UserUtils.getUserDisplayLabel(userItem.getUser());
          activityStatsDTO.teamMember = userDTO;
+         activityStatsDTO.displayName = userDTO.displayName;
          CompletedActivityPerformanceDTO performanceStatsDTO = null;
 
          Map<String, CompletedActivityPerformanceDTO> processStats = new HashMap<String, CompletedActivityPerformanceDTO>();
