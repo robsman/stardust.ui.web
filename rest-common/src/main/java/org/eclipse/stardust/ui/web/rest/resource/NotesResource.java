@@ -13,27 +13,31 @@ package org.eclipse.stardust.ui.web.rest.resource;
 
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.service.NotesService;
-import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
+import org.eclipse.stardust.ui.web.rest.dto.NotesResultDTO;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 
 import com.google.gson.JsonObject;
 
 /**
- * 
  * @author Abhay.Thappan
+ * @author Yogesh.Manware
  *
  */
 @Path("/notes")
@@ -45,49 +49,66 @@ public class NotesResource
    @Resource
    private NotesService notesService;
 
+   @Resource
+   private RestCommonClientMessages restCommonClientMessages;
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/{processInstanceOid}")
-   public Response getNotes(@PathParam("processInstanceOid") long processInstanceOid)
+   @RequestDescription("*asc* specifies an order of notes returned from server, by default it is false")
+   @ResponseDescription("json of QueryResultDTO containing NoteDTO - Process Instance level notes")
+   public Response getNotes(@PathParam("processInstanceOid") long processInstanceOid,
+         @QueryParam("asc") @DefaultValue("false") boolean asc)
    {
-      try
-      {
-         QueryResultDTO resultDTO = notesService.getNotes(processInstanceOid);
-         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
-      }
-      catch (ObjectNotFoundException onfe)
-      {
-         return Response.status(Status.NOT_FOUND).build();
-      }
-      catch (Exception e)
-      {
-         trace.error("", e);
-         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-      }
+      NotesResultDTO resultDTO = notesService.getProcessNotes(processInstanceOid, asc);
+      return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
    }
-   
+
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/save")
-   public Response saveNote(String postData){
-      try
-      {
-         
-         JsonMarshaller jsonIo = new JsonMarshaller();
-         JsonObject postJSON = jsonIo.readJsonObject(postData);
+   @RequestDescription("Request should contains note text and either processInstanceOid or activityInstanceOid. Note that activity level and process level notes are saved by this end point")
+   public Response saveNote(String postData) throws Exception
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
 
-         long processInstanceOid = postJSON.getAsJsonPrimitive("processInstanceOid").getAsLong();
-         String noteText = postJSON.getAsJsonPrimitive("noteText").getAsString();
-         
-         notesService.saveNote(noteText, processInstanceOid);
-         return Response.ok(null, MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
+      long processInstanceOid = -1;
+      if (postJSON.getAsJsonPrimitive("processInstanceOid") != null)
       {
-         trace.error(e, e);
-         return Response.serverError().build();
+         processInstanceOid = postJSON.getAsJsonPrimitive("processInstanceOid").getAsLong();
       }
+
+      long activityInstanceOid = -1;
+
+      if (postJSON.getAsJsonPrimitive("activityInstanceOid") != null)
+      {
+         activityInstanceOid = postJSON.getAsJsonPrimitive("activityInstanceOid").getAsLong();
+      }
+
+      String noteText = postJSON.getAsJsonPrimitive("noteText").getAsString();
+      if (processInstanceOid > 0)
+      {
+         notesService.saveProcessNotes(processInstanceOid, noteText);
+      }
+      else
+      {
+         notesService.saveActivityNotes(activityInstanceOid, noteText);
+      }
+
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/activity/{activityInstanceOid}")
+   @ResponseDescription("Returns Activity Instance level notes")
+   public Response getActivityNotes(@PathParam("activityInstanceOid") long activityInstanceOid,
+         @QueryParam("asc") @DefaultValue("false") boolean asc)
+   {
+      NotesResultDTO resultDTO = notesService.getActivityNotes(activityInstanceOid, asc);
+      return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
    }
 }

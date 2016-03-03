@@ -1,0 +1,239 @@
+<style type="text/css" media="all">
+.notes-panel {
+	padding: 1px 1px 8px 5px;
+	width: 100%;
+}
+
+.notes-panel .notes-table {
+	background-color: white;
+	width: 100%;
+}
+
+.notes-panel .notes-list-table {
+	border-collapse: separate
+}
+
+.notes-panel td {
+	vertical-align: top;
+}
+
+.notes-panel .toolbar {
+	background-color: #C1C1C1 !important;
+	width: 10%;
+}
+
+.notes-panel .notesContent {
+	width: 90%;
+}
+
+.notes-panel .noteUser {
+	font-weight: bolder;
+}
+
+.notes-panel .noteDate {
+	opacity: 0.7;
+	font-weight: bolder;
+}
+
+.notes-panel .noteText {
+	
+}
+
+.notes-panel textarea {
+	float: left;
+	border-style: none !important;
+	width: 88%;
+	height: 30px;
+	resize: vertical;
+}
+
+.notes-panel .input-button {
+	width: 10%;
+	float: right;
+	margin-right: 5px;
+}
+
+.notes-panel img {
+	margin-top: 3px;
+}
+
+.notes-panel table {
+	border-collapse: collapse;
+}
+
+.notes-panel .border {
+	border-top: 4px solid #C1C1C1;
+	border-bottom: 4px solid #C1C1C1;
+}
+</style>
+
+<div style="width: 25px; float: left">
+	<a href='#' class='heading'
+		style='cursor: pointer; text-decoration: none;'
+		ng-click="notesCtrl.expand()"><i title="Expand Notes Panel"
+		ng-hide='notesCtrl.propertiesPageVisible'
+		class='pi pi-trigger-expanded pi-lg pi-rotate-90'></i> </a>
+</div>
+
+<div ng-show="notesCtrl.propertiesPageVisible" class="notes-panel">
+	<table class="notes-table">
+		<tbody>
+			<tr>
+				<td class="toolbar">
+					<table>
+						<tbody>
+							<tr>
+								<td><a href='#' class='heading'
+									style='cursor: pointer; text-decoration: none;'
+									ng-click="notesCtrl.collapse()"> <i title="Collapse"
+										class='pi pi-trigger-collapsed pi-lg'
+										style='float: left; margin-left: 2px;'></i>
+								</a></td>
+							</tr>
+							<tr ng-show="notesCtrl.showProcessNotes"
+								ng-click="notesCtrl.openNotesView()">
+								<td style="text-align: center"><a href='#'
+									title="Open Notes View" class='heading'
+									style='cursor: pointer; text-decoration: none;'> <i
+										class='iceOutTxt pi pi-notes pi-lg'></i>
+								</a></td>
+							</tr>
+							<tr ng-show="notesCtrl.showProcessNotes"
+								ng-click="notesCtrl.openNotesView()">
+								<td style="text-align: center"><a title="Open Notes View"
+									href='#'> <span> {{notesCtrl.getTotalCount()}} </span></a></td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+				<td class="notesContent">
+					<table>
+						<tr>
+							<td>
+								<div>
+									<h1>Notes</h1>
+								</div>
+							</td>
+						</tr>
+						<tr ng-show="notesCtrl.showProcessNotes">
+							<td>
+								<table>
+									<tr>
+										<td>
+											<table cellspacing="2">
+												<tbody>
+													<tr>
+														<td><h2>{{notesCtrl.processNotes.label}}</h2></td>
+													</tr>
+													<tr>
+														<td>
+															<table cellspacing="7" class="notes-list-table">
+																<tr ng-repeat="note in notesCtrl.processNotes.list">
+																	<td><img
+																		ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+																		ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
+																		width="24px" height="24px" /> <i
+																		class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
+																		ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+																		style="margin-top: 3px; margin-left: 3px;"></i></td>
+																	<td>
+																		<table>
+																			<tr>
+																				<td><span class="noteUser">{{note.creatorName}}</span></td>
+																			</tr>
+																			<tr>
+																				<td><span class="noteDate">{{note.created
+																						| sdDateTimeFilter}}</span></td>
+																			</tr>
+																			<tr>
+																				<td><span class="noteText">{{note.note}}</span>
+																				</td>
+																			</tr>
+																		</table>
+																	</td>
+																</tr>
+															</table>
+													</td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+									<tr class="border">
+										<td><textarea type="text"
+												ng-model="notesCtrl.processNote"
+												placeholder="Add a Note here ...">
+                       							</textarea> <a href='#' class='heading'
+											style='cursor: pointer; text-decoration: none;'
+											ng-click="notesCtrl.addProcessNotes()"> <i title="Add"
+												ng-show='notesCtrl.propertiesPageVisible'
+												class='pi pi-expand-all pi-lg' style='margin-left: 3px;'></i>
+										</a></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr ng-show="notesCtrl.showActivityNotes">
+							<td>
+								<table>
+									<tr>
+										<td>
+											<table cellspacing="2">
+												<tbody>
+													<tr>
+														<td><h2>{{notesCtrl.activityNotes.label}}</h2></td>
+													</tr>
+													<tr>
+														<td>
+															<table cellspacing="7" class="notes-list-table">
+																<tr ng-repeat="note in notesCtrl.activityNotes.list">
+																	<td><img
+																		ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+																		ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
+																		width="24px" height="24px" /> <i
+																		class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
+																		ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+																		style="margin-top: 3px; margin-left: 3px;"></i></td>
+																	<td>
+																		<table>
+																			<tr>
+																				<td><span class="noteUser">{{note.creatorName}}</span></td>
+																			</tr>
+																			<tr>
+																				<td><span class="noteDate">{{note.created
+																						| sdDateTimeFilter}}</span></td>
+																			</tr>
+																			<tr>
+																				<td><span class="noteText">{{note.note}}</span>
+																				</td>
+																			</tr>
+																		</table>
+																	</td>
+																</tr>
+															</table>
+													</td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+									<tr class="border">
+										<td><textarea type="text"
+												ng-model="notesCtrl.activityNote"
+												placeholder="Add a Note here ...">
+                        						</textarea> <a href='#' class='heading'
+											style='cursor: pointer; text-decoration: none;'
+											ng-click="notesCtrl.addActivityNotes()"> <i title="Add"
+												ng-show='notesCtrl.propertiesPageVisible'
+												class='pi pi-expand-all pi-lg' style='margin-left: 3px;'></i>
+										</a></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

@@ -33,13 +33,12 @@ public class NoteDTO extends AbstractDTO
    public String scopeType;
 
    public long userOID;
-   
+
    public String avatarImageURI;
 
    public NoteDTO(Note note)
    {
-      creatorName = UserUtils.getUserDisplayLabel(note.getUser()); // TODO Auto-generated
-                                                                  // constructor stub
+      creatorName = UserUtils.getUserDisplayLabel(note.getUser());
       created = note.getTimestamp().getTime();
       this.note = note.getText();
       userOID = note.getUser().getOID();

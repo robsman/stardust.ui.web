@@ -13,25 +13,38 @@
  */
 package org.eclipse.stardust.ui.web.rest.component.service;
 
-import javax.annotation.Resource;
+import org.eclipse.stardust.ui.web.rest.dto.NotesResultDTO;
 
-import org.eclipse.stardust.ui.web.rest.component.util.NotesUtils;
-import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
-import org.springframework.stereotype.Component;
-
-@Component
-public class NotesService
+/**
+ * @author Yogesh.Manware
+ * @version $Revision: $
+ */
+public interface NotesService
 {
-   @Resource
-   private NotesUtils notesUtils;
+   /**
+    * @param processInstanceOid
+    * @param asc
+    * @return
+    */
+   NotesResultDTO getProcessNotes(long processInstanceOid, boolean asc);
 
-   public QueryResultDTO getNotes(long processInstanceOid)
-   {
-      return notesUtils.getNotes(processInstanceOid);
-   }
-   
-   public void saveNote(String noteText, long processInstanceOid)throws Exception
-   {
-      notesUtils.saveNote(noteText, processInstanceOid);
-   }
+   /**
+    * @param processInstanceOid
+    * @param noteText
+    */
+   void saveProcessNotes(long processInstanceOid, String noteText);
+
+   /**
+    * @param activityInstanceOid
+    * @param asc
+    * @return
+    */
+   NotesResultDTO getActivityNotes(long activityInstanceOid, boolean asc);
+
+   /**
+    * @param activityInstanceOid
+    * @param noteText
+    */
+   void saveActivityNotes(long activityInstanceOid, String noteText);
+
 }

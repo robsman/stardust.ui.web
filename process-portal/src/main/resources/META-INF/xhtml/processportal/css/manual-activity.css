@@ -330,3 +330,28 @@ input[type="checkbox"].panel-input-highlight {
 .hideIfDesktop {
 	display: none;
 }
+
+/* checklist activity panel  start*/
+.panel-expanded {
+  width: 95%;
+  float: left
+}
+
+.panel-restricted {
+  width: 67%;
+  float: left
+}
+
+.notes-panel-expanded {
+  width: 30%;
+  float: right;
+  max-width: 350px;
+  min-width: 200px;
+}
+
+.notes-panel-collapsed {
+  width: 3%;
+  float: right;
+  margin-right: 3px;
+}
+/* checklist activity panel  end*/
