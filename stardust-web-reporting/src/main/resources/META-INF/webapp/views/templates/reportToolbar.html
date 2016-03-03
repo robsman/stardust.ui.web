@@ -4,7 +4,21 @@
 		cellspacing="0">
 		<tbody>
 			<tr>
-				<td style="width: 99%"></td>
+				<td style="width: 99%">
+					<div ng-show="showSaveMessage">
+					<table>
+						<tr>
+							<td style="width: 20px"></td>
+							<td>
+								<i class="pi pi-allow pi-lg"> </i>
+							</td>
+							<td>
+								{{saveMessage}}							
+							</td>
+						</tr>
+					</table>
+					</div>
+				</td>
 				<td class="toolbarGroupRight"><table cellpadding="0"
 						cellspacing="0">
 						<tbody>

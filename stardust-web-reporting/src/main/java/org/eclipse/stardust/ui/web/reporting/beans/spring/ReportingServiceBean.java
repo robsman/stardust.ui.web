@@ -953,6 +953,11 @@ public class ReportingServiceBean
          folder = findOrCreateFolder(basePath);
 
          saveReportDocument(reportInstanceJson, folder, name + "-" + getTimeStampString() + REPORT_INSTANCE_EXT);
+         
+         JsonObject tempRreportJson = GsonUtils.extractObject(reportInstanceJson, "definition");
+         String tempName = GsonUtils.extractString(tempRreportJson, "name");
+         tempName = name + "-" + getTimeStampString() + REPORT_INSTANCE_EXT;
+         tempRreportJson.addProperty("instanceName", tempName);
 
          return reportInstanceJson;
       }

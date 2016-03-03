@@ -1490,6 +1490,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
          * 
          */
         ReportRenderingController.prototype.saveReportInstance = function(report, parameters) {
+        	var deferred = jQuery.Deferred();
         	var self = this;
         	if (report) {
 				this.report = report;
@@ -1504,16 +1505,19 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
                 .done(
                       function(data) {
                     	// save report instance along with report definition
-                    		self.saveReportInstance_(self.report, data, null);
+                    		self.saveReportInstance_(self.report, data, null).then(function(data) {
+                    			deferred.resolve(data);
+                    		});
                       }).fail(function(data) {
-                
+                    	  deferred.reject(data);
                       });
-				return;
 			}else{
 				if (parent.iPopupDialog) {
 					parent.iPopupDialog.openPopup(self.prepareSaveReportInstance());
+					deferred.reject(data);
 				}
 			}
+        	return deferred.promise();
 		};
         
 		/**

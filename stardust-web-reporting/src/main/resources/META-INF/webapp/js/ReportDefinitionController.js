@@ -80,6 +80,8 @@ define(
 					//set toolbar
 					this.showSaveInstanceBtn = true;
 					this.showSaveBtn = true;
+					this.showSaveMessage = false;
+					this.saveMessage = "Some text";
 					
 					this.renderingController = renderingController;
 					this.schedulingController = SchedulingController.create();
@@ -1247,6 +1249,15 @@ define(
                                        self.report.reportUID, self.report.name, self.path);
                            }
                            self.showFavoriteBtn = true;
+                           
+                           self.showSaveMessage = true;
+                           self.saveMessage = I18NUtils.getProperty('reporting.definitionView.saveReport.message').replace("{0}", self.report.name);
+                           setTimeout(function () {
+                               self.showSaveMessage = false;
+                               self.updateView();
+                           }, 5000);
+                           
+                           
                            self.updateView();
                         });
                document.body.style.cursor = "default";
@@ -2000,7 +2011,15 @@ define(
              * 
              */
             ReportDefinitionController.prototype.saveReportInstance = function() {
-            	this.renderingController.saveReportInstance(self.report, self.parameters);
+            	var self = this;
+            	self.renderingController.saveReportInstance(self.report, self.parameters).then(function(data) {
+            		self.showSaveMessage = true;
+                    self.saveMessage = I18NUtils.getProperty('reporting.definitionView.saveReport.message').replace("{0}", data.definition.instanceName);
+                    setTimeout(function () {
+                        self.showSaveMessage = false;
+                        self.updateView();
+                    }, 5000);
+            	});
     		};
     		
     		/**
