@@ -95,7 +95,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.springframework.stereotype.Component;
 
