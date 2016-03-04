@@ -9,7 +9,9 @@ angular.module('bpm-ui').constant('sgConfig', {
 	    "enabled": true,
 	    "mode": "click",
 	    "position": "left",
-	    "width": "350"
+	    "width": 350,
+	    "maximumWidth": 350,
+	    "minimumWidth": 350
 	},
 	"menuApi":{
       "searchEnabled": false,
