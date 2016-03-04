@@ -46,7 +46,7 @@ public class ProcessInstanceDTO extends AbstractDTO
 
    public Map<String, DescriptorDTO> descriptorValues;
 
-   public Object processDescriptorsList;
+   public Map<String, DescriptorDTO> processDescriptorsValues;
 
    public Long endTime;
 

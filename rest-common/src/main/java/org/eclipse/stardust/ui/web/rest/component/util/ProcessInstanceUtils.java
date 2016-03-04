@@ -29,6 +29,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
+import org.eclipse.stardust.engine.api.dto.DataPathDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
@@ -1807,7 +1808,9 @@ public class ProcessInstanceUtils
 
       // Update Document Descriptors for process
       dto.descriptorValues = getDescriptorValues(pi, processDefinition);
-      dto.processDescriptorsList = getProcessDescriptor(pi, processDefinition);
+      //For descriptor column display values
+      dto.processDescriptorsValues = getProcessDescriptorValues(processDefinition, ((ProcessInstanceDetails) pi).getDescriptors());
+     
       dto.supportsProcessAttachments = processDefinitionUtils.supportsProcessAttachments(processDefinition);
 
       CommonDescriptorUtils.updateProcessDocumentDescriptors(
@@ -1844,6 +1847,21 @@ public class ProcessInstanceUtils
       dto.benchmark = getProcessBenchmark(pi);
 
       return dto;
+   }
+
+   private Map<String, DescriptorDTO> getProcessDescriptorValues(ProcessDefinition processDefinition,
+         Map<String, Object> descriptors)
+   {
+      Map<String, String> descriptorValues = CommonDescriptorUtils.getProcessDescriptorValues(processDefinition,
+            descriptors);
+      Map<String, DescriptorDTO> processDescriptorValues = new HashMap<String, DescriptorDTO>();
+      for (String key : descriptorValues.keySet())
+      {
+         DescriptorDTO descriptorDTO = new DescriptorDTO();
+         descriptorDTO.value = descriptorValues.get(key);
+         processDescriptorValues.put(key, descriptorDTO);
+      }
+      return processDescriptorValues;
    }
 
    /**

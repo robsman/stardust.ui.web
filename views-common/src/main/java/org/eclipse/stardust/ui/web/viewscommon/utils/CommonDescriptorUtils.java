@@ -1238,4 +1238,29 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
 
       return refModel;
    }
+   /**
+    * This method will be used to get the values for the different descriptor column
+    * @param processDefinition
+    * @param descriptors
+    * @return
+    */
+   public static Map<String, String> getProcessDescriptorValues(ProcessDefinition processDefinition,
+         Map<String, Object> descriptors)
+   {
+      Map<String, DataPathDetails> datapathMap = getDatapathMap(processDefinition);
+      Map<String, String> processDescriptorValues = new HashMap<String, String>();
+      for (String key : descriptors.keySet())
+      {
+         Object descriptorValue = descriptors.get(key);
+         if (!isEmpty(descriptorValue))
+         {
+            DataPathDetails dataPathDetails = datapathMap.get(key);
+            GenericDataMapping mapping = new GenericDataMapping(dataPathDetails);
+            DataMappingWrapper dmWrapper = new DataMappingWrapper(mapping, null, false);
+            processDescriptorValues.put(key, formatDescriptorValue(descriptors.get(key), dmWrapper.getType()));
+
+         }
+      }
+      return processDescriptorValues;
+   }
 }

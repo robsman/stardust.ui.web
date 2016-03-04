@@ -50,5 +50,10 @@ public class DescriptorDTO extends AbstractDTO{
       this.linkText = linkText;
   }
 
+   public DescriptorDTO()
+   {
+      super();
+   }
+
 
 }
