@@ -158,6 +158,8 @@ public class ActivityTableUtils
    public static enum MODE {
       ACTIVITY_TABLE, WORKLIST;
    }
+   
+   private static final String ACTIVITY_STRING_SEPRATOR = "#|#";
 
    private static final Logger trace = LogManager.getLogger(ActivityTableUtils.class);
    
@@ -314,14 +316,19 @@ public class ActivityTableUtils
          if (!CollectionUtils.isEmpty(filterDTO.activityName.activities))
          {
             FilterOrTerm or = filter.addOrTerm();
-            if (!filterDTO.activityName.activities.contains("-1"))
-            {
-               for (String activity : filterDTO.activityName.activities)
+            
+               for (String activityUniqueString : filterDTO.activityName.activities)
                {
+                  //Using a separator as DTO builder doesn't support List inside another List.
+                  if(activityUniqueString.contains(ACTIVITY_STRING_SEPRATOR) && !activityUniqueString.contains("-1"))
+                  {
+                     String pQId = activityUniqueString.substring(0, activityUniqueString.indexOf(ACTIVITY_STRING_SEPRATOR));
+                     String aQId = activityUniqueString.substring(activityUniqueString.indexOf(ACTIVITY_STRING_SEPRATOR) + 3, activityUniqueString.length());
 
-                  or.add(ActivityFilter.forAnyProcess(activity));
-               }
+                     or.add(ActivityFilter.forAnyProcess(aQId));
+                  }
             }
+            
          }
 
          if (!CollectionUtils.isEmpty(filterDTO.activityName.processes))

@@ -22,7 +22,7 @@
     */
    function ActivityFilter( $filter, $parse, sdUtilService, sdLoggerService) {
        trace = sdLoggerService.getLogger('bpm-common.sdProcessActivityTableFilter');
-     
+
        return {
          restrict : 'A',
          templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/tableFilters/processActivityTableFilter.html',
@@ -35,18 +35,24 @@
                var displayText = [];
 
                if (ctrl.isActivityFilter()) {
-                  angular.forEach(scope.filterData.activities, function(value) {
-                     displayText.push(ctrl.idToName[value]);
-                  });
-               }
-               else {
-                  if ((scope.filterData.processes) < 1) {
-                	  return false; 
-                  }       
 
-                  angular.forEach(scope.filterData.processes, function(value) {
-                     displayText.push(ctrl.idToName[value]);
-                  });
+                   if (scope.filterData.activities.length === 0) {
+                       return false;
+                   }
+                   angular.forEach(scope.filterData.activities, function(value) {
+                       var text = (value === "-1") ? DEFAULT_ACTIVITY.name : ctrl.idToName[value];
+                       displayText.push(text);
+
+                   });
+               } else {
+
+                   if (scope.filterData.processes.length === 0) {
+                       return false;
+                   }
+                   angular.forEach(scope.filterData.processes, function(value) {
+                       var text = (value === "-1") ? DEFAULT_PROCESS.name : ctrl.idToName[value];
+                       displayText.push(text);
+                   });
                }
                var title = displayText.join(',');
                scope.setFilterTitle(sdUtilService.truncateTitle(title));
@@ -55,6 +61,8 @@
          }
       };
    }
+
+   var UNIQUE_ID_SEPRATOR = "#|#";
 
    var DEFAULT_ACTIVITY = {
       "id" : "-1",
@@ -65,7 +73,8 @@
       "implementationTypeId" : "Manual",
       "implementationTypeName" : "Manual",
       "auxillary" : false,
-      "process" : "All processes"
+      "process" : "All processes",
+      "uniqueId" : "-1"
    };
 
    var DEFAULT_PROCESS = {
@@ -103,20 +112,20 @@
       });
 
       /**
-       * 
+       *
        */
       this.loadAllActivities = function() {
          this.getAllActivities($filter);
       };
       /**
-       * 
+       *
        */
       this.isActivityFilter = function() {
          return self.filterType == FILTER_TYPE_ACTIVITY;
       };
 
       /***
-       * 
+       *
        */
       this.updateProcess = function() {
          if (self.isActivityFilter()) {
@@ -125,7 +134,7 @@
       };
 
       /**
-       * 
+       *
        */
       this.loadValues = function() {
          angular.forEach(self.allAccessibleProcesses, function(data) {
@@ -133,12 +142,12 @@
             var duplicate =  $filter('filter')(self.processes, {
                id : data.id
             }, true);
-          
+
             if (duplicate.length < 1) {
             	data['order'] = 1;
             	self.processes.push(data)
             }
-          
+
 
          });
 
@@ -146,7 +155,7 @@
             this.loadAllActivities();
          }
       };
-      
+
       $scope.filterCtrl = this;
    };
 
@@ -171,7 +180,7 @@
                   angular.forEach(activities, function(activity) {
                      activity['order'] = 1;
                      var found = $filter('filter')(self.activities, {
-                        name : activity.name
+                        uniqueId : activity.uniqueId
                      }, true);
                      if (found.length < 1) {
                         activity['order'] = 1;
@@ -212,16 +221,16 @@
     */
    FilterController.prototype.createIdNamePairs = function() {
       var self = this;
-      self.idToName[DEFAULT_PROCESS.id] = DEFAULT_PROCESS.name;
-      self.idToName[DEFAULT_ACTIVITY.id] = DEFAULT_ACTIVITY.name;
-      
+
       angular.forEach(self.allAccessibleProcesses, function( process) {
          self.idToName[process.id] = process.name;
          angular.forEach(process.activities, function(activity) {
-            self.idToName[activity.qualifiedId] = activity.name;
+         //Using a seprator to avoid send a array inside another array which the DTOBuilder is not able to handle.
+            activity.uniqueId = process.id + UNIQUE_ID_SEPRATOR + activity.qualifiedId;
+            self.idToName[activity.uniqueId] = activity.name;
          });
       });
-      
+
    };
 
    /*
@@ -248,10 +257,10 @@
 
 		   if (!angular.isUndefined(process.activities)) {
 			   angular.forEach(process.activities, function(activity) {
-				   
+
 				  angular.forEach(process.activities, function(activity) {
 					   var duplicate =  $filter('filter')(self.activities, {
-						   id : activity.id
+						   uniqueId : activity.uniqueId
 					   }, true);
 
 					   if (duplicate.length < 1) {
@@ -259,7 +268,7 @@
 						   self.activities.push(activity)
 					   }
 				   });
-				   
+
 			   });
 		   }
 	   });

@@ -9,12 +9,12 @@
 		<i class="pi pi-process-auxiliary pi-lg " ng-show="filterCtrl.showAuxillaryProcess"></i>
 	</button>
 </div>
-<div>	
-  <select style="height: 75px; min-width: 200px; max-width: 350px;" name="processes" ng-model="filterData.processes" multiple 
+<div>
+  <select style="height: 75px; min-width: 200px; max-width: 350px;" name="processes" ng-model="filterData.processes" multiple
           ng-change="filterCtrl.updateProcess()" ng-init="filterData.processes = filterData.processes || ['-1']">
-         <option title="{{process.name}}"  
-                 ng-repeat="process in filterCtrl.processes | filter:{'auxillary': filterCtrl.showAuxillaryProcess } : filterCtrl.auxComparator | orderBy:['order','name']" 
-                 value="{{process.id}}">{{process.name}}</option> 
+         <option title="{{process.name}}"
+                 ng-repeat="process in filterCtrl.processes | filter:{'auxillary': filterCtrl.showAuxillaryProcess } : filterCtrl.auxComparator | orderBy:['order','name']"
+                 value="{{process.id}}">{{process.name}}</option>
   </select>
 
 </div>
@@ -34,9 +34,9 @@
 		<select style="height: 75px; min-width: 200px; max-width: 350px;"
 			name="activities" ng-model="filterData.activities" multiple
 			ng-init="filterData.activities = filterData.activities || ['-1']">
-			<option title="{{activity.name}}" 
+			<option title="{{activity.name}}"
 			        ng-repeat="activity in filterCtrl.activities |filter:{'auxillary': filterCtrl.showAuxillaryActivity } : filterCtrl.auxComparator|orderBy:['order','name'] "
-			        value="{{activity.qualifiedId}}">{{activity.name}}</option>
+			        value="{{activity.uniqueId}}">{{activity.name}}</option>
 		</select>
 	</div>
 </div>
