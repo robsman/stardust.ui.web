@@ -1,4 +1,3 @@
-
 <table sd-data-table="ctrl.fvhTableApi"
 	   sda-mode="local"
 	   sda-selectable="row"
@@ -18,12 +17,15 @@
 	   <tbody>
 	   		<tr>
 	   			<td sda-field="revisionName">
-	   				<a sd-open-document-link
-	   				   sda-name="rowData.revisionName"
-	   				   sda-document-id="rowData.revisionId"
-	   				   sda-mime-type="rowData.contentType"
-	   				   href="#">
-	   				</a>
+	   				<div ng-click="ctrl.closeFileVersionHistoryDialog()">
+		   				<a sd-open-document-link
+		   				   sda-name="rowData.revisionName"
+		   				   sda-stop-event="false"
+		   				   sda-document-id="rowData.revisionId"
+		   				   sda-mime-type="rowData.contentType"
+		   				   href="#">
+		   				</a>
+	   				</div>
 	   			</td>
 	   			<td sda-field="name"></td>
 	   			<td sda-field="owner"></td>

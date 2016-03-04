@@ -573,6 +573,10 @@
 	  return template;
   };
   
+  docRepoController.prototype.closeFileVersionHistoryDialog = function(){
+    this.fileVersionHistoryDialog.close();
+  }
+
   docRepoController.prototype.openFolderSecuritySettingsDialog = function(folderItem){
 
     var that = this;

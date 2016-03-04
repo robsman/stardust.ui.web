@@ -29,7 +29,8 @@
 				name : '=sdaName',
 				mimeType : '=sdaMimeType',
 				documentId : '=sdaDocumentId',
-				params : '=sdaParams'
+				params : '=sdaParams',
+				stopEvent : '=sdaStopEvent' 
 			},
 			template : '<a href="#"  ng-click="docLinkCtrl.openDocument($event);">'
 					+ '<i ng-class="docLinkCtrl.mimeIcon" class="pi-lg spacing-right"> </i> <span ng-bind="name"></span>'
@@ -46,11 +47,19 @@
 
 		this.mimeIcon = sdMimeTypeService.getIcon($scope.mimeType);
 
+		//ZZM: default to true, if false allows event to bubble so that user can handle the click.
+		//For example, use in a dialog where clicking a dialog link opens a view and closes the dialog.
+		if(angular.isUndefined($scope.stopEvent)){
+			$scope.stopEvent = true;
+		}
+
 		/**
 		 * Declared here for accessing the $scope variable
 		 */
 		this.openDocument = function($event) {
-			sdUtilService.stopEvent($event);
+			if($scope.stopEvent === true){
+				sdUtilService.stopEvent($event);
+			}
 			this.openDocumentView($scope.documentId, sdCommonViewUtilService, $scope.params);
 		};
 
