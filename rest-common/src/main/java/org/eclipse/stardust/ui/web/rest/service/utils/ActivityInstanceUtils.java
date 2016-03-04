@@ -229,7 +229,7 @@ public class ActivityInstanceUtils
             dto.dataMappings = cache.get(cacheKey);
 
             // Get (IN_)OUT Data
-            dto.inOutData = new LinkedHashMap<String, Serializable>();
+            dto.inOutData = new LinkedHashMap<String, Object>();
             Map<String, Serializable> dataValues = getAllInDataValues(ai, context);
             for (Entry<String, Serializable> entry : dataValues.entrySet())
             {
@@ -237,7 +237,13 @@ public class ActivityInstanceUtils
                {
                   if (entry.getKey().equals(pathDto.id))
                   {
-                     dto.inOutData.put(entry.getKey(), entry.getValue());
+                	 Serializable value = entry.getValue();
+                	 // Send date as long value
+                	 if (entry.getValue() instanceof Date)
+                	 {
+                		 value = ((Date) entry.getValue()).getTime();
+                	 }
+                     dto.inOutData.put(entry.getKey(), value);
                      break;
                   }
                }
