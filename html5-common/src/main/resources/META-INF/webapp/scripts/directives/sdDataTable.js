@@ -142,6 +142,7 @@
 						'<i class="pi pi-menu-dropdown"></i>\n' +
 					'</span>'+
 					'<script id="exportAsCSV.html" type="text/ng-template">'+
+						'<div>'+
 						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' +
 							'{{i18n(\'html5-common.export-options-current-page-current-fields\')}}\n' +
 						'</a></div>\n' +
@@ -154,6 +155,7 @@
 						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: true})">' +
 							'{{i18n(\'html5-common.export-options-all-pages-all-fields\')}}\n' +
 						'</a></div>\n'+
+						'</div>'+
 					'</script>' +
 					'<script id="columnSelector.html" type="text/ng-template">\n'+
 						 '<div>'+
