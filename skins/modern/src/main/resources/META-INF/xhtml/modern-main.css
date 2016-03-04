@@ -9774,3 +9774,30 @@ img[src *='world_go.png'].nodeMenuIcon {
 }
 /*************** Sidebar - End ***************/
 
+/*************** Popover Start ***************/
+
+.popover {
+    z-index: 1020;
+    font-size: 11px;
+    border-radius: 3px;
+    color :#464646;
+    border: 1px solid #007d8a;
+}
+
+.popover-content {
+  padding: 15px;
+}
+
+.popover.top>.arrow {
+  border-top-color: #007d8a
+}
+.popover.left>.arrow {
+  border-left-color: #007d8a
+}
+.popover.bottom>.arrow {
+  border-bottom-color: #007d8a
+}
+.popover.right>.arrow {
+  border-right-color: #007d8a
+}
+/*************** Popover end ***************/
