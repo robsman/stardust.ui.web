@@ -17,7 +17,7 @@
    angular.module('bpm-common').directive( 'sdBenchmarkCategory', [ BenchmarkDirective]);
 
    /*
-    * 
+    *
     */
    function BenchmarkDirective() {
 	   return {
@@ -25,15 +25,15 @@
 		   scope : {
 			   sdaValue : '=',
 		   },
-		   template : '<i ng-if="sdaValue.color" class="pi pi-flag pi-lg" '+
-		   						'ng-style="benchmarkCtrl.flagStyle" '+
-		   						'ng-mouseenter=\'benchmarkCtrl.toolTip.show = true\' '+
-		   						'ng-mouseleave=\'benchmarkCtrl.toolTip.show = false\'> '+
-		   			  '<\/i>'+
-		   			  '<div class="popup-dlg worklist-tooltip" style="color: black" ng-show="benchmarkCtrl.toolTip.show">'+
-		   			  		'<span class="worklist-tooltip-label" ng-bind="benchmarkCtrl.i18n(\'views-common-messages.views-processTable-benchmark-tooltip-categoryLabel\')"><\/span> '+
-		   			  		': <span ng-bind="sdaValue.label"><\/span>' +
-		   			  '<\/div>',
+		   template : '<i ng-if="sdaValue.color" class="pi pi-flag pi-lg" ng-style="benchmarkCtrl.flagStyle" '+
+		   						 'sd-popover sda-template="\'benchmarkPopoverTemplate.html\'" sda-trigger="mouseenter" sda-placement="top auto" '+
+		   			      '<\/i>'+
+                  '<script id="benchmarkPopoverTemplate.html" type="text/ng-template">'+
+      		   			  '<div>'+
+      		   			  		'<span class="worklist-tooltip-label" ng-bind="benchmarkCtrl.i18n(\'views-common-messages.views-processTable-benchmark-tooltip-categoryLabel\')"><\/span> '+
+      		   			  		': <span ng-bind="sdaValue.label"><\/span>' +
+      		   			  '</div>'+
+                  '</script>',
 		   controller : [ '$scope', BenchmarkController ]
 	   };
    };
@@ -44,9 +44,9 @@
 	   this.toolTip = {
          show : false
       };
-	   
+
 	   this.flagStyle = {color : $scope.sdaValue.color};
-      
+
       this.i18n = $scope.$parent.i18n;
       $scope.benchmarkCtrl = this;
    }
