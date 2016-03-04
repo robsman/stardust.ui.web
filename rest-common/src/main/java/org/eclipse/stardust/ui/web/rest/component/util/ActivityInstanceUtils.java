@@ -553,6 +553,21 @@ public class ActivityInstanceUtils
    }
 
    /**
+    * @param instance
+    * @return
+    */
+   public String getActivityInstanceLabel(ActivityInstance instance)
+   {
+      if (null != instance)
+      {
+         StringBuilder activityLabel = new StringBuilder(getActivityLabel(instance));
+         activityLabel.append(" (").append("#").append(instance.getOID()).append(")");
+         return activityLabel.toString();
+      }
+      return "";
+   }
+   
+   /**
     * @param ai
     * @return Localized activity state name
     */

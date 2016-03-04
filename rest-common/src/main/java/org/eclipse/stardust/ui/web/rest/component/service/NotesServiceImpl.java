@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest.component.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -36,8 +37,6 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author Yogesh.Manware
@@ -118,7 +117,7 @@ public class NotesServiceImpl implements NotesService
       NotesResultDTO notesResultDTO = new NotesResultDTO();
       notesResultDTO.list = noteDTOList;
       notesResultDTO.totalCount = noteDTOList.size();
-      notesResultDTO.label = processInstanceUtils.getProcessLabel(processInstance); 
+      notesResultDTO.label = processInstanceUtils.getProcessLabel(processInstance);
       return notesResultDTO;
 
    }
@@ -207,7 +206,7 @@ public class NotesServiceImpl implements NotesService
       NotesResultDTO notesResultDTO = new NotesResultDTO();
       notesResultDTO.list = noteDTOList;
       notesResultDTO.totalCount = noteDTOList.size();
-      notesResultDTO.label = activityInstanceUtils.getActivityLabel(activityInstance);
+      notesResultDTO.label = activityInstanceUtils.getActivityInstanceLabel(activityInstance);
       return notesResultDTO;
    }
 
