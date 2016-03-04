@@ -36,7 +36,7 @@
 	             '</span>\n' +
 	        '</span>\n' +
             '<script type="text/ng-template" id="criticalityTemplate.html">'+
-	            '<div style="color: black">\n' +
+	            '<div>\n' +
     		     		'<span class="worklist-tooltip-label" ng-bind="criticalityCtrl.i18n(\'views-common-messages.processHistory-activityTable-criticalityTooltip-criticality\')"></span>: '+
     		        '<span ng-bind="criticalityCtrl.criticality.label"></span><br/>\n' +
     		     		'<span class="worklist-tooltip-label" ng-bind="criticalityCtrl.i18n(\'views-common-messages.processHistory-activityTable-criticalityTooltip-value\')"></span>: '+

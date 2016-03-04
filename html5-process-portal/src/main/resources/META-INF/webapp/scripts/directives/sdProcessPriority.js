@@ -38,9 +38,9 @@
 			   	        ' ng-options="item.value as item.label for item in sdaAvailablePriorities"></select>\n' +
 			   '</div>\n'+
 	        '<script id="priorityTemplate.html" type="text/ng-template">'+
-	  		   	   '<div style="color: black">'+
-	  		   			'<span class="worklist-tooltip-label" ng-bind="processPriorityCtrl.i18n(\'views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name\')"></span>: '+
-	  		   			'<span ng-bind="sdaPriority.label"></span>' +
+	  		   	   '<div>'+
+  	  		   			'<span class="worklist-tooltip-label" ng-bind="processPriorityCtrl.i18n(\'views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name\')"></span>: '+
+  	  		   			'<span ng-bind="sdaPriority.label"></span>' +
 	  		   	   '</div>'+
 	         '</script>',
 		   controller : [ '$scope', '$attrs', '$parse' , 'sdPriorityService', ProcessPriorityController ]

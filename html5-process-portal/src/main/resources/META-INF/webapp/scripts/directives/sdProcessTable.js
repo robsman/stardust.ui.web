@@ -109,7 +109,6 @@
 				};
 
 				this.caseMenuPopover = {
-						url : sdUtilService.getBaseUrl()  + 'plugins/html5-process-portal/scripts/directives/partials/caseMenuPopover.html',
 						visible : false
 				}
 

@@ -26,7 +26,7 @@
 			<button ng-disabled="processTableCtrl.dataTable.getSelection().length < 1"
 							title="{{i18n('views-common-messages.views-case-tooltip-menu')}}"
 							class="button-link tbl-toolbar-item tbl-tool-link" aid="PP-ProcessTable-CaseMenu"
-				   	 sd-popover sda-template="processTableCtrl.caseMenuPopover.url" sda-is-open="processTableCtrl.caseMenuPopover.visible"
+				   	 sd-popover sda-template="'caseMenuPopover.html'" sda-is-open="processTableCtrl.caseMenuPopover.visible"
 				   	 sda-placement="bottom auto">
 				 			 <i class="pi pi-case pi-lg"></i>
 	             <i class="pi pi-bottom pi-menu-dropdown pi-sm" ></i>
@@ -177,7 +177,7 @@
 						<button class="button-link tbl-tool-link" ng-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortPopoverAction"
 						    title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
 						    sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
-			                sda-placement="bottom auto"
+			                sda-placement="auto bottom-right"
 							ng-click="processTableCtrl.openAbortPopover($event, rowData); ">
 							<i class="pi pi-menu-dropdown"></i>
 						</button>
@@ -244,3 +244,29 @@
 	     sda-process-instances="processTableCtrl.processesToCreateCase" >
 	</div>
 </div>
+
+<script id="caseMenuPopover.html" type="text/ng-template">
+<div>
+	<div>
+		<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1"
+			aid="PP-ProcessTable-AttachCase"
+			ng-click="processTableCtrl.openAttachToCaseDialog(processTableCtrl.dataTable.getSelection())"
+			title="{{i18n('views-common-messages.views-attachToCase-title')}}"
+			class="button-link tbl-toolbar-item tbl-tool-link"
+			style="margin-right: 0px;">
+			{{i18n('views-common-messages.views-createCase-menubar-attachToCase')}}
+		</button>
+	</div>
+	<div>
+		<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1"
+			aid="PP-ProcessTable-CreateCase"
+			ng-click="processTableCtrl.openCreateCaseDialog(processTableCtrl.dataTable.getSelection())"
+			title="{{i18n('views-common-messages.views-createCase-title')}}"
+			class="button-link tbl-toolbar-item tbl-tool-link"
+			style="margin-right: 0px;">
+			{{i18n('views-common-messages.views-createCase-menubar-createCase')}}
+		</button>
+	</div>
+</div>
+</script>
+

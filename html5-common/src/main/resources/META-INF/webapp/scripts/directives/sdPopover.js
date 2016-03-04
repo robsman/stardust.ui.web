@@ -39,7 +39,7 @@
                  if(angular.isUndefined(tAttrs['sdaTrigger'])) {
                     tElement.attr('popover-trigger','outsideClick');
                 }
-
+                tElement.attr('popover-animation','false');
                 tElement.removeAttr('sd-popover'); // necessary to avoid infinite compile loop
                 return {
                     post: function(scope, element, attr, ctrl) {
