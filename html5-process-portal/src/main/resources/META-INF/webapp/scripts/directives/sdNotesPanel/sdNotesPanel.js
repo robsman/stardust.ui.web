@@ -94,12 +94,13 @@
   /**
    * 
    */
-  function NotesController(notesService, sdViewUtilService, $scope) {
-    var self = this;
-    self.$scope = $scope;
-    self.notesService = notesService;
-    self.sdViewUtilService = sdViewUtilService;
-    self.initialize();
+  function NotesController(notesService, sdViewUtilService, sdUtilService, sgI18nService, $scope) {
+    this.$scope = $scope;
+    this.notesService = notesService;
+    this.sdViewUtilService = sdViewUtilService;
+    this.rootUrl = sdUtilService.getBaseUrl();
+    this.sdI18n = $scope.$root.i18n;
+    this.initialize();
 
   }
 
@@ -209,7 +210,7 @@
    */
   NotesController.prototype.getUserImageURL = function(userImageURI) {
     // remove a trailing slash from url
-    var rootUrl = this.notesService.rootUrl.slice(0, this.notesService.rootUrl.length - 1);
+    var rootUrl = this.rootUrl.slice(0, this.rootUrl.length - 1);
 
     return (userImageURI.indexOf("/") > -1) ? rootUrl + userImageURI : userImageURI;
   };
@@ -250,7 +251,7 @@
   };
 
   // inject dependencies
-  NotesController.$inject = ["notesService", "sdViewUtilService", "$scope"];
+  NotesController.$inject = ["notesService", "sdViewUtilService", "sdUtilService", "sgI18nService", "$scope"];
 
   // register controller
   app.controller('notesPanelCtrl', NotesController);

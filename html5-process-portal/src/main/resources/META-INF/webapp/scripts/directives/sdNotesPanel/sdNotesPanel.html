@@ -70,7 +70,8 @@
 <div style="width: 25px; float: left">
 	<a href='#' class='heading'
 		style='cursor: pointer; text-decoration: none;'
-		ng-click="notesCtrl.expand()"><i title="Expand Notes Panel"
+		ng-click="notesCtrl.expand()"><i
+		title="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.expand')}}"
 		ng-hide='notesCtrl.propertiesPageVisible'
 		class='pi pi-trigger-expanded pi-lg pi-rotate-90'></i> </a>
 </div>
@@ -85,22 +86,31 @@
 							<tr>
 								<td><a href='#' class='heading'
 									style='cursor: pointer; text-decoration: none;'
-									ng-click="notesCtrl.collapse()"> <i title="Collapse"
+									ng-click="notesCtrl.collapse()"> <i
+										title="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.collapse')}}"
 										class='pi pi-trigger-collapsed pi-lg'
 										style='float: left; margin-left: 2px;'></i>
 								</a></td>
 							</tr>
 							<tr ng-show="notesCtrl.showProcessNotes"
 								ng-click="notesCtrl.openNotesView()">
-								<td style="text-align: center"><a href='#'
-									title="Open Notes View" class='heading'
-									style='cursor: pointer; text-decoration: none;'> <i
-										class='iceOutTxt pi pi-notes pi-lg'></i>
+								<td ng-show="notesCtrl.getTotalCount() > 0"
+									style="text-align: center"><a href='#'
+									title="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.openNotesView')}}"
+									class='heading' style='cursor: pointer; text-decoration: none;'>
+										<i class='iceOutTxt pi pi-notes pi-lg'></i>
+								</a></td>
+								<td ng-show="notesCtrl.getTotalCount() == 0"
+									style="text-align: center"><a href='#'
+									title="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.openNotesView')}}"
+									class='heading' style='cursor: pointer; text-decoration: none;'>
+										<i class='iceOutTxt pi pi-notes-empty pi-lg'></i>
 								</a></td>
 							</tr>
 							<tr ng-show="notesCtrl.showProcessNotes"
 								ng-click="notesCtrl.openNotesView()">
-								<td style="text-align: center"><a title="Open Notes View"
+								<td style="text-align: center"><a
+									title="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.openNotesView')}}"
 									href='#'> <span> {{notesCtrl.getTotalCount()}} </span></a></td>
 							</tr>
 						</tbody>
@@ -111,7 +121,7 @@
 						<tr>
 							<td>
 								<div>
-									<h1>Notes</h1>
+									<h1>{{notesCtrl.sdI18n('processportal.views.notesPanel.title')}}</h1>
 								</div>
 							</td>
 						</tr>
@@ -153,25 +163,25 @@
 																	</td>
 																</tr>
 															</table>
-													</td>
+														</td>
 													</tr>
 												</tbody>
 											</table>
 										</td>
 									</tr>
-									<tr class="border">
-										<td><textarea type="text"
-												ng-model="notesCtrl.processNote"
-												placeholder="Add a Note here ...">
-                       							</textarea> <a href='#' class='heading'
-											style='cursor: pointer; text-decoration: none;'
-											ng-click="notesCtrl.addProcessNotes()"> <i title="Add"
-												ng-show='notesCtrl.propertiesPageVisible'
-												class='pi pi-expand-all pi-lg'></i>
-										</a></td>
-									</tr>
 								</table>
 							</td>
+						</tr>
+						<tr class="border">
+							<td><textarea type="text" ng-model="notesCtrl.processNote"
+									placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addProcessNote')}}">
+                       							</textarea> <a href='#' class='heading'
+								style='cursor: pointer; text-decoration: none;'
+								ng-click="notesCtrl.addProcessNotes()"> <i
+									title="{{notesCtrl.sdI18n('processportal.views.notesPanel.header.addNote')}}"
+									ng-show='notesCtrl.propertiesPageVisible'
+									class='pi pi-expand-all pi-lg'></i>
+							</a></td>
 						</tr>
 						<tr ng-show="notesCtrl.showActivityNotes">
 							<td>
@@ -217,19 +227,19 @@
 											</table>
 										</td>
 									</tr>
-									<tr class="border">
-										<td><textarea type="text"
-												ng-model="notesCtrl.activityNote"
-												placeholder="Add a Note here ...">
-                        						</textarea> <a href='#' class='heading'
-											style='cursor: pointer; text-decoration: none;'
-											ng-click="notesCtrl.addActivityNotes()"> <i title="Add"
-												ng-show='notesCtrl.propertiesPageVisible'
-												class='pi pi-expand-all pi-lg'></i>
-										</a></td>
-									</tr>
 								</table>
 							</td>
+						</tr>
+						<tr class="border">
+							<td><textarea type="text" ng-model="notesCtrl.activityNote"
+									placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addActivityNote')}}">
+                        						</textarea> <a href='#' class='heading'
+								style='cursor: pointer; text-decoration: none;'
+								ng-click="notesCtrl.addActivityNotes()"> <i
+									title="{{notesCtrl.sdI18n('processportal.views.notesPanel.header.addNote')}}"
+									ng-show='notesCtrl.propertiesPageVisible'
+									class='pi pi-expand-all pi-lg'></i>
+							</a></td>
 						</tr>
 					</table>
 				</td>

@@ -390,15 +390,13 @@
 				return sdEnvConfigService.getBaseUrl();
 			}
 			
-			// When loaded from framework i.e index.html, location.href points
-			// to contextRoot
 			var baseURL = '';
-			if (location.href.indexOf("plugins") > -1) {
-				// If plugins encountered in the location url 
-				baseURL = location.href.substring(0, location.href
-						.indexOf("plugins"));
-			}
-			
+      if (location.href.indexOf("plugins") > -1) {
+        baseURL = location.href.substring(0, location.href.indexOf("plugins"));
+      } else if (location.href.indexOf("main.html") > -1) {
+        baseURL = location.href.substring(0, location.href.indexOf("main.html"));
+      }
+      
 			return baseURL;
 		};
 
