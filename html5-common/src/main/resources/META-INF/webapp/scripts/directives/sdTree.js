@@ -915,7 +915,9 @@
 
 	                  deferred.promise.then(function(){
 	                    rootCtrl.api.removeItem(parentPath,hashKey);
-	                    rootCtrl.api.setNodeIcon(that.nodeId, "");
+	                  })
+	                  ["finally"](function(){
+	                  	 rootCtrl.api.setNodeIcon(that.nodeId, "");
 	                  });
 	                  break;
 	                

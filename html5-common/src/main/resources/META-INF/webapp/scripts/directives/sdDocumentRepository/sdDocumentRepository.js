@@ -9,7 +9,8 @@
                                "$scope", "$filter", "sdViewUtilService", "$q",
                                "sdMimeTypeService", "sdI18nService"];
 
-  function docRepoController(documentRepositoryService, $timeout, sdUtilService, $scope, $filter, sdViewUtilService, $q, sdMimeTypeService, sdI18nService){
+  function docRepoController(documentRepositoryService, $timeout, sdUtilService, $scope, $filter, 
+                             sdViewUtilService, $q, sdMimeTypeService, sdI18nService){
 
     var that = this;
     var virtualRoot;
@@ -193,6 +194,8 @@
     textMap.bindErrorCreate = i18n.translate("views.bindRepositoryDialog.createException");
     textMap.close =  i18n.translate("common.close");
     textMap.confirm =  i18n.translate("common.confirm");
+    textMap.confirmDelete = i18n.translate("common.confirmDelete.title");
+    textMap.confirmDeleteQuestion = i18n.translate("common.confirmDeleteRes.message.label").split("<br/>")[0];
     textMap.error =  i18n.translate("common.error");
     return textMap;
   };
@@ -336,10 +339,10 @@
         break;
       case "node-delete" :
          if(data.valueItem.nodeType==="document"){
-          this.deleteDocument(data.nodeId,data.valueItem);
+          this.deleteDocument(data);
         }
         else if(data.valueItem.nodeType==="folder"){
-           this.deleteFolder(data.nodeId,data.valueItem);
+           this.deleteFolder(data);
         }
         break;
       case "node-rename-commit":
@@ -767,24 +770,75 @@
     });
   };
   
-  docRepoController.prototype.deleteFolder = function(nodeId,nodeItem){
+  docRepoController.prototype.deleteFolder = function(treeNode){
     var that = this;
-    this.documentService.deleteFolder(nodeItem.id)
-    .then(function(name){
-      var parentItem = that.treeApi.getParentItem(nodeId);
-      var index = parentItem.children.indexOf(nodeItem);
-      parentItem.children.splice(index,1);
-    });
+
+    //We will create our handler functions on the fly so as to avoid 
+    //scoping all our data onto our controller. Ideally the dialog implementation
+    //should be promise based with the open returning a promise which is rejected
+    //or resolved based on user action. 
+    this.onDeleteDocumentDialogConfirm = function(res){
+      if(res===true){
+        this.documentService.deleteFolder(treeNode.valueItem.id)
+        .then(function(name){
+          var parentItem = that.treeApi.getParentItem(treeNode.valueItem.id);
+          var index = parentItem.children.indexOf(treeNode.valueItem);
+          parentItem.children.splice(index,1);
+        })
+        ["catch"](function(err){
+          //TODO: err handling 
+        })
+        ["finally"](function(){
+          treeNode.deferred.resolve();
+        });
+      }
+      else{
+        treeNode.deferred.resolve();
+      };
+    };
+
+    this.onDeleteDocumentDialogClose = function(res){
+       treeNode.deferred.reject();
+    };
+
+    this.openDeleteDocumentDialog();
+
+
   };
   
-  docRepoController.prototype.deleteDocument = function(nodeId,nodeItem){
+  docRepoController.prototype.deleteDocument = function(treeNode){
+
     var that = this;
-    this.documentService.deleteDocument(nodeItem.id)
-    .then(function(name){
-      var parentItem = that.treeApi.getParentItem(nodeId);
-      var index = parentItem.children.indexOf(nodeItem);
-      parentItem.children.splice(index,1);
-    });
+
+    //We will create our handler functions on the fly so as to avoid 
+    //scoping all our data onto our controller. Ideally the dialog implementation
+    //should be promise based with the open returning a promise which is rejected
+    //or resolved based on user action. 
+    this.onDeleteDocumentDialogConfirm = function(res){
+      if(res===true){
+        that.documentService.deleteDocument(treeNode.valueItem.id)
+        .then(function(name){
+          var parentItem = that.treeApi.getParentItem(treeNode.valueItem.id);
+          var index = parentItem.children.indexOf(treeNode.valueItem);
+          parentItem.children.splice(index,1);
+        })
+        ["catch"](function(err){
+          //TODO: err handling 
+        })
+        ["finally"](function(){
+          treeNode.deferred.resolve();
+        });
+      }
+      else{
+        treeNode.deferred.resolve();
+      };
+    };
+
+    this.onDeleteDocumentDialogClose = function(res){
+       treeNode.deferred.reject();
+    };
+
+    this.openDeleteDocumentDialog();
   };
   
   docRepoController.prototype.renameFolder = function(folderId,newName,nodeItem){
@@ -803,7 +857,7 @@
     if(newName===nodeItem.name){
       return;
     }
-    
+
     this.documentService.renameDocument(docId,newName)
     .then(function(doc){
       nodeItem.name = doc.name;
@@ -848,6 +902,10 @@
     this.repoPropertyDialog.open();
   };
   
+  docRepoController.prototype.openDeleteDocumentDialog = function(){
+    this.deleteDocumentDialog.open();
+  };
+
   docRepoController.prototype.openBindRepoDialog = function(){
     this.bindRepoDialog.open();
   };

@@ -65,6 +65,21 @@
         sda-scope="this">
 	</div>
 
+  <!--Document Delete Confirmation Dialog-->
+  <div  sd-dialog="ctrl.deleteDocumentDialog" 
+        sda-title="{{ctrl.textMap.confirmDelete}}" 
+        sda-type="confirm" 
+        sda-confirm-action-label="{{ctrl.textMap.confirm}}"
+        sda-cancel-action-label="{{ctrl.textMap.close}}"
+        sda-modal="true"
+        sda-on-open="ctrl.onDeleteDocumentDialogOpen(res)"
+        sda-on-close="ctrl.onDeleteDocumentDialogClose(res)"
+        sda-on-confirm="ctrl.onDeleteDocumentDialogConfirm(res)"
+        sda-template="{{ctrl.baseTemplateUrl}}deleteDocumentConfirmation.html"
+        sda-scope="this">
+  </div>
+
+
   <!--General Error Dialog-->
   <div  sd-dialog="ctrl.errorDialog" 
         sda-title="{{ctrl.textMap.error}}" 
