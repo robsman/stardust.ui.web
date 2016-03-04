@@ -269,7 +269,7 @@
           controller: "notesPanelCtrl",
           controllerAs: "notesCtrl",
           templateUrl: sdUtilService.getBaseUrl()
-                  + "plugins/html5-common/scripts/directives/sdNotesPanel/sdNotesPanel.html"
+                  + "plugins/html5-process-portal/scripts/directives/sdNotesPanel/sdNotesPanel.html"
         };
       }])
 })();

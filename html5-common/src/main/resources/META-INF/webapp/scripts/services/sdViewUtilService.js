@@ -43,6 +43,8 @@
 			var args = Array.prototype.slice.call(arguments, 0);
 			self.viewChanged.apply(self, args);
 		});
+		
+		var ippWindow = window.BridgeUtils ? window : window.parent;
 
 		/*
 		 * 
@@ -124,7 +126,7 @@
 				}
 			};
 
-			window.postMessage(JSON.stringify(message), "*")
+			ippWindow.postMessage(JSON.stringify(message), "*")
 			return true;
 		};
 		
@@ -155,7 +157,7 @@
 				}
 			};
 
-			window.postMessage(JSON.stringify(message), "*");
+			ippWindow.postMessage(JSON.stringify(message), "*");
 		};
 
 
@@ -171,7 +173,7 @@
 				}
 			};
 
-			window.postMessage(JSON.stringify(message), "*");
+			ippWindow.postMessage(JSON.stringify(message), "*");
 		};
 		/*
 		 * 
@@ -185,7 +187,7 @@
 				}
 			};
 
-			window.postMessage(JSON.stringify(message), "*");
+			ippWindow.postMessage(JSON.stringify(message), "*");
 		};
 
 		/*

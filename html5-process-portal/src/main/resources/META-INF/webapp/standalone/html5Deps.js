@@ -69,7 +69,7 @@ var html5Deps = function() {
           'sdProcessDocumentTree': ['html5-common/scripts/directives/sdProcessDocumentsTree/sdProcessDocumentsTree'],
           'uiBootstrap':['html5-common/libs/ui-bootstrap/ui-bootstrap-tpls-1.2.1.min'],   
           'sdDateTimeFilter' : [ 'html5-common/scripts/filters/sdDateTimeFilter'],
-          'sdNotesPanel': ['html5-common/scripts/directives/sdNotesPanel/sdNotesPanel']
+          'sdNotesPanel': ['html5-process-portal/scripts/directives/sdNotesPanel/sdNotesPanel']
       },
       shim : {
         'jquery.dataTables' : [ 'jquery' ],
