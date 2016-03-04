@@ -29,17 +29,6 @@ angular.module('bpm-ui').controller(
 				'sgPubSubService',
 				function($scope, $timeout, sgSidebarStateService, sdSidebarService, sdViewUtilService, sdUtilService,
 						sgPubSubService) {
-					/*
-					 * 
-					 */
-					function disableSidebarResizing() {
-						// There is no API to disable resizing, so add
-						// workaround
-						var sidebarResizeHandle = jQuery('.sg-sidebar-resize');
-						if (sidebarResizeHandle) {
-							sidebarResizeHandle.off();
-						}
-					}
 
 					/*
 					 * 
@@ -83,10 +72,6 @@ angular.module('bpm-ui').controller(
 					$scope.$root.getSidebarDetails = sgSidebarStateService.getSidebarDetails;
 
 					$scope.$root.$timeout = $timeout;
-
-					$scope.$watch('sidebar.position', function(newValue) {
-						disableSidebarResizing();
-					}, true);
 
 					// TODO: It's observed that title is not getting set by
 					// Shell. So manually change it here!
