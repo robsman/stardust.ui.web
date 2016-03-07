@@ -423,8 +423,7 @@ public class WorklistUtils
             ActivityInstanceState.Hibernated, ActivityInstanceState.Application, ActivityInstanceState.Suspended});
 
       query.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
-      query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
-
+      
       ActivityTableUtils.addCriterias(query, options);
 
       QueryResult< ? > result = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);

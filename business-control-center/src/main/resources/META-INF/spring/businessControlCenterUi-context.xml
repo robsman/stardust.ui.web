@@ -84,6 +84,8 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 	    <ippui:view name="processSearchView"
 				include="/plugins/html5-process-portal/partials/views/processSearchView.html">
 				<ippui:preferences>
+				    <ippui:preferencePage name="configuration"
+					include="/plugins/business-control-center/views/processSearchViewConfiguration.xhtml" />
 					<ippui:preferencePage name="icon"
 						include="/plugins/views-common/images/icons/cog_search.png" />
 				</ippui:preferences>
