@@ -193,7 +193,8 @@ var html5Deps = function() {
               // use parent i18n implementation
               if (parentScope && parentScope.sdI18n) {
                 service.translate = parentScope.sdI18n;
-                $rootScope.i18n = parentScope.sdI18n;
+                $rootScope.i18n = parentScope.sdI18n; //TODO: should have sgi18n??
+                $rootScope.sdI18n = parentScope.sdI18n;
               } else {
                 // provide dummy implementation if i18n not
                 // available from parent

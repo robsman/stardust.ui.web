@@ -99,7 +99,7 @@
     this.notesService = notesService;
     this.sdViewUtilService = sdViewUtilService;
     this.rootUrl = sdUtilService.getBaseUrl();
-    this.sdI18n = $scope.$root.i18n;
+    this.sdI18n = $scope.$parent.sdI18n;
     this.initialize();
 
   }
