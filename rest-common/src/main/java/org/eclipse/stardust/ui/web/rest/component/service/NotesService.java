@@ -21,6 +21,14 @@ import org.eclipse.stardust.ui.web.rest.dto.NotesResultDTO;
  */
 public interface NotesService
 {
+
+   /**
+    * @param processInstanceOid
+    * @param asc
+    * @return
+    */
+   NotesResultDTO getAllNotes(long processInstanceOid, boolean asc);
+
    /**
     * @param processInstanceOid
     * @param asc

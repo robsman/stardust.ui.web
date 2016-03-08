@@ -56,12 +56,25 @@ public class NotesServiceImpl implements NotesService
    @Resource(name = "ProcessInstanceUtilsREST")
    private ProcessInstanceUtils processInstanceUtils;
 
-   /**
-    * Referring to CRNT-39917, it is decided to return both activity and process notes
-    * from this method
-    */
+   @Override
+   public NotesResultDTO getAllNotes(long processInstanceOid, boolean asc)
+   {
+      return getNotes(processInstanceOid, asc, false);
+   }
+
    @Override
    public NotesResultDTO getProcessNotes(long processInstanceOid, boolean asc)
+   {
+      return getNotes(processInstanceOid, asc, true);
+   }
+
+   /**
+    * @param processInstanceOid
+    * @param asc
+    * @param onlyProcesLevelNotes
+    * @return
+    */
+   private NotesResultDTO getNotes(long processInstanceOid, boolean asc, boolean onlyProcesLevelNotes)
    {
       ProcessInstance processInstance = processInstanceUtils.getProcessInstance(processInstanceOid);
 
@@ -87,19 +100,22 @@ public class NotesServiceImpl implements NotesService
 
       for (Note note : noteList)
       {
-         NoteDTO noteDTO = new NoteDTO(note);
-         noteDTO.noteNumber = noteList.indexOf(note) + 1;
-         noteDTOList.add(noteDTO);
-
          if (ContextKind.ProcessInstance.equals(note.getContextKind()))
          {
             // Process level notes
+            NoteDTO noteDTO = new NoteDTO(note);
+            noteDTO.noteNumber = noteList.indexOf(note) + 1;
             noteDTO.scopeType = msgBean.getParamString("views.noteToolTip.process",
                   processInstanceUtils.getProcessLabel(processInstance));
+
+            noteDTOList.add(noteDTO);
          }
-         else
+         else if (!onlyProcesLevelNotes)
          {
             // activity level notes
+            NoteDTO noteDTO = new NoteDTO(note);
+            noteDTO.noteNumber = noteList.indexOf(note) + 1;
+
             long activityInstanceOid = note.getContextOid();
             ActivityInstance activityInstance = activityInstanceUtils.getActivityInstance(activityInstanceOid);
             if (activityInstance == null)
@@ -108,6 +124,8 @@ public class NotesServiceImpl implements NotesService
             }
             noteDTO.scopeType = msgBean.getParamString("views.noteToolTip.activity",
                   activityInstanceUtils.getActivityInstanceLabel(activityInstance));
+
+            noteDTOList.add(noteDTO);
          }
       }
 

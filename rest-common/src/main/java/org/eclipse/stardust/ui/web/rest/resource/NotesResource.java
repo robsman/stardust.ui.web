@@ -57,14 +57,28 @@ public class NotesResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/{processInstanceOid}")
    @RequestDescription("*asc* specifies an order of notes returned from server, by default it is false")
-   @ResponseDescription("json of QueryResultDTO containing NoteDTO - Process Instance level notes")
+   @ResponseDescription("json of QueryResultDTO containing NoteDTO - Process Instance level as well as Activity Instance level notes")
    public Response getNotes(@PathParam("processInstanceOid") long processInstanceOid,
+         @QueryParam("asc") @DefaultValue("false") boolean asc)
+   {
+      NotesResultDTO resultDTO = notesService.getAllNotes(processInstanceOid, asc);
+      return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+   }
+
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/process/{processInstanceOid}")
+   @RequestDescription("*asc* specifies an order of notes returned from server, by default it is false")
+   @ResponseDescription("json of QueryResultDTO containing NoteDTO - Just Process Instance level notes")
+   public Response getProcessNotes(@PathParam("processInstanceOid") long processInstanceOid,
          @QueryParam("asc") @DefaultValue("false") boolean asc)
    {
       NotesResultDTO resultDTO = notesService.getProcessNotes(processInstanceOid, asc);
       return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
    }
-
+   
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)

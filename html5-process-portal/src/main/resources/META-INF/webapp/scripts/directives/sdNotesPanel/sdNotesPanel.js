@@ -41,7 +41,7 @@
    * @returns
    */
   NotesService.prototype.getProcessNotes = function(processInstanceOid) {
-    var url = this.rootUrl + "services/rest/portal/notes/" + processInstanceOid + "?asc=true";
+    var url = this.rootUrl + "services/rest/portal/notes/process/" + processInstanceOid + "?asc=true";
     var deferred = this.$q.defer();
 
     this.$http.get(url).then(function(data) {
