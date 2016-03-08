@@ -200,6 +200,9 @@
 		var hours = v.getHours();
 		var minutes = v.getMinutes();
 
+		hours = (isNaN(hours))?0:hours;
+		minutes = (isNaN(minutes))?0:minutes;
+		
 		hours = (hours < 10)? "0" + hours : "" + hours;
 		minutes = (minutes < 10)? "0" + minutes : "" + minutes;
 		return hours + ":" + minutes;

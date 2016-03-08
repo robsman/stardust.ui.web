@@ -1125,7 +1125,10 @@
 			//to initialize the condition.lhs value of new buildout with this value.
 			rhsDefault = parentModel.data.filter(function(v){return v.id==="CURRENT_DATE"})[0];
 			procDef.categoryConditions.forEach(function(c){
-				c.details.condition.offset.time = new Date("1/1/1970 " +  c.details.condition.offset.time);
+				if(!angular.isDate(c.details.condition.offset.time)){
+					c.details.condition.offset.time = new Date("1/1/1970 " +  c.details.condition.offset.time);
+				}
+				
 				if(c.details.condition.rhs.id===""){
 					c.details.condition.rhs.id=rhsDefault.qualifiedId;
 					c.details.condition.rhs.type="data";
@@ -1168,6 +1171,9 @@
 			//to initialize the condition.lhs value of new buidlout with this value.
 			rhsDefault = parentModel.data.filter(function(v){return v.id==="CURRENT_DATE"})[0];
 			activity.categoryConditions.forEach(function(c){
+				if(!angular.isDate(c.details.condition.offset.time)){
+					c.details.condition.offset.time = new Date("1/1/1970 " +  c.details.condition.offset.time);
+				}
 				c.details.condition.offset.time = new Date("1/1/1970 " +  c.details.condition.offset.time);
 				if(c.details.condition.rhs.id===""){
 					c.details.condition.rhs.id=rhsDefault.qualifiedId;
