@@ -9729,9 +9729,16 @@ img[src *='world_go.png'].nodeMenuIcon {
 	}
 }
 
-
 .perspective-series {
 	height: 20px;
+}
+
+.sg-sidebar-opened .perspective-series{
+	padding-left:39px;
+}
+
+.sg-sidebar-opened.sg-sidebar-pinned .perspective-series{
+	padding-left:0px;
 }
 
 .perspective-launch-panels {
