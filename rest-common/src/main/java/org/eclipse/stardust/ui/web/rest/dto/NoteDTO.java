@@ -33,6 +33,10 @@ public class NoteDTO extends AbstractDTO
    public String scopeType;
 
    public long userOID;
+   
+   public long contextOID;
+   
+   public String contextKind;
 
    public String avatarImageURI;
 
@@ -42,6 +46,8 @@ public class NoteDTO extends AbstractDTO
       created = note.getTimestamp().getTime();
       this.note = note.getText();
       userOID = note.getUser().getOID();
+      contextOID = note.getContextOid();
+      contextKind = note.getContextKind().getName();
       avatarImageURI = MyPicturePreferenceUtils.getUsersImageURI(note.getUser());
    }
 

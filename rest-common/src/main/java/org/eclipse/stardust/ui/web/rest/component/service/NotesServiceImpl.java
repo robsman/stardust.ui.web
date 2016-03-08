@@ -18,12 +18,14 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceAttributes;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceAttributesImpl;
 import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ProcessInstanceUtils;
@@ -32,7 +34,6 @@ import org.eclipse.stardust.ui.web.rest.dto.NoteDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotesResultDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.NoteEvent;
-import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -55,6 +56,10 @@ public class NotesServiceImpl implements NotesService
    @Resource(name = "ProcessInstanceUtilsREST")
    private ProcessInstanceUtils processInstanceUtils;
 
+   /**
+    * Referring to CRNT-39917, it is decided to return both activity and process notes
+    * from this method
+    */
    @Override
    public NotesResultDTO getProcessNotes(long processInstanceOid, boolean asc)
    {
@@ -62,7 +67,7 @@ public class NotesServiceImpl implements NotesService
 
       if (processInstance == null)
       {
-         throw new I18NException("Process Instance not found.");
+         throw new ObjectNotFoundException(BpmRuntimeError.ATDB_NO_MATCHING_PROCESS_INSTANCE.raise());
       }
 
       ProcessInstance scopeProcessInstance = processInstance;
@@ -82,14 +87,27 @@ public class NotesServiceImpl implements NotesService
 
       for (Note note : noteList)
       {
+         NoteDTO noteDTO = new NoteDTO(note);
+         noteDTO.noteNumber = noteList.indexOf(note) + 1;
+         noteDTOList.add(noteDTO);
+
          if (ContextKind.ProcessInstance.equals(note.getContextKind()))
          {
-            NoteDTO noteDTO = new NoteDTO(note);
+            // Process level notes
             noteDTO.scopeType = msgBean.getParamString("views.noteToolTip.process",
                   processInstanceUtils.getProcessLabel(processInstance));
-
-            noteDTO.noteNumber = noteList.indexOf(note) + 1;
-            noteDTOList.add(noteDTO);
+         }
+         else
+         {
+            // activity level notes
+            long activityInstanceOid = note.getContextOid();
+            ActivityInstance activityInstance = activityInstanceUtils.getActivityInstance(activityInstanceOid);
+            if (activityInstance == null)
+            {
+               throw new ObjectNotFoundException(BpmRuntimeError.ATDB_NO_MATCHING_ACTIVITY_INSTANCE.raise());
+            }
+            noteDTO.scopeType = msgBean.getParamString("views.noteToolTip.activity",
+                  activityInstanceUtils.getActivityInstanceLabel(activityInstance));
          }
       }
 
@@ -160,11 +178,10 @@ public class NotesServiceImpl implements NotesService
    @Override
    public NotesResultDTO getActivityNotes(long activityInstanceOid, boolean asc)
    {
-      MessagesViewsCommonBean msgBean = MessagesViewsCommonBean.getInstance();
       ActivityInstance activityInstance = activityInstanceUtils.getActivityInstance(activityInstanceOid);
       if (activityInstance == null)
       {
-         throw new I18NException("Activity Instance not found.");
+         throw new ObjectNotFoundException(BpmRuntimeError.ATDB_NO_MATCHING_ACTIVITY_INSTANCE.raise());
       }
 
       ActivityInstanceAttributes attributes = activityInstance.getAttributes();
