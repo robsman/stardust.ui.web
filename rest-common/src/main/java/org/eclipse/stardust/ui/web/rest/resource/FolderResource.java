@@ -48,6 +48,7 @@ import org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.util.FileUploadUtils;
 import org.eclipse.stardust.ui.web.rest.util.MapAdapter;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IResourceDataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -76,6 +77,7 @@ public class FolderResource
     * @param levelOfDetail
     * @param createIfDoesNotExist
     * @return
+    * @throws ResourceNotFoundException
     */
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
@@ -84,7 +86,7 @@ public class FolderResource
    @ResponseDescription("Returns folderDTO json object")
    public Response getFolder(@PathParam("folderId") String folderId,
          @QueryParam("levelOfDetail") @DefaultValue("1") int levelOfDetail,
-         @QueryParam("create") @DefaultValue("false") boolean createIfDoesNotExist)
+         @QueryParam("create") @DefaultValue("false") boolean createIfDoesNotExist) throws ResourceNotFoundException
    {
       folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
       FolderDTO folderContents = repositoryService.getFolder(folderId, levelOfDetail, createIfDoesNotExist);
@@ -142,6 +144,7 @@ public class FolderResource
     * @return
     * @throws DocumentManagementServiceException
     * @throws UnsupportedEncodingException
+    * @throws ResourceNotFoundException
     */
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -150,7 +153,7 @@ public class FolderResource
    @RequestDescription("Either url should contain complete path or message body must contain *parentFolderPath* and *name* to be created")
    @ResponseDescription("On success, sents back FolderDTO in response")
    public Response createFolder(@PathParam("folderId") String folderId, String postedData)
-         throws DocumentManagementServiceException, UnsupportedEncodingException
+         throws DocumentManagementServiceException, UnsupportedEncodingException, ResourceNotFoundException
    {
       // convert json to simple map
       Map<String, Object> folderDataMap = null;
@@ -263,7 +266,7 @@ public class FolderResource
          + "```javascript\r\n" + "{\r\n" + "    \"added\" : [\"/Y/newlyAddedFile.txt\"],\r\n"
          + "    \"updated\" : [\"/Y/existingFileUpdated.txt\"]\r\n" + "}\r\n" + "```")
    public Response importFolderAndMerge(@PathParam("folderId") String folderId, List<Attachment> attachments)
-      throws Exception
+         throws Exception
    {
       // parse attachments
       List<DocumentContentRequestDTO> uploadedFolder = FileUploadUtils.parseAttachments(attachments);

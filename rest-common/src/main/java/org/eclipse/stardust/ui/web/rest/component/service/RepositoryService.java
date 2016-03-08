@@ -23,6 +23,7 @@ import org.eclipse.stardust.ui.web.rest.dto.request.RepositorySearchRequestDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryProviderDTO;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IResourceDataProvider;
 
 /**
@@ -35,20 +36,23 @@ public interface RepositoryService
    // *******************************
    // Folder specific
    // *******************************
-   
+
    /**
     * @param folderId
     * @param levelOfDetail
     * @param createIfDoesNotExist
     * @return
+    * @throws ResourceNotFoundException
     */
-   FolderDTO getFolder(String folderId, int levelOfDetail, boolean createIfDoesNotExist);
+   FolderDTO getFolder(String folderId, int levelOfDetail, boolean createIfDoesNotExist)
+         throws ResourceNotFoundException;
 
    /**
     * @param folderId
     * @param folderDataMap
+    * @throws ResourceNotFoundException
     */
-   FolderDTO createFolder(String folderId, Map<String, Object> folderDataMap);
+   FolderDTO createFolder(String folderId, Map<String, Object> folderDataMap) throws ResourceNotFoundException;
 
    /**
     * @param folderId
@@ -71,10 +75,11 @@ public interface RepositoryService
     * @param folderId
     * @param uploadedFolder
     * @param merge
-    * @return 
+    * @return
     * @throws Exception
     */
-   Map<String, Set<String>> importFolder(String folderId, List<DocumentContentRequestDTO> uploadedFolder, boolean merge) throws Exception;
+   Map<String, Set<String>> importFolder(String folderId, List<DocumentContentRequestDTO> uploadedFolder, boolean merge)
+         throws Exception;
 
    // *******************************
    // Document specific
@@ -82,16 +87,19 @@ public interface RepositoryService
    /**
     * @param documentId
     * @return
+    * @throws ResourceNotFoundException
     */
-   DocumentDTO getDocument(String documentId);
+   DocumentDTO getDocument(String documentId) throws ResourceNotFoundException;
 
    /**
     * @param documentId
     * @param targetFolderPath
     * @param createVersion
     * @return
+    * @throws ResourceNotFoundException
     */
-   DocumentDTO copyDocument(String documentId, String targetFolderPath, boolean createVersion);
+   DocumentDTO copyDocument(String documentId, String targetFolderPath, boolean createVersion)
+         throws ResourceNotFoundException;
 
    /**
     * reverts to provided previous revision - in a process, copies attributes - content
@@ -106,13 +114,15 @@ public interface RepositoryService
    /**
     * @param documentId
     * @return
+    * @throws ResourceNotFoundException
     */
-   String getDocumentContent(String documentId);
+   String getDocumentContent(String documentId) throws ResourceNotFoundException;
 
    /**
     * @return
+    * @throws ResourceNotFoundException
     */
-   List<DocumentDTO> getDocumentHistory(String DocumentId);
+   List<DocumentDTO> getDocumentHistory(String DocumentId) throws ResourceNotFoundException;
 
    /**
     * This method support multiple documents upload By default creates new version of the
@@ -142,8 +152,10 @@ public interface RepositoryService
     * @param documentIds
     * @param processInstance
     * @return
+    * @throws ResourceNotFoundException
     */
-   void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance);
+   void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance)
+         throws ResourceNotFoundException;
 
    /**
     * @param documentId
@@ -155,8 +167,10 @@ public interface RepositoryService
     * @param documentId
     * @param documentInfoDTO
     * @return
+    * @throws ResourceNotFoundException
     */
-   DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO);
+   DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO)
+         throws ResourceNotFoundException;
 
    // *******************************
    // Repository level operations
@@ -166,17 +180,17 @@ public interface RepositoryService
     * @return list of RepositoryProviderDTOs
     */
    List<RepositoryProviderDTO> getRepositoryProviders();
-   
+
    /**
     * @return list of RepositoryInstanceDTOs
     */
    List<RepositoryInstanceDTO> getRepositories();
-   
+
    /**
     * @param repositoryId
     */
    void setDefualtRepository(String repositoryId);
-   
+
    /**
     * @param repositoryAttributes
     */
@@ -186,8 +200,7 @@ public interface RepositoryService
     * @param repositoryId
     */
    void unbindRepository(String repositoryId);
-   
-   
+
    /**
     * @param repositorySearchRequestDTO
     * @return

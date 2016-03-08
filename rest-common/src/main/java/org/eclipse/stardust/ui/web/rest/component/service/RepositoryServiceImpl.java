@@ -53,6 +53,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.DefualtResourceDataProvider;
@@ -74,40 +75,47 @@ public class RepositoryServiceImpl implements RepositoryService
    private static final String REPOSITORY_ID = "id";
    private static String DOCUMENTS = "documents";
    private static String FOLDERS = "folders";
-   
+
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
-   
+
    @Resource
    private UserService userService;
 
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
-   
+
    // *******************************
    // Folder specific
    // *******************************
    /**
+    * @throws ResourceNotFoundException
     *
     */
    public FolderDTO getFolder(String folderId, int levelOfDetail, boolean createIfDoesNotExist)
+         throws ResourceNotFoundException
    {
+      if (StringUtils.isEmpty(folderId))
+      {
+         folderId = "/";
+      }
+      
       // remove the trailing slash if it exist
       if (folderId.length() != 1 && folderId.charAt(folderId.length() - 1) == '/')
       {
          folderId = folderId.substring(0, folderId.length() - 1);
       }
 
-      // remove unwanted slashes 
+      // remove unwanted slashes
       folderId = folderId.replaceAll("//", "/");
-      
+
       // fetching of children information may be time consuming, may need to be
       // parameterized later
       Folder folder = getDMS().getFolder(folderId, levelOfDetail);
 
       if (folder == null && !createIfDoesNotExist)
       {
-         throw new I18NException(restCommonClientMessages.getParamString("folder.notFound", folderId));
+         throw new ResourceNotFoundException(restCommonClientMessages.getParamString("folder.notFound", folderId));
       }
 
       if (folder == null)
@@ -129,10 +137,11 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
+    * @throws ResourceNotFoundException 
     *
     */
    @Override
-   public FolderDTO createFolder(String folderId, Map<String, Object> folderDataMap)
+   public FolderDTO createFolder(String folderId, Map<String, Object> folderDataMap) throws ResourceNotFoundException
    {
       Folder folder = null;
       String parentFolderPath = null;
@@ -160,7 +169,7 @@ public class RepositoryServiceImpl implements RepositoryService
       }
       else
       {
-         throw new I18NException(restCommonClientMessages.getParamString("folder.notFound", folderId));
+         throw new ResourceNotFoundException(restCommonClientMessages.getParamString("folder.notFound", folderId));
       }
 
       return FolderDTOBuilder.build(folder);
@@ -204,7 +213,7 @@ public class RepositoryServiceImpl implements RepositoryService
       }
       return null;
    }
-   
+
    /**
     * @param searchRequestDTO
     * @return
@@ -222,7 +231,7 @@ public class RepositoryServiceImpl implements RepositoryService
 
    /**
     * @param folders
-    * @param searchRequestDTO 
+    * @param searchRequestDTO
     * @return
     */
    private QueryResultDTO buildFolderSearchResult(List<Folder> folders, RepositorySearchRequestDTO searchRequestDTO)
@@ -233,11 +242,12 @@ public class RepositoryServiceImpl implements RepositoryService
       {
          if (searchRequestDTO.documentDataTableOption != null)
          {
-        	int pageSize = searchRequestDTO.documentDataTableOption.pageSize;
-        	if(folders.size() < pageSize){
-        		pageSize = folders.size();
-        	}
-            resultDTO.list = FolderDTOBuilder.build(folders.subList(0,pageSize));
+            int pageSize = searchRequestDTO.documentDataTableOption.pageSize;
+            if (folders.size() < pageSize)
+            {
+               pageSize = folders.size();
+            }
+            resultDTO.list = FolderDTOBuilder.build(folders.subList(0, pageSize));
          }
          else
          {
@@ -248,21 +258,22 @@ public class RepositoryServiceImpl implements RepositoryService
       }
       return resultDTO;
    }
-   
+
    // *******************************
    // Document specific
    // *******************************
    /**
+    * @throws ResourceNotFoundException 
     *
     */
    @Override
-   public DocumentDTO getDocument(String documentId)
+   public DocumentDTO getDocument(String documentId) throws ResourceNotFoundException
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       Document document = getDMS().getDocument(documentId);
       if (document == null)
       {
-         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
+         throw new ResourceNotFoundException(MessagesViewsCommonBean.getInstance().getString(
                "views.myDocumentsTreeView.documentNotFound"));
       }
 
@@ -270,9 +281,10 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
+    * @throws ResourceNotFoundException 
     *
     */
-   public DocumentDTO copyDocument(String documentId, String targetFolderPath, boolean createVersion)
+   public DocumentDTO copyDocument(String documentId, String targetFolderPath, boolean createVersion) throws ResourceNotFoundException
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       return DocumentDTOBuilder.build(
@@ -298,10 +310,11 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
+    * @throws ResourceNotFoundException 
     *
     */
    @Override
-   public String getDocumentContent(String documentId)
+   public String getDocumentContent(String documentId) throws ResourceNotFoundException
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
 
@@ -312,10 +325,11 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
+    * @throws ResourceNotFoundException 
     *
     */
    @Override
-   public List<DocumentDTO> getDocumentHistory(String documentId)
+   public List<DocumentDTO> getDocumentHistory(String documentId) throws ResourceNotFoundException
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       Document document = getJCRDocument(documentId);
@@ -398,14 +412,14 @@ public class RepositoryServiceImpl implements RepositoryService
                      "views.genericRepositoryView.document.parentFolderError")));
                continue;
             }
-            
+
             parentFolder = DocumentMgmtUtility.createFolderIfNotExists(documentInfoDTO.parentFolderPath);
          }
          else
          {
             documentInfoDTO.dataPathId = CommonProperties.PROCESS_ATTACHMENTS;
          }
-         
+
          Document document = DocumentMgmtUtility.getDocument(parentFolder, documentInfoDTO.name);
 
          if (!documentInfoDTO.createVersion && document != null)
@@ -420,7 +434,7 @@ public class RepositoryServiceImpl implements RepositoryService
             // create document
             document = DocumentMgmtUtility.createDocument(parentFolder.getId(), documentInfoDTO.name,
                   documentInfoDTO.contentBytes, documentInfoDTO.documentType, documentInfoDTO.contentType,
-                  documentInfoDTO.description, documentInfoDTO.comment, null, (Map)documentInfoDTO.properties);
+                  documentInfoDTO.description, documentInfoDTO.comment, null, (Map) documentInfoDTO.properties);
             if (processInstance != null)
             {
                if (!CommonProperties.PROCESS_ATTACHMENTS.equals(documentInfoDTO.dataPathId))
@@ -464,10 +478,11 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
+    * @throws ResourceNotFoundException 
     *
     */
    @Override
-   public void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance)
+   public void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance) throws ResourceNotFoundException
    {
       List<Document> documentsToBeDetached = new ArrayList<Document>();
 
@@ -501,17 +516,18 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
+    * @throws ResourceNotFoundException 
     *
     */
    @Override
-   public DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO)
+   public DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO) throws ResourceNotFoundException
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       Document document = getDMS().getDocument(documentId);
 
       if (document == null)
       {
-         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
+         throw new ResourceNotFoundException(MessagesViewsCommonBean.getInstance().getString(
                "views.myDocumentsTreeView.documentNotFound"));
       }
 
@@ -524,10 +540,11 @@ public class RepositoryServiceImpl implements RepositoryService
          }
          document.setName(documentInfoDTO.name);
       }
-      
-      //check if content-type has changed
-      if((documentInfoDTO.contentType != null) && !document.getContentType().equals(documentInfoDTO.contentType)){
-    	 document.setContentType(documentInfoDTO.contentType);
+
+      // check if content-type has changed
+      if ((documentInfoDTO.contentType != null) && !document.getContentType().equals(documentInfoDTO.contentType))
+      {
+         document.setContentType(documentInfoDTO.contentType);
       }
 
       return DocumentDTOBuilder.build(updateDocument(document, documentInfoDTO), getDMS());
@@ -536,13 +553,13 @@ public class RepositoryServiceImpl implements RepositoryService
    /**
     * @param document
     * @param documentInfoDTO
-    * @return 
+    * @return
     */
    private Document updateDocument(Document document, DocumentContentRequestDTO documentInfoDTO)
    {
       document.setDescription(documentInfoDTO.description);
       document.setProperties(documentInfoDTO.properties);
-      
+
       // TODO: updated the current user as owner?
       document.setOwner(SessionContext.findSessionContext().getUser().getAccount());
 
@@ -564,7 +581,7 @@ public class RepositoryServiceImpl implements RepositoryService
          document = getDMS().updateDocument(document, documentInfoDTO.contentBytes, "",
                documentInfoDTO.createNewRevision, documentInfoDTO.comment, "", false);
       }
-      
+
       return document;
    }
 
@@ -573,13 +590,14 @@ public class RepositoryServiceImpl implements RepositoryService
     * 
     * @param documentId
     * @return
+    * @throws ResourceNotFoundException 
     */
-   private Document getJCRDocument(String documentId)
+   private Document getJCRDocument(String documentId) throws ResourceNotFoundException
    {
       Document document = getDMS().getDocument(documentId);
       if (null == document)
       {
-         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
+         throw new ResourceNotFoundException(MessagesViewsCommonBean.getInstance().getString(
                "views.myDocumentsTreeView.documentNotFound"));
       }
       return document;
@@ -608,8 +626,7 @@ public class RepositoryServiceImpl implements RepositoryService
       resultDTO.totalCount = docs.getTotalCount();
       return resultDTO;
    }
-   
-   
+
    // *******************************
    // Repository level operations
    // *******************************
@@ -651,8 +668,7 @@ public class RepositoryServiceImpl implements RepositoryService
       String defaultRepository = DocumentMgmtUtility.getDocumentManagementService().getDefaultRepository();
       for (IRepositoryInstanceInfo repoInstanceInfo : repositoryInstanceInfos)
       {
-         RepositoryInstanceDTO repositoryInstanceDTO = DTOBuilder.build(repoInstanceInfo,
-               RepositoryInstanceDTO.class);
+         RepositoryInstanceDTO repositoryInstanceDTO = DTOBuilder.build(repoInstanceInfo, RepositoryInstanceDTO.class);
          repositoryInstances.add(repositoryInstanceDTO);
          if (defaultRepository.equals(repoInstanceInfo.getRepositoryId()))
          {
@@ -722,7 +738,7 @@ public class RepositoryServiceImpl implements RepositoryService
       attributes.put(JcrVfsRepositoryConfiguration.USER_LEVEL_AUTHORIZATION, true);
       DocumentMgmtUtility.getDocumentManagementService().bindRepository(new JcrVfsRepositoryConfiguration(attributes));
    }
-   
+
    /**
     *
     */
@@ -767,7 +783,7 @@ public class RepositoryServiceImpl implements RepositoryService
    // *******************************
    // General/common methods
    // *******************************
-   
+
    /**
     * @param repositoryId
     */
@@ -784,7 +800,7 @@ public class RepositoryServiceImpl implements RepositoryService
                "views.bindRepositoryDialog.repoId.invalid"));
       }
    }
-   
+
    private DocumentManagementService getDMS()
    {
       return serviceFactoryUtils.getDocumentManagementService();

@@ -88,6 +88,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CorrespondencePanelPreferenceUtils;
@@ -576,8 +577,9 @@ public class ProcessInstanceService
    /**
     * @param oid
     * @return
+    * @throws ResourceNotFoundException 
     */
-   public FolderDTO getCorrespondenceFolderDTO(Long oid)
+   public FolderDTO getCorrespondenceFolderDTO(Long oid) throws ResourceNotFoundException
    {
       ProcessInstance processInstance = ProcessInstanceUtils.getProcessInstance(oid);
       String correspondenceFolderPath = DocumentMgmtUtility.getCorrespondenceFolderPath(processInstance.getOID());

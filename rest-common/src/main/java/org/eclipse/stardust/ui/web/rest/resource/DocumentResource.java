@@ -53,6 +53,7 @@ import org.eclipse.stardust.ui.web.rest.exception.PortalErrorClass;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.util.FileUploadUtils;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
@@ -339,13 +340,13 @@ public class DocumentResource
     *  @author Yogesh.Manware
     * @param documentId
     * @return
-    * @throws Exception
+    * @throws ResourceNotFoundException
     */
    @DELETE
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId: .*}")
    @ResponseDescription("if the document deleted succussfully, *Operation completed successfully* is sent back.")
-   public Response deleteDocument(@PathParam("documentId") String documentId) throws Exception
+   public Response deleteDocument(@PathParam("documentId") String documentId) throws ResourceNotFoundException
    {
       repositoryService.deleteDocument(documentId);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
@@ -356,7 +357,7 @@ public class DocumentResource
     * @param documentId
     * @param postedData
     * @return
-    * @throws Exception
+    * @throws ResourceNotFoundException
     */
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -365,7 +366,7 @@ public class DocumentResource
    @RequestDescription("The document (id provided in URL), will be copied to the *targetFolderPath* supplied in body. \r\n"
          + "\r\n" + "If the document already exist, error message will be returned. \r\n" + "")
    @ResponseDescription("Returns DocumentDTO json object")
-   public Response copy(@PathParam("documentId") String documentId, String postedData) throws Exception
+   public Response copy(@PathParam("documentId") String documentId, String postedData) throws ResourceNotFoundException
    {
       Map<String, Object> data = JsonDTO.getAsMap(postedData);
       String targetFolderPath = (String) data.get("targetFolderPath");
@@ -421,14 +422,14 @@ public class DocumentResource
     *  @author Yogesh.Manware
     * @param documentId
     * @return
-    * @throws Exception
+    * @throws ResourceNotFoundException
     */
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{documentId: .*}")
    @ResponseDescription("Returns all basic document information in the form of DocumentDTO, to retrieve content use */content/documentId*")
-   public Response getDocument(@PathParam("documentId") String documentId) throws Exception
+   public Response getDocument(@PathParam("documentId") String documentId) throws ResourceNotFoundException
    {
       DocumentDTO documentDTO = repositoryService.getDocument(documentId); 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
