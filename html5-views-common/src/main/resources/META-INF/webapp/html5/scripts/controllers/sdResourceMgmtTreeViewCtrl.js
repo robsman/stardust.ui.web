@@ -3,12 +3,26 @@
 	'use strict';
 	
 	//inject our dependencies for the controller
-	sdResourceMgmtTreeViewCtrl.$inject = ["sdI18nService"];
+	sdResourceMgmtTreeViewCtrl.$inject = ["sdI18nService", "sdResourceMgmtTreeService"];
 	
-	function sdResourceMgmtTreeViewCtrl(sdI18nService){
-		this.path="/documents,/realms";
+	function sdResourceMgmtTreeViewCtrl(sdI18nService, sdResourceMgmtTreeService){
+
+		var that = this;
+
+		this.path=null;
 		this.i18n = sdI18nService.getInstance("views-common-messages");
 		this.header = this.i18n.translate("views.resourceMgmtTreeView.header");
+		this.sdResourceMgmtTreeService = sdResourceMgmtTreeService;
+
+		this.buildDefaultStructure()
+		.then(function(res){
+			that.path = "/artifacts";
+		});
+
+	};
+
+	sdResourceMgmtTreeViewCtrl.prototype.buildDefaultStructure = function(){
+		return this.sdResourceMgmtTreeService.buildDefaultStructure();
 	};
 
 	sdResourceMgmtTreeViewCtrl.prototype.menuHook = function(menuItems,treeNode){

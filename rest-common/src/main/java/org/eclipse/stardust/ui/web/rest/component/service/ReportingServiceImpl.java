@@ -20,6 +20,7 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.FolderInfo;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.dto.builder.FolderDTOBuilder;
@@ -58,6 +59,15 @@ public class ReportingServiceImpl implements ReportingService
       roleOrgReportDefinitionsNodes.put(SAVED_REPORTS, new ArrayList<FolderDTO>());
       
       Folder participantFolder = getDMS().getFolder(REPORTS_ROOT_FOLDER, Folder.LOD_LIST_MEMBERS);
+      
+      //handle default folder structure creation if root folder does not exist
+      if(participantFolder == null){
+    	  DocumentMgmtUtility.createFolderIfNotExists(REPORTS_ROOT_FOLDER);
+    	  DocumentMgmtUtility.createFolder(REPORTS_ROOT_FOLDER, REPORT_DESIGN);
+    	  DocumentMgmtUtility.createFolder(REPORTS_ROOT_FOLDER, SAVED_REPORTS);
+    	  participantFolder = getDMS().getFolder(REPORTS_ROOT_FOLDER, Folder.LOD_LIST_MEMBERS);
+      }
+      
       List<Folder> subfolders = participantFolder.getFolders();
       User loggedInUser = IppUserProvider.getInstance().getUser();
 
