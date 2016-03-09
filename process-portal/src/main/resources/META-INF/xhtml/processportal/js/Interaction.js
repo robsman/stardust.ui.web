@@ -316,7 +316,7 @@ if (!window.bpm.portal.Interaction) {
 			if (isPrimitiveTransferObject(obj[key])) {
 				obj[key] = convertPrimitiveAsPerDataType(obj[key].toString(), path);
 			} else {
-				obj[key] = null; // This is not valid Primitive, then it must be empty primitive
+				obj[key] = ""; // This is not valid Primitive, then it must be empty primitive
 			}
 		}
 
