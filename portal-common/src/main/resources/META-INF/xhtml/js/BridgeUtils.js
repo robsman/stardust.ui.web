@@ -1347,7 +1347,7 @@ if (!window["BridgeUtils"].FrameManager) {
 		    if (0 < openContentFrames.length) {
 			if ('before' == phaseId) {
 				messages.push("Content tabs are currently open.\n\n" +
-						"If you leave this page any unsaved content will be lost and any open Actvities will be returned to your personal worklist.");
+						"If you leave this page any unsaved content will be lost and any open Activities will be returned to your personal worklist.");
 		        } else if ('after' == phaseId) {
 				alert("Unsaved content of " + openContentFrames.length + " content frame(s) will be lost.");
 		        }
