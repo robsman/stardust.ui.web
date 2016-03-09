@@ -590,8 +590,7 @@
 		 */
 		UtilService.prototype.downloadFolder = function(folderId){
 			var REST_BASE_URL = this.getBaseUrl() + "services/rest/portal/folders";
-			window.location = this.getRootUrl() + 
-							  "/" + REST_BASE_URL + 
+			window.location = REST_BASE_URL + 
 							  "/export" + 
 							  "/"+ folderId;
 		};
@@ -605,9 +604,8 @@
 		 */
 		UtilService.prototype.downloadDocument = function(documentId,documentName){
 			
-		  var REST_BASE_URL = this.getBaseUrl() + "services/rest/portal/documents";
-			window.location = this.getRootUrl() + 
-							  "/" + REST_BASE_URL + 
+	  		var REST_BASE_URL = this.getBaseUrl() + "services/rest/portal/documents";
+			window.location = REST_BASE_URL + 
 							  "/downloadDocument" + 
 							  "/"+ documentId + 
 							  "/" + documentName;
