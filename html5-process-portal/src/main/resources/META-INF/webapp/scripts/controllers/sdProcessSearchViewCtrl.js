@@ -882,6 +882,7 @@
 	 */
 	ProcessSearchViewCtrl.prototype.prePopulateCriteria = function(params) {
 		var deferred = _q.defer();
+		this.processDefaults(params);
 		if (this.SEARCH_OPT_PROCESS == params[this.SEARCH_OPT]) {
 			this.query.processSearchCriteria.filterObject = "0";
 			this.prePopulateProcessCriteria(params).then(function() {
@@ -1133,7 +1134,7 @@
 		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
 		      
 		      
-		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function(){
+		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function() {
 			      //Set Activity State and Criticality after processChange as it resets it.
 			      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
 		    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
@@ -1297,6 +1298,43 @@
 		this.applyActivityFilters();
 		this.procSrchActivities.splice(0, 0, this.defaultActivity);
 		this.activitySrchSelected = [ this.procSrchActivities[0] ];
+	};
+	
+	/*
+	 * 
+	 */
+	ProcessSearchViewCtrl.prototype.processDefaults = function(params) {
+		//Activity Search Defaults
+		if (params[this.SEARCH_OPT] == null) {
+			params[this.SEARCH_OPT] = this.SEARCH_OPT_PROCESS;
+			
+		}
+		if (params[this.STATE] == null) {
+			params[this.STATE] = this.procSrchState[0].value; 
+		}
+		if (params[this.PRIORITY] == null) {
+			params[this.PRIORITY] = this.priorities[0].value; 
+		}
+		if (params[this.HIERARCHY] == null) {
+			params[this.HIERARCHY] = this.HIERARCHY_PROCESS; 
+		}
+		if (params[this.PROCESSES] == null) {
+			params[this.PROCESSES] = [ this.procSrchProcess[0].value ]; 
+		}
+		
+		//Activity Search Defaults
+		if (params[this.CRITICALITY] == null) {
+			params[this.CRITICALITY] = this.activitySrchCriticality[0].name; 
+		}
+		if (this.SEARCH_OPT_ACTIVITY == params[this.SEARCH_OPT]) {
+			if (params[this.STATE] == null) {
+				params[this.STATE] = this.activitySrchState[0].name;
+			}
+		}
+		if (params[this.ACTIVITIES] == null) {
+			params[this.ACTIVITIES] = [ this.defaultActivity.value ]; 
+		}
+		
 	};
 	
 	/*
