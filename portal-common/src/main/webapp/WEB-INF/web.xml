@@ -108,15 +108,6 @@
 	  		<param-value>/xmlhttp,/plugins/processportal/integration/iframe/iframe-panel-server-support.js,/plugins/common/js/facesSupport.js,/plugins/views-common/scripts/loginUtil.js</param-value>
 	  	</init-param>
 	</filter>
-	<filter>
-		<filter-name>portalPluginContentFilter</filter-name>
-		<filter-class>
-			org.eclipse.stardust.ui.web.plugin.support.PortalPluginContentFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>portalPluginContentFilter</filter-name>
-		<url-pattern>/plugins/*</url-pattern>
-	</filter-mapping>
 	<filter-mapping>
 		<filter-name>IppPortalLoginFilter</filter-name>
 		<url-pattern>*.iface</url-pattern>
@@ -139,6 +130,17 @@
 		<filter-name>IppPortalLoginFilter</filter-name>
 		<url-pattern>*.html</url-pattern>
 	</filter-mapping>
+
+	<filter>
+		<filter-name>portalPluginContentFilter</filter-name>
+		<filter-class>
+			org.eclipse.stardust.ui.web.plugin.support.PortalPluginContentFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>portalPluginContentFilter</filter-name>
+		<url-pattern>/plugins/*</url-pattern>
+	</filter-mapping>
+
 	<filter>
 	    <filter-name>touchSessionFilter</filter-name>
 	    <filter-class>com.icesoft.faces.webapp.http.servlet.TouchSessionFilter</filter-class>
