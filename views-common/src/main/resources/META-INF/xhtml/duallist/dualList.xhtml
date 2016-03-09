@@ -44,41 +44,25 @@
 			<ice:column>
 				<ice:panelGrid columns="1"
 					style="vertical-align: top;margin-bottom: ">
-					<ice:panelGroup style="padding: 5px;width:80px;"
-						styleClass="button">
-						<ice:commandLink action="#{dualListModel.add}">
+					<ice:panelGroup>
+						<ice:commandButton style="width: 90px;height: 30px;" styleClass="button" value="#{views_common_msgPropsBean['dualList.add.label']}" action="#{dualListModel.add}">
 							<pc:automationTag value="auto-COM-dualList-AddLink" standAlone="false"/>
-							<ice:outputText
-								value="#{views_common_msgPropsBean['dualList.add.label']}"
-								styleClass="action-link" escape="false" />
-						</ice:commandLink>
+						</ice:commandButton>
 					</ice:panelGroup>
-					<ice:panelGroup style="padding: 5px;width:80px;"
-						styleClass="button">
-						<ice:commandLink action="#{dualListModel.addAll}">
+					<ice:panelGroup>
+						<ice:commandButton style="width: 90px;height: 30px;" styleClass="button" action="#{dualListModel.addAll}" value="#{views_common_msgPropsBean['dualList.addAll.label']}">
 							<pc:automationTag value="auto-COM-dualList-AddAllLink" standAlone="false"/>
-							<ice:outputText
-								value="#{views_common_msgPropsBean['dualList.addAll.label']}"
-								styleClass="action-link" escape="false" />
-						</ice:commandLink>
+						</ice:commandButton>
 					</ice:panelGroup>
-					<ice:panelGroup style="padding: 5px;width:80px;"
-						styleClass="button">
-						<ice:commandLink action="#{dualListModel.remove}">
-							<pc:automationTag value="auto-COM-dualList-RemoveLink" standAlone="false"/>
-							<ice:outputText
-								value="#{views_common_msgPropsBean['dualList.remove.label']}"
-								styleClass="action-link" escape="false" />
-						</ice:commandLink>
+					<ice:panelGroup>
+						<ice:commandButton style="width: 90px;height: 30px;" styleClass="button" action="#{dualListModel.remove}" value="#{views_common_msgPropsBean['dualList.remove.label']}">
+						 	<pc:automationTag value="auto-COM-dualList-RemoveLink" standAlone="false"/>
+						</ice:commandButton>
 					</ice:panelGroup>
-					<ice:panelGroup style="padding: 5px;width:80px;"
-						styleClass="button">
-						<ice:commandLink action="#{dualListModel.removeAll}">
+					<ice:panelGroup>
+						<ice:commandButton style="width: 90px;height: 30px;" styleClass="button" action="#{dualListModel.removeAll}" value="#{views_common_msgPropsBean['dualList.removeAll.label']}" >
 							<pc:automationTag value="auto-COM-dualList-RemoveAllLink" standAlone="false"/>
-							<ice:outputText
-								value="#{views_common_msgPropsBean['dualList.removeAll.label']}"
-								styleClass="action-link" escape="false" />
-						</ice:commandLink>
+						</ice:commandButton>
 					</ice:panelGroup>
 				</ice:panelGrid>
 			</ice:column>
