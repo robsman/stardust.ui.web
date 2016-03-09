@@ -16,30 +16,26 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
-import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
-import org.eclipse.stardust.engine.api.query.Query;
+import org.eclipse.stardust.engine.api.runtime.DataCopyOptions;
 import org.eclipse.stardust.engine.api.runtime.ProcessDefinitions;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.api.runtime.SpawnOptions;
+import org.eclipse.stardust.engine.api.runtime.SpawnOptions.SpawnMode;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogType;
-import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.common.message.MessageDialog.MessageType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
@@ -47,12 +43,9 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
-
-
 
 /**
  * 
@@ -62,26 +55,45 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
  *        bean for switch(Abort and Start) process dialog
  * 
  */
-public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICallbackHandler, ConfirmationDialogHandler
+public class SwitchProcessDialogBean extends PopupUIComponentBean
+      implements ICallbackHandler, ConfirmationDialogHandler
 {
    private static final long serialVersionUID = 1L;
+
    private static final String BEAN_NAME = "switchProcessDialogBean";
+
    private final MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
-   
+
    private List<SelectItem> switchableProcessItems;
+
    private String selectedProcessId;
+
    private boolean showStartProcessView = true;
+
    private List<SwitchProcessTableEntry> switchedProcessTable;
+
    private List<ProcessInstance> sourceProcessInstances;
+
    private String linkComment;
+
    private List<ProcessInstance> startedProcessInstances;
+
    private List<String> switchedProcessMessage;
+
    private ICallbackHandler iCallbackHandler;
+
    private List<ProcessInstance> nonAbortableProcesses;
+
    private boolean showAbortDailog;
+
    private boolean allRowAborted;
+
+   private boolean pauseParentProcess;
+
    private String notificationLabel;
+
    private Integer modelOID;
+
    private ConfirmationDialog switchProcessConfirmationDialog;
 
    /**
@@ -99,7 +111,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
     */
    @Override
    public void initialize()
-   {    
+   {
       switchableProcessItems = findStartableProcessess();
       if (CollectionUtils.isNotEmpty(switchableProcessItems))
       {
@@ -110,7 +122,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
                return s1.getLabel().compareTo(s2.getLabel());
             }
          });
-         
+
          selectedProcessId = (String) switchableProcessItems.get(0).getValue(); // default
                                                                                 // selection
                                                                                 // first
@@ -132,6 +144,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
       notificationLabel = null;
       nonAbortableProcesses = null;
       sourceProcessInstances = null;
+      pauseParentProcess = false;
    }
 
    /**
@@ -182,12 +195,12 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
          }
          else if (CollectionUtils.isNotEmpty(sourceProcessInstances))
          {
-         // Case-2 :if Case-1 and Case -2 is passed then allow to open
-         // "Abort and Start Process"
-         initialize();
-         super.openPopup();
+            // Case-2 :if Case-1 and Case -2 is passed then allow to open
+            // "Abort and Start Process"
+            initialize();
+            super.openPopup();
          }
-         
+
       }
       catch (Exception e)
       {
@@ -218,7 +231,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
                   {
                      if (!nonAbortableProcesses.contains(pi))
                      {
-                        tableEntryList.add(spawnPeerProcess(pi, selectedProcessId, linkComment));
+                        tableEntryList.add(spawnPeerProcess(pi, selectedProcessId, linkComment, pauseParentProcess));
                      }
                   }
 
@@ -227,15 +240,8 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
             }
             else
             {
-               ProcessInstance processInstance = sourceProcessInstances.get(0);
-
-               // check permission
-               if (ProcessInstanceUtils.isAbortable(processInstance))
-               {
-                  ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(
-                        processInstance.getOID(), selectedProcessId, true, null, true, linkComment);
-                  startedProcessInstances.add(pi);
-               }
+               ProcessInstance processInstance = sourceProcessInstances.get(0);             
+               abortOrHaltAndSpawnProcess(processInstance);
             }
          }
          openConfirmationDialog();
@@ -244,6 +250,32 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
       {
          closeSwitchProcessPopup();
          ExceptionHandler.handleException(e);
+      }
+   }
+
+   private void abortOrHaltAndSpawnProcess(ProcessInstance processInstance)
+   {   // check permission
+      if (ProcessInstanceUtils.isAbortable(processInstance))
+      {
+
+         ProcessInstance pi = null;
+         DataCopyOptions dataCopyOptions = new DataCopyOptions(true, null, null, true);
+         SpawnOptions options;
+         //Check to see if its HALT or ABORT request
+         if (pauseParentProcess)
+         {
+
+            options = new SpawnOptions(null, SpawnMode.HALT, linkComment, dataCopyOptions);
+         }
+         else
+         {
+            options = new SpawnOptions(null, SpawnMode.ABORT, linkComment, dataCopyOptions);
+         }
+
+         pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(processInstance.getOID(),
+               selectedProcessId, options);
+         startedProcessInstances.add(pi);
+
       }
    }
 
@@ -302,7 +334,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
       closeSwitchProcessPopup();
       return true;
    }
-   
+
    /**
     * method to close Switch Process Dialog
     */
@@ -346,7 +378,6 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
       // close Switch Process Dialog
       closeSwitchProcessPopup();
    }
-   
 
    /**
     * return Switched Process Message in Collection (separated by \n)
@@ -372,9 +403,17 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
 
                String sourceParam = ProcessInstanceUtils.getProcessLabel(sourceProcessInstance);
                String targetParam = ProcessInstanceUtils.getProcessLabel(switchedProcessInstance);
-
-               String successMsg = COMMON_MESSAGE_BEAN.getParamString("views.switchProcessDialog.processesStarted",
-                     sourceParam, targetParam);
+               String successMsg;
+               if (pauseParentProcess)
+               {
+                  successMsg = COMMON_MESSAGE_BEAN.getParamString("views.pauseProcessDialog.processesStarted",
+                        sourceParam, targetParam);
+               }
+               else
+               {
+                  successMsg = COMMON_MESSAGE_BEAN.getParamString("views.switchProcessDialog.processesStarted",
+                        sourceParam, targetParam);
+               }
                switchedProcessMessage.add(successMsg);
             }
          }
@@ -522,7 +561,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
          tableEntry = new SwitchProcessTableEntry(null, null, false,
                COMMON_MESSAGE_BEAN.getString("common.notifyProcessAlreadyAborted"), key);
       }
-      else if(processInstance.isCaseProcessInstance())
+      else if (processInstance.isCaseProcessInstance())
       {
          String key = ProcessInstanceUtils.getProcessLabel(processInstance);
          tableEntry = new SwitchProcessTableEntry(null, null, false,
@@ -575,16 +614,25 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
     * @return
     */
    private SwitchProcessTableEntry spawnPeerProcess(ProcessInstance processInstance, String targetProcessId,
-         String linkComment)
+         String linkComment, boolean pauseParentProcess)
    {
-      WorkflowService workflowService = ServiceFactoryUtils.getWorkflowService();
       SwitchProcessTableEntry tableEntry = null;
-
       try
       {
-         ProcessInstance pi = workflowService.spawnPeerProcessInstance(processInstance.getOID(), targetProcessId, true,
-               null, true, linkComment);
-
+         ProcessInstance pi = null;
+         DataCopyOptions dataCopyOptions = new DataCopyOptions(true, null, null, true);
+         SpawnOptions options;
+         //Check to see if its HALT or ABORT request
+         if (pauseParentProcess)
+         {
+            options = new SpawnOptions(null, SpawnMode.HALT, linkComment, dataCopyOptions);
+         }
+         else
+         {
+            options = new SpawnOptions(null, SpawnMode.ABORT, linkComment, dataCopyOptions);
+         }
+         pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(processInstance.getOID(),
+               targetProcessId, options);
          startedProcessInstances.add(pi);
          tableEntry = new SwitchProcessTableEntry(processInstance, pi, true, null, null);
       }
@@ -603,11 +651,12 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
     * @return list of Startable Processes
     */
    private List<SelectItem> findStartableProcessess()
-   {     
+   {
 
       List<SelectItem> items = new ArrayList<SelectItem>();
 
-      ProcessDefinitions pds = ServiceFactoryUtils.getQueryService().getProcessDefinitions(ProcessDefinitionQuery.findStartable());
+      ProcessDefinitions pds = ServiceFactoryUtils.getQueryService().getProcessDefinitions(
+            ProcessDefinitionQuery.findStartable());
 
       Map<String, ProcessDefinition> pdMap = CollectionUtils.newHashMap();
 
@@ -640,11 +689,17 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
    public static class SwitchProcessTableEntry extends DefaultRowModel
    {
       private static final long serialVersionUID = 1L;
+
       private final ProcessInstance switchedProcessInstance;
+
       private final ProcessInstance sourceProcessInstance;
+
       private final boolean success;
+
       private final String statusMessage;
+
       private final String abortedProcessInstance;
+
       private final MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
 
       /**
@@ -705,7 +760,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
          return abortedProcessInstance;
       }
    }
-   
+
    public boolean getMultiSelected()
    {
       return CollectionUtils.isNotEmpty(getSourceProcessInstances()) && getSourceProcessInstances().size() > 1
@@ -718,4 +773,20 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
       return modelOID;
    }
 
+   /**
+    * @return the pauseParentProcess
+    */
+   public boolean isPauseParentProcess()
+   {
+      return pauseParentProcess;
+   }
+
+   /**
+    * @param pauseParentProcess
+    *           the pauseParentProcess to set
+    */
+   public void setPauseParentProcess(boolean pauseParentProcess)
+   {
+      this.pauseParentProcess = pauseParentProcess;
+   }
 }

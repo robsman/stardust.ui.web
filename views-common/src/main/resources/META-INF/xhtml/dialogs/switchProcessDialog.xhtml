@@ -21,7 +21,7 @@
 				<ice:panelGroup>
 					<pc:automationTag value="auto-COM-SwitchProcDlg-Header"/>
 					<ice:outputText styleClass="headerText"
-						value="#{views_common_msgPropsBean['views.switchProcessDialog.title']}" />
+						value="#{switchProcessDialogBean.pauseParentProcess ? views_common_msgPropsBean['views.pauseProcessDialog.title'] : views_common_msgPropsBean['views.switchProcessDialog.title']}" />
 					<ice:commandLink title="#{common_msgPropsBean['common.close']}"
 						action="#{switchProcessDialogBean.closePopup}" immediate="true"
 						styleClass="windowClose pi-cmdLnk">
@@ -81,7 +81,7 @@
 											styleClass="pi pi-information pi-lg"
 											style="width:20px;heigth:20px;text-align: top;padding:0px;" />
 										<ice:outputText
-											value="#{views_common_msgPropsBean['views.switchProcessDialog.switchProcessmessage']}" escape="false"/>
+											value="#{switchProcessDialogBean.pauseParentProcess ? views_common_msgPropsBean['views.switchProcessDialog.pauseProcessmessage'] : views_common_msgPropsBean['views.switchProcessDialog.switchProcessmessage']}" escape="false"/>
 
 									</ice:panelGrid>
 								</ice:panelGroup>

@@ -14,4 +14,7 @@ public class SwitchProcessDTO extends AbstractDTO {
 	
 	@DTOAttribute("processInstaceOIDs")
 	public List<Long> processInstaceOIDs;
+	
+	@DTOAttribute("pauseParentProcess")
+	public Boolean pauseParentProcess;
 }

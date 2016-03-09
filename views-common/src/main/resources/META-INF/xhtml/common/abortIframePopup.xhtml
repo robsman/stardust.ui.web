@@ -74,6 +74,14 @@
 							value="#{views_common_msgPropsBean['views.switchProcessDialog.Menu.abortandjoin']}" />
 					</ice:panelGrid>
 				</ice:commandLink>
+				<ice:commandLink styleClass="action-link"
+					actionListener="#{activityDetailsBean.openPauseProcess}" disabled="#{!activityDetailsBean.enableJoinProcess}" immediate="true" onclick="closeAbortMenuIframe();">
+					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSwitchJoin-JoinProc" />
+					<ice:panelGrid columns="1" style="margin-left:2px;" styleClass="#{activityDetailsBean.enableJoinProcess?'':'iceCmdBtn-dis'} ">
+						<ice:outputText style="white-space: nowrap;"
+							value="#{views_common_msgPropsBean['views.switchProcessDialog.Menu.pauseandstart']}" />
+					</ice:panelGrid>
+				</ice:commandLink>
 			</ice:panelGrid>
 		</ice:panelGroup>
 	</ice:form>

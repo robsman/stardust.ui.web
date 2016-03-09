@@ -691,9 +691,10 @@
 	    /*
 	     *
 	     */
-	    self.openSwitchDialog = function() {
+	    self.openSwitchDialog = function(pauseParentProcess) {
 	    	self.showSwitchProcessDialog = true;
 	    	self.abortMenuPopover.toolbar = false;
+	    	self.pauseParentProcess = pauseParentProcess;
 	    };
 
 	    /**

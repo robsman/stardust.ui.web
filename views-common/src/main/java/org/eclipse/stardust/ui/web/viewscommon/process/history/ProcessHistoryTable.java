@@ -146,7 +146,16 @@ public class ProcessHistoryTable extends UIViewComponentBean
    public void openSwitchProcess(ActionEvent event)
    {
       ProcessInstance processInstance = (ProcessInstance) event.getComponent().getAttributes().get("processInstance");     
-      ProcessInstanceUtils.openSwitchProcessDialog(processInstance);
+      ProcessInstanceUtils.openSwitchProcessDialog(processInstance, false);
+   }
+   
+   /**
+    * action listener to open Switch process dialog
+    */
+   public void openPauseProcess(ActionEvent event)
+   {
+      ProcessInstance processInstance = (ProcessInstance) event.getComponent().getAttributes().get("processInstance");     
+      ProcessInstanceUtils.openSwitchProcessDialog(processInstance, true);
    }
    
    /**

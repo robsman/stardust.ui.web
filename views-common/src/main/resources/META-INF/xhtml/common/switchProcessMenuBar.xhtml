@@ -36,6 +36,13 @@
 					<f:attribute name="processInstance" value="#{processInstance}" />
 					<f:attribute name="activityInstance" value="#{activityInstance}" />					
 				</ice:menuItem>
+				<ice:menuItem styleClass="switchMnuItm" disabled="#{!bean.enableSwitchProcess}" style="font-weight: normal"
+					value="#{views_common_msgPropsBean['views.switchProcessDialog.Menu.pauseandstart']}"
+					actionListener="#{bean.openPauseProcess}" icon="">
+					<pc:automationTag value="auto-COM-SwitchProcMenuBar-SelAbortStart" standAlone="false"/>
+					<f:attribute name="processInstance" value="#{processInstance}" />
+					<f:attribute name="activityInstance" value="#{activityInstance}" />
+				</ice:menuItem>
 			</ice:menuItem>
 		</ice:menuBar>
 	</ice:panelGroup>

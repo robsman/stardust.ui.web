@@ -626,9 +626,10 @@
 			/*
 			 *
 			 */
-			ProcessTableCompiler.prototype.openSwitchDialog = function() {
+			ProcessTableCompiler.prototype.openSwitchDialog = function(pauseParentProcess) {
 				this.showSwitchProcessDialog = true;
 				this.abortProcessPopover.visible = false;
+				this.pauseParentProcess = pauseParentProcess;
 			}
 
 			/*

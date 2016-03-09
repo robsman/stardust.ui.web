@@ -1,7 +1,7 @@
 <div style="min-width:130px">
 <div>
 	<button ng-disabled="activityTableCtrl.processesToAbort.length < 1"
-		ng-click="activityTableCtrl.openSwitchDialog()"
+		ng-click="activityTableCtrl.openSwitchDialog(false)"
 		class="button-link tbl-toolbar-item tbl-tool-link"
 		style="margin-right: 0px;">
 		{{i18n('views-common-messages.views-switchProcessDialog-Menu-abortandstart')}}
@@ -13,6 +13,14 @@
 		class="button-link tbl-toolbar-item tbl-tool-link"
 		style="margin-right: 0px;">
 		{{i18n('views-common-messages.views-switchProcessDialog-Menu-abortandjoin')}}
+	</button>
+</div>
+<div>
+	<button ng-disabled="activityTableCtrl.processesToAbort.length < 1"
+		ng-click="activityTableCtrl.openSwitchDialog(true)"
+		class="button-link tbl-toolbar-item tbl-tool-link"
+		style="margin-right: 0px;">
+		{{i18n('views-common-messages.views-switchProcessDialog-Menu-pauseandstart')}}
 	</button>
 </div>
 </div>

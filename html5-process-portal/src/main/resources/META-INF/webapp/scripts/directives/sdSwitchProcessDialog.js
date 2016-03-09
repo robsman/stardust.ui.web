@@ -39,7 +39,8 @@
 				scope: {  // Creates a new sub scope
 					onConfirm: '&sdaOnConfirm',
 					disabled: '=ngDisabled',
-					showDialog: '=sdaShowDialog'
+					showDialog: '=sdaShowDialog',
+					pauseParentProcess: '@sdaPauseParentProcess'
 				},
 				transclude: true,
 				template: // Switch process Dialog
@@ -152,11 +153,17 @@
 					spawnableProcesses : [],
 					linkComment : '',
 					switchCompleted: false,
-					selectedProcess: undefined,
-					switchProcessDialogMsg : $sce.trustAsHtml(self
-					.i18n('views-common-messages.views-switchProcessDialog-switchProcessmessage'))
+					selectedProcess: undefined
 				};
 
+				if($scope.pauseParentProcess === "true"){
+					self.switchProcess.switchProcessDialogMsg = $sce.trustAsHtml(self
+							.i18n('views-common-messages.views-switchProcessDialog-pauseProcessmessage'));
+				}else{
+					self.switchProcess.switchProcessDialogMsg = $sce.trustAsHtml(self
+							.i18n('views-common-messages.views-switchProcessDialog-switchProcessmessage'));
+				}
+				
 				self.abortNotification = {
 					totalCount : 0,
 					list : []
@@ -198,7 +205,8 @@
 				var deferred = $q.defer();
 				
 				var abortData = {
-					linkComment : self.switchProcess.linkComment
+					linkComment : self.switchProcess.linkComment,
+					pauseParentProcess : $scope.pauseParentProcess
 				};
 				
 				abortData.processInstaceOIDs = self.processInstanceOIDs;
@@ -271,11 +279,16 @@
 							'Please select atleast one Process to switch!'));
 					return;
 				}
+				//self.pauseParentProcess = $scope.pauseParentProcess;
 				self.resetValues();
 				
 				self.processInstanceOIDs = getProcessInstanceOIDs();
+				if($scope.pauseParentProcess === "true"){
+					self.dialogTitle = sdUtilService.format(self.i18n('views-common-messages.views-pauseProcessDialog-title'));
+				}else{
+					self.dialogTitle = sdUtilService.format(self.i18n('views-common-messages.views-switchProcessDialog-title'));
+				}
 				
-				self.dialogTitle = sdUtilService.format(self.i18n('views-common-messages.views-switchProcessDialog-title'));
 				
 				checkIfProcessesAbortable('abortandstart').then(function(data) {
 					if (data.length > 0) {

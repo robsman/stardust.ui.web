@@ -372,6 +372,20 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    public void openSwitchProcess(ActionEvent event)
    {
       SwitchProcessDialogBean dialog = SwitchProcessDialogBean.getInstance();
+      dialog.setPauseParentProcess(false);
+      List<ProcessInstance> sourceList = CollectionUtils.newArrayList();
+      sourceList.add(processInstance);
+      dialog.setSourceProcessInstances(sourceList);
+      dialog.openPopup();
+   }
+   
+   /**
+    * action listener to open Switch process dialog
+    */
+   public void openPauseProcess(ActionEvent event)
+   {
+      SwitchProcessDialogBean dialog = SwitchProcessDialogBean.getInstance();
+      dialog.setPauseParentProcess(true);
       List<ProcessInstance> sourceList = CollectionUtils.newArrayList();
       sourceList.add(processInstance);
       dialog.setSourceProcessInstances(sourceList);

@@ -1070,9 +1070,10 @@ public class ProcessInstanceUtils
    /**
     * method to open  Abort and Switch process dialog
     */
-   public static void openSwitchProcessDialog(ProcessInstance processInstance)
+   public static void openSwitchProcessDialog(ProcessInstance processInstance, boolean pauseParentProcess)
    {
       SwitchProcessDialogBean dialog = SwitchProcessDialogBean.getInstance();
+      dialog.setPauseParentProcess(pauseParentProcess);
       List<ProcessInstance> sourceList = new ArrayList<ProcessInstance>(1);
       sourceList.add(processInstance);
       dialog.setSourceProcessInstances(sourceList);

@@ -85,45 +85,7 @@
 									<ice:outputLabel value="#{views_common_msgPropsBean['views.spawnProcessDialog.activateWorkItems']}"
 										styleClass="label-form" />
 								</ice:panelGroup>
-								<ice:panelGroup>
-									<ice:selectBooleanCheckbox
-										value="#{spawnProcessDialogBean.pauseParentProcess}"
-										partialSubmit="true">
-										<pc:automationTag
-											value="auto-COM-SpawnProcDlg-PauseParentProcess"
-											standAlone="false" />
-									</ice:selectBooleanCheckbox>
-									<ice:outputLabel
-										value="#{views_common_msgPropsBean['views.spawnProcessDialog.pauseParentProcess']}"
-										styleClass="label-form" />
-								</ice:panelGroup>
 							</ice:panelGroup>
-
-							<!-- 	<ice:panelGroup expanded="true"
-								rendered="#{!spawnProcessDialogBean.showStartProcessView}">
-								<ice:panelGrid columns="2">
-									<ice:outputText styleClass="pi pi-dialog-info pi-lg"
-										style="width:20px;heigth:20px;text-align: top;padding:0px;" />
-									<ice:outputText styleClass="panelHeaderTitle"
-										value="#{views_common_msgPropsBean['views.spawnProcessDialog.processesStarted']}" />
-									<ice:column></ice:column>
-										<ice:panelGroup style="max-height: 100px; overflow: auto;">
-											<pc:automationTag value="auto-COM-SpawnProcDlg-SpawnResultTbl" />
-											<pc:genericDataTable bean="#{spawnProcessDialogBean}"
-												id="spawnedProcess"
-												table="#{spawnProcessDialogBean.spawnProcessHelper.spawnedProcessTable}"
-												exportExcel="false" exportCsv="false" sortSupported="false"
-												renderColumnHeaders="false" style="border-left:1px solid #d9d9d9;">
-												<ui:include src="/plugins/views-common/dialogs/hideBlankTableHeaders.xhtml" />
-											</pc:genericDataTable>
-										</ice:panelGroup>
-									<ice:panelGroup styleClass="clearing" />
-									<ice:panelGroup styleClass="clearing" />
-									<ice:panelGroup styleClass="clearing" />
-									<ice:outputText styleClass="panelHeaderTitle"
-										value="#{views_common_msgPropsBean['views.spawnProcessDialog.viewSpawnedActivities']}" />
-								</ice:panelGrid>
-							</ice:panelGroup> -->
 						</ice:panelGroup>
 
 

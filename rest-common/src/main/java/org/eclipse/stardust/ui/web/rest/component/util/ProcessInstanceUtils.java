@@ -29,7 +29,6 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
-import org.eclipse.stardust.engine.api.dto.DataPathDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
@@ -55,13 +54,16 @@ import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.DataCopyOptions;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessDefinitions;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.SpawnOptions;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.api.runtime.SpawnOptions.SpawnMode;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -723,7 +725,7 @@ public class ProcessInstanceUtils
       return notAbortableProcesses;
    }
 
-   public List<AbortNotificationDTO> switchProcess(List<Long> processInstOIDs, String processId, String linkComment)
+   public List<AbortNotificationDTO> switchProcess(List<Long> processInstOIDs, String processId, String linkComment, Boolean pauseParentProcess)
    {
       List<AbortNotificationDTO> newProcessInstances = new ArrayList<AbortNotificationDTO>();
 
@@ -751,8 +753,22 @@ public class ProcessInstanceUtils
 
          try
          {
-            ProcessInstance pi = serviceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(processInstOID,
-                  processId, true, null, true, linkComment);
+            DataCopyOptions dataCopyOptions = new DataCopyOptions(true, null, null, true);
+            ProcessInstance pi;
+            SpawnOptions options;
+            if (pauseParentProcess)
+            {
+               
+               options = new SpawnOptions(null, SpawnMode.HALT, linkComment, dataCopyOptions);
+              
+            }
+            else
+            {
+               options = new SpawnOptions(null, SpawnMode.ABORT, linkComment, dataCopyOptions);
+            }
+            
+            pi = serviceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(processInstOID, processId,
+                  options);
 
             if (pi != null)
             {

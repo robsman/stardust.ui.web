@@ -290,6 +290,40 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
          ProcessInstance selProcessInstance = (ProcessInstance) event.getComponent().getAttributes()
                .get("processInstance");
          SwitchProcessDialogBean dialog = SwitchProcessDialogBean.getInstance();
+         dialog.setPauseParentProcess(false);
+         if (null != selProcessInstance)
+         {
+            List<ProcessInstance> sourceList = CollectionUtils.newArrayList();
+            sourceList.add(selProcessInstance);
+            dialog.setSourceProcessInstances(sourceList);
+         }
+         else
+         {
+            // For multiple row select i.e Process table toolbar
+            List<ProcessInstance> processList = getSelectedProcessList();
+            dialog.setSourceProcessInstances(processList);
+         }
+         dialog.openPopup();
+      }
+      catch (Exception e)
+      {
+         ExceptionHandler.handleException(e);
+      }
+   }
+   
+   
+   /**
+    * action listener to open Switch process
+    */
+   public void openPauseProcess(ActionEvent event)
+   {
+      try
+      {
+         // For mandatory single row select i.e ProcessTable Actions Column
+         ProcessInstance selProcessInstance = (ProcessInstance) event.getComponent().getAttributes()
+               .get("processInstance");
+         SwitchProcessDialogBean dialog = SwitchProcessDialogBean.getInstance();
+         dialog.setPauseParentProcess(true);
          if (null != selProcessInstance)
          {
             List<ProcessInstance> sourceList = CollectionUtils.newArrayList();

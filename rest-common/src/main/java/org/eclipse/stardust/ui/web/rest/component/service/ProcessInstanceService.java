@@ -517,7 +517,7 @@ public class ProcessInstanceService
       SwitchProcessDTO processDTO = GsonUtils.fromJson(processData, SwitchProcessDTO.class);
 
       return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.switchProcess(processDTO.processInstaceOIDs,
-            processDTO.processId, processDTO.linkComment));
+            processDTO.processId, processDTO.linkComment, processDTO.pauseParentProcess));
    }
 
    public String abortAndJoinProcess(String processData)

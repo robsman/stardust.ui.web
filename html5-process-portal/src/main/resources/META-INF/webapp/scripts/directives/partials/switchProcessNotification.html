@@ -31,7 +31,7 @@
 					sda-mode="local">
 					<thead>
 						<tr>
-							<th ng-show="switchProcessController.switchProcess.switchCompleted" sda-name="abortedProcess" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-abortedProcesses')}}" sda-sortable="false"></th>
+							<th ng-show="switchProcessController.switchProcess.switchCompleted" sda-name="abortedProcess" sda-label="{{pauseParentProcess === 'true' ? i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-pausedProcesses') : i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-abortedProcesses')}}" sda-sortable="false"></th>
 							<th ng-show="switchProcessController.switchProcess.switchCompleted" sda-name="startedProcess" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-startedProcesses')}}" sda-sortable="false"></th>
 							<th sda-name="status" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-status')}}" sda-sortable="false"></th>
 						</tr>

@@ -62,7 +62,7 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
    private Boolean hasSpawnProcessPermission;
    private boolean showSpawnedWorkItems;
    private boolean activateSpawnedWorkItems;
-   private boolean pauseParentProcess;
+
 
    @Override
    public void initialize()
@@ -88,8 +88,6 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
             UserPreferencesEntries.F_SHOW_WORK_ITEMS, true);
       activateSpawnedWorkItems = userPrefHelper.getBoolean(UserPreferencesEntries.V_WORKFLOW_EXEC_CONFIG_PANEL,
             UserPreferencesEntries.F_ACTIVATE_WORK_ITEMS, false);
-      pauseParentProcess = userPrefHelper.getBoolean(UserPreferencesEntries.V_WORKFLOW_EXEC_CONFIG_PANEL,
-              UserPreferencesEntries.F_PAUSE_PARENT_PROCESS, false);
    }
 
    /**
@@ -199,15 +197,8 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
                SubprocessSpawnInfo info = new SubprocessSpawnInfo(process, true, null);
                infoList.add(info);
             }
-            showStartProcessView = false;
-            if (pauseParentProcess)
-            {
-              spawnProcessHelper.spawnPeerProcessInstances(spawnProcessHelper.getRootProcessInstance().getOID(), infoList);   
-            }
-            else
-            {
-               spawnProcessHelper.spawnSubprocessInstances(spawnProcessHelper.getRootProcessInstance().getOID(), infoList);   
-            }
+            showStartProcessView = false;           
+            spawnProcessHelper.spawnSubprocessInstances(spawnProcessHelper.getRootProcessInstance().getOID(), infoList);   
             spawnProcessHelper.update();
            
             closePopup();
@@ -359,16 +350,5 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
    public void setActivateSpawnedWorkItems(boolean activateSpawnedWorkItems)
    {
       this.activateSpawnedWorkItems = activateSpawnedWorkItems;
-   }
-
-   public boolean isPauseParentProcess()
-   {
-      return pauseParentProcess;
-   }
-
-   public void setPauseParentProcess(boolean pauseParentProcess)
-   {
-      this.pauseParentProcess = pauseParentProcess;
-   }
-   
+   }   
 }

@@ -3397,6 +3397,7 @@ public class ActivityDetailsBean extends UIComponentBean
    public void openSwitchProcess(ActionEvent event)
    {
       SwitchProcessDialogBean dialog = SwitchProcessDialogBean.getInstance();
+      dialog.setPauseParentProcess(false);
       List<ProcessInstance> sourceList = CollectionUtils.newArrayList();
       sourceList.add(getActivityInstance().getProcessInstance());
       dialog.setSourceProcessInstances(sourceList);
@@ -3417,6 +3418,36 @@ public class ActivityDetailsBean extends UIComponentBean
          }
       });
    }
+   
+   
+   /**
+    * action listener to open Switch process dialog
+    */
+   public void openPauseProcess(ActionEvent event)
+   {
+      SwitchProcessDialogBean dialog = SwitchProcessDialogBean.getInstance();
+      dialog.setPauseParentProcess(true);
+      List<ProcessInstance> sourceList = CollectionUtils.newArrayList();
+      sourceList.add(getActivityInstance().getProcessInstance());
+      dialog.setSourceProcessInstances(sourceList);
+      dialog.openPopup();
+      closeSwitchProcessIframePopup();
+
+      dialog.setICallbackHandler(new ICallbackHandler()
+      {
+         public void handleEvent(EventType eventType)
+         {
+            if (eventType.equals(EventType.APPLY))
+            {
+               skipViewEvents = true;
+               PortalApplication.getInstance().closeView(thisView, true);
+               releaseInteraction();
+               skipViewEvents = false;
+            }
+         }
+      });
+   }
+   
    
    public boolean isQualityAssuranceActivity()
    {

@@ -178,7 +178,7 @@
 						    title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
 						    sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
 			                sda-placement="auto bottom-right"
-							ng-click="processTableCtrl.openAbortPopover($event, rowData); ">
+							ng-click="processTableCtrl.openAbortPopover(rowData); ">
 							<i class="pi pi-menu-dropdown"></i>
 						</button>
 
@@ -233,7 +233,7 @@
 	</div>
 
 	<div sd-switch-process-dialog sda-show-dialog="processTableCtrl.showSwitchProcessDialog" sda-on-confirm="processTableCtrl.switchCompleted"
-	     sda-process-instances="processTableCtrl.processesToAbort" >
+	     sda-process-instances="processTableCtrl.processesToAbort" sda-pause-parent-process="{{processTableCtrl.pauseParentProcess}}">
 	</div>
 
 	<div sd-attach-to-case-dialog sda-show-dialog="processTableCtrl.showAttachToCaseDialog" sda-on-confirm="processTableCtrl.attachToCaseCompleted"
