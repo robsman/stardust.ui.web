@@ -13,7 +13,7 @@
 
       <!--jta-data-source>TestJtaDs</jta-data-source-->
 
-      <class>org.eclipse.stardust.ui.web.rt.persistence.jpa.test.TestEntity</class>
+      <class>com.infinity.bpm.rt.persistence.jpa.test.TestEntity</class>
 
       <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
