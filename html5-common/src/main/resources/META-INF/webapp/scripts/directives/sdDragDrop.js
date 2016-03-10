@@ -10,63 +10,58 @@
  *******************************************************************************/
 (function(){
 
-	//Sniff browser so we can set the proper dataType on the dataTransfer API
-	var dataType = "text/plain";
-
-	if(navigator.appName==="Microsoft Internet Explorer"){
-		dataType = "text";
-	}
-
 	/**
 	 * sdDataDrop: makes the associated element a drop target with
 	 * a user defined callback for drop events - attrs.onDrop
 	 */
 	angular.module('bpm-common.directives')
-	.directive("sdDataDrop",function($parse){
+	.directive("sdDataDrop",["$parse", "sdUtilService",function($parse,sdUtilService){
 
-	   return{
-	    scope: true,
-	    link: function(scope, elem, attrs){
+		var dataType = (sdUtilService.isIE())?"text":"text/plain";
 
-	      elem.attr("droppable","true");
+   		return{
+		    scope: true,
+		    link: function(scope, elem, attrs){
 
-	      elem.bind("dragenter",function(e){
-	        e.preventDefault();
-	        elem.addClass("drop-over");
-	        return true;
-	      });
+		      elem.attr("droppable","true");
 
-	      elem.bind("dragleave",function(e){
-	    	  elem.removeClass("drop-over");
-	      });
+		      elem.bind("dragenter",function(e){
+		        e.preventDefault();
+		        elem.addClass("drop-over");
+		        return true;
+		      });
 
-	      elem.bind("dragover",function(e){
-	          if (e.preventDefault) {e.preventDefault();}
-	          if (e.stopPropagation) {e.stopPropagation();}
-	          e = (e.dataTransfer)?e: e.originalEvent;
-	          e.dataTransfer.dropEffect = 'move';
-	          return false;
-	      });
+		      elem.bind("dragleave",function(e){
+		    	  elem.removeClass("drop-over");
+		      });
 
-	     
-	      elem.bind("drag",function(){
-	    	 if (attrs.sdDataDrag === undefined) {
-	    		 return false;
-	    	 }
-	      });
+		      elem.bind("dragover",function(e){
+		          if (e.preventDefault) {e.preventDefault();}
+		          if (e.stopPropagation) {e.stopPropagation();}
+		          e = (e.dataTransfer)?e: e.originalEvent;
+		          e.dataTransfer.dropEffect = 'move';
+		          return false;
+		      });
 
-	      elem.bind("drop",function(e){
-	    	if (e.preventDefault) {e.preventDefault();}
-	        if (e.stopPropagation) {e.stopPropagation();}
-	        e = (e.dataTransfer)?e: e.originalEvent;
-	        var data = e.dataTransfer.getData(dataType);
-	        var fn = $parse(attrs.sdaDrop);
-	        fn(scope, {$data: data, $event: e});
-	        elem.removeClass("drop-over");
-	      });
-	    }
-	  };
-	});//sd-data-drop end
+		     
+		      elem.bind("drag",function(){
+		    	 if (attrs.sdDataDrag === undefined) {
+		    		 return false;
+		    	 }
+		      });
+
+		      elem.bind("drop",function(e){
+		    	if (e.preventDefault) {e.preventDefault();}
+		        if (e.stopPropagation) {e.stopPropagation();}
+		        e = (e.dataTransfer)?e: e.originalEvent;
+		        var data = e.dataTransfer.getData(dataType);
+		        var fn = $parse(attrs.sdaDrop);
+		        fn(scope, {$data: data, $event: e});
+		        elem.removeClass("drop-over");
+		      });
+		    }
+		  };
+	}]);//sd-data-drop end
 
 
 	/**
@@ -74,84 +69,85 @@
 	 * a user defined callback for drop events - attrs.onDrop
 	 */
 	angular.module('bpm-common.directives')
-	.directive("sdDataDrag",function($parse){
+	.directive("sdDataDrag",["$parse", "sdUtilService",function($parse, sdUtilService){
+
+		var dataType = (sdUtilService.isIE())?"text":"text/plain";
+
+  		return{
+		    require: "ngModel",
+		    link: function(scope, elem, attrs,ngModelCtrl){
+
+		      var data=ngModelCtrl.$viewValue,
+	    	      dragElem,
+	    	      cloneElem;
+
+		      elem.attr("draggable","true");
+
+		      elem.bind("dragend",function(e){
+		        var fn = $parse(attrs.sdaDragend);
+
+		        srcObject=ngModelCtrl.$modelValue;
+		        fn(scope, {$data: srcObject, $event: e});
+
+		        if(dragElem && dragElem.remove){
+		          dragElem.remove();
+		        }
+
+		        if(cloneElem && cloneElem.remove){
+		          cloneElem.remove();
+		        }
+
+		      });
+
+		      elem.bind("dragstart",function(e){
+
+		        var data =ngModelCtrl.$viewValue,
+		        	  fn = $parse(attrs.sdaDragstart),
+		            fn2 = $parse(attrs.sdaDragElemFx),
+		            dragObj;
 
 
-	  return{
-	    require: "ngModel",
-	    link: function(scope, elem, attrs,ngModelCtrl){
+		        //DragStart callback
+		        data = fn(scope, {$data: ngModelCtrl.$viewValue, $event: e}) || data;
 
-	      var data=ngModelCtrl.$viewValue,
-    	      dragElem,
-    	      cloneElem;
-
-	      elem.attr("draggable","true");
-
-	      elem.bind("dragend",function(e){
-	        var fn = $parse(attrs.sdaDragend);
-
-	        srcObject=ngModelCtrl.$modelValue;
-	        fn(scope, {$data: srcObject, $event: e});
-
-	        if(dragElem && dragElem.remove){
-	          dragElem.remove();
-	        }
-
-	        if(cloneElem && cloneElem.remove){
-	          cloneElem.remove();
-	        }
-
-	      });
-
-	      elem.bind("dragstart",function(e){
-
-	        var data =ngModelCtrl.$viewValue,
-	        	  fn = $parse(attrs.sdaDragstart),
-	            fn2 = $parse(attrs.sdaDragElemFx),
-	            dragObj;
+		        //Drag element factory callback
+		        dragString =  fn2(scope, {item: ngModelCtrl.$viewValue});
 
 
-	        //DragStart callback
-	        data = fn(scope, {$data: ngModelCtrl.$viewValue, $event: e}) || data;
-
-	        //Drag element factory callback
-	        dragString =  fn2(scope, {item: ngModelCtrl.$viewValue});
-
-
-	        if(dragString){
-  	        //now create drag element and append to top of body
-  	        dragElem = $(dragString);
-  	        dragElem.css({"position":"absolute","top":0,"left":0,"z-index" : -2});
+		        if(dragString){
+	  	        //now create drag element and append to top of body
+	  	        dragElem = $(dragString);
+	  	        dragElem.css({"position":"absolute","top":0,"left":0,"z-index" : -2});
 
 
-  	        //now createClone
-  	        cloneElem = dragElem.clone();
+	  	        //now createClone
+	  	        cloneElem = dragElem.clone();
 
-  	        //cloneElem.css(cloneCss);
-  	        //cloneElem.children().css(cloneCss);
-  	        cloneElem.addClass("sd-clone-elem");
-  	        $("body").append(dragElem);
-  	        $("body").append(cloneElem);
-	        }
-	        //ensure we at least pass an empty string
-	        if(angular.isUndefined(data)){data="";}
+	  	        //cloneElem.css(cloneCss);
+	  	        //cloneElem.children().css(cloneCss);
+	  	        cloneElem.addClass("sd-clone-elem");
+	  	        $("body").append(dragElem);
+	  	        $("body").append(cloneElem);
+		        }
+		        //ensure we at least pass an empty string
+		        if(angular.isUndefined(data)){data="";}
 
-	        data = JSON.stringify(data);
+		        data = JSON.stringify(data);
 
-	        e = (e.dataTransfer)?e: e.originalEvent;
-	        e.dataTransfer.setData(dataType,data);
-	        e.dataTransfer.dropEffect = 'move';
-	        if(e.dataTransfer.setDragImage){
-	        	if(dragElem) {
-	        		e.dataTransfer.setDragImage(dragElem[0],0,0);
-	        	}
-	        }
-	        e.dataTransfer.effectAllowed="move";
+		        e = (e.dataTransfer)?e: e.originalEvent;
+		        e.dataTransfer.setData(dataType,data);
+		        e.dataTransfer.dropEffect = 'move';
+		        if(e.dataTransfer.setDragImage){
+		        	if(dragElem) {
+		        		e.dataTransfer.setDragImage(dragElem[0],0,0);
+		        	}
+		        }
+		        e.dataTransfer.effectAllowed="move";
 
-	      });
+		      });
 
-	    }
-	  };
-	});//sd-data-drag end
+		    }
+		  };
+		}]);//sd-data-drag end
 
 })();
