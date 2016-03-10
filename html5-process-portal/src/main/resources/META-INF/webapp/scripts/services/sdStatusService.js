@@ -119,6 +119,16 @@
 		             				label : sgI18nService
 		             						.translate('views-common-messages.views-processTable-statusFilter-aborting')
 		             			},
+		             			{
+		             				value : 5,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-halting')
+		             			},
+		             			{
+		             				value : 6,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-halted')
+		             			},
 		             			
 		             	];
 		}
