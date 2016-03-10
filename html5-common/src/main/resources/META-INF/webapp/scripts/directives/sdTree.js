@@ -578,7 +578,7 @@
 	  //============================================================================
 	  // TreeNode Directive TODO:comment
 	  //============================================================================
-	  mod.directive("sdTreeNode",function($parse,$q,$timeout,$compile){
+	  mod.directive("sdTreeNode",function($parse,$q,$timeout,$compile,sdUtilService){
 	    
 	    return{
 	      require:["sdTreeNode","^?sdTree","^?sdTreeNode"],
@@ -627,7 +627,7 @@
 	          'ng-class="{\'pi-arrow-r\':!isVisible && !isLeaf,',
 	          '\'pi-arrow-d\':isVisible }" class="pi"></i>',
 	          '</div>',
-	          '<a href="" ' + dragdropStr + ' title="{{' + attrs.sdaTitle + '}}" ng-model="nodeItem"  ng-click="invokeCallback(\'node-click\',$event)"  class="tree-node">',
+	          '<a ' + dragdropStr + ' title="{{' + attrs.sdaTitle + '}}" ng-model="nodeItem"  ng-click="invokeCallback(\'node-click\',$event)"  class="tree-node">',
 	          '<i oncontextmenu="return false;" onmouseup="angular.element(this).scope().triggerMenu(event);" ng-class="getIconClass() + \' \' + iconClass" class="js-icon pi pi-badge">' +
 	          	'<i class="pi pi-badge-bg"></i>' +
 	          	'<i class="pi pi-badge-icon"></i>' +
@@ -792,13 +792,10 @@
 	            
 	            //Monitor our template input field for the enter key and blur that element when detected
 	            scope.keyMonitor= function(e){
-	                if(e.charCode===13 && e.target.blur){
+	                if(e.which===13 && e.target.blur){
 	                	e.target.blur();
 	                }
-	                //reset on key press otherwise we can get into a state where a valid blur is ignored.
-	                else{
-	                	scope.md = false;
-	                }
+	                else{scope.md = false;}
 	             };
 	             
 	            //Create our own local allowEdit so we dont shadow the parents value
@@ -837,9 +834,9 @@
 	            //users controller.
 	            scope.invokeCallback = function(name,e){
 
+	              
 	              if(e && e.preventDefault){
 	                e.preventDefault();
-	                e.stopImmediatePropagation();
 	                e.stopPropagation();
 	              }
 
@@ -892,7 +889,8 @@
 	                  break;
 	                
 	                case 'node-drop':
-	                  if(navigator.appName === "Microsoft Internet Explorer"){
+
+	                  if(sdUtilService.isIE()){
 	                	  data.dropData =  JSON.parse(e.dataTransfer.getData("text"));
 	                  }else{
 	                	  data.dropData =  JSON.parse(e.dataTransfer.getData("text/plain"));
