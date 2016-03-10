@@ -577,6 +577,21 @@
 			}
 		}
 		
+		/**
+		 * AngularJS internal IE detection code,
+		 * Works on IE11 and below, Will fail on EDGE
+		 * https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
+		 * @return {Boolean} [description]
+		 */
+		UtilService.prototype.isIE = function(){
+			var msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
+	
+			if (isNaN(msie)) {
+			  msie = parseInt((/trident\/.*; rv:(\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
+			}
+
+			return (!isNaN(msie))
+		}
 	   /**
 	    * Returns true if browser is IE and browser is below version 10
 	    */
