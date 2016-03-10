@@ -837,10 +837,13 @@
 	              
 	              if(e && e.preventDefault){
 	                e.preventDefault();
+	                e.stopImmediatePropagation();
 	                e.stopPropagation();
 	              }
 
-	              //ignore mouse click events on our editable input field
+	              //ignore mouse click events on our editable input field otherwise we would
+	              //handle that click as a normal node click (Which it isn't). The intent here would
+	              //be to change cursor position/selectionRange).
 	              if((e.srcElement || e.target).nodeName === "INPUT" && name==="node-click"){
 	              	return;
 	              }
