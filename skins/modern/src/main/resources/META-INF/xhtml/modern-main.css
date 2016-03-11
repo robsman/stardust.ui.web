@@ -9716,10 +9716,15 @@ img[src *='world_go.png'].nodeMenuIcon {
 	border-top: 1px solid #958977;
 	position:fixed;
 	z-index:1;
-	left:0;
+	left:42px;
 	top:40px;
 	padding-left:4px;
-	width:350px;
+	width:306px;
+}
+
+.sg-sidebar-opened.sg-sidebar-pinned .perspective-series-wrapper{
+	left:2px;
+	width:346px;
 }
 
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
@@ -9731,10 +9736,6 @@ img[src *='world_go.png'].nodeMenuIcon {
 
 .perspective-series {
 	height: 20px;
-}
-
-.sg-sidebar-opened .perspective-series{
-	padding-left:39px;
 }
 
 .sg-sidebar-opened.sg-sidebar-pinned .perspective-series{
