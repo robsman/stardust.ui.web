@@ -39,6 +39,7 @@ import org.eclipse.stardust.ui.web.rest.dto.BenchmarkTLVStatisticsByBOResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.BenchmarkTLVStatisticsResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.BusinessObjectStatisticDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessDefinitionDTO;
+import org.eclipse.stardust.ui.web.rest.util.ActivityUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -337,7 +338,7 @@ public class TrafficLightViewUtils
             BenchmarkTLVStatisticsResultDTO bASRDTO = new BenchmarkTLVStatisticsResultDTO();
             bASRDTO.id = activityId;
             bASRDTO.parentId = processId;
-            bASRDTO.name = getActivityOrProcessName(activityId);
+            bASRDTO.name = ActivityUtils.getActivity(processId,activityId).getName();
             bASRDTO.isActivity = true;
 
             bASRDTO.abortedCount = stats.getAbortedCountForActivity(processId, activityId);
@@ -390,17 +391,6 @@ public class TrafficLightViewUtils
          modelName = qualifiedProcessId.substring(0, lastIndex + 1);
       }
       return modelName;
-   }
-
-   public static String getActivityOrProcessName(String qualifiedId)
-   {
-      String name = null;
-      if (qualifiedId.indexOf("{") != -1)
-      {
-         int lastIndex = qualifiedId.lastIndexOf("}");
-         name = qualifiedId.substring(lastIndex + 1);
-      }
-      return name;
    }
 
    public static Calendar getCurrentDayEnd()
