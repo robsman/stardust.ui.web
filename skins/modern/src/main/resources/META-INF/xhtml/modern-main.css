@@ -9702,7 +9702,7 @@ img[src *='world_go.png'].nodeMenuIcon {
 
 /*************** Sidebar - Start ***************/ 
 .sg-sidebar-content{
-	top:29px !important;
+	top:15px !important;
 }
 
 .perspective-sidebar-contents {
@@ -9711,21 +9711,21 @@ img[src *='world_go.png'].nodeMenuIcon {
 }
 
 .perspective-series-wrapper {
-	height: 28px;
+	height: 30px;
 	border-bottom: 1px solid #DDDDDD;
 	border-top: 1px solid #958977;
 	position:fixed;
-	background:#fff;
 	z-index:1;
 	left:0;
-	top:54px;
+	top:40px;
+	padding-left:4px;
 	width:350px;
 }
 
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
 /* IE10+ CSS styles go here */
 	.perspective-series-wrapper {
-		top:149px;
+		top:112px;
 	}
 }
 
