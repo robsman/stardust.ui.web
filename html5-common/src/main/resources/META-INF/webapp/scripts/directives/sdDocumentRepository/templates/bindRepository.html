@@ -1,33 +1,34 @@
 
-<label>Available Providers</label>
-<hr style="margin:0;">
-<div style="margin:1em;">
-
-	
-
-	<label style="display:inline-table;min-width:55px;">Provider</label>
-	<select ng-model="ctrl.boundDialogRepoProvider" ng-options="item as item.name for item in ctrl.repositoryProviders"></select>
-	
-</div>
-
-<label>Repository Settings</label>
-<hr style="margin:0;">
-
-
-<div style="display:inline-flex;">
+<div style="max-width:640px;">
+	<label>Available Providers</label>
+	<hr style="margin:0;">
 	<div style="margin:1em;">
-		<label style="display:inline;">Repository ID </label>
-		<input ng-model="ctrl.boundDialogRepoProvider.beanId" type="text"/>
+
+		
+
+		<label style="display:inline-table;min-width:55px;">Provider</label>
+		<select ng-model="ctrl.boundDialogRepoProvider" ng-options="item as item.name for item in ctrl.repositoryProviders"></select>
+		
 	</div>
 
-	<div ng-init= "ctrl.boundDialogRepoProvider.jndiName=ctrl.boundDialogRepoProvider.id + '/newRepo'" style="margin:1em;">
-		<label style="display:inline;">jndiName </label>
-		<input ng-model="ctrl.boundDialogRepoProvider.jndiName" type="text"/>
+	<label>Repository Settings</label>
+	<hr style="margin:0;">
+
+
+	<div style="display:inline-flex;">
+		<div style="margin:1em;">
+			<label style="display:inline;">Repository ID </label>
+			<input ng-model="ctrl.boundDialogRepoProvider.beanId" type="text"/>
+		</div>
+
+		<div ng-init= "ctrl.boundDialogRepoProvider.jndiName=ctrl.boundDialogRepoProvider.id + '/newRepo'" style="margin:1em;">
+			<label style="display:inline;">jndiName </label>
+			<input ng-model="ctrl.boundDialogRepoProvider.jndiName" type="text"/>
+		</div>
 	</div>
-</div>
 
 
-<div style="position:relative;display:inline-block;">
+	<div style="position:relative;display:inline-block;">
 
 		<div class="popover-body">
 
@@ -86,3 +87,4 @@
 
 		</div>
 	</div>
+</div>
