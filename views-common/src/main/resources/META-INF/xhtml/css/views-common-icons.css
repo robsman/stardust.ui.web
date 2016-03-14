@@ -11,6 +11,11 @@
  
 /* Workflow Execution Views */
  
+ .all_management:before{
+	font-family: "FontAwesome";
+	content: "\f016"; /* fa-file-o */
+}
+ 
 .clipboard-task:before{
 	font-family: "FontAwesome";
 	content: "\f0ea"; /* fa-clipboard */
