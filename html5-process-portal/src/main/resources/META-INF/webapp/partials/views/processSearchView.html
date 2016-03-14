@@ -1,25 +1,13 @@
 <div sg-stretch-to-bottom class="view-panel">
 	<div class="ng-hide" ng-show="true" ng-controller="sdProcessSearchViewCtrl as procSearchViewCtrl">
-		<div class="view-panel-toolbar">
-			<a href="#" ng-show="procSearchViewCtrl.showSearchCriteria"
-				ng-click="procSearchViewCtrl.showSearchCriteria = false" aid="BCC-ProcSrch-HideCriteria">
-				<table cellpadding="0" cellspacing="0" class="searchTableLayout">
-					<tr>
-						<td style="padding-right: 5px;"><i
-							class=" pi pi-trigger-expanded pi-lg"></i></td>
-						<td><header class="heading">{{(i18n('business-control-center-messages.views-processSearchView-searchCriteria-label')).toUpperCase()}}</header></td>
-					</tr>
-				</table>
-			</a> <a href="#" ng-show="!procSearchViewCtrl.showSearchCriteria"
-				ng-click="procSearchViewCtrl.showSearchCriteria = true" aid="BCC-ProcSrch-ShowCriteria">
-				<table cellpadding="0" cellspacing="0" class="searchTableLayout">
-					<tr>
-						<td style="padding-right: 5px;"><i
-							class=" pi pi-trigger-collapsed pi-lg"></i></td>
-						<td><span class="heading">{{(i18n('business-control-center-messages.views-processSearchView-searchCriteria-label')).toUpperCase()}}</span></td>
-					</tr>
-				</table>
-			</a>
+		<div class="heading"
+			ng-click="procSearchViewCtrl.setShowSearchCriteria()"
+			aid="BCC-ProcSrch-ShowHideCriteria">
+			<i ng-show="procSearchViewCtrl.showSearchCriteria"
+				class="pi pi-trigger-expanded pi-lg"></i>
+			<i ng-show="!procSearchViewCtrl.showSearchCriteria"
+				class="pi pi-trigger-collapsed pi-lg"></i>
+			<span>{{i18n('business-control-center-messages.views-processSearchView-searchCriteria-label')}}</span>
 		</div>
 		<div ng-show="procSearchViewCtrl.showSearchCriteria">
 			<table style="margin-left: 5px;">

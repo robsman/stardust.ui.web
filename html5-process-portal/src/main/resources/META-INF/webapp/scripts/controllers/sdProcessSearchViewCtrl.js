@@ -1337,6 +1337,14 @@
 		
 	};
 	
+	/**
+	 * 
+	 */
+	ProcessSearchViewCtrl.prototype.setShowSearchCriteria = function() {
+		this.showSearchCriteria = !this.showSearchCriteria;
+	};
+	
+	
 	/*
 	 * 
 	 */
