@@ -48,7 +48,7 @@ span.dirty:before{
 }
 
 .tab-arrow:after, .tab-arrow:before {
-	bottom: -6px;
+	bottom: -8px;
 	left: 50%;
 	border: solid transparent;
 	content: " ";

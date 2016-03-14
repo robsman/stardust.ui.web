@@ -277,7 +277,7 @@
 	</div>
 	
 	<!--Bottom Container - Tabs - > Model Tree and Categories  -->
-	<div style="width:100%;position:relative;margin-top:1em;overflow:auto;">
+	<div sd-unfurl sda-fudge="-80" sda-min-height="200px;" style="width:100%;position:relative;margin-top:1em;overflow:auto;">
 		
 	    <!-- Tabs -->
 	    <div class="tab-container">
@@ -313,7 +313,7 @@
 	    	<div style="position:relative;">
 			    <!-- Model Tree Container -->
 				<div ng-show="ctrl.selectedBenchmark" 
-				     style="width:225px;xdisplay:inline-flex;xdisplay:-ms-flexbox;a;overflow:auto;">
+				     style="width:225px;overflow:auto;">
 					
 					<!-- sdTree Implementation of Model Tree -->
 				    <ul sd-tree="ctrl.onTreeInit(api)"
