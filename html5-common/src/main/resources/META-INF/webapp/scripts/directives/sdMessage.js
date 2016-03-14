@@ -59,7 +59,7 @@ angular
 										$scope.showError = false;
 									};
 									
-									if (!angular.isDefined($scope.messageKey)) {
+									if (!$scope.messageKey) {
 										$scope.messageKey = 'global.error';
 									}
 
