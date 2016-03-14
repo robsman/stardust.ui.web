@@ -10,12 +10,13 @@
  
 (function(){
 	
-	sdReportsService.$inject = ["$http", "$q", "sdUtilService"];
+	sdReportsService.$inject = ["$http", "$q", "sdUtilService", "sgI18nService"];
 	
-	function sdReportsService($http, $q, sdUtilService){
+	function sdReportsService($http, $q, sdUtilService, sgI18nService){
 		this.$http = $http;
 		this.$q = $q;
 		this.rootUrl = sdUtilService.getRootUrl();
+	    this.i18n = sgI18nService.translate;
 	};
 	
 	
@@ -25,14 +26,20 @@
 		
 		var deferred = this.$q.defer(),
 			paths =[],
-			upathKey;
+			upathKey,
+			publicReportsLabel,
+			privateReportsLabel;
+		
+		//0:compute our i18n labels
+		publicReportsLabel = this.i18n("views-common-messages.views-genericRepositoryView-systemFolders-publicReportDefinitions-label");
+		privateReportsLabel = this.i18n("views-common-messages.views-genericRepositoryView-systemFolders-privateReportDefinitions-label");
 		
 		//1: Add the fixed path we do know
-		paths={"reports/designs" : "Personel Report Definitions"}
+		paths={"reports/designs" : publicReportsLabel}
 
 		//2:Now compute the one we don't
 		upathKey = myDocumentsFolderPath + "/reports/designs"
-		paths[upathKey] = "Private Report Definitions";
+		paths[upathKey] = privateReportsLabel;
 		deferred.resolve(paths);
 
 		return deferred.promise;
