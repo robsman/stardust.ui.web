@@ -1034,8 +1034,12 @@ public class ActivityTableUtils
                   documentDTO.contentType = (MimeTypesHelper.detectMimeType(documentInfo.getName(), null).getType());
                   documents.add(documentDTO);
                }
+               boolean isDocument = true;
+               if(documents.isEmpty()){
+                  isDocument = false;
+               }
 
-               DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), true, documents);
+               DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), isDocument, documents);
                descriptors.put(desc.getId(), descriptorDto);
             }else{
                ProcessDescriptor desc = (ProcessDescriptor) descriptor;

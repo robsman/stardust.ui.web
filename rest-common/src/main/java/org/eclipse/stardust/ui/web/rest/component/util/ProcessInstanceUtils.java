@@ -1989,7 +1989,11 @@ public class ProcessInstanceUtils
                documents.add(documentDTO);
             }
 
-            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), true, documents);
+            boolean isDocument = true;
+            if(documents.isEmpty()){             
+               isDocument = false;
+            }
+            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), isDocument, documents); 
             descriptors.put(desc.getId(), descriptorDto);
          }
          else

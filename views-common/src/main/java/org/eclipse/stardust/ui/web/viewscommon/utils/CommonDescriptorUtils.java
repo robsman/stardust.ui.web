@@ -318,14 +318,17 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
 
             	   if (includeDocuments) {
             		   List<DocumentInfo> documents = new ArrayList<DocumentInfo>();
+            		   String valueOfDescriptor = null;
             		   if(descriptorValue instanceof DocumentInfo){
             			   documents.add((DocumentInfo) descriptorValue);
             		   }else if(descriptorValue instanceof List){
             			   documents = (List<DocumentInfo>) descriptorValue;
+            		   }else if(descriptorValue instanceof Integer){
+            		      valueOfDescriptor =  descriptorValue.toString();
             		   }
             		   ProcessDocumentDescriptor docDescriptor = new ProcessDocumentDescriptor(
             		         entry.getKey(),
-            		         I18nUtils.getDataPathName(entry.getValue()), null, documents);
+            		         I18nUtils.getDataPathName(entry.getValue()), valueOfDescriptor, documents);
             		   processDescriptors.add(docDescriptor);
             	   } else {
             		   continue;
