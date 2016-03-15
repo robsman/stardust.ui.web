@@ -542,10 +542,10 @@ define(
                                              .val());
                         }
                      });
-					 
-					this.parameterDefinitionNameInput
+                
+               this.parameterDefinitionNameInput
                      .change(function() {
-					    if (!self.view.validate()) {
+                   if (!self.view.validate()) {
                            return;
                         }
                      });
@@ -644,7 +644,7 @@ define(
                this.transactedRouteRow.hide();
                if(this.isIntegrator()){
                  this.autoStartupRow.show();
-               	this.transactedRouteRow.show();
+                  this.transactedRouteRow.show();
                }
                this.inputBodyAccessPointInput.empty();
                this.inputBodyAccessPointInput.append("<option value='"
@@ -912,38 +912,45 @@ define(
              * 
              */
             GenericEndpointOverlay.prototype.validate = function() {
-				var valid = true;
-				this.camelContextInput.removeClass("error");
-				this.parameterDefinitionNameInput.removeClass("error");
-				var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
-				if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
-					this.view.errorMessages
-									  .push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
-					this.parameterDefinitionNameInput.addClass("error");
-					valid = false;
-					}
-				
-				for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
-				{
-					var ap = this.getApplication().contexts.application.accessPoints[n];
-					if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
-					{
-						if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
-							this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
-							}
-						this.parameterDefinitionNameInput.addClass("error");
-						valid = false;
-						}
-					}
-				if (m_utils.isEmptyString(this.camelContextInput.val())) {
-					this.view.errorMessages.push("Camel Context must not be empty.");
-					this.camelContextInput.addClass("error");
-					}
-				if (this.view.errorMessages.length != 0){
-					valid = false;
-					}
-				return valid;
-				};
+            var valid = true;
+            this.camelContextInput.removeClass("error");
+            this.parameterDefinitionNameInput.removeClass("error");
+            this.producerOutboundConversion.removeClass("error");
+            this.producerInboundConversion.removeClass("error");
+            var parameterDefinitionNameInput=this.parameterDefinitionNameInput.val();
+            if(!parameterDefinitionNameInput)
+               parameterDefinitionNameInput="";
+            
+            var parameterDefinitionNameInputWhithoutSpaces =  parameterDefinitionNameInput.replace(/ /g, "");
+            if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
+               this.view.errorMessages
+                             .push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
+               this.parameterDefinitionNameInput.addClass("error");
+               valid = false;
+               }
+            
+            for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
+            {
+               var ap = this.getApplication().contexts.application.accessPoints[n];
+               if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+               {
+                  if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
+                     this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+                     }
+                  this.parameterDefinitionNameInput.addClass("error");
+                  valid = false;
+                  }
+               }
+            if (m_utils.isEmptyString(this.camelContextInput.val())) {
+               this.view.errorMessages.push("Camel Context must not be empty.");
+               this.camelContextInput.addClass("error");
+               }
+            
+            if (this.view.errorMessages.length != 0){
+               valid = false;
+               }
+            return valid;
+            };
             
             /**
              * 
@@ -951,6 +958,9 @@ define(
             GenericEndpointOverlay.prototype.validateProducerRoute = function() {
 
                this.producerRouteTextarea.removeClass("error");
+               this.producerOutboundConversion.removeClass("error");
+               this.producerInboundConversion.removeClass("error");
+               
                if(!m_utils.isEmptyString(this.producerRouteTextarea.val())) {
                   var indexFromEndpoint = this.producerRouteTextarea.val().indexOf("<from");
                   if(indexFromEndpoint != -1) {
@@ -958,50 +968,13 @@ define(
                      .push("Producer Route must not contain From Endpoint.");
                      this.producerRouteTextarea.addClass("error");
                   }
-                  var indexExplicitProuducerOutboundConverter = this.producerRouteTextarea.val().indexOf("bean:bpmTypeConverter?method=to");
                   
-                  // add check for new data endpoint
-                  if(indexExplicitProuducerOutboundConverter == -1) {
-                     indexExplicitProuducerOutboundConverter = this.producerRouteTextarea.val().indexOf("ipp:data:to");
-                  }
-                  
-                  if(indexExplicitProuducerOutboundConverter != -1 && this.producerOutboundConversion.val() != "None" && 
-                        !m_utils.isEmptyString(this.producerOutboundConversion.val())) {
-                     // check if this converter is in the same place as the injected Inbound converter
-                     // check if the explicit outbound conversion is right after setHeader Endpoint
-                     var setHeaderIndex = this.producerRouteTextarea.val().indexOf("</setHeader>");
-                     if(setHeaderIndex == -1) {
+                  if(this.producerBpmTypeConverter.prop("checked")){
+                     if(this.producerOutboundConversion.val()==m_constants.TO_BE_DEFINED && this.producerInboundConversion.val()==m_constants.TO_BE_DEFINED){
                         this.view.errorMessages
-                        .push("More than one Producer Outbound Conversion specified.");
-                        this.producerRouteTextarea.addClass("error");
-                     }
-                     else  {
-                        var beforeExplicitProuducerOutboundConverter = this.producerRouteTextarea.val().substring(setHeaderIndex, indexExplicitProuducerOutboundConverter);
-                        var toUriCount = beforeExplicitProuducerOutboundConverter.match(/<to/g);
-                        if(toUriCount.length == 1) {
-                           this.view.errorMessages
-                           .push("More than one Producer Outbound Conversion specified.");
-                           this.producerRouteTextarea.addClass("error");
-                        }
-                     }
-                  }
-                  
-                  var indexExplicitProuducerInboundConverter = this.producerRouteTextarea.val().indexOf("bean:bpmTypeConverter?method=from");
-                  
-                  // add check for new data endpoint
-                  if(indexExplicitProuducerInboundConverter == -1) {
-                     indexExplicitProuducerInboundConverter = this.producerRouteTextarea.val().indexOf("ipp:data:from");
-                  }
-                  
-                  if(indexExplicitProuducerInboundConverter != -1 && this.producerInboundConversion.val() != "None" && 
-                        !m_utils.isEmptyString(this.producerInboundConversion.val())) {
-                     // check if the explicit inbound conversion is right after last To Endpoint
-                     var lastProducerRoutePart = this.producerRouteTextarea.val()
-                        .substring(indexExplicitProuducerInboundConverter, this.producerRouteTextarea.val().length);
-                     if(lastProducerRoutePart.indexOf("<to") == -1) {
-                        this.view.errorMessages
-                        .push("More than one Producer Inbound Conversion specified.");
-                        this.producerRouteTextarea.addClass("error");
+                        .push("Please select a conversion mode or uncheck Include BPM Type Converter checkbox.");
+                        this.producerOutboundConversion.addClass("error");
+                        this.producerInboundConversion.addClass("error");
                      }
                   }
                }
@@ -1378,7 +1351,7 @@ define(
             };
             
             GenericEndpointOverlay.prototype.isIntegrator = function(){
-            	   return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+                  return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
             }
 
          }
