@@ -19,7 +19,7 @@
    function MultiSelectFilter($parse, sdUtilService) {
       return {
          restrict : 'A',
-         template : '<select style="min-width: 200px; max-width: 350px;" name="options" ng-model="filterData.like" '
+         template : '<select style="min-width: 200px; max-width: 350px; height: 75px" name="options" ng-model="filterData.like" '
                   + 'ng-options="option[value] as option[label] for option in filterCtrl.options | orderBy:\'{{label}}\'"><\/select>'
                   + '<label ng-show="multiple" ng-bind="i18n(\'portal-common-messages.common-filterPopup-pickListFilter-pickMany-list-message\')"><\/label>',
          controller : [ '$scope','$attrs','$parse', FilterController ],
@@ -27,7 +27,6 @@
 			if (!attr.sdaMultiple || attr.sdaMultiple == 'true') {
 				var selectElem = elem.find('select');
 				selectElem.attr('multiple', '');
-				selectElem.attr('height', '75px');
 			}
 
 			return function(scope, element, attr, ctrl) { // Link
