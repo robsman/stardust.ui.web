@@ -1041,7 +1041,11 @@ define(
                         }
                      }
                   }
-                  uri = uri.replace(/&/g, "&amp;");
+                  if(uri){
+                     uri = uri.replace(/&/g, "&amp;");
+                  }else{
+                     uri="";
+                  }
                   if (uri.indexOf("?") > 0)
                   {
                      var index = uri.indexOf("?");
