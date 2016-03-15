@@ -70,7 +70,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 	   	<ippui:view name="categoryTree" include="/plugins/html5-business-control-center/partials/views/allManagementViews.html">
 	   		<ippui:preferences>
 				<ippui:preferencePage name="icon"
-					include="/plugins/views-common/images/icons/pending_activities.png" />
+					include="/plugins/views-common/images/icons/all_management.png" />
 			</ippui:preferences>
 	   	</ippui:view>
 	   	
