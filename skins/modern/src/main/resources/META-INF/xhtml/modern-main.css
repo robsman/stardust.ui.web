@@ -9753,6 +9753,10 @@ img[src *='world_go.png'].nodeMenuIcon {
 	right:14px;
 }
 
+.perspective-launch-panels .pi-refresh{
+	cursor:pointer;	
+}
+
 .perspective-launch-panels-html5 {
 	padding: 0 13px; /* This is required to match padding of ICEfaces Launch Panels, class: content */
 	position:relative;
