@@ -57,6 +57,13 @@
 		EnvConfigService.prototype.getBaseUrl = function() {
 			return envConfigs.baseUrl;
 		};
+		
+		/*
+		 * 
+		 */
+		EnvConfigService.prototype.getSsoServiceUrl = function() {
+			return envConfigs.ssoServiceURL;
+		};
 
 		/*
 		 * 
