@@ -1,0 +1,187 @@
+<style type="text/css" media="all">
+
+
+.properties-panel h1{
+	margin: 0px;
+	margin-bottom: 10px; 
+}
+
+.properties-panel h2 {
+	margin: 0px;
+	margin-bottom: 5px;
+	margin-left: 5px; 
+}
+
+.properties-panel h2 {
+	margin: 0px;
+	margin-bottom: 5px;
+	margin-left: 10px; 
+}
+
+.properties-panel {
+	padding: 1px 1px 8px 5px;
+	width: 100%;
+}
+
+.properties-panel .properties-table {
+	background-color: white;
+	width: 100%;
+}
+
+.properties-panel .properties-list-table {
+	border-collapse: separate
+}
+
+.properties-panel td {
+	vertical-align: top;
+}
+
+.properties-panel .toolbar {
+	background-color: #C1C1C1 !important;
+	width: 10%;
+}
+
+.properties-panel .propertiesContent {
+	width: 90%;
+}
+
+.properties-panel textarea {
+	float: left;
+	border-style: none !important;
+	width: 88%;
+	height: 30px;
+	resize: vertical;
+}
+
+.properties-panel .input-button {
+	width: 10%;
+	float: right;
+	margin-right: 5px;
+}
+
+.properties-panel img {
+	margin-top: 3px;
+}
+
+.properties-panel table {
+	border-collapse: collapse;
+}
+
+.properties-panel .border {
+	border-top: 4px solid #C1C1C1;
+	border-bottom: 4px solid #C1C1C1;
+}
+
+.properties-panel .borderTop {
+	border-top: 4px solid #C1C1C1;
+}
+
+.properties-panel .borderBottom {
+	border-bottom: 4px solid #C1C1C1;
+}
+
+.properties-panel .menu-popover div {
+	margin-bottom: 5px;
+}
+</style>
+
+<div
+	ng-controller="sdActivityPanelPropertiesPageController as propertiesPageController">
+
+	<div style="width: 25px; float: left">
+		<a href='#' class='heading'
+			style='cursor: pointer; text-decoration: none;'
+			ng-click="propertiesPageController.expand()"><i
+			title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.expand.title')}}"
+			ng-hide='propertiesPageController.propertiesPageVisible'
+			class='pi pi-trigger-expanded pi-lg pi-rotate-90'></i> </a>
+	</div>
+
+	<div ng-show="propertiesPageController.propertiesPageVisible"
+		class="properties-panel">
+		<table class="properties-table">
+			<tbody>
+				<tr>
+					<td class="toolbar">
+						<table>
+							<tbody>
+								<tr>
+									<td><a href='#' class='heading'
+										style='cursor: pointer; text-decoration: none;'
+										ng-click="propertiesPageController.collapse()"> <i
+											title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.collapse.title')}}"
+											class='pi pi-trigger-collapsed pi-lg'
+											style='float: left; margin-left: 2px;'></i>
+									</a></td>
+								</tr>
+								<tr
+									ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
+									<td ng-show="propertiesPageController.getNotesTotalCount() > 0"
+										style="text-align: center"><a href='#'
+										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesPanel')}}"
+										class='heading'
+										style='cursor: pointer; text-decoration: none;'> <i
+											class='pi pi-notes pi-lg'></i>
+									</a></td>
+									<td
+										ng-show="propertiesPageController.getNotesTotalCount() == 0"
+										style="text-align: center"><a href='#'
+										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesView')}}"
+										class='heading'
+										style='cursor: pointer; text-decoration: none;'> <i
+											class='pi pi-notes-empty pi-lg'></i>
+									</a></td>
+								</tr>
+								<tr
+									ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
+									<td style="text-align: center"><a
+										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesView')}}"
+										href='#'> <span>
+												{{propertiesPageController.getNotesTotalCount()}} </span></a></td>
+								</tr>
+								<tr
+									ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
+									<td
+										ng-show="propertiesPageController.getDocumentsTotalCount() > 0"
+										style="text-align: center"><a href='#'
+										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
+										class='heading'
+										style='cursor: pointer; text-decoration: none;'> <i
+											class='pi pi-text pi-lg'></i>
+									</a></td>
+									<td
+										ng-show="propertiesPageController.getDocumentsTotalCount() == 0"
+										style="text-align: center"><a href='#'
+										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
+										class='heading'
+										style='cursor: pointer; text-decoration: none;'> <i
+											class='pi pi-invert pi-lg'></i>
+									</a></td>
+								</tr>
+								<tr
+									ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
+									<td style="text-align: center"><a
+										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
+										href='#'> <span>
+												{{propertiesPageController.getDocumentsTotalCount()}} </span></a></td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+					<td>
+						<div sd-notes-panel
+							ng-show="propertiesPageController.selectedPropertiesPage == 'notes'"
+							sda-activity-instance-oid="{{propertiesPageController.activityInstanceOid}}"
+							sda-process-instance-oid="{{propertiesPageController.processInstanceOid}}">
+						</div>
+						<div sd-process-documents-panel
+							ng-show="propertiesPageController.selectedPropertiesPage == 'documents'"
+							sda-process-instance-oid="{{propertiesPageController.processInstanceOid}}"
+							sda-activity-instance-oid="{{propertiesPageController.activityInstanceOid}}">
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

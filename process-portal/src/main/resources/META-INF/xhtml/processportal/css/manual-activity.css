@@ -342,12 +342,12 @@ input[type="checkbox"].panel-input-highlight {
   float: left;
 }
 
-.notes-panel-expanded {
+.properties-panel-expanded {
   width: 30%;
   min-width: 200px;
 }
 
-.notes-panel-collapsed {
+.properties-panel-collapsed {
   width: 3%;
   margin-right: 3px;
 }

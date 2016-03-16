@@ -39,6 +39,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
@@ -51,6 +52,7 @@ import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkActivityStatisticsQuery;
+import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.component.service.DelegationComponent;
@@ -995,6 +997,31 @@ public class ActivityInstanceResource
       }
    }
 
+   /**
+    * @author Yogesh.Manware
+    * @param attachments
+    * @param activityOid
+    * @param dataPathId
+    * @return
+    * @throws Exception
+    */
+   @POST
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{oid}/documents")
+   public Response uploadDocuments(List<Attachment> attachments, @PathParam("oid") Long activityOid,
+         @PathParam("dataPathId") String dataPathId) throws Exception
+   {
+      if (StringUtils.isEmpty(dataPathId))
+      {
+         dataPathId = DmsConstants.PATH_ID_ATTACHMENTS;
+      }
+
+      Map<String, Object> result = activityInstanceService.addProcessDocuments(activityOid, attachments);
+
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
+   }
+   
    /**
     * 
     * @param options

@@ -82,6 +82,8 @@ public class DocumentDTO extends AbstractDTO
 
    public List<Pair<String, String>> documentData;
    
+   public String attachmentType = "process"; // or activity
+   
    public DocumentDTO()
    {
 

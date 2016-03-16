@@ -17,7 +17,6 @@
  * @sdaActivityInstanceOid - Activity Oid to request activity notes for. If it
  *                         is not provided then Activity Notes section will not
  *                         appear
- * @function &sdaEventCallback - user callback to listen for events on.
  */
 
 /**
@@ -99,7 +98,7 @@
     this.notesService = notesService;
     this.sdViewUtilService = sdViewUtilService;
     this.rootUrl = sdUtilService.getBaseUrl();
-    this.sdI18n = $scope.$parent.sdI18n;
+    this.sdI18n = $scope.$root.sdI18n;
     this.initialize();
 
   }
@@ -108,10 +107,9 @@
    * 
    */
   NotesController.prototype.initialize = function() {
-    this.propertiesPageVisible = true;
     this.initializeProcessNotes();
     this.initializeActivityNotes();
-    console.log("initialized");
+    console.log("Notes controller initialized...");
   }
 
   /**
@@ -148,30 +146,6 @@
         self.activityNotes = data.data;
       });
     }
-  }
-
-  /**
-   * 
-   */
-  NotesController.prototype.expand = function() {
-    this.propertiesPageVisible = true;
-    this.$scope.eventCallback({
-      event: {
-        type: "notes-panel-expanded"
-      }
-    });
-  }
-
-  /**
-   * 
-   */
-  NotesController.prototype.collapse = function() {
-    this.propertiesPageVisible = false;
-    this.$scope.eventCallback({
-      event: {
-        type: "notes-panel-collapsed"
-      }
-    });
   }
 
   /**
@@ -264,8 +238,7 @@
           restrict: 'EA',
           scope: {
             activityInstanceOid: "@sdaActivityInstanceOid",
-            processInstanceOid: "@sdaProcessInstanceOid",
-            eventCallback: "&sdaEventCallback"
+            processInstanceOid: "@sdaProcessInstanceOid"
           },
           controller: "notesPanelCtrl",
           controllerAs: "notesCtrl",

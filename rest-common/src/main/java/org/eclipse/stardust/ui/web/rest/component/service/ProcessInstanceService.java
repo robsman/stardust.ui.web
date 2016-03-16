@@ -244,7 +244,7 @@ public class ProcessInstanceService
 
       if (DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPathId))
       {
-         result = repositoryService.createDocuments(uploadedDocuments, processInstance, true);
+         result = repositoryService.createProcessDocuments(uploadedDocuments, processInstance, true);
       }
       else
       {
@@ -295,7 +295,7 @@ public class ProcessInstanceService
             documentInfoDTO.parentFolderPath = DocumentMgmtUtility.getTypedDocumentsFolderPath(processInstance);
             documentInfoDTO.dataPathId = dataPathId;
          }
-         result = repositoryService.createDocuments(uploadedDocuments, processInstance, false);
+         result = repositoryService.createProcessDocuments(uploadedDocuments, processInstance, false);
       }
       return result;
    }

@@ -16,39 +16,39 @@ package org.eclipse.stardust.ui.web.rest.component.service;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.ConcurrencyException;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
-import org.eclipse.stardust.engine.api.runtime.FolderInfo;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ScanDirection;
 import org.eclipse.stardust.engine.api.runtime.TransitionOptions;
 import org.eclipse.stardust.engine.api.runtime.TransitionReport;
 import org.eclipse.stardust.engine.api.runtime.TransitionTarget;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
-import org.eclipse.stardust.engine.extensions.dms.data.DmsFolderBean;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityStatisticsUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
+import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.component.util.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
-import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceOutDataDTO;
@@ -59,19 +59,20 @@ import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.dto.PendingActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.PostponedActivitiesResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.dto.TrivialManualActivityDTO;
-import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.builder.FolderDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO;
+import org.eclipse.stardust.ui.web.rest.util.FileUploadUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.springframework.stereotype.Component;
 
@@ -106,6 +107,9 @@ public class ActivityInstanceService
 
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
+   
+   @Resource
+   private RepositoryService repositoryService;
 
    private static final Logger trace = LogManager.getLogger(ActivityInstanceService.class);
 
@@ -508,6 +512,25 @@ public class ActivityInstanceService
       folderDTO.documents = DocumentDTOBuilder.build(correspondenceOutFolder.getDocuments(),
             serviceFactoryUtils.getDocumentManagementService());
       return folderDTO;
+   }
+   
+   
+   /**
+    * @param activityOid
+    * @param attachments
+    * @return
+    * @throws Exception
+    */
+   public Map<String, Object> addProcessDocuments(long activityOid, List<Attachment> attachments) throws Exception
+   {
+      ActivityInstance activityInstance = activityInstanceUtils.getActivityInstance(activityOid);
+      if (activityInstance == null)
+      {
+         throw new ObjectNotFoundException(BpmRuntimeError.ATDB_NO_MATCHING_ACTIVITY_INSTANCE.raise());
+      }
+      // parse attachments
+      List<DocumentContentRequestDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
+      return repositoryService.createActivityDocuments(uploadedDocuments, activityInstance);
    }
    
    /**

@@ -99,6 +99,7 @@ public class DocumentMgmtUtility
 {
    public static final String DOCUMENTS = "/documents";
    public static final String PROCESS_ATTACHMENTS = "/process-attachments";
+   public static final String ACTIVITY_ATTACHMENTS = "/activity-attachments";
    public static final String SPECIFIC_DOCUMENTS = "/specific-documents";
    public static final String CORRESPONDENCE = "/correspondence";
    public static final String CORRESPONDENCE_OUT = "/correspondence-out-";
@@ -1251,7 +1252,16 @@ public class DocumentMgmtUtility
    {
       return DmsUtils.composeDefaultPath(pi.getOID(), pi.getStartTime()) + PROCESS_ATTACHMENTS;
    }
-   
+ 
+   /**
+    * @param ai
+    * @return
+    */
+   public static String getActivityAttachmentsFolderPath(ActivityInstance ai)
+   {
+      return DmsUtils.composeDefaultPath(ai.getOID(), ai.getProcessInstanceOID(), ai.getStartTime())
+            + ACTIVITY_ATTACHMENTS;
+   }
    
    /**
     * return Typed Documents folder path

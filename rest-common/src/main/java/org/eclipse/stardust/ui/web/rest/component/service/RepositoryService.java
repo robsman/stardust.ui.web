@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
@@ -125,6 +126,12 @@ public interface RepositoryService
    List<DocumentDTO> getDocumentHistory(String DocumentId) throws ResourceNotFoundException;
 
    /**
+    * @param documentInfoDTO
+    * @return
+    */
+   Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTO);
+
+   /**
     * This method support multiple documents upload By default creates new version of the
     * document if one exist with the same name If you don't want to create new version use
     * 'createVersion=false' to overwrite existing document user flag
@@ -134,8 +141,21 @@ public interface RepositoryService
     * @param processInstance
     * @return
     */
-   Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTO,
+   Map<String, Object> createProcessDocuments(List<DocumentContentRequestDTO> documentInfoDTO,
          ProcessInstance processInstance, boolean processAttachments);
+
+   /**
+    * This method support multiple documents upload, By default creates new version of the
+    * document if one exist with the same name, If you don't want to create new version
+    * use 'createVersion=false' to overwrite existing document user flag
+    * 'createNewRevision=false', by new revision is created.
+    * 
+    * @param documentInfoDTO
+    * @param activityInstance
+    * @param processAttachments
+    * @return
+    */
+   Map<String, Object> createActivityDocuments(List<DocumentContentRequestDTO> documentInfoDTO, ActivityInstance activityInstance);
 
    /**
     * internally calls createDocuments
@@ -145,7 +165,7 @@ public interface RepositoryService
     * @param processAttachments
     * @return
     */
-   Map<String, Object> createDocument(DocumentContentRequestDTO documentInfoDTO, ProcessInstance processInstance,
+   Map<String, Object> createProcessDocument(DocumentContentRequestDTO documentInfoDTO, ProcessInstance processInstance,
          boolean processAttachments);
 
    /**

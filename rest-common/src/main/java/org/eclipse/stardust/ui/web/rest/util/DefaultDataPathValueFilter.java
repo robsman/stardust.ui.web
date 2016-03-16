@@ -17,10 +17,12 @@ import java.util.Map;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DataPathDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO;
@@ -70,7 +72,23 @@ public class DefaultDataPathValueFilter implements IDataPathValueFilter
                documents = ((List<Document>) dataValue);
             }
          }
-         dataPathValueDTO.documents = DocumentDTOBuilder.build(documents, null);
+         
+         dataPathValueDTO.documents = new ArrayList<DocumentDTO>();
+         
+         for (Document document : documents)
+         {
+            DocumentDTO documentDTO = DocumentDTOBuilder.build(document, null);
+            // determine the attachment type
+            if (DmsUtils.getActivityInstanceOid(document) != null)
+            {
+               documentDTO.attachmentType = "activity";
+            }
+            else if (DmsUtils.getProcessInstanceOid(document) != null)
+            {
+               documentDTO.attachmentType = "process";
+            }
+            dataPathValueDTO.documents.add(documentDTO);
+         }
       }
       else if(dataValue != null)
       {

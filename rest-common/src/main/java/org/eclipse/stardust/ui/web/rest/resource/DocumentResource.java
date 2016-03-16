@@ -227,7 +227,7 @@ public class DocumentResource
    {
       // parse attachments
       List<DocumentContentRequestDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
-      Map<String, Object> result = repositoryService.createDocuments(uploadedDocuments, null, false);
+      Map<String, Object> result = repositoryService.createProcessDocuments(uploadedDocuments, null, false);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
    
@@ -300,7 +300,7 @@ public class DocumentResource
 
       documentInfoDTO.properties = properties; 
       
-      Map<String, Object> result = repositoryService.createDocument(documentInfoDTO, null, false);
+      Map<String, Object> result = repositoryService.createProcessDocument(documentInfoDTO, null, false);
 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }

@@ -14,8 +14,7 @@
 
 (function() {
 	'use strict';
-
-	angular.module('workflow-ui.services').provider('sdMimeTypeService',
+	angular.module('bpm-common.services').provider('sdMimeTypeService',
 			function() {
 				this.$get = [function($q, $http) {
 					var service = new MimeTypeService();
@@ -155,13 +154,14 @@
 		 * 
 		 */
 		MimeTypeService.prototype.getIcon = function(mimeType) {
-
-			var icon = mimeMap[mimeType].icon;
-
-			if (angular.isUndefined(icon)) {
-				//Default Icon
-				icon = "pi pi-other";
-			}
+		  var icon = undefined;
+      if (mimeType) {
+        var icon = mimeMap[mimeType].icon;
+      }
+      if (angular.isUndefined(icon)) {
+        // Default Icon
+        icon = "pi pi-other";
+      }
 			return icon;
 		};
 	};

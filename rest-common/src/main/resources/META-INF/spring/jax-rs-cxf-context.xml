@@ -70,6 +70,7 @@
             <bean class="org.eclipse.stardust.ui.web.rest.exception.mapper.ApplicationExceptionMapper"/>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.mapper.I18nExceptionMapper"/>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.mapper.ResourceNotFoundExceptionMapper"/>
+            <bean class="org.eclipse.stardust.ui.web.rest.exception.mapper.ObjectNotFoundExceptionMapper"/>
         </jaxrs:providers>
 	</jaxrs:server>
 

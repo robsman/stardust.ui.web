@@ -25,6 +25,7 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.common.Base64;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
@@ -358,24 +359,44 @@ public class RepositoryServiceImpl implements RepositoryService
       return previousVersions;
    }
 
-   /**
-    *
-    */
    @Override
-   public Map<String, Object> createDocument(DocumentContentRequestDTO documentInfoDTO,
+   public Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTOs)
+   {
+      return createDocuments(documentInfoDTOs, null, null, false);
+   }
+
+   @Override
+   public Map<String, Object> createActivityDocuments(List<DocumentContentRequestDTO> documentInfoDTOs,
+         ActivityInstance activityInstance)
+   {
+      return createDocuments(documentInfoDTOs, activityInstance, activityInstance.getProcessInstance(), true);
+   }
+
+   @Override
+   public Map<String, Object> createProcessDocuments(List<DocumentContentRequestDTO> documentInfoDTOs,
+         ProcessInstance processInstance, boolean processAttachments)
+   {
+      return createDocuments(documentInfoDTOs, null, processInstance, processAttachments);
+   }
+
+   @Override
+   public Map<String, Object> createProcessDocument(DocumentContentRequestDTO documentInfoDTO,
          ProcessInstance processInstance, boolean processAttachments)
    {
       List<DocumentContentRequestDTO> documentInfoDTOs = new ArrayList<DocumentContentRequestDTO>();
       documentInfoDTOs.add(documentInfoDTO);
-      return createDocuments(documentInfoDTOs, processInstance, processAttachments);
+      return createDocuments(documentInfoDTOs, null, processInstance, processAttachments);
    }
-
+   
    /**
-    *
+    * @param documentInfoDTOs
+    * @param activityInstance - pass this only if it is activity attachment
+    * @param processInstance
+    * @param processAttachments
+    * @return
     */
-   @Override
-   public Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTOs,
-         ProcessInstance processInstance, boolean processAttachments)
+   private Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTOs,
+         ActivityInstance activityInstance, ProcessInstance processInstance, boolean processAttachments)
    {
       Map<String, Object> result = new HashMap<String, Object>();
       List<NotificationDTO> failures = new ArrayList<NotificationDTO>();
@@ -383,12 +404,20 @@ public class RepositoryServiceImpl implements RepositoryService
       List<DocumentDTO> documentDTOs = new ArrayList<DocumentDTO>();
       result.put("documents", documentDTOs);
 
-      String processAttachmentFolderPath = null;
+      String attachmentFolderPath = null;
       Folder parentFolder = null;
       if (processAttachments)
       {
-         processAttachmentFolderPath = DocumentMgmtUtility.getProcessAttachmentsFolderPath(processInstance);
-         parentFolder = DocumentMgmtUtility.createFolderIfNotExists(processAttachmentFolderPath);
+         if (activityInstance != null)
+         {
+            attachmentFolderPath = DocumentMgmtUtility.getActivityAttachmentsFolderPath(activityInstance);
+         }
+         else
+         {
+            attachmentFolderPath = DocumentMgmtUtility.getProcessAttachmentsFolderPath(processInstance);
+         }
+
+         parentFolder = DocumentMgmtUtility.createFolderIfNotExists(attachmentFolderPath);
       }
 
       List<Document> documents = new ArrayList<Document>();
@@ -459,7 +488,7 @@ public class RepositoryServiceImpl implements RepositoryService
       }
       return result;
    }
-
+ 
    /**
     * @param documentInfoDTO
     * @return

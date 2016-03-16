@@ -41,7 +41,7 @@ var html5Deps = function() {
       paths : {
         'jquery' : ['../portal-shell/js/libs/jquery/1.9.1/jquery'],
         'jquery.dataTables' : [ "html5-common/libs/datatables/1.9.4/jquery.dataTables" ],
-        'angularjs' : ['../portal-shell/js/libs/angular/1.2.11/angular'],
+        'angularjs' : ['../portal-shell/js/libs/angular/1.3.3/angular'],
         'angularResource' : ['../portal-shell/js/libs/angular/1.2.11/angular-resource'],
         'bootstrap' : [ 'html5-common/libs/bootstrap/bootstrap' ],
         'ckeditor':['html5-common/libs/ckeditor/ckeditor'],
@@ -69,7 +69,10 @@ var html5Deps = function() {
           'sdProcessDocumentTree': ['html5-common/scripts/directives/sdProcessDocumentsTree/sdProcessDocumentsTree'],
           'uiBootstrap':['html5-common/libs/ui-bootstrap/ui-bootstrap-tpls-1.2.1.min'],   
           'sdDateTimeFilter' : [ 'html5-common/scripts/filters/sdDateTimeFilter'],
-          'sdNotesPanel': ['html5-process-portal/scripts/directives/sdNotesPanel/sdNotesPanel']
+          'sdNotesPanel': ['html5-process-portal/scripts/directives/sdNotesPanel/sdNotesPanel'],
+          'sdMimeTypeService': ['html5-process-portal/scripts/services/sdMimeTypeService'],
+          'sdActivityPanelPropertiesPage': ['html5-process-portal/scripts/directives/ActivityPropertiesPage/sdActivityPanelPropertiesPage'],
+          'sdProcessDocumentsPanel': ['html5-process-portal/scripts/directives/sdProcessDocumentsPanel/sdProcessDocumentsPanel']
       },
       shim : {
         'jquery.dataTables' : [ 'jquery' ],
@@ -95,20 +98,24 @@ var html5Deps = function() {
         'sdPortalConfigurationService' : [ 'html5CommonMain' ],
           'sdLocalizationService' : [ 'html5CommonMain' ],
           'sdDatePicker' : [ 'html5CommonMain', 'sdLocalizationService' ],
-          'sdPopover' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
+          'sdPopover' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap'],
           'sdAutoComplete' :['html5CommonMain'],
           'sdRichTextEditor':['html5CommonMain','ckeditor'],
           'sdTree' :['html5CommonMain','ckeditor'] ,
           'sdFolderTree' : ['html5CommonMain','sdUtilService','sdTree'],
           'sdProcessDocumentTree':['html5CommonMain','sdUtilService','sdTree'],
           'sdDateTimeFilter' : ['sdLocalizationService'],
-          'sdNotesPanel':['html5CommonMain','sdUtilService', 'sdDateTimeFilter']
+          'sdNotesPanel':['html5CommonMain','sdUtilService', 'sdDateTimeFilter'],
+          'sdProcessDocumentsPanel':['html5CommonMain','sdUtilService', 'sdMimeTypeService', 'sdPopover'],
+          'sdMimeTypeService': ['html5CommonMain'],
+          'sdActivityPanelPropertiesPage': ['sdNotesPanel', 'sdProcessDocumentsPanel']
       },
       deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap","ckeditor","portalApplication",
           "html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
           "sdLoggerService", "sdData", "sdDataTable", "sdEnvConfigService",
           'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover', 
-          'sdAutoComplete','sdRichTextEditor','sdTree','sdFolderTree','sdProcessDocumentTree', 'sdDateTimeFilter', 'sdNotesPanel']
+          'sdAutoComplete','sdRichTextEditor','sdTree','sdFolderTree','sdProcessDocumentTree', 'sdDateTimeFilter', 'sdNotesPanel', 
+          'sdActivityPanelPropertiesPage', 'sdProcessDocumentsPanel', 'uiBootstrap']
 
     };
 
