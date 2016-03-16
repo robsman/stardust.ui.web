@@ -18,7 +18,7 @@
 			'sdWorkflowWorklistPanelCtrl',
 			[ 'sdWorkflowWorklistService', 'sdLoggerService', 'sdViewUtilService',
 					'sdI18nService', 'sdActivityInstanceService', 'sdDialogService', 'sdCommonViewUtilService',
-					'$scope', 'sgPubSubService', 'sdSidebarService', '$timeout', WorkflowWorklistPanelCtrl ]);
+					'$scope', 'sgPubSubService', 'sdSidebarService', '$timeout', 'sdUtilService' , WorkflowWorklistPanelCtrl ]);
 	var _sdWorkflowWorklistService;
 	var _sdViewUtilService;
 	var trace;
@@ -28,11 +28,12 @@
 	var _sdCommonViewUtilService;
 	var _scope;
 	var _timeout;
+	var _sdUtilService;
 	/**
 	 *
 	 */
 	function WorkflowWorklistPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService, 
-			sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope, sgPubSubService, sdSidebarService, $timeout) {
+			sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope, sgPubSubService, sdSidebarService, $timeout, sdUtilService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowWorklistPanelCtrl');
 		_sdWorkflowWorklistService = sdWorkflowWorklistService;
 		_sdViewUtilService = sdViewUtilService;
@@ -42,6 +43,7 @@
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_scope = $scope;
 		_timeout = $timeout;
+		_sdUtilService = sdUtilService;
 		this.showEmptyWorklists = false;
 		
 		this.collapsePanelHandle = null;
@@ -198,16 +200,46 @@
 	 * @returns
 	 */
 	WorkflowWorklistPanelCtrl.prototype.iconCallback = function(item) {
-    		    return item.icon;
-		  };
+		if (item.icon.indexOf("/") > -1) {
+			var style = document.createElement('style');
+			var cssText = "";
+			style.type = 'text/css';
+			// First css rule to take care of non hover appearance
+			cssText += ".node-" + item.uuid 
+				    + " + span" 
+				    + "{color:#2a5db0;" 
+				    + "background: url("
+					+ _sdUtilService.getRootUrl() + item.icon 
+					+ ") left no-repeat !important; background-size: 12px 12px !important;"
+					+ "padding-left: 1em !important;}";
+
+			// second css rule to take care of hover otherwise the image will
+			// disappear on hover using the default css
+			cssText += ".node-" + item.uuid 
+			        + " + span:hover " 
+			        + "{background: url("
+					+ _sdUtilService.getRootUrl() + item.icon 
+					+ ") left no-repeat !important;  background-size: 12px 12px !important;}";
+			style.innerHTML = cssText;
+			document.getElementsByTagName('head')[0].appendChild(style);
+
+			var css = [ "pi", "pi-lg" ];
+			css.push("node-" + item.uuid);
+			return css.join(" ");
+		} else {
+			return item.icon;
+		}
+	};
+		  
 		  
 	/**
 	 * Getting tree API handler.
+	 * 
 	 * @param api
 	 */	  
      WorkflowWorklistPanelCtrl.prototype.onTreeInit = function(api){
 		 var self = this;
-		 self.treeApi = api;
+		 self.treeApi = api;		 		 
 	  };
 
 })();
