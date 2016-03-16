@@ -306,6 +306,33 @@
 
   };
   
+  documentRepoService.prototype.moveDocument = function(docId,targetFolderPath,withRevision){
+
+    var deferred = this.$q.defer();
+    var url= this.documentRoot + "/" + docId + "/copy";
+    var data = {};
+    var verb;
+
+    verb = (withRevision===true)?"PUT":"POST";
+    data.targetFolderPath = targetFolderPath;
+
+
+    this.$http({
+      "method" : verb,
+      "url" : url,
+      "data" : data
+    })
+    .then(function(res){
+      deferred.resolve(res.data);
+    })
+    ["catch"](function(err){
+      deferred.reject(err);
+    });
+    
+    return deferred.promise;
+
+  };
+
   documentRepoService.prototype.deleteDocument = function(docId){
 
     var deferred = this.$q.defer();

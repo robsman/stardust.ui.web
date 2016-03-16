@@ -362,6 +362,20 @@
       case "node-rename" :
         data.deferred.resolve();
         break;
+      case "node-dragend" :
+        console.log("dragend");
+        console.log(data);
+        break;
+      case "node-drop" :
+        if(data.dropData && data.dropData.nodeType==='document'){
+          this.moveDocument(data);
+        }
+        break;
+      case "node-native-drop" :
+        if(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length >0){
+          this.uploadFile(data.valueItem, e.dataTransfer.files);
+        }
+        break;
       case "menu-bind" :
         this.openBindRepoDialog();
         break;
@@ -403,7 +417,7 @@
         this.uploadAndExplode(data.valueItem);
         break;
       case "menu-uploadFile" :
-        this.uploadFile(data.valueItem,data);
+        this.uploadFile(data.valueItem);
         break;
       case "menu-securityFile" :
         this.openFileSecuritySettingsDialog(data.valueItem);
@@ -495,6 +509,42 @@
     return nodeItem.nodeType==='document';
   };
 
+  docRepoController.prototype.moveDocument = function(dropEvt){
+
+    var doc = dropEvt.dropData;
+    var newPath = dropEvt.valueItem.path;
+    var that = this;
+    //1: Get target folders children from server so we can check
+    //   for file name collisions (dont trust stale client collection).
+    this.documentService.getChildren(dropEvt.valueItem.id)
+    .then(function(children){
+
+      var hasCollision = children.documents.some(function(childDoc){
+        return doc.name === childDoc.name;
+      });
+
+       //open confirmation dialog
+      if(hasCollision===true){
+       alert("TODO:collision confirmation dialog");
+      }
+      //safe to move with revision.
+      else{
+        return that.documentService.moveDocument(doc.id, newPath, true);
+      }
+
+    })
+    .then(function(res){
+      alert("TODO:success->refresh tree nodes,open drop target node");
+    })
+    ["catch"](function(err){
+      alert("error");
+    })
+    ["finally"](function(){
+      dropEvt.deferred.resolve();
+    });
+
+  };
+
   docRepoController.prototype.uploadAndExplode = function(folder){
     
     var that = this;
@@ -562,6 +612,8 @@
 	  template ='<li sd-tree-node ng-repeat="child in child.children" \
 		               sda-menu-items="(,)" \
 					         sda-node-id="child.id" \
+                   sda-droppable-expr="child.nodeType==\'folder\'" \
+                   sda-draggable-expr="child.nodeType==\'document\'" \
 					         sda-is-leaf="ctrl.isLeaf(child)" \
 		   			       sda-lazy-compile="true" \
 					         sda-label="child.name"> \
@@ -604,10 +656,11 @@
 
   };
   
-  docRepoController.prototype.uploadFile = function(targetFolder){
+  docRepoController.prototype.uploadFile = function(targetFolder,stagedFiles){
     var that = this;
     var treeFolder;
     var repoId;
+    var filteredFiles=[];
 
     treeFolder = that.treeApi.childNodes[targetFolder.id];
 
@@ -630,7 +683,7 @@
     }
 
     //now open dialog and wait for succesful files to be resolved.
-    that.uploadDialogAPI.open()
+    that.uploadDialogAPI.open(stagedFiles)
     .then(function(files){
       
       files.forEach(function(file){

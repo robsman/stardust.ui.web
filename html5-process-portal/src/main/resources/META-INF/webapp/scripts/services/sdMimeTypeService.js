@@ -154,14 +154,16 @@
 		 * 
 		 */
 		MimeTypeService.prototype.getIcon = function(mimeType) {
-		  var icon = undefined;
-      if (mimeType) {
-        var icon = mimeMap[mimeType].icon;
-      }
-      if (angular.isUndefined(icon)) {
-        // Default Icon
-        icon = "pi pi-other";
-      }
+		  	var icon = undefined;
+
+			if (mimeType &&  mimeMap[mimeType]) {
+				var icon = mimeMap[mimeType].icon;
+			}
+
+			if (angular.isUndefined(icon)) {
+			// Default Icon
+				icon = "pi pi-other";
+			}
 			return icon;
 		};
 	};

@@ -604,12 +604,16 @@
 	        	dragdropStr =" sd-data-drag sda-dragend='dragend($data,$event)' ";
 	        }
 	        
+	        if(attrs.sdaDraggableExpr){
+	        	dragdropStr +=" DRAG_EXPR_TARGET ";
+	        };
+
 	        if(attrs.sdaDroppable==='true'){
 	        	dragdropStr +=" sd-data-drop sda-drop='drop($data,$event)' ";
 	        }
 	        
 	        if(attrs.sdaDroppableExpr){
-	        	dragdropStr +="DROP_EXPR_TARGET";
+	        	dragdropStr +=" DROP_EXPR_TARGET ";
 	        };
 	        
 	        if(attrs.sdaLazyCompile && attrs.sdaLazyCompile.toUpperCase()==='TRUE'){
@@ -665,8 +669,10 @@
 	          //below us. We must set it in PRE!
 	          pre: function(scope, iterStartElement, attrs, controllers){
 	            var localCtrl=controllers[0];
-	            var dropTargetElem;
+	            var dragDropTargetElem;
 	            var compDTElem;
+	            var doRecompile = false;
+
 	            localCtrl.template = template;
 	            
 	            //Modify iterStartElement by parsing new attribute sda-droppable-expr
@@ -675,17 +681,33 @@
 	            	if($parse(attrs.sdaDroppableExpr)(scope)===true){
 	            		
 	            		//Manipulate DOM to add needed elements.
-	            		dropTargetElem  = iterStartElement[0].querySelector("a[DROP_EXPR_TARGET]");
-	            		dropTargetElem.removeAttribute("DROP_EXPR_TARGET");
-	            		dropTargetElem.setAttribute("sd-data-drop","");
-	            		dropTargetElem.setAttribute("sda-drop","drop($data,$event)");
+	            		dragDropTargetElem  = iterStartElement[0].querySelector("a[DROP_EXPR_TARGET]");
+	            		dragDropTargetElem.removeAttribute("DROP_EXPR_TARGET");
+	            		dragDropTargetElem.setAttribute("sd-data-drop","");
+	            		dragDropTargetElem.setAttribute("sda-drop","drop($data,$event)");
 	            		
-	            		//This is actually the second compilation of this element meaning we have now
-	            		//duplicated our ng-click handler but as our invoke scope method leverages
-	            		//stopImmediatePropagation for events this should not be an issue.
-	            		compDTElem = $compile(dropTargetElem)(scope);
-
+	            		doRecompile = true;  
 	            	}
+	            }
+
+	             if(attrs.sdaDraggableExpr){
+	            	if($parse(attrs.sdaDraggableExpr)(scope)===true){
+	            		
+	            		//Manipulate DOM to add needed elements.
+	            		dragDropTargetElem  = iterStartElement[0].querySelector("a[DRAG_EXPR_TARGET]");
+	            		dragDropTargetElem.removeAttribute("DRAG_EXPR_TARGET");
+	            		dragDropTargetElem.setAttribute("sd-data-drag","");
+	            		dragDropTargetElem.setAttribute("sda-drag","dragend($data,$event)");
+	            		
+	            		doRecompile = true;  
+	            	}
+	            }
+
+	            if(doRecompile===true){
+	            	//This is actually the second compilation of this element meaning we have now
+            		//duplicated our ng-click handler but as our invoke scope method leverages
+            		//stopImmediatePropagation for events this should not be an issue.
+            		compDTElem = $compile(dragDropTargetElem)(scope);
 	            }
 	            
 	          },
@@ -820,13 +842,20 @@
 	            rootCtrl.childNodes[scope.nodeId] = scope;
 	            
 	            scope.dragend = function(src,e){
-	            	console.log("DRAG END");
 	            	scope.invokeCallback('node-dragend',e);
 	            };
 	            
 	            scope.drop = function(src,e){
-	            	console.log("DROP");
-	            	scope.invokeCallback('node-drop',e);
+	            	//any drop initiated from a sd-data-drag node should
+	            	//have a src parameter supplied. If not we assume
+	            	//this is a native file system drop event
+	            	if(!src){
+	            		scope.invokeCallback('node-native-drop',e);
+	            	}
+	            	else{
+	            		scope.invokeCallback('node-drop',e);
+	            	}
+
 	            };
 	            
 	            //Generic callback wrapper which utilizes the callback defined

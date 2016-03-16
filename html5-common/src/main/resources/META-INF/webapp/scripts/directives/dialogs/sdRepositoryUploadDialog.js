@@ -91,7 +91,8 @@
 					hasDuplicate = that.curatedFiles.some(function(f){
 						return f.name === file.name;
 					});
-					if(!hasDuplicate){
+
+					if(!hasDuplicate && that.isFile(file)){
 						
 						that.curatedFiles.push({
 							"comments" : "",
@@ -111,6 +112,11 @@
 
 				};//for end
 
+				//if we filtered out all of our files then reset to initial state
+				if(that.curatedFiles.length===0){
+					that.state = "initial";
+				}
+
 			},0);//timeout invoke end
 		}
 		
@@ -119,10 +125,12 @@
 		$timeout(function(){
 			var customApi = {
 					"close" : that.uploadDialog.close,
-					"open" : function(nonFileData){
+					"open" : function(stagedFiles){
 						that.resetState();
+						if(stagedFiles && stagedFiles.length > 0){
+							$scope.fileNameChanged({"files" : stagedFiles});
+						};
 						that.fileDefer = $q.defer();
-						that.nonFileData = nonFileData;
 						that.uploadDialog.open();
 						return that.fileDefer.promise;
 					}
@@ -156,6 +164,21 @@
 
 		return textMap;
 
+	};
+
+	/**
+	 * Make a best guess as to whether a file is a actually a folder.
+	 * We expect folders will have no file type and be a multiple of 
+	 * 4096 bytes. This is definitely not foolproof as a folder named
+	 * test.jpg will report a type. Also, files that have no file type and
+	 * are a multiple of 4096 bytes in size will look just like a folder to
+	 * this algorithm.
+	 * @param  {[type]}  file [description]
+	 * @return {Boolean}      [description]
+	 */
+	fileRepoUploadController.prototype.isFile = function(file){
+		var result =(file.type || file.size%4096 != 0);
+		return result;
 	};
 
 	fileRepoUploadController.prototype.isZip = function(file){
