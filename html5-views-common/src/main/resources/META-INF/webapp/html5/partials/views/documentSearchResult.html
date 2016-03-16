@@ -17,27 +17,27 @@
 		sda-preference-delegate="docSearchViewCtrl.preferenceDelegate(prefInfo)"
 		sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
 		sda-sortable="true"
-		sda-sort-by="{name : 'documentName', dir : 'desc'}" sda-exports="true"
+		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
 		sda-exports-file-name="{{docSearchViewCtrl.exportFileNameForDocumentSearchResult}}">
 		<thead
 			sda-i18n-scope="views-common-messages.views-documentSearchView-documentSearchTable-column">
 			<tr>
-				<th sda-name="documentName" sda-sortable="true" sda-fixed="true">
+				<th sda-name="name" sda-sortable="true" sda-fixed="true">
 					<div sda-filter-template>
 						<div sd-text-search-table-filter></div>
 					</div>
 				</th>
-				<th sda-name="createDate" sda-sortable="true">
+				<th sda-name="dateCreated" sda-sortable="true">
 					<div sda-filter-template>
 						<div sd-date-table-filter></div>
 					</div>
 				</th>
-				<th sda-name="modificationDate" sda-sortable="true">
+				<th sda-name="dateLastModified" sda-sortable="true">
 					<div sda-filter-template>
 						<div sd-date-table-filter></div>
 					</div>
 				</th>
-				<th sda-name="fileType" sda-sortable="true" sda-visible="false">
+				<th sda-name="contentType" sda-sortable="true" sda-visible="false">
 					<div sda-filter-template>
 						<div sd-text-search-table-filter></div>
 					</div>
@@ -67,20 +67,20 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td sda-exporter="rowData.documentName">
-				 <i class="{{docSearchViewCtrl.getGlyphiconClass(rowData.fileType)}} spacing-right"></i>
+				<td sda-exporter="rowData.name">
+				 <i class="{{docSearchViewCtrl.getGlyphiconClass(rowData.contentType)}} spacing-right"></i>
 				 <span sd-popover sda-placement="right auto"
 						sda-trigger="mouseenter" sda-template="'plugins/html5-views-common/html5/partials/views/documentDetailToolTip.html'">
-						<a href="#" ng-click="docSearchViewCtrl.openDocumentView(rowData.documentId);" aid="COM-SrchDoc-DocSrchTbl-DocName">
-							{{rowData.documentName}} 
+						<a href="#" ng-click="docSearchViewCtrl.openDocumentView(rowData.uuid);" aid="COM-SrchDoc-DocSrchTbl-DocName">
+							{{rowData.name}} 
 						</a>
 				</span>
 				</td>
 				<td sda-data-type="dateTime"></td>
 				<td sda-data-type="dateTime"></td>
 				<td></td>
-				<td></td>
-				<td sda-exporter="rowData.fileSize | sdFileSize">{{rowData.fileSize
+				<td>{{rowData.documentType.name}}</td>
+				<td sda-exporter="rowData.size | sdFileSize">{{rowData.size
 					| sdFileSize}}</td>
 				<td sda-exporter="docSearchViewCtrl.getMetaData(rowData.metadata)">
 				    <table>
@@ -90,18 +90,18 @@
 						</tr>
 					</table>
 				</td>
-				<td sda-exporter="rowData.documentPath"><table>
+				<td sda-exporter="rowData.path"><table>
 						<tbody>
 							<tr style="vertical-align: top;">
 								<td><i class="glyphicon glyphicon-folder-close"></i></td>
-								<td><div ng-bind="rowData.documentPath"></div></td>
+								<td><div ng-bind="rowData.path"></div></td>
 							</tr>
 						</tbody>
 					</table></td>
 				<td sda-exporter="rowData.repositoryId"><div
 						ng-bind="rowData.repositoryId"></div></td>
-				<td></td>
-				<td sda-exporter="rowData.author"><sd-user-details sda-user-oid="rowData.userOID" sda-account="rowData.author" sda-aid-prefix="COM-SrchDoc-DocSrchTbl-Author"></sd-user-details>
+				<td>{{rowData.uuid}}</td>
+				<td sda-exporter="rowData.ownerDetails.displayName"><sd-user-details sda-user-oid="rowData.ownerDetails.oid" sda-account="rowData.ownerDetails.displayName" sda-aid-prefix="COM-SrchDoc-DocSrchTbl-Author"></sd-user-details>
 				</td>
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
@@ -119,10 +119,10 @@
 							aid="COM-SrchDoc-DocSrchTbl-ActionsAttachDocToProc">
 							<i class="pi pi-fw pi-lg pi-attach-document"></i>
 						</button>
-						<sd-document-download sda-document-id="rowData.documentId"
-							sda-document-name="rowData.documentName" sda-aid-prefix="COM-SrchDoc-DocSrchTbl-ActionsDownload"></sd-document-download>
+						<sd-document-download sda-document-id="rowData.uuid"
+							sda-document-name="rowData.name" sda-aid-prefix="COM-SrchDoc-DocSrchTbl-ActionsDownload"></sd-document-download>
 						<button
-							ng-click="docSearchViewCtrl.setShowDocumentVersions(rowData.documentId,rowData.documentName);"
+							ng-click="docSearchViewCtrl.setShowDocumentVersions(rowData.uuid,rowData.name);"
 							title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-versionHistory')}}"
 							class="button-link tbl-tool-link"
 							aid="COM-SrchDoc-DocSrchTbl-ActionsVersionHistory">

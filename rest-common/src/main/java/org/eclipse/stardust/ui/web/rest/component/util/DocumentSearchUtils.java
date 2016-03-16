@@ -91,13 +91,13 @@ public class DocumentSearchUtils
 
    private static final String POSTFIX_CLOSE = ")";
 
-   private static final String COL_DOCUMENT_NAME = "documentName";
+   private static final String COL_DOCUMENT_NAME = "name";
 
-   private static final String COL_CREATE_DATE = "createDate";
+   private static final String COL_CREATE_DATE = "dateCreated";
 
-   private static final String COL_MODIFICATION_DATE = "modificationDate";
+   private static final String COL_MODIFICATION_DATE = "dateLastModified";
 
-   private static final String COL_FILE_TYPE = "fileType";
+   private static final String COL_FILE_TYPE = "contentType";
 
    private static final String COL_DOCUMENT_TYPE = "documentType";
 
@@ -354,7 +354,7 @@ public class DocumentSearchUtils
       // without orderby, totalCount ends up being null
       if (options.orderBy == null)
       {
-         options.orderBy = "documentName";
+         options.orderBy = "name";
       }
 
       DocumentQuery query = new DocumentQuery();
@@ -483,25 +483,25 @@ public class DocumentSearchUtils
 
       FilterAndTerm filter = query.getFilter().addAndTerm();
 
-      if (null != documentSearchFilter.documentName)
+      if (null != documentSearchFilter.name)
       {
 
-         if (StringUtils.isNotEmpty(documentSearchFilter.documentName.textSearch))
+         if (StringUtils.isNotEmpty(documentSearchFilter.name.textSearch))
          {
             filter.and(DocumentQuery.NAME.like(QueryUtils
-                  .getFormattedString(documentSearchFilter.documentName.textSearch)));
+                  .getFormattedString(documentSearchFilter.name.textSearch)));
          }
       }
-      if (null != documentSearchFilter.createDate)
+      if (null != documentSearchFilter.dateCreated)
       {
-         Date startTime = new Date(documentSearchFilter.createDate.from);
-         Date endTime = new Date(documentSearchFilter.createDate.to);
+         Date startTime = new Date(documentSearchFilter.dateCreated.from);
+         Date endTime = new Date(documentSearchFilter.dateCreated.to);
          setDateFilter(startTime, endTime, DocumentQuery.DATE_CREATED, filter);
       }
-      if (null != documentSearchFilter.modificationDate)
+      if (null != documentSearchFilter.dateLastModified)
       {
-         Date startTime = new Date(documentSearchFilter.modificationDate.from);
-         Date endTime = new Date(documentSearchFilter.modificationDate.to);
+         Date startTime = new Date(documentSearchFilter.dateLastModified.from);
+         Date endTime = new Date(documentSearchFilter.dateLastModified.to);
          setDateFilter(startTime, endTime, DocumentQuery.DATE_LAST_MODIFIED, filter);
       }
       if (null != documentSearchFilter.author)
@@ -511,13 +511,13 @@ public class DocumentSearchUtils
             filter.and(DocumentQuery.OWNER.like(QueryUtils.getFormattedString(documentSearchFilter.author.textSearch)));
          }
       }
-      if (null != documentSearchFilter.fileType)
+      if (null != documentSearchFilter.contentType)
       {
 
-         if (StringUtils.isNotEmpty(documentSearchFilter.fileType.textSearch))
+         if (StringUtils.isNotEmpty(documentSearchFilter.contentType.textSearch))
          {
             filter.and(DocumentQuery.CONTENT_TYPE.like(QueryUtils
-                  .getFormattedString(documentSearchFilter.fileType.textSearch)));
+                  .getFormattedString(documentSearchFilter.contentType.textSearch)));
          }
       }
       if (null != documentSearchFilter.documentId)

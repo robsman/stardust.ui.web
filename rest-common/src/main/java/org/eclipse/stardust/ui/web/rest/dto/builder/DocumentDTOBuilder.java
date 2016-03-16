@@ -57,6 +57,7 @@ public class DocumentDTOBuilder
       if (document != null)
       {
          DocumentDTO documentDTO = DTOBuilder.build(document, DocumentDTO.class);
+         documentDTO.description = document.getDescription();
          DocumentTypeDTO documentTypeDTO = DocumentTypeDTOBuilder.build(document.getDocumentType());
          documentDTO.documentType = documentTypeDTO;
          if (dms != null)
@@ -183,7 +184,10 @@ public class DocumentDTOBuilder
 
          for (DocumentDTO documentDTO : documentDTOs)
          {
-            userIds.add(documentDTO.owner);
+            if(documentDTO.owner != null){
+               userIds.add(documentDTO.owner);
+            }
+            
          }
          List<UserDTO> userDTOs = userService.getUserDetails(userIds, detailLevelDTO.userDetailsLevel);
 
@@ -191,7 +195,7 @@ public class DocumentDTOBuilder
          {
             for (UserDTO userDTO : userDTOs)
             {
-               if (documentDTO.owner.equals(userDTO.account))
+               if (documentDTO.owner != null && documentDTO.owner.equals(userDTO.account))
                {
                   documentDTO.ownerDetails = userDTO;
                }

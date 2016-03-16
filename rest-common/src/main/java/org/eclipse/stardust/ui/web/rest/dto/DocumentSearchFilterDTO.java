@@ -16,17 +16,17 @@ package org.eclipse.stardust.ui.web.rest.dto;
 
 public class DocumentSearchFilterDTO extends AbstractDTO implements FilterDTO 
 {
-   public TextSearchDTO documentName;
+   public TextSearchDTO name;
 
-   public TextSearchDTO fileType;
+   public TextSearchDTO contentType;
 
    public TextSearchDTO documentId;
 
    public TextSearchDTO author;
 
-   public RangeDTO createDate;
+   public RangeDTO dateCreated;
 
-   public RangeDTO modificationDate;
+   public RangeDTO dateLastModified;
 
    public EqualsDTO documentType;
 

@@ -59,19 +59,38 @@
 		 */
 		DocumentSearchService.prototype.performSearch = function(query) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:type";
+			var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/repository/:type";
 
-			var options = sdDataTableHelperService.convertToQueryParams(query.options);
+			/*var options = sdDataTableHelperService.convertToQueryParams(query.options);
 
 			if (options.length > 0) {
 				restUrl = restUrl + "?" + options.substr(1);
-			}
-
+			}*/
 			var postData = {
-				filters : query.options.filters,
-				documentSearchCriteria : query.documentSearchCriteria
+				documentDataTableOption : query.options,
+				name : query.documentSearchCriteria.documentName,
+				id : query.documentSearchCriteria.documentId,
+				dateCreatedFrom : query.documentSearchCriteria.createDateFrom,
+				dateCreateTo : query.documentSearchCriteria.createDateTo,
+				dateLastModifiedFrom : query.documentSearchCriteria.modificationDateFrom,
+				dateLastModifiedTo : query.documentSearchCriteria.modificationDateTo,
+				owner : query.documentSearchCriteria.author,
+				contentTypeIn : query.documentSearchCriteria.selectedFileTypes,
+				contentTypeLike : query.documentSearchCriteria.advancedFileType,
+				documentTypeIdIn : query.documentSearchCriteria.selectedDocumentTypes,
+				repositoryIn : query.documentSearchCriteria.selectedRepository,
+				documentDetailLevelDTO : {"userDetailsLevel" : "minimal",
+			                              "DocumentDataDetailsLevel" : "minimal"}
 			};
 
+			if(query.documentSearchCriteria.searchContent){
+				postData.contentLike = query.documentSearchCriteria.containingText;
+			}
+			
+			if(query.documentSearchCriteria.searchContent){
+				postData.metaDataLike = query.documentSearchCriteria.containingText;
+			}
+			
 			var documentSearch = $resource(restUrl, {
 				type : '@type'
 			}, {
@@ -81,7 +100,7 @@
 			});
 
 			var urlTemplateParams = {};
-			urlTemplateParams.type = "searchByCriteria";
+			urlTemplateParams.type = "search";
 
 			return documentSearch.fetch(urlTemplateParams, postData).$promise;
 

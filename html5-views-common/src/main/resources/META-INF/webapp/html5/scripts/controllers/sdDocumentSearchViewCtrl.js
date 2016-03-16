@@ -154,12 +154,22 @@
 			self.query.documentSearchCriteria.author = "";
 		}
 
+		options.filter = options.filters;
+		var index = options.order.length - 1;
+		options.orderBy = options.order[index].name;
+		if(options.order[index].dir === 'desc'){
+			options.asc = false;
+		}else{
+			options.asc = true;
+		}
+		
+		delete options.filters;
 		self.query.options = options;
 
 		_sdDocumentSearchService.performSearch(self.query).then(function(data) {
-			self.documentSearchResult.list = data.list;
-			self.documentSearchResult.totalCount = data.totalCount;
-			deferred.resolve(self.documentSearchResult);
+			//self.documentSearchResult.list = data.list;
+			//self.documentSearchResult.totalCount = data.totalCount;
+			deferred.resolve(data.documents);
 		}, function(error) {
 			trace.log(error);
 			deferred.reject(error);
@@ -173,7 +183,7 @@
 	 */
 	DocumentSearchViewCtrl.prototype.openProcessDialog = function(rowData) {
 		var self = this;
-		_sdDocumentSearchService.fetchProcessDialogData(rowData.documentId).then(function(data) {
+		_sdDocumentSearchService.fetchProcessDialogData(rowData.uuid).then(function(data) {
 			self.processDialogData = {};
 			self.processDialogData.list = data.list;
 			self.processDialogData.totalCount = data.totalCount;
@@ -352,12 +362,12 @@
 		self.processDefns = {};
 		self.showAttachToProcessDialog = true;
 		if(rowData != undefined){
-			self.documentIds = [rowData.documentId];
+			self.documentIds = [rowData.uuid];
 		}else {
 			if (angular.isArray(self.docSrchRsltTable.getSelection())) {
-				self.documentIds = self.getSelectedRoleIds(self.docSrchRsltTable.getSelection());
+				self.documentIds = self.getSelectedDocIds(self.docSrchRsltTable.getSelection());
 			} else {
-				self.documentIds = [self.docSrchRsltTable.getSelection().documentId];
+				self.documentIds = [self.docSrchRsltTable.getSelection().uuid];
 			}
 		}
 		
@@ -382,10 +392,10 @@
 	 * @param rowSelection
 	 * @returns
 	 */
-	DocumentSearchViewCtrl.prototype.getSelectedRoleIds = function(rowSelection) {
+	DocumentSearchViewCtrl.prototype.getSelectedDocIds = function(rowSelection) {
 		var documentIds = [];
 		for ( var index in rowSelection) {
-			documentIds.push(rowSelection[index].documentId);
+			documentIds.push(rowSelection[index].uuid);
 		}
 		return documentIds;
 	};
