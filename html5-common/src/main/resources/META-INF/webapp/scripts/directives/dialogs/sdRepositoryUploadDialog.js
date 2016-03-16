@@ -367,6 +367,9 @@
 						that.responseFiles.push(result.documents[0]);
 					}
 				}
+				else if(that.mode==="UPDATE"){
+					that.responseFiles.push(result);
+				}
 			});
 
 			that.state = (failed)? "error" : "success";
