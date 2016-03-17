@@ -21,6 +21,18 @@
         sda-scope="this">
 	</div>
 	
+  <!-- UnBind Repository Confirmation Dialog -->
+  <div  sd-dialog="ctrl.unbindRepoDialog" 
+        sda-title="{{ctrl.textMap.confirm}}" 
+        sda-type="confirm" 
+        sda-confirm-action-label="{{ctrl.textMap.confirm}}"
+        sda-cancel-action-label="{{ctrl.textMap.close}}"
+        sda-modal="true"
+        sda-on-confirm="ctrl.onUnbindDialogConfirm(res)"
+        sda-template="{{ctrl.baseTemplateUrl}}unbindRepository.html"
+        sda-scope="this">
+  </div>
+
 	<!--Repository Properties Dialog-->
   <div  sd-dialog="ctrl.repoPropertyDialog" 
         sda-title="{{'Repository Properties'}}" 

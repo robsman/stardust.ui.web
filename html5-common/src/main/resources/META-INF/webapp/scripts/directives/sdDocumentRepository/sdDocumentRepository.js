@@ -211,6 +211,8 @@
     textMap.bind.id = i18n.translate("views.bindRepositoryDialog.provider.id");
     textMap.bind.name = i18n.translate("views.bindRepositoryDialog.provider.name");
     textMap.bind.provider = i18n.translate("views.bindRepositoryDialog.provider");
+    textMap.unbind = {};
+    textMap.unbind.confirmation = i18n.translate("common.confirmUnbindRepo.message.label");
 
     return textMap;
   };
@@ -953,13 +955,23 @@
   };
   
   docRepoController.prototype.unbindRepository = function(treeEvent){
+
     var that = this;
-    this.documentService.unbindRepository(treeEvent.valueItem.id)
-    .then(function(){
-      var parentItem = that.treeApi.getParentItem(treeEvent.valueItem.id);
-      var index = parentItem.children.indexOf(treeEvent.valueItem);
-      parentItem.children.splice(index,1);
-    });
+    this.dynamicUnbindLabel = this.textMap.unbind.confirmation.replace("{0}",treeEvent.valueItem.id);
+
+    this.onUnbindDialogConfirm = function(res){
+      if(res===true){
+        that.documentService.unbindRepository(treeEvent.valueItem.id)
+        .then(function(){
+          var parentItem = that.treeApi.getParentItem(treeEvent.valueItem.id);
+          var index = parentItem.children.indexOf(treeEvent.valueItem);
+          parentItem.children.splice(index,1);
+        });
+      }
+    }
+
+    this.unbindRepoDialog.open();
+  
   };
   
   docRepoController.prototype.setRepositoryAsDefault = function(repo){
