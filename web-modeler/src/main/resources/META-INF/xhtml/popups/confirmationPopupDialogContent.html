@@ -4,7 +4,8 @@
 <link type="text/css" rel="stylesheet" href="../../common/css/iPopupDialogStyle.css">
 </link>
  <link rel="stylesheet" type="text/css" href="../../modern-skin/modern.css"></link>
-  <link rel="stylesheet" type="text/css"  href="../../modern-skin/modern.font.icons.css"></link>	
+ <link rel="stylesheet" type="text/css"  href="../../modern-skin/modern.font.icons.css"></link>	
+ <link rel="stylesheet" href="../../html5-common/styles/portal-icons.css"/>
 <script src="../../views-common/js/libs/jquery/jquery-1.7.2.min.js"></script>
 <script src="../../common/js/ipopupDialogCustomSkinSupport.js"></script>
 <script>
@@ -35,14 +36,14 @@
 <body onload="init();" style="height: 100%; width: 100%; overflow: hidden; margin: 0px;">
 	<div id="titleBar" class="iPopupDialogTitleBar">
 		<span id="titleText" class="iPopupDialogTitleText"></span>
-		<input id="dialogCloseIcon" type="button" title="Close" class="iPopupDialogCloseControl" />
+		<span id="dialogCloseIcon" class="iPopupDialogCloseButton"><i class="pi pi-dialog-close pi-lg"  title="Close" ></i></span>
 	</div>
 	<div id="contentArea" class="iPopupDialogContentArea">
 		<div class="iPopupDialogSpacerDiv"></div>
 		<table border="0">
 			<tr>
 				<td class="iPopupDialogContentTabCol1">
-					<img src="../images/icons/dialog-icon-warning.jpg" />
+					<i class="pi pi-dialog-warning pi-2x" style="padding-right:10px "></i>
 				</td>
 				<td class="iPopupDialogContentTabCol2">
 					<span id="contentText" class="iPopupDialogContentText"></span>
