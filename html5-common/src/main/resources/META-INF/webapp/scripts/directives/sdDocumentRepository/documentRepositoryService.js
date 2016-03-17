@@ -3,7 +3,7 @@
  
   //Virtual root node of all instanced repositories
   var virtualRoot = {
-    "name" : "Available Repositories",
+    "name" : "!Repositories",
     "id" : "VirtualRoot",
     "type" : "VirtualRoot",
     "version" : "0.0.0",
@@ -24,9 +24,9 @@
 
   /**Bootstrap Section Ends**/
   
-  documentRepoService.$inject = ["$q","$timeout","$location","$http", "sdUtilService", "sdMimeTypeService"];
+  documentRepoService.$inject = ["$q","$timeout","$location","$http", "sdUtilService", "sdMimeTypeService", "sdI18nService"];
   
-  function documentRepoService($q, $timeout, $location, $http, sdUtilService, sdMimeTypeService){
+  function documentRepoService($q, $timeout, $location, $http, sdUtilService, sdMimeTypeService, sdI18nService){
 
     var absUrl;
 
@@ -35,7 +35,7 @@
     this.$timeout = $timeout;
     this.$http = $http;
     this.sdMimeTypeService = sdMimeTypeService;
-    
+    this.i18n = sdI18nService.getInstance('views-common-messages');
     //TODO:remove
     this.docRepo = [{"id":"System","name":"Jackrabbit","type":"Content Repository API for Java(TM) Technology Specification 2.0","version":"2.6.1","transactionSupported":false,"versioningSupported":false,"writeSupported":false}]; 
     
@@ -48,6 +48,9 @@
     this.documentRoot = this.absUrl + "/services/rest/portal/documents";
     this.documentTypesRoot = this.absUrl + "/services/rest/portal/document-types";
     this.rootUrl = this.absUrl + "/services/rest/portal/repository";
+
+    //compute the default name for our virtual root node
+    this.vrRootName = this.i18n.translate("views.genericRepositoryView.treeMenuItem.repo.root");
 
   }
 
@@ -152,8 +155,12 @@
   };
 
   documentRepoService.prototype.getVirtualRoot = function(){
+
     var deferred = this.$q.defer();
-    deferred.resolve(angular.extend({},virtualRoot));
+    var vr = angular.extend({},virtualRoot);
+    vr.name = this.vrRootName;
+    
+    deferred.resolve(vr);
     return deferred.promise;
   };
 
@@ -439,26 +446,25 @@
     return deferred.promise;
 
   };
-  
-  documentRepoService.prototype.getVirtualRoot = function(){
-    var deferred = this.$q.defer();
-    deferred.resolve(virtualRoot);
-    return deferred.promise;
-  };
 
   //Returns repositories along with a virtual root element.
   documentRepoService.prototype.getRepositories = function(){
 
     var deferred = this.$q.defer();
+    var that = this;
 
     this.$http({
       "method" : "GET",
       "url" : this.rootUrl,
     })
     .then(function(res){
-      var vr = angular.extend({}, virtualRoot)
-      vr.children=(res.data);
-      deferred.resolve([vr]);
+
+      that.getVirtualRoot()
+      .then(function(vr){
+        vr.children=(res.data);
+        deferred.resolve([vr]);
+      });
+      
     })
     ["catch"](function(err){
       deferred.reject(err);

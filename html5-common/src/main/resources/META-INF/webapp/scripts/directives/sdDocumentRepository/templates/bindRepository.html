@@ -1,90 +1,107 @@
 
 <div style="max-width:640px;">
-	<label>Available Providers</label>
-	<hr style="margin:0;">
-	<div style="margin:1em;">
+	<div class="modal-body">
 
-		
-
-		<label style="display:inline-table;min-width:55px;">Provider</label>
-		<select ng-model="ctrl.boundDialogRepoProvider" ng-options="item as item.name for item in ctrl.repositoryProviders"></select>
-		
-	</div>
-
-	<label>Repository Settings</label>
-	<hr style="margin:0;">
-
-
-	<div style="display:inline-flex;">
+		<label>{{ctrl.textMap.bind.availableProviders}}</label>
+		<hr style="margin:0;">
 		<div style="margin:1em;">
-			<label style="display:inline;">Repository ID </label>
-			<input ng-model="ctrl.boundDialogRepoProvider.beanId" type="text"/>
+
+			<label style="display:inline-table;min-width:55px;">{{ctrl.textMap.bind.provider}}</label>
+			<select ng-model="ctrl.boundDialogRepoProvider" ng-options="item as item.name for item in ctrl.repositoryProviders"></select>
+			
 		</div>
 
-		<div ng-init= "ctrl.boundDialogRepoProvider.jndiName=ctrl.boundDialogRepoProvider.id + '/newRepo'" style="margin:1em;">
-			<label style="display:inline;">jndiName </label>
-			<input ng-model="ctrl.boundDialogRepoProvider.jndiName" type="text"/>
+		<label>{{ctrl.textMap.bind.repositorySettings}}</label>
+		<hr style="margin:0;">
+
+
+		<div style="display:inline-flex;">
+			<div style="margin:1em;">
+				<label style="display:inline;">{{ctrl.textMap.bind.id}}</label>
+				<input ng-model="ctrl.boundDialogRepoProvider.beanId" type="text"/>
+			</div>
+
+			<div ng-init= "ctrl.boundDialogRepoProvider.jndiName=ctrl.boundDialogRepoProvider.id + '/newRepo'" style="margin:1em;">
+				<label style="display:inline;">{{ctrl.textMap.bind.name}}</label>
+				<input ng-model="ctrl.boundDialogRepoProvider.jndiName" type="text"/>
+			</div>
 		</div>
-	</div>
 
 
-	<div style="position:relative;display:inline-block;">
+		<div style="position:relative;display:inline-block;">
 
-		<div class="popover-body">
+			<div class="popover-body">
 
 
-			<label>Capabilities</label>
-			<hr style="margin:0;">
-				
-				<div style="display:inline-table;min-width:120px;">
-					<input ng-checked="ctrl.boundDialogRepoProvider.isFullTextSearchSupported" 
-						   type="checkbox" 
-						   disabled='disabled'/>
-					<label style="display:inline;">Full Text Search</label>
-				</div>
+				<label>{{ctrl.textMap.bind.capabilities}}</label>
+				<hr style="margin:0;">
+					
+					<div style="display:inline-table;min-width:140px;">
+						<input ng-checked="ctrl.boundDialogRepoProvider.isFullTextSearchSupported" 
+							   style="vertical-align:text-bottom;margin-right:4px;"
+							   type="checkbox" 
+							   disabled='disabled'/>
+						<label style="display:inline;">{{ctrl.textMap.bind.fullTextSearch}}</label>
+					</div>
 
-				<div style="display:inline-table;min-width:120px;">
-					<input ng-checked="ctrl.boundDialogRepoProvider.isTransactionSupported" 
-						   type="checkbox" 
-						   disabled='disabled'/>
-					<label style="display:inline;">Transactions</label>
-				</div>
+					<div style="display:inline-table;min-width:140px;">
+						<input ng-checked="ctrl.boundDialogRepoProvider.isTransactionSupported"
+							   style="vertical-align:text-bottom;margin-right:4px;" 
+							   type="checkbox" 
+							   disabled='disabled'/>
+						<label style="display:inline;">{{ctrl.textMap.bind.transaction}}</label>
+					</div>
 
-				<div style="display:inline-table;min-width:120px;">
-					<input ng-checked="ctrl.boundDialogRepoProvider.isMetaDataSearchSupported" 
-						   type="checkbox" 
-						   disabled='disabled'/>
-					<label style="display:inline;">Meta Data Search</label>
-				</div>
-				
-				<div style="display:inline-table;min-width:120px;">
-					<input ng-checked="ctrl.boundDialogRepoProvider.isMetaDataWriteSupported" 
-						   type="checkbox" 
-						   disabled='disabled'/>
-					<label style="display:inline;">Meta Data Storage</label>
-				</div>
+					<div style="display:inline-table;min-width:140px;">
+						<input ng-checked="ctrl.boundDialogRepoProvider.isMetaDataSearchSupported" 
+							   style="vertical-align:text-bottom;margin-right:4px;"
+							   type="checkbox" 
+							   disabled='disabled'/>
+						<label style="display:inline;">{{ctrl.textMap.bind.metaDataSearch}}</label>
+					</div>
+					
+					<div style="display:inline-table;min-width:140px;">
+						<input ng-checked="ctrl.boundDialogRepoProvider.isMetaDataWriteSupported" 
+							   style="vertical-align:text-bottom;margin-right:4px;"
+							   type="checkbox" 
+							   disabled='disabled'/>
+						<label style="display:inline;">{{ctrl.textMap.bind.metaDataStorage}}</label>
+					</div>
 
-				<div style="display:inline-table;min-width:120px;">
-					<input ng-checked="ctrl.boundDialogRepoProvider.isAccessControlPolicySupported" 
-						   type="checkbox" 
-						   disabled='disabled'/>
-					<label style="display:inline;">Access Control</label>
-				</div>
-				
-				<div style="display:inline-table;min-width:120px;">
-					<input ng-checked="ctrl.boundDialogRepoProvider.isVersioningSupported" 
-						   type="checkbox" 
-						   disabled='disabled'/>
-					<label style="display:inline;">Versioning</label>
-				</div>
+					<div style="display:inline-table;min-width:140px;">
+						<input ng-checked="ctrl.boundDialogRepoProvider.isAccessControlPolicySupported" 
+							   style="vertical-align:text-bottom;margin-right:4px;"
+							   type="checkbox" 
+							   disabled='disabled'/>
+						<label style="display:inline;">{{ctrl.textMap.bind.aclPolicy}}</label>
+					</div>
+					
+					<div style="display:inline-table;min-width:140px;">
+						<input ng-checked="ctrl.boundDialogRepoProvider.isVers ioningSupported" 
+							   style="vertical-align:text-bottom;margin-right:4px;"
+							   type="checkbox" 
+							   disabled='disabled'/>
+						<label style="display:inline;">{{ctrl.textMap.bind.versioning}}</label>
+					</div>
 
-				<div style="display:inline-table;min-width:120px;">
-					<input ng-checked="ctrl.boundDialogRepoProvider.isWriteSupported" 
-						   type="checkbox" 
-						   disabled='disabled'/>
-					<label style="display:inline;">Writable</label>
-				</div>
-
+					<div style="display:inline-table;min-width:140px;">
+						<input ng-checked="ctrl.boundDialogRepoProvider.isWriteSupported" 
+							   style="vertical-align:text-bottom;margin-right:4px;"
+							   type="checkbox" 
+							   disabled='disabled'/>
+						<label style="display:inline;">{{ctrl.textMap.bind.writable}}</label>
+					</div>
+					
+			</div>
 		</div>
-	</div>
+
+	</div><!--modal body end-->
+
+	<div class="modal-footer">
+	 	<div style="float:left;" class="confirmation-buttonpane">
+			<button class="button ng-binding" ng-click="ctrl.onBindDialogConfirm(true)" aid="-ConfirmAction">{{ctrl.textMap.confirm}}</button>
+			<button class="button ng-binding" ng-click="ctrl.closeBindRepoDialog()" aid="-CancelAction">{{ctrl.textMap.close}}</button>
+		</div>
+	</div><!--modal footer end-->
+
 </div>

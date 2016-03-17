@@ -197,6 +197,21 @@
     textMap.confirmDelete = i18n.translate("common.confirmDelete.title");
     textMap.confirmDeleteQuestion = i18n.translate("common.confirmDeleteRes.message.label").split("<br/>")[0];
     textMap.error =  i18n.translate("common.error");
+    textMap.bind = {};
+    textMap.bind.capabilities = i18n.translate("views.bindRepositoryDialog.provider.capabilities");
+    textMap.bind.fullTextSearch = i18n.translate("views.bindRepositoryDialog.provider.capabilities.fullSearch");
+    textMap.bind.metaDataSearch = i18n.translate("views.bindRepositoryDialog.provider.capabilities.metaDataSearch");
+    textMap.bind.metaDataStorage = i18n.translate("views.bindRepositoryDialog.provider.capabilities.metaDataStorage");
+    textMap.bind.versioning = i18n.translate("views.bindRepositoryDialog.provider.capabilities.versioning");
+    textMap.bind.transaction = i18n.translate("views.bindRepositoryDialog.provider.capabilities.transaction");
+    textMap.bind.aclPolicy = i18n.translate("views.bindRepositoryDialog.provider.capabilities.aclPolicy");
+    textMap.bind.writable = i18n.translate("views.bindRepositoryDialog.provider.capabilities.writable");
+    textMap.bind.availableProviders = i18n.translate("views.bindRepositoryDialog.repositorySettings.availableProviders");
+    textMap.bind.repositorySettings = i18n.translate("views.bindRepositoryDialog.repositorySettings");
+    textMap.bind.id = i18n.translate("views.bindRepositoryDialog.provider.id");
+    textMap.bind.name = i18n.translate("views.bindRepositoryDialog.provider.name");
+    textMap.bind.provider = i18n.translate("views.bindRepositoryDialog.provider");
+
     return textMap;
   };
 
@@ -242,6 +257,21 @@
     this.treeApi = api;
   };
   
+  docRepoController.prototype.refreshRepositories = function(){
+
+    var that = this;
+      this.$timeout(function(){
+        that.$scope.rootPath = "OP_REFRESH";
+        that.$timeout(function(){
+          that.$scope.rootPath = "/";
+          that.$timeout(function(){
+            that.treeApi.expandNode("VirtualRoot");
+          },250);
+        },0)
+      },0);
+      
+  };
+
   docRepoController.prototype.getDocumentClass = function(doc){
 
     var docType = doc.contentType;
@@ -967,7 +997,11 @@
     this.bindRepoDialog.open();
   };
   
-   docRepoController.prototype.onBindDialogConfirm = function(res){
+  docRepoController.prototype.closeBindRepoDialog = function(){
+    this.bindRepoDialog.close();
+  };
+
+  docRepoController.prototype.onBindDialogConfirm = function(res){
     var that = this;
     var jndiName = that.boundDialogRepoProvider.jndiName;
     var id = that.boundDialogRepoProvider.beanId;
@@ -979,8 +1013,10 @@
 
         that.documentService.bindRepository(providerId,id,jndiName)
         .then(function(boundRepo){
+          that.bindRepoDialog.close();
           //TODO:refresh tree as we need the uuid etc.
-          that.data[0].children.push(boundRepo);//this wont work...
+          that.refreshRepositories();
+          
         })
         ["catch"](function(err){
           that.errorMessage=that.textMap.bindErrorCreate;
@@ -1001,15 +1037,8 @@
   };
 
   docRepoController.prototype.onBindDialogOpen = function(res){
-    var that = this;
-    return;    
-    res.promise.then(function(){
-      that.documentService.bindRepository(that.boundDialogRepoProvider)
-      .then(function(boundRepo){
-        that.data[0].children.push(boundRepo);
-      });
-    });
-    
+    //always reset beanId
+    this.boundDialogRepoProvider.beanId = "";
   };
   
   docRepoController.prototype.getMatches = function(matchVal){
@@ -1087,6 +1116,11 @@
     $scope.$watch("rootPath",function(v1){
 
       var key;
+
+      //do nothing if null
+      if(v1==="OP_REFRESH"){
+        return;
+      }
 
       //If user has not assigned a value or simply given us a "/" then load all repositories
       if(v1 == "/"){
