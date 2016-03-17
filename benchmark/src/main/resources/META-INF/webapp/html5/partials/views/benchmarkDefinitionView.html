@@ -571,9 +571,10 @@
 	    	       type="text">
     	</div>
     	
-    	<div class="container">
-	    	<label style="display:inline-block;width:100px;">{{ctrl.textMap.description}}</label>
+    	<div style="position:relative;" class="container">
+	    	<label style="position:absolute;">{{ctrl.textMap.description}}</label>
 	    	<textarea ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'" 
+	    			  style="position:relative;left:104px;width:50%;"
 	    			  ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
 	    			  ng-model="ctrl.selectedBenchmark.description"></textarea>
     	</div>
