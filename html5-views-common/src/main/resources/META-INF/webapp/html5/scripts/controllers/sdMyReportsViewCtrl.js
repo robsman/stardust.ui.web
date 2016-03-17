@@ -3,9 +3,9 @@
 	'use strict';
 	
 	//inject our dependencies for the controller
-	sdMyReportsViewCtrl.$inject = ["sdReportsService", "sdI18nService", "$q"];
+	sdMyReportsViewCtrl.$inject = ["sdReportsService", "sdI18nService", "$q", "eventBus"];
 	
-	function sdMyReportsViewCtrl(sdReportsService, sdI18nService, $q){
+	function sdMyReportsViewCtrl(sdReportsService, sdI18nService, $q, eventBus){
 		var that = this,
 			i18n;
 
@@ -13,6 +13,7 @@
 		this.savedReportsPaths = null;
 		this.grants = [];
 		this.personalReports = [];
+		this.eventBus = eventBus;
 
 		i18n = sdI18nService.getInstance('views-common-messages');
 		this.header = i18n.translate("views.myReportsView.header");
@@ -78,6 +79,12 @@
 		});
 
 	}
+
+	sdMyReportsViewCtrl.prototype.eventHook = function(data,e){
+		if(data.treeEvent==="node-delete" && data.valueItem.nodeType==="document"){
+			this.eventBus.emitMsg("myReportsView.file.delete",data.valueItem);
+		};
+	};
 
 	/**
 	 * Hook into the sdDocumentRepository directive to allow us

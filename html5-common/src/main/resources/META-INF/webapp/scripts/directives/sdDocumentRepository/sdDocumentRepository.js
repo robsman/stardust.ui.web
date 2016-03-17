@@ -332,6 +332,9 @@
     
     var that = this;
 
+
+    this.$scope.eventHook({"data" : data, "e" : e});
+
     switch(data.treeEvent){
       case "node-expand":
         if(! data.valueItem.isInitialized && 
@@ -1217,6 +1220,7 @@
         "scope" : {
           "rootPath" : "=sdaRootPath",
           "menuHook" : "&sdaMenuHook",
+          "eventHook" : "&sdaEventHook",
           "showSearchFilter" : "=sdaSearchable"
         },
         "controller" : docRepoController,
