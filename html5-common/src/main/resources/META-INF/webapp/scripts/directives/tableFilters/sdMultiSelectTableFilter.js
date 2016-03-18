@@ -21,7 +21,7 @@
          restrict : 'A',
          template : '<select style="min-width: 200px; max-width: 350px; height: 75px" name="options" ng-model="filterData.like" '
                   + 'ng-options="option[value] as option[label] for option in filterCtrl.options | orderBy:\'{{label}}\'"><\/select>'
-                  + '<label ng-show="multiple" ng-bind="i18n(\'portal-common-messages.common-filterPopup-pickListFilter-pickMany-list-message\')"><\/label>',
+                  + '<label style="display: block;" ng-show="multiple" ng-bind="i18n(\'portal-common-messages.common-filterPopup-pickListFilter-pickMany-list-message\')"><\/label>',
          controller : [ '$scope','$attrs','$parse', FilterController ],
          compile: function (elem, attr) {
 			if (!attr.sdaMultiple || attr.sdaMultiple == 'true') {

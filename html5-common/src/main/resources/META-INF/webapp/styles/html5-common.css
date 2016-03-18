@@ -129,6 +129,7 @@ span.heading{
 	background: #FFFFFF;
 	overflow: auto;
 	box-shadow: 5px 5px 25px #888888;
+	min-width: 250px;
 }
 
 .popup-dlg-bgImg {
@@ -139,6 +140,7 @@ span.heading{
 .popup-dlg-hdr {
 	border-bottom: 1px solid #CCCCCC;
 	padding: 5px 0px 5px 0px;
+    white-space: nowrap;
 }
 
 .popup-dlg-hdr-txt {
