@@ -109,6 +109,7 @@
 				};
 
 				this.caseMenuPopover = {
+						url : sdUtilService.getBaseUrl()  + 'plugins/html5-process-portal/scripts/directives/partials/caseMenuPopover.html',
 						visible : false
 				}
 
@@ -723,6 +724,11 @@
 					}
 				}
 				self.processDocumentsPopover.visible = true;
+			}
+			
+			// this method is just added for as popover required it.
+			ProcessTableCompiler.prototype.openCasePopover = function(){
+				return true;
 			}
 
 			/*

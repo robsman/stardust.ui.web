@@ -1,0 +1,22 @@
+<div>
+	<div>
+		<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1"
+			aid="PP-ProcessTable-AttachCase"
+			ng-click="processTableCtrl.openAttachToCaseDialog(processTableCtrl.dataTable.getSelection())"
+			title="{{i18n('views-common-messages.views-attachToCase-title')}}"
+			class="button-link tbl-toolbar-item tbl-tool-link"
+			style="margin-right: 0px;">
+			{{i18n('views-common-messages.views-createCase-menubar-attachToCase')}}
+		</button>
+	</div>
+	<div>
+		<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1"
+			aid="PP-ProcessTable-CreateCase"
+			ng-click="processTableCtrl.openCreateCaseDialog(processTableCtrl.dataTable.getSelection())"
+			title="{{i18n('views-common-messages.views-createCase-title')}}"
+			class="button-link tbl-toolbar-item tbl-tool-link"
+			style="margin-right: 0px;">
+			{{i18n('views-common-messages.views-createCase-menubar-createCase')}}
+		</button>
+	</div>
+</div>

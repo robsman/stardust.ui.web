@@ -137,10 +137,10 @@
 						' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}">\n' +
 						'<i class="pi pi-export pi-lg"></i>\n' +
 					'</button>\n' +
-					'<span ng-if="$dtApi.enableExportCSV" class="tbl-tool-link" sd-popover sda-template="\'exportAsCSV.html\'" '+
-					  'sda-placement="auto bottom-left">\n' +
-						'<i class="pi pi-menu-dropdown"></i>\n' +
-					'</span>'+
+					'<button ng-disabled="!$dtApi.enableExportCSV" class="button-link tbl-toolbar-item tbl-tool-link" sd-popover sda-template="\'exportAsCSV.html\'" '+
+					  'sda-placement="auto bottom-left"  ng-click="$dtApi.setExportPopoverVisibility()">\n' +
+						'<i class="pi pi-bottom pi-menu-dropdown"></i>\n' +
+					'</button>'+
 					'<script id="exportAsCSV.html" type="text/ng-template">'+
 						'<div>'+
 						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' +
@@ -221,7 +221,6 @@
 
 		// Setup component instance
 		setup();
-
 		/*
 		 *
 		 */
@@ -2759,6 +2758,13 @@
 				self.applyTo = columnSelectorPreference.scope;
 				self.columns = getSelectableColumns(columnsByDisplayOrder);
 			}
+			
+			// this method is just added for as popover required it.
+			this.setExportPopoverVisibility = function(){
+				return true;
+			}
+			
+			
 
 			/*
 			 *
