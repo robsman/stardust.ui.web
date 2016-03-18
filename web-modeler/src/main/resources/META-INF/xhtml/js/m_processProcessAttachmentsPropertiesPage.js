@@ -93,6 +93,10 @@ define(
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.uniquePerRootProcessInstanceInput,
 									"carnot:engine:dms:byReference");
+					
+					if (this.propertiesPanel.element && this.propertiesPanel.element.dataPathes) {
+						this.setElement();
+					}
 				};
 
 				/**
