@@ -616,7 +616,7 @@
 				var message = result.failure[0].message;
 				sdDialogService.error(scope, message, options)
 			    } else {
-			    	sdCommonViewUtilService.openActivityView(rowItem.activityOID, null, self.cachedQuery);
+			    	sdCommonViewUtilService.openActivityView(rowItem.activityOID, null, (rowItem.trivial ? self.cachedQuery : undefined));
 				self.refresh();
 			    }
 			});
