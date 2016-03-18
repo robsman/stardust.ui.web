@@ -39,10 +39,10 @@ var html5Deps = function() {
   function prepareRequireJsConfig(config) {
     var reqMod = {
       paths : {
-        'jquery' : ['../portal-shell/js/libs/jquery/1.9.1/jquery'],
+        'jquery' : ['../portal-shell/js/libs/jquery/2.1.3/jquery'],
         'jquery.dataTables' : [ "html5-common/libs/datatables/1.9.4/jquery.dataTables" ],
-        'angularjs' : ['../portal-shell/js/libs/angular/1.3.3/angular'],
-        'angularResource' : ['../portal-shell/js/libs/angular/1.2.11/angular-resource'],
+        'angularjs' : ['../portal-shell/js/libs/angular/1.4.4/angular'],
+        'angularResource' : ['../portal-shell/js/libs/angular/1.4.4/angular-resource'],
         'bootstrap' : [ 'html5-common/libs/bootstrap/bootstrap' ],
         'ckeditor':['html5-common/libs/ckeditor/ckeditor'],
         'portalApplication' : [ 'common/html5/portalApplication' ],
@@ -93,7 +93,7 @@ var html5Deps = function() {
         'sdUtilService' : [ 'html5CommonMain' ],
         'sdViewUtilService' : [ 'html5CommonMain' ],
         'sdPreferenceService' : [ 'html5CommonMain','angularResource'],
-        'sdDialog' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
+        'sdDialog' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap', 'sdEnvConfigService', 'sdUtilService', 'sdLoggerService'],
         'sdDialogService' : [ 'sdDialog' ],
         'sdPortalConfigurationService' : [ 'html5CommonMain' ],
           'sdLocalizationService' : [ 'html5CommonMain' ],

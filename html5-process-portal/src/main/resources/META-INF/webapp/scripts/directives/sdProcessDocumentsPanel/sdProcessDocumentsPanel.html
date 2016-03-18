@@ -7,60 +7,74 @@
 .properties-panel h4 {
 	color: #A69A88
 }
+
+.properties-panel.renameComplete {
+	padding: 0px;
+}
 </style>
 <div class="propertiesContent">
 	<table>
-		<tr>
-			<td>
-				<div>
-					<h1>{{processDocumentsCtrl.sdI18n('processportal.views.documents.propertiesPage.label')}}</h1>
-				</div>
-			</td>
-		</tr>
 		<tr ng-show="processDocumentsCtrl.showProcessDocuments">
-			<td style="padding-left: 5px"><h2 style="margin-bottom: 0px;">COMPLETE
-					N NEXT (#15)</h2></td>
+			<td><h2>{{processDocumentsCtrl.processLabel}}</h2></td>
 		</tr>
 		<tr ng-show="processDocumentsCtrl.showProcessDocuments"
-			ng-repeat="document in processDocumentsCtrl.processDocuments.processAttachments">
-			<td style="padding-bottom: 8px; padding-left: 15px"><i
-				class="{{processDocumentsCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>
-				<span> <a href="#"
-					ng-click="processDocumentsCtrl.openDocumentView(document.uuid);"
-					aid="COM-SrchDoc-DocSrchTbl-DocName"> {{document.name}} </a>
-			</span></td>
-			<td><i
-				ng-click="processDocumentsCtrl.showDocumentMenu(document)"
-				class="pi pi-next-page pi-lg"></i></td>
-		</tr>
-		<tr class="borderTop"
-			ng-show="processDocumentsCtrl.showActivityDocuments">
-			<td style="padding-left: 5px"><h2 style="margin-bottom: 0px;">COMPLETE
-					N NEXT (#15)</h2></td>
-		</tr>
-		<tr ng-show="processDocumentsCtrl.showActivityDocuments"
-			ng-repeat="document in processDocumentsCtrl.processDocuments.activityAttachments">
-			<td style="padding-bottom: 8px; padding-left: 15px"
+			ng-repeat="document in processDocumentsCtrl.processAttachments">
+			<td class="properties-panel-content"
 				ng-show="!processDocumentsCtrl.documentActionControl[document.uuid].edit"><i
 				class="{{processDocumentsCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>
 				<span> <a href="#"
 					ng-click="processDocumentsCtrl.openDocumentView(document.uuid);"
 					aid="COM-SrchDoc-DocSrchTbl-DocName"> {{document.name}} </a>
 			</span></td>
-			<td
+			<td class="properties-panel-content"
 				ng-show="processDocumentsCtrl.documentActionControl[document.uuid].edit">
 				<input type="text"
 				ng-model="processDocumentsCtrl.documentActionControl[document.uuid].name">
-				<button ng-click="processDocumentsCtrl.renameComplete">
+				<button class="renameComplete"
+					ng-click="processDocumentsCtrl.renameComplete()">
 					<i class="pi pi-check pi-lg"></i>
 				</button>
 			</td>
-			<td>
+			<td ng-click="processDocumentsCtrl.showDocumentMenuPopover(document)">
 				<button class="button-link tbl-tool-link"
 					aid="PP-ProcessTable-AbortAllPopover" sd-popover
 					sda-template="processDocumentsCtrl.documentMenuPopupUrl"
-					sda-placement="left auto" sda-trigger="outsideClick"
-					ng-click="processDocumentsCtrl.showDocumentMenuPopover(document)">
+					sda-placement="left auto" sda-trigger="none"
+					sda-is-open="processDocumentsCtrl.documentActionControl[document.uuid].popover">
+					<i class="pi pi-next-page pi-lg"></i>
+				</button>
+			</td>
+		</tr>
+
+
+		<tr class="borderTop"
+			ng-show="processDocumentsCtrl.showActivityAttachments">
+			<td><h2>{{processDocumentsCtrl.activityLabel}}</h2></td>
+		</tr>
+		<tr ng-show="processDocumentsCtrl.showActivityAttachments"
+			ng-repeat="document in processDocumentsCtrl.activityAttachments">
+			<td class="properties-panel-content"
+				ng-show="!processDocumentsCtrl.documentActionControl[document.uuid].edit"><i
+				class="{{processDocumentsCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>
+				<span> <a href="#"
+					ng-click="processDocumentsCtrl.openDocumentView(document.uuid);"
+					aid="COM-SrchDoc-DocSrchTbl-DocName"> {{document.name}} </a>
+			</span></td>
+			<td class="properties-panel-content"
+				ng-show="processDocumentsCtrl.documentActionControl[document.uuid].edit">
+				<input type="text"
+				ng-model="processDocumentsCtrl.documentActionControl[document.uuid].name">
+				<button class="renameComplete"
+					ng-click="processDocumentsCtrl.renameComplete()">
+					<i class="pi pi-check pi-lg"></i>
+				</button>
+			</td>
+			<td ng-click="processDocumentsCtrl.showDocumentMenuPopover(document)">
+				<button class="button-link tbl-tool-link"
+					aid="PP-ProcessTable-AbortAllPopover" sd-popover
+					sda-template="processDocumentsCtrl.documentMenuPopupUrl"
+					sda-placement="left auto" sda-trigger="none"
+					sda-is-open="processDocumentsCtrl.documentActionControl[document.uuid].popover">
 					<i class="pi pi-next-page pi-lg"></i>
 				</button>
 			</td>
@@ -69,4 +83,11 @@
 			<td></td>
 		</tr>
 	</table>
+	<div sd-dialog
+		sda-dialog-handle="processDocumentsCtrl.documentHistoryDialog"
+		sda-title="{{'Attachment Version History'}}"
+		sda-confirm-action-label="confirm" sda-cancel-action-label="cancel"
+		sda-modal="true"
+		sda-template="{{processDocumentsCtrl.documentHistoryPopupUrl}}"
+		sda-scope="this"></div>
 </div>

@@ -27,6 +27,8 @@ public class ActivityInstanceDTO extends AbstractDTO
 {
    @DTOAttribute("OID")
    public long activityOID;
+   
+   public String activityName;
 
    @DTOAttribute("startTime.time")
    public Long startTime;

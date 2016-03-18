@@ -43,15 +43,6 @@
     var url = this.rootUrl + "services/rest/portal/process-instances/" + processInstanceOid + "/documents";
     var deferred = this.$q.defer();
 
-    /*
-     * var searchCri = { "documentSearchCriteria": { "selectedFileTypes":
-     * ["All"], "selectedDocumentTypes": ["All"], "selectedRepository": ["All"],
-     * "showAll": false, "searchContent": true, "searchData": true,
-     * "advancedFileType": "", "selectFileTypeAdvance": false, "documentName":
-     * "", "documentId": "", "createDateTo": 1457516688730,
-     * "modificationDateTo": 1457516688730, "author": "", "containingText": "" } };
-     */
-
     this.$http.get(url).then(function(data) {
       deferred.resolve(data);
     }, function(error) {
@@ -61,11 +52,10 @@
   }
 
   /**
-   * @param activityInstanceOid
-   * @returns
+   * 
    */
-  ProcessDocumentsService.prototype.getActivityDocuments = function(activityInstanceOid) {
-    var url = this.rootUrl + "services/rest/portal/notes/activity/" + activityInstanceOid + "?asc=true";
+  ProcessDocumentsService.prototype.getActivityInstance = function(activityInstanceOid) {
+    var url = this.rootUrl + "services/rest/portal/activity-instances/" + activityInstanceOid;
     var deferred = this.$q.defer();
 
     this.$http.get(url).then(function(data) {
@@ -80,11 +70,13 @@
    * @param activityInstanceOid
    * @returns
    */
-  ProcessDocumentsService.prototype.updateDocument = function(data) {
-    var url = this.rootUrl + "services/rest/portal/notes/save";
+  ProcessDocumentsService.prototype.rename = function(document, newName) {
+    var url = this.rootUrl + "services/rest/portal/documents/" + document.uuid;
     var deferred = this.$q.defer();
 
-    this.$http.post(url, data).then(function(data) {
+    this.$http.put(url, {
+      name: newName
+    }).then(function(data) {
       deferred.resolve(data);
     }, function(error) {
       deferred.reject(error);
@@ -92,6 +84,52 @@
     return deferred.promise;
   }
 
+  /**
+   * 
+   */
+  ProcessDocumentsService.prototype.deleteDocument = function(document) {
+    var url = this.rootUrl + "services/rest/portal/documents/" + document.uuid;
+    var deferred = this.$q.defer();
+
+    this.$http['delete'](url).then(function(data) {
+      deferred.resolve(data);
+    }, function(error) {
+      deferred.reject(error);
+    })
+    return deferred.promise;
+  }
+
+  /**
+   * 
+   */
+  ProcessDocumentsService.prototype.detach = function(document) {
+    var url = this.rootUrl + "services/rest/portal/documents/" + document.uuid;
+    var deferred = this.$q.defer();
+
+    this.$http['delete'](url).then(function(data) {
+      deferred.resolve(data);
+    }, function(error) {
+      deferred.reject(error);
+    })
+    return deferred.promise;
+  }
+
+  ProcessDocumentsService.prototype.getHistory = function(document) {
+    var url = this.rootUrl + "services/rest/portal/documents/history/" + document.uuid;
+    var deferred = this.$q.defer();
+
+    this.$http.get(url).then(function(data) {
+      deferred.resolve(data);
+    }, function(error) {
+      deferred.reject(error);
+    })
+    return deferred.promise;
+  }
+
+  /**
+   * @param data
+   * @returns
+   */
   ProcessDocumentsService.prototype.uploadDocument = function(data) {
     var url = this.rootUrl + "services/rest/portal/notes/save";
     var deferred = this.$q.defer();
@@ -125,7 +163,9 @@
 
     this.documentMenuPopupUrl = sdUtilService.getBaseUrl()
             + "plugins/html5-views-common/html5/partials/views/documentMenuPopover.html";
-    this.documentActionControl = {};
+
+    this.documentHistoryPopupUrl = sdUtilService.getBaseUrl()
+            + "plugins/html5-views-common/html5/partials/views/documentHistory.html";
 
     this.initialize();
   }
@@ -134,7 +174,9 @@
    * 
    */
   ProcessDocumentsController.prototype.initialize = function() {
+    this.documentHistoryDialog = {};
     this.initializeDocuments();
+
     console.log("ProcessDocuments controller initialized...");
   }
 
@@ -149,15 +191,34 @@
       self.showProcessDocuments = false;
     }
     if (self.$scope.activityInstanceOid) {
-      self.showActivityDocuments = true;
+      self.showActivityAttachments = true;
     } else {
-      self.showActivityDocuments = false;
+      self.showActivityAttachments = false;
     }
 
-    if (self.showProcessDocuments || self.showActivityDocuments) {
+    // to get activity and process labels
+    if (self.showProcessDocuments || self.showActivityAttachments) {
+      self.processDocumentsService.getActivityInstance(self.$scope.activityInstanceOid).then(function(data) {
+        self.activityInstance = data.data;
+        self.processInstance = data.data.processInstance;
+        self.activityLabel = self.activityInstance.activityName;
+        self.processLabel = self.processInstance.processName;
+      });
+    }
+
+    if (self.showProcessDocuments || self.showActivityAttachments) {
       self.processDocumentsService.getProcessDocuments(self.$scope.processInstanceOid).then(function(data) {
-        self.processDocuments = self.normalizeData(data.data);
-        self.activityDocuments = self.normalizeData(data.data);
+        var allDocs = self.normalizeData(data.data);
+        self.processAttachments = allDocs.processAttachments;
+        self.activityAttachments = allDocs.activityAttachments;
+
+        self.documentActionControl = {};
+        for (var int = 0; int < self.processAttachments.length; int++) {
+          self.documentActionControl[self.processAttachments[int].uuid] = {};
+        }
+        for (var int = 0; int < self.activityAttachments.length; int++) {
+          self.documentActionControl[self.activityAttachments[int].uuid] = {};
+        }
       });
     }
   }
@@ -172,7 +233,7 @@
   /**
    * 
    */
-  ProcessDocumentsController.prototype.uploadActivityDocuments = function() {
+  ProcessDocumentsController.prototype.uploadactivityAttachments = function() {
   }
 
   /**
@@ -193,12 +254,12 @@
    */
   ProcessDocumentsController.prototype.getTotalCount = function() {
     var total = 0;
-    if (this.showActivityDocuments && this.activityDocuments) {
-      total = total + this.activityDocuments.totalCount;
+    if (this.showActivityAttachments && this.activityAttachments) {
+      total = total + this.activityAttachments.length;
     }
 
-    if (this.showProcessDocuments && this.processDocuments) {
-      total = total + this.processDocuments.totalCount;
+    if (this.showProcessDocuments && this.processAttachments) {
+      total = total + this.processAttachments.length;
     }
     return total;
   };
@@ -228,18 +289,107 @@
    * 
    */
   ProcessDocumentsController.prototype.showDocumentMenuPopover = function(selectedDocument) {
-    this.documentActionControl.selectedDocument = selectedDocument;
+    this.selectedDocument = selectedDocument;
+    if (!this.documentActionControl[selectedDocument.uuid].popover) {
+      this.documentActionControl[selectedDocument.uuid].popover = true;
+    } else {
+      this.documentActionControl[selectedDocument.uuid].popover = false;
+    }
+    for ( var uuid in this.documentActionControl) {
+      if (uuid != selectedDocument.uuid) {
+        this.documentActionControl[uuid].popover = false;
+      }
+    }
+    event.preventDefault();
   }
 
+  /**
+   * 
+   */
   ProcessDocumentsController.prototype.rename = function() {
-    this.documentActionControl[this.documentActionControl.selectedDocument.uuid] = {
-      edit: true,
-      name: this.documentActionControl.selectedDocument.name
-    };
+    this.documentActionControl[this.selectedDocument.uuid].edit = true;
+    this.documentActionControl[this.selectedDocument.uuid].name = this.selectedDocument.name;
   }
 
+  /**
+   * 
+   */
   ProcessDocumentsController.prototype.renameComplete = function() {
+    this.documentActionControl[this.selectedDocument.uuid].edit = false;
+    var self = this;
+    var newName = this.documentActionControl[this.selectedDocument.uuid].name;
 
+    if (newName && (newName != this.selectedDocument.name)) {
+      this.processDocumentsService.rename(this.selectedDocument, newName).then(function(result) {
+        for (var int = 0; int < self.processAttachments.length; int++) {
+          if (self.processAttachments[int].uuid === result.data.uuid) {
+            self.processAttachments[int] = result.data;
+            self.selectedDocument = result.data;
+          }
+        }
+        for (var int = 0; int < self.activityAttachments.length; int++) {
+          if (self.activityAttachments[int].uuid === result.data.uuid) {
+            self.activityAttachments[int] = result.data;
+            self.selectedDocument = result.data;
+          }
+        }
+      }, function(error) {
+        console.error(error);
+      })
+    }
+  }
+
+  /**
+   * 
+   */
+  ProcessDocumentsController.prototype.deleteDocument = function() {
+    var self = this;
+    this.processDocumentsService.deleteDocument(this.selectedDocument).then(function() {
+      self.initializeDocuments();
+    }, function(error) {
+      console.error(error);
+    })
+
+    self.selectedDocument = null;
+  }
+
+  /**
+   * 
+   */
+  ProcessDocumentsController.prototype.detach = function() {
+    var self = this;
+    this.processDocumentsService.deleteDocument(this.selectedDocument).then(function() {
+      self.initializeDocuments();
+    }, function(error) {
+      console.error(error);
+    })
+
+    self.selectedDocument = null;
+  }
+
+  /**
+   * 
+   */
+  ProcessDocumentsController.prototype.viewHistory = function() {
+    var self = this;
+    this.processDocumentsService.getHistory(this.selectedDocument).then(function(result) {
+      self.currentDocumentHistory = result.data;
+      self.documentHistoryDialog.open();
+      self.isReady = true;
+    }, function(error) {
+      console.error(error);
+    })
+  }
+
+  ProcessDocumentsController.prototype.getCurrentDocumentHistory = function(params) {
+    return this.currentDocumentHistory;
+  }
+
+  /**
+   * 
+   */
+  ProcessDocumentsController.prototype.closeHistory = function() {
+    this.documentHistoryDialog.close();
   }
 
   /**

@@ -1,21 +1,11 @@
 <style type="text/css" media="all">
-
-
-.properties-panel h1{
-	margin: 0px;
-	margin-bottom: 10px; 
+.properties-panel table {
+	width: 100%
 }
 
 .properties-panel h2 {
 	margin: 0px;
 	margin-bottom: 5px;
-	margin-left: 5px; 
-}
-
-.properties-panel h2 {
-	margin: 0px;
-	margin-bottom: 5px;
-	margin-left: 10px; 
 }
 
 .properties-panel {
@@ -36,13 +26,19 @@
 	vertical-align: top;
 }
 
+.properties-panel-content {
+	padding-bottom: 8px;
+	padding-left: 5px;
+	padding-right: 5px
+}
+
 .properties-panel .toolbar {
-	background-color: #C1C1C1 !important;
-	width: 10%;
+	width: 2%;
+	background-image: none !important;
 }
 
 .properties-panel .propertiesContent {
-	width: 90%;
+
 }
 
 .properties-panel textarea {
@@ -74,10 +70,12 @@
 
 .properties-panel .borderTop {
 	border-top: 4px solid #C1C1C1;
+	margin-bottom: 5px;
 }
 
 .properties-panel .borderBottom {
 	border-bottom: 4px solid #C1C1C1;
+	margin-top: 5px;
 }
 
 .properties-panel .menu-popover div {
@@ -132,13 +130,13 @@
 											class='pi pi-notes-empty pi-lg'></i>
 									</a></td>
 								</tr>
-								<tr
+								<!-- <tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
 									<td style="text-align: center"><a
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesView')}}"
 										href='#'> <span>
 												{{propertiesPageController.getNotesTotalCount()}} </span></a></td>
-								</tr>
+								</tr> -->
 								<tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
 									<td
@@ -158,13 +156,13 @@
 											class='pi pi-invert pi-lg'></i>
 									</a></td>
 								</tr>
-								<tr
+								<!-- <tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
 									<td style="text-align: center"><a
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
 										href='#'> <span>
 												{{propertiesPageController.getDocumentsTotalCount()}} </span></a></td>
-								</tr>
+								</tr> -->
 							</tbody>
 						</table>
 					</td>

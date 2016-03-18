@@ -217,7 +217,6 @@ public class ProcessInstanceUtils
       {
          StringBuilder processLabel = new StringBuilder(I18nUtils.getProcessName(processDefinitionUtils
                .getProcessDefinition(instance.getModelOID(), instance.getProcessID())));
-         processLabel.append(" (").append("#").append(instance.getOID()).append(")");
          return processLabel.toString();
       }
       return "";

@@ -1,0 +1,24 @@
+<div class=modal-body>
+	<table sd-data-table="processDocumentsCtrl.fvhTableApi"
+		sda-mode="local" sda-selectable="row" sda-sortable="false"
+		sda-page-size="5" sda-ready="processDocumentsCtrl.isReady"
+		sd-data="processDocumentsCtrl.currentDocumentHistory">
+		<thead>
+			<tr>
+				<th sda-name="revisionName" sda-label="Version No"></th>
+				<th sda-name="name" sda-label="Document Name"></th>
+				<th sda-name="owner" sda-label="Author"></th>
+				<th sda-name="dateLastModified" sda-label="Modified Date"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td sda-field="revisionName"></td>
+				<td sda-field="name"></td>
+				<td sda-field="owner"></td>
+				<td sda-field="dateLastModified" sda-data-type="DateTime"><span>
+						{{rowData.dateLastModified | date:'short'}} </span></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

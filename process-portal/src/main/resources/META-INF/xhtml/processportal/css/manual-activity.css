@@ -333,18 +333,17 @@ input[type="checkbox"].panel-input-highlight {
 
 /* checklist activity panel  start*/
 .panel-expanded {
-  width: 95%;
+  width: 96%;
   float: left;
 }
 
 .panel-restricted {
-  width: 67%;
+  width: 75%;
   float: left;
 }
 
 .properties-panel-expanded {
-  width: 30%;
-  min-width: 200px;
+  width: 25%;
 }
 
 .properties-panel-collapsed {

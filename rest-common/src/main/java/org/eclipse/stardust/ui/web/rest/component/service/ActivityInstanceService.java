@@ -120,7 +120,9 @@ public class ActivityInstanceService
    public ActivityInstanceDTO getActivityInstance(long activityInstanceOid)
    {
       ActivityInstance ai = activityInstanceUtils.getActivityInstance(activityInstanceOid);
-      return DTOBuilder.build(ai, ActivityInstanceDTO.class);
+      ActivityInstanceDTO aDTO = DTOBuilder.build(ai, ActivityInstanceDTO.class);
+      aDTO.activityName = activityInstanceUtils.getActivityLabel(ai);
+      return aDTO;
    }
 
    /**

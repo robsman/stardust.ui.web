@@ -105,8 +105,7 @@ public class NotesServiceImpl implements NotesService
             // Process level notes
             NoteDTO noteDTO = new NoteDTO(note);
             noteDTO.noteNumber = noteList.indexOf(note) + 1;
-            noteDTO.scopeType = msgBean.getParamString("views.noteToolTip.process",
-                  processInstanceUtils.getProcessLabel(processInstance));
+            noteDTO.scopeType = processInstanceUtils.getProcessLabel(processInstance);
 
             noteDTOList.add(noteDTO);
          }
@@ -123,7 +122,7 @@ public class NotesServiceImpl implements NotesService
                throw new ObjectNotFoundException(BpmRuntimeError.ATDB_NO_MATCHING_ACTIVITY_INSTANCE.raise());
             }
             noteDTO.scopeType = msgBean.getParamString("views.noteToolTip.activity",
-                  activityInstanceUtils.getActivityInstanceLabel(activityInstance));
+                  activityInstanceUtils.getActivityLabel(activityInstance));
 
             noteDTOList.add(noteDTO);
          }
@@ -241,7 +240,7 @@ public class NotesServiceImpl implements NotesService
       NotesResultDTO notesResultDTO = new NotesResultDTO();
       notesResultDTO.list = noteDTOList;
       notesResultDTO.totalCount = noteDTOList.size();
-      notesResultDTO.label = activityInstanceUtils.getActivityInstanceLabel(activityInstance);
+      notesResultDTO.label = activityInstanceUtils.getActivityLabel(activityInstance);
       return notesResultDTO;
    }
 

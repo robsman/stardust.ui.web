@@ -613,7 +613,7 @@ public class ProcessInstanceResource
    @DELETE
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("{oid}/documents{dataPathId:.*}{documentId: (/documentId)?}")
+   @Path("{oid}/documents/{dataPathId}/{documentId}")
    public Response removeDocument(List<Attachment> attachments, @PathParam("oid") Long processOid,
          @PathParam("dataPathId") String dataPathId, @PathParam("documentId") String documentId) throws Exception
    {

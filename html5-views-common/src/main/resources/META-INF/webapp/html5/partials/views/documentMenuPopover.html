@@ -8,7 +8,7 @@
 		</button>
 	</div>
 	<div>
-		<button ng-click="processDocumentsCtrl.delete()"
+		<button ng-click="processDocumentsCtrl.deleteDocument()"
 			class="button-link tbl-toolbar-item tbl-tool-link"
 			style="margin-right: 0px;">
 			{{processDocumentsCtrl.sdI18n('views-common-messages.views.genericRepositoryView.treeMenuItem.delete')}}
@@ -21,14 +21,12 @@
 			{{processDocumentsCtrl.sdI18n('views-common-messages.views.genericRepositoryView.treeMenuItem.detach')}}
 		</button>
 	</div>
-	<div>
-		<button ng-click="processDocumentsCtrl.versionHistory()"
-			class="button-link tbl-toolbar-item tbl-tool-link"
+	<div ng-click="processDocumentsCtrl.viewHistory()">
+		<button class="button-link tbl-toolbar-item tbl-tool-link"
 			style="margin-right: 0px;">
 			{{processDocumentsCtrl.sdI18n('views-common-messages.views.genericRepositoryView.treeMenuItem.versionHistory')}}
 		</button>
 	</div>
-
 	<div>
 		<button ng-click="processDocumentsCtrl.download()"
 			class="button-link tbl-toolbar-item tbl-tool-link"

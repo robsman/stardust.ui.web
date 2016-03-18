@@ -178,7 +178,14 @@
 					}
 			    });
 				
-				exposeAPI($attrs.sdDialog);
+				// TODO sdDialogHandle is invented as having directive name same
+        // as attribute name somehow does not work in Checklist panel flow.
+        var dialogHandle = $attrs.sdaDialogHandle;
+        if (!dialogHandle) {
+          dialogHandle = $attrs.sdDialog;
+        }
+        
+        exposeAPI(dialogHandle);
 
 				// Expose closeDialog to the provided scope.
 				self.dialogScope.closeThisDialog = closeDialog;

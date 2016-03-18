@@ -7,68 +7,39 @@
 	opacity: 0.7;
 	font-weight: bolder;
 }
-
-.properties-panel .noteText {
-	
-}
 </style>
 <div>
 	<table>
-		<tr>
-			<td>
-				<div>
-					<h1>{{notesCtrl.sdI18n('processportal.views.notesPanel.title')}}</h1>
-				</div>
-			</td>
-		</tr>
 		<tr ng-show="notesCtrl.showProcessNotes">
+			<td colspan="2"><h2>{{notesCtrl.processNotes.label}}</h2></td>
+		</tr>
+		<tr ng-show="notesCtrl.showProcessNotes"
+			ng-repeat="note in notesCtrl.processNotes.list">
+			<td class="properties-panel-content"><img
+				ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+				ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
+				width="24px" height="24px" /> <i
+				class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
+				ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+				style="margin-top: 3px; margin-left: 3px;"></i></td>
 			<td>
 				<table>
 					<tr>
-						<td>
-							<table cellspacing="2">
-								<tbody>
-									<tr>
-										<td><h2 style="margin-left: 5px">{{notesCtrl.processNotes.label}}</h2></td>
-									</tr>
-									<tr>
-										<td>
-											<table cellspacing="7" class="properties-list-table">
-												<tr ng-repeat="note in notesCtrl.processNotes.list">
-													<td><img
-														ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-														ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
-														width="24px" height="24px" /> <i
-														class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
-														ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-														style="margin-top: 3px; margin-left: 3px;"></i></td>
-													<td>
-														<table>
-															<tr>
-																<td><span class="noteUser">{{note.creatorName}}</span></td>
-															</tr>
-															<tr>
-																<td><span class="noteDate">{{note.created |
-																		sdDateTimeFilter}}</span></td>
-															</tr>
-															<tr>
-																<td><span class="noteText">{{note.note}}</span></td>
-															</tr>
-														</table>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</td>
+						<td><span class="noteUser">{{note.creatorName}}</span></td>
+					</tr>
+					<tr>
+						<td><span class="noteDate">{{note.created |
+								sdDateTimeFilter}}</span></td>
+					</tr>
+					<tr>
+						<td><span class="noteText">{{note.note}}</span></td>
 					</tr>
 				</table>
 			</td>
 		</tr>
 		<tr class="border">
-			<td><textarea type="text" ng-model="notesCtrl.processNote"
+			<td colspan="2"><textarea type="text"
+					ng-model="notesCtrl.processNote"
 					placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addProcessNote')}}">
                        							</textarea> <a href='#' class='heading'
 				style='cursor: pointer; text-decoration: none;'
@@ -78,53 +49,35 @@
 			</a></td>
 		</tr>
 		<tr ng-show="notesCtrl.showActivityNotes">
+			<td colspan="2"><h2>{{notesCtrl.activityNotes.label}}</h2></td>
+		</tr>
+		<tr ng-show="notesCtrl.showActivityNotes"
+			ng-repeat="note in notesCtrl.activityNotes.list">
+			<td class="properties-panel-content"><img
+				ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+				ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
+				width="24px" height="24px" /> <i
+				class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
+				ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+				style="margin-top: 3px; margin-left: 3px;"></i></td>
 			<td>
 				<table>
 					<tr>
-						<td>
-							<table cellspacing="2">
-								<tbody>
-									<tr>
-										<td><h2 style="margin-bottom: 0px;">{{notesCtrl.activityNotes.label}}</h2></td>
-									</tr>
-									<tr>
-										<td>
-											<table cellspacing="7" class="properties-list-table">
-												<tr ng-repeat="note in notesCtrl.activityNotes.list">
-													<td><img
-														ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-														ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
-														width="24px" height="24px" /> <i
-														class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
-														ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-														style="margin-top: 3px; margin-left: 3px;"></i></td>
-													<td>
-														<table>
-															<tr>
-																<td><span class="noteUser">{{note.creatorName}}</span></td>
-															</tr>
-															<tr>
-																<td><span class="noteDate">{{note.created |
-																		sdDateTimeFilter}}</span></td>
-															</tr>
-															<tr>
-																<td><span class="noteText">{{note.note}}</span></td>
-															</tr>
-														</table>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</td>
+						<td><span class="noteUser">{{note.creatorName}}</span></td>
+					</tr>
+					<tr>
+						<td><span class="noteDate">{{note.created |
+								sdDateTimeFilter}}</span></td>
+					</tr>
+					<tr>
+						<td><span class="noteText">{{note.note}}</span></td>
 					</tr>
 				</table>
 			</td>
 		</tr>
 		<tr class="border">
-			<td><textarea type="text" ng-model="notesCtrl.activityNote"
+			<td colspan="2"><textarea type="text"
+					ng-model="notesCtrl.activityNote"
 					placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addActivityNote')}}">
                         						</textarea> <a href='#' class='heading'
 				style='cursor: pointer; text-decoration: none;'
