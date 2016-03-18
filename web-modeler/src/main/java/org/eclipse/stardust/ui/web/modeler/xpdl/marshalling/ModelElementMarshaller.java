@@ -342,6 +342,14 @@ public class ModelElementMarshaller implements ModelMarshaller
             }
          }
          
+         if (AttributeUtil.getAttribute(dataPath,
+               PredefinedConstants.USE_SERVERTIME) != null)
+         {
+            dataPathJson.addProperty(ModelerConstants.DESCRIPTOR_USE_SERVERTIME,
+                  AttributeUtil.getBooleanValue(dataPath,
+                        PredefinedConstants.USE_SERVERTIME));
+         }
+                 
       }
 
       JsonObject activitiesJson = new JsonObject();

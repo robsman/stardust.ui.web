@@ -37,7 +37,9 @@ public class TestCompositeDescriptors extends RecordingTestcase
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "ProvidedProcess", "ProvidedProcess");
       DataPathType dataPath = GenericModelingAssertions.assertDataPath(process, "DataPath_1", "DataPath_ 1", null, true, false, DirectionType.IN_LITERAL, "http://www.link.com");
       GenericModelingAssertions.assertAttribute(dataPath, "type", "Link");
-      GenericModelingAssertions.assertAttribute(dataPath, "text", "This is a link.");       
+      GenericModelingAssertions.assertAttribute(dataPath, "text", "This is a link.");
+      GenericModelingAssertions.assertAttribute(dataPath, "stardust:model:dateTimeDescriptor:useServerTime", "true"); 
+      
    }
    
    @Test

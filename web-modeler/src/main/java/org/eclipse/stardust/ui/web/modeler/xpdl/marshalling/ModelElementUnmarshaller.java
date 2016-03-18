@@ -829,7 +829,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       else
       {
          AttributeUtil.setAttribute(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY, null);
-      }            
+      }
    }
 
    /**
@@ -1343,9 +1343,18 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          
          if (hasNotJsonNull(dataPathJson, "text"))
          {
-            AttributeUtil.setAttribute(dataPathType, "text", dataPathJson.get("text").getAsString());            
+            AttributeUtil.setAttribute(dataPathType, "text",
+                  dataPathJson.get("text").getAsString());
          }
-         
+
+         if (hasNotJsonNull(dataPathJson, ModelerConstants.DESCRIPTOR_USE_SERVERTIME))
+         {
+            AttributeUtil.setBooleanAttribute(dataPathType,
+                  PredefinedConstants.USE_SERVERTIME,
+                  dataPathJson.get(ModelerConstants.DESCRIPTOR_USE_SERVERTIME)
+                        .getAsBoolean());
+         }
+                  
          newDataPaths.add(dataPathType);
       }
       processDefinition.getDataPath().clear();
