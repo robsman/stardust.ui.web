@@ -135,6 +135,11 @@ public class ManualActivityUi
          {
             path.setName(dataMapping.getName());
             manualActivityPath.getChildPaths().add(path);
+            
+            if (null != dataMapping.getAttribute("mandatoryDataMapping"))
+            {
+               path.setMandatory((Boolean) dataMapping.getAttribute("mandatoryDataMapping")); 
+            }
          }
          else
          {

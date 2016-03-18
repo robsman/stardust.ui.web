@@ -30,6 +30,7 @@ public class PathDTO /*extends AbstractDTO*/
    public String typeName;
    public Boolean isPrimitive;
    public Boolean isList;
+   public Boolean isMandatory;
    public Boolean isEnum;
    public String[] enumValues;
    public Map<String, String> properties;
