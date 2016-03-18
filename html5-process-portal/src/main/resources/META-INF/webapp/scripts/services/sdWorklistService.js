@@ -130,17 +130,17 @@
 		   if( query.participantQId && query.userId ) {
 			   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl,  'userId='+query.userId);
 		   }
-
-
+		   
+		   var postData = sdDataTableHelperService.convertToPostParams(query.options);
+		   postData.worklistId = query.id;
+		   
+		   addCustomizationParameters(postData, query);
+		  
 		   var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
-
 		   if (queryParams.length > 0) {
 			   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams.substr(1));
 		   }
-
-		   var postData = sdDataTableHelperService.convertToPostParams(query.options);
-		   postData.worklistId = query.id;
-
+		   
 		   var worklist = $resource(restUrl, {
 			   type : '@type',
 			   id : '@id'
@@ -152,6 +152,36 @@
 
 		   return worklist.fetch(urlTemplateParams, postData).$promise;
 	   };
+	   
+	   /**
+	    * 
+	    */
+	   function addCustomizationParameters(postData, query) {
+		   debugger;
+		   //adding descriptor values
+		   if(query.fetchDescriptors) {
+			   if( typeof(query.fetchDescriptors) === "boolean") {
+				   if(query.fetchDescriptors) {
+					   postData.descriptors.fetchAll = query.fetchDescriptors;
+				   }
+			   }else  if( angular.isArray(query.fetchDescriptors)) {
+				   if(query.fetchDescriptors) {
+					   postData.descriptors.visibleColumns = postData.descriptors.visibleColumns.concat(query.fetchDescriptors);
+				   }
+			   }
+		   }
+
+		   if(query.sortBy) { 
+			   query.options.order = query.sortBy;
+		   }
+
+		   if(query.filterBy) {
+			   if(!postData.filters) {
+				   postData.filters = {};
+			   }
+			   angular.merge(postData.filters, query.filterBy);
+		   }
+	   }
    }
 
 })();

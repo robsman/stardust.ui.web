@@ -38,10 +38,12 @@
 	var directiveDefObject = {
 			restrict : 'AE',
 			require : '^?sdData',
+			transclude : true,
+			replace : true,
 			scope : true, // Creates a new sub scope
 			templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/activityTable.html',
 			compile : function(elem, attr, transclude) {
-				processRawMarkup(elem, attr);
+				processRawMarkup(elem, attr, transclude);
 
 				return {
 					post : function(scope, element, attr, ctrl) {
@@ -82,8 +84,9 @@
 	/*
 	 *
 	 */
-	function processRawMarkup(elem, attr) {
+	function processRawMarkup(elem, attr, transclude) {
 		try{
+			processCustomTemplate(elem, attr, transclude);
 			processTrivialDataColumn(elem, attr);
 			processDescriptorColumns(elem, attr);
 			processActions(elem, attr);
@@ -94,6 +97,34 @@
 		}
 	}
 
+	/**
+	 * 
+	 */
+	function processCustomTemplate(elem, attr, transclude) {
+		
+		var customTemplate = {};
+		
+		transclude({}, function(clone) {
+			for(var index = 0 ; index < clone.length; index++ ){
+				if(jQuery(clone[index]).is("thead") ) {
+					customTemplate.head = jQuery(clone[index])[0];
+				} else if(jQuery(clone[index]).is("tbody")){
+					customTemplate.body = jQuery(clone[index])[0];
+				}
+			}
+		});
+		
+
+		if(customTemplate.head && customTemplate.body) {
+			//Remove all the contents of the table
+			jQuery(elem.find('table[sd-data-table]')[0]).empty();
+
+			//Add contents from custom template
+			jQuery(customTemplate.body).appendTo(elem.find('table[sd-data-table]')[0]);
+			jQuery(customTemplate.head).appendTo(elem.find('table[sd-data-table]')[0]);
+			
+		}
+	}
 
 	/*
 	 *
