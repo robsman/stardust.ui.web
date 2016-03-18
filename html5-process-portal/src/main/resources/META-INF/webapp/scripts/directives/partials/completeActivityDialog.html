@@ -11,10 +11,14 @@
 		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-generic')"></div>
 </div>
 <div ng-if="activityTableCtrl.completeDialog.confirmationType == 'dataMapping'">
-	
+	<div class="panel-validation-summary-bar" ng-show="!isTrivialDataValid">
+		<span class="fa fa-exclamation-triangle panel-validation-summary-bar-img"></span>
+		<span class="panel-validation-summary-bar-text">Please correct the fields highlighted below.</span>
+	</div>	
 	<div class="complete-activity-description"  ng-bind-html="activityTableCtrl.trustAsHtml(activityTableCtrl.completeDialog.description)"  ng-if="activityTableCtrl.completeDialog.description"></div>
 	<div sd-trivial-manual-activity-data
 				sda-data-mappings="activityTableCtrl.completeDialog.dataMappings"
-				sda-out-data="activityTableCtrl.completeDialog.outData"></div>
+				sda-out-data="activityTableCtrl.completeDialog.outData"
+				style="min-width: 300px;"></div>
 
 </div>

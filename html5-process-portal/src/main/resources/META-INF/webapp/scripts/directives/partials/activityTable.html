@@ -359,7 +359,7 @@
 								<i class="pi pi-user pi-lg"></i>
 						</button>
 						<button sda-column-type="TRIVIAL_DATA" ng-if="activityTableCtrl.isWorklistMode();"  aid="PP-ActivityTable-CompleteAction" sda-action-type="complete"
-								ng-disabled="(rowData.dataMappings == undefined) || !rowData.activatable"
+								ng-disabled="(rowData.dataMappings == undefined) || !rowData.activatable || !rowData.isTrivialDataValid"
 								ng-click="activityTableCtrl.$openCompleteDialog(rowData);"
 								title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}" class="button-link tbl-tool-link">
 								<i class="pi pi-activity-complete pi-lg"></i>

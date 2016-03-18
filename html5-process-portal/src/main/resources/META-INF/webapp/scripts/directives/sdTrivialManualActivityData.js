@@ -48,6 +48,16 @@
          }
       }
       $scope.dataCtrl = this;
+      
+      var scope = $scope;
+      $scope.$watch('trivialFieldsForm.$valid', function(valid) {
+    	  // TODO - not very elegant
+    	  if (scope.rowData) {
+    		  scope.rowData.isTrivialDataValid = valid;
+    	  } else {
+    		  scope.isTrivialDataValid = valid;
+    	  }
+      });
    }
    
    

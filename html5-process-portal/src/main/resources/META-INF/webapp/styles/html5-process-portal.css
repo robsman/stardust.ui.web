@@ -286,3 +286,21 @@ padding : 5px;;
 input[type="checkbox"].tma-input-highlighted {
     outline: 1px solid #990000 !important;
 }
+
+.panel-validation-summary-bar
+{
+	padding: 5px;
+	margin-bottom: 10px;
+	background-color: #FFD966;
+	line-height: 30px;
+}
+
+.panel-validation-summary-bar-img {
+	color: #990000;
+}
+
+.panel-validation-summary-bar-text
+{
+	color: normal;
+	font-weight: bold;
+}
