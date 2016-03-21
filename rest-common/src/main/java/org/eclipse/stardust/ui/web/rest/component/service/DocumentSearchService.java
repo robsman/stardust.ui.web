@@ -15,19 +15,13 @@
  */
 package org.eclipse.stardust.ui.web.rest.component.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.query.QueryResult;
-import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.ui.web.rest.component.util.DocumentSearchUtils;
-import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
-import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchCriteriaDTO;
-import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentVersionDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InfoDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO;
@@ -56,13 +50,6 @@ public class DocumentSearchService
       return documentSearchUtils.getFilterAttributes();
    }
 
-   public QueryResultDTO performSearch(DataTableOptionsDTO options, DocumentSearchCriteriaDTO documentSearchAttributes)
-   {
-      QueryResult<Document> docs = documentSearchUtils.performSearch(options, documentSearchAttributes);
-      return buildDocumentSearchResult(docs);
-
-   }
-
    /**
     * 
     * @param documentId
@@ -74,37 +61,6 @@ public class DocumentSearchService
       QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = processList;
       resultDTO.totalCount = processList.size();
-      return resultDTO;
-
-   }
-
-   /**
-    * 
-    * @param docs
-    * @return
-    */
-   private QueryResultDTO buildDocumentSearchResult(QueryResult<Document> docs)
-   {
-      List<DocumentSearchResultDTO> list = new ArrayList<DocumentSearchResultDTO>();
-
-      for (Document doc : docs)
-      {
-         DocumentSearchResultDTO docSearchResultDTO = null;
-         try{
-             docSearchResultDTO = new DocumentSearchResultDTO(doc);
-         }catch(Exception e){
-            trace.error(e);
-            docSearchResultDTO = new DocumentSearchResultDTO();
-         }
-         
-         
-         list.add(docSearchResultDTO);
-      }
-
-      QueryResultDTO resultDTO = new QueryResultDTO();
-      resultDTO.list = list;
-      resultDTO.totalCount = docs.getTotalCount();
-
       return resultDTO;
 
    }

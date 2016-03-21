@@ -167,8 +167,6 @@
 		self.query.options = options;
 
 		_sdDocumentSearchService.performSearch(self.query).then(function(data) {
-			//self.documentSearchResult.list = data.list;
-			//self.documentSearchResult.totalCount = data.totalCount;
 			deferred.resolve(data.documents);
 		}, function(error) {
 			trace.log(error);

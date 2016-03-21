@@ -41,7 +41,6 @@ import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.Documents;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.thirdparty.encoding.Text;
@@ -49,7 +48,6 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
-import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchFilterAttributesDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchFilterDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentVersionDTO;
@@ -212,131 +210,6 @@ public class DocumentSearchUtils
    }
 
    /**
-    * 
-    * @param options
-    * @param documentSearchAttributes
-    * @return
-    * @deprecated
-    */
-   public QueryResult<Document> performSearch(DataTableOptionsDTO options, DocumentSearchCriteriaDTO documentSearchAttributes)
-   {
-      DocumentQuery query = new DocumentQuery();
-
-      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
-      query.setPolicy(subsetPolicy);
-
-      addSortCriteria(query, options);
-
-      if (options.filter != null)
-      {
-         applyFiltering(query, options.filter);
-      }
-
-      FilterAndTerm filter = query.where(DocumentQuery.NAME.like(QueryUtils
-            .getFormattedString(documentSearchAttributes.documentName)));
-
-      if (null != documentSearchAttributes.createDateFrom && null != documentSearchAttributes.createDateTo)
-      {
-         filter.and(DocumentQuery.DATE_CREATED.between(DateUtils.convertToGmt(documentSearchAttributes.createDateFrom),
-               DateUtils.convertToGmt(documentSearchAttributes.createDateTo)));
-      }
-
-      if (null != documentSearchAttributes.modificationDateFrom && null != documentSearchAttributes.modificationDateTo)
-      {
-         filter.and(DocumentQuery.DATE_LAST_MODIFIED.between(
-               DateUtils.convertToGmt(documentSearchAttributes.modificationDateFrom),
-               DateUtils.convertToGmt(documentSearchAttributes.modificationDateTo)));
-      }
-
-      if (StringUtils.isNotEmpty(documentSearchAttributes.author))
-      {
-         filter.and(DocumentQuery.OWNER.like(QueryUtils.getFormattedString(documentSearchAttributes.author)));
-      }
-
-      // Document types
-      List<String> documentTypeIds = documentSearchAttributes.selectedDocumentTypes;
-      if (documentTypeIds.size() > 0 && !checkIfAllOptionSelect(documentTypeIds))
-      {
-         FilterOrTerm filterOrTerm = filter.addOrTerm();
-         for (String documentTypeId : documentTypeIds)
-         {
-            filterOrTerm.add(DocumentQuery.DOCUMENT_TYPE_ID.isEqual(documentTypeId));
-         }
-      }
-
-      // Repository types
-      List<String> selectedRepo = documentSearchAttributes.selectedRepository;
-      if (selectedRepo.size() > 0 && !checkIfAllOptionSelect(selectedRepo))
-      {
-         query.setPolicy(RepositoryPolicy.includeRepositories(CollectionUtils.newArrayList(selectedRepo)));
-      }
-      else
-      {
-         query.setPolicy(RepositoryPolicy.includeAllRepositories());
-      }
-
-      // File Type
-      if (documentSearchAttributes.selectFileTypeAdvance)
-      {
-         filter.and(DocumentQuery.CONTENT_TYPE.like(QueryUtils
-               .getFormattedString(documentSearchAttributes.advancedFileType)));
-      }
-      else
-      {
-         List<String> mimeTypes = documentSearchAttributes.selectedFileTypes;
-         if (mimeTypes.size() > 0 && !checkIfAllOptionSelect(mimeTypes))
-         {
-            FilterOrTerm filterOrTerm = filter.addOrTerm();
-            for (String mimeType : mimeTypes)
-            {
-               filterOrTerm.add(DocumentQuery.CONTENT_TYPE.isEqual(mimeType));
-            }
-         }
-      }
-
-      if (StringUtils.isNotEmpty(documentSearchAttributes.documentId))
-      {
-         filter.and(DocumentQuery.ID.like(QueryUtils.getFormattedString(documentSearchAttributes.documentId)));
-      }
-
-      FilterCriterion contentFilter = null, dataFilter = null;
-      if (StringUtils.isNotEmpty(documentSearchAttributes.containingText))
-      {
-         if (documentSearchAttributes.searchContent)
-         {
-            contentFilter = DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
-                  .escapeIllegalJcrChars(documentSearchAttributes.containingText)));
-         }
-
-         if (documentSearchAttributes.searchData)
-         {
-            dataFilter = DocumentQuery.META_DATA.any().like(
-                  QueryUtils.getFormattedString(Text.escapeIllegalJcrChars(documentSearchAttributes.containingText)));
-         }
-
-         if (null != contentFilter && null != dataFilter)
-         {
-            FilterOrTerm filterOrTerm = filter.addOrTerm();
-            filterOrTerm.add(contentFilter);
-            filterOrTerm.add(dataFilter);
-         }
-         else if (null != contentFilter)
-         {
-            filter.and(contentFilter);
-         }
-         else if (null != dataFilter)
-         {
-            filter.and(dataFilter);
-         }
-      }
-
-      DocumentManagementService documentManagementService = ServiceFactoryUtils.getDocumentManagementService();
-      Documents docs = documentManagementService.findDocuments(query);
-
-      return docs;
-   }
-   
-   /**
     * @author Yogesh.Manware
     * @param options
     * @param documentSearchRequest
@@ -350,7 +223,7 @@ public class DocumentSearchUtils
       {
          options = documentSearchRequest.documentDataTableOption = new DataTableOptionsDTO();
       }
-      
+
       // without orderby, totalCount ends up being null
       if (options.orderBy == null)
       {
@@ -440,7 +313,7 @@ public class DocumentSearchUtils
          filterOrTerm.add(dataFilter);
       }
 
-      //override filters with table level filters
+      // override filters with table level filters
       if (options.filter != null)
       {
          applyFiltering(query, options.filter);
@@ -456,7 +329,8 @@ public class DocumentSearchUtils
     * @param dateAttributeName
     * @param filter
     */
-   private static void setDateFilter(Date dateFrom, Date dateTo, FilterableAttribute dateAttributeName, FilterAndTerm filter)
+   private static void setDateFilter(Date dateFrom, Date dateTo, FilterableAttribute dateAttributeName,
+         FilterAndTerm filter)
    {
       if (null != dateFrom && null != dateTo)
       {
@@ -471,7 +345,7 @@ public class DocumentSearchUtils
          filter.and(dateAttributeName.lessOrEqual(DateUtils.convertToGmt(dateTo)));
       }
    }
-   
+
    /**
     * 
     * @param query
@@ -488,8 +362,7 @@ public class DocumentSearchUtils
 
          if (StringUtils.isNotEmpty(documentSearchFilter.name.textSearch))
          {
-            filter.and(DocumentQuery.NAME.like(QueryUtils
-                  .getFormattedString(documentSearchFilter.name.textSearch)));
+            filter.and(DocumentQuery.NAME.like(QueryUtils.getFormattedString(documentSearchFilter.name.textSearch)));
          }
       }
       if (null != documentSearchFilter.dateCreated)
@@ -720,14 +593,15 @@ public class DocumentSearchUtils
       if (DocumentMgmtUtility.isProcessAttachmentAllowed(pi))
       {
          List<Document> documentList = new ArrayList<Document>();
-         for(String documentId : documentIds){
-            Document selectedDoc = DocumentMgmtUtility.getDocument(documentId); 
+         for (String documentId : documentIds)
+         {
+            Document selectedDoc = DocumentMgmtUtility.getDocument(documentId);
             if (null != selectedDoc)
             {
                documentList.add(selectedDoc);
             }
          }
-               
+
          if (documentList.size() > 0)
          {
             // create copy of the documents and update process instance

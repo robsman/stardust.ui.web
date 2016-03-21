@@ -61,11 +61,6 @@
 			// Prepare URL
 			var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/repository/:type";
 
-			/*var options = sdDataTableHelperService.convertToQueryParams(query.options);
-
-			if (options.length > 0) {
-				restUrl = restUrl + "?" + options.substr(1);
-			}*/
 			var postData = {
 				documentDataTableOption : query.options,
 				name : query.documentSearchCriteria.documentName,

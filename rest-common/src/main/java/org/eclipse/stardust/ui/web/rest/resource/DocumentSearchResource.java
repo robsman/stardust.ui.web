@@ -20,28 +20,21 @@ import java.util.MissingResourceException;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.DocumentSearchService;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
-import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
-import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchCriteriaDTO;
-import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchFilterDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InfoDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 
@@ -77,41 +70,6 @@ public class DocumentSearchResource
       {
          String result = documentSearchService.createDocumentSearchFilterAttributes();
          return Response.ok(result, MediaType.TEXT_PLAIN_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         trace.error(e, e);
-         return Response.serverError().build();
-      }
-   }
-
-   /**
-    * 
-    * @param skip
-    * @param pageSize
-    * @param orderBy
-    * @param orderByDir
-    * @param postData
-    * @return
-    */
-   @POST
-   @Path("/searchByCriteria")
-   public Response searchByCritera(@QueryParam("skip") @DefaultValue("0") Integer skip,
-         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("orderBy") @DefaultValue("documentName") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("desc") String orderByDir, String postData)
-   {
-
-      try
-      {
-         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "desc".equalsIgnoreCase(orderByDir));
-         populateFilters(options, postData);
-
-         DocumentSearchCriteriaDTO documentSearchAttributes = getDocumentSearchCriteria(postData);
-
-         QueryResultDTO result = documentSearchService.performSearch(options, documentSearchAttributes);
-         Gson gson = new Gson();
-         return Response.ok(gson.toJson(result), MediaType.TEXT_PLAIN_TYPE).build();
       }
       catch (Exception e)
       {
@@ -246,62 +204,4 @@ public class DocumentSearchResource
       }
       return documentIds;
    }
-
-   /**
-    * Populate the options with the post data.
-    * 
-    * @param options
-    * @param postData
-    * @return
-    */
-   private DataTableOptionsDTO populateFilters(DataTableOptionsDTO options, String postData)
-   {
-      JsonMarshaller jsonIo = new JsonMarshaller();
-      JsonObject postJSON = jsonIo.readJsonObject(postData);
-
-      // For filter
-      JsonObject filters = postJSON.getAsJsonObject("filters");
-      if (null != filters)
-      {
-         DocumentSearchFilterDTO docSearchFilterDTO = new Gson().fromJson(postJSON.get("filters"),
-               DocumentSearchFilterDTO.class);
-
-         options.filter = docSearchFilterDTO;
-      }
-      return options;
-   }
-
-   /**
-    * 
-    * @param postData
-    * @return
-    * @throws Exception
-    */
-   private DocumentSearchCriteriaDTO getDocumentSearchCriteria(String postData) throws Exception
-   {
-      DocumentSearchCriteriaDTO documentSearchCriteria = null;
-
-      JsonMarshaller jsonIo = new JsonMarshaller();
-      JsonObject postJSON = jsonIo.readJsonObject(postData);
-
-      JsonObject documentSearchCriteriaJson = postJSON.getAsJsonObject("documentSearchCriteria");
-
-      String documentSearchCriteriaJsonStr = documentSearchCriteriaJson.toString();
-      if (StringUtils.isNotEmpty(documentSearchCriteriaJsonStr))
-      {
-         try
-         {
-            documentSearchCriteria = DTOBuilder.buildFromJSON(documentSearchCriteriaJsonStr,
-                  DocumentSearchCriteriaDTO.class);
-         }
-         catch (Exception e)
-         {
-            trace.error("Error in Deserializing filter JSON", e);
-            throw e;
-         }
-      }
-
-      return documentSearchCriteria;
-   }
-
 }
