@@ -153,13 +153,14 @@
    * 
    */
   function ProcessDocumentsController(processDocumentsService, sdViewUtilService, sdUtilService, sgI18nService,
-          sdMimeTypeService, $scope) {
+          sdMimeTypeService, $scope, sdPropertiesPageService) {
     this.$scope = $scope;
     this.processDocumentsService = processDocumentsService;
     this.sdViewUtilService = sdViewUtilService;
     this.rootUrl = sdUtilService.getBaseUrl();
     this.sdMimeTypeService = sdMimeTypeService;
     this.sdI18n = $scope.$root.sdI18n;
+    this.propertiesPageService = sdPropertiesPageService
 
     this.documentMenuPopupUrl = sdUtilService.getBaseUrl()
             + "plugins/html5-views-common/html5/partials/views/documentMenuPopover.html";
@@ -219,6 +220,8 @@
         for (var int = 0; int < self.activityAttachments.length; int++) {
           self.documentActionControl[self.activityAttachments[int].uuid] = {};
         }
+        
+        self.publishTotalCount();
       });
     }
   }
@@ -252,7 +255,7 @@
   /**
    * @returns
    */
-  ProcessDocumentsController.prototype.getTotalCount = function() {
+  ProcessDocumentsController.prototype.publishTotalCount = function() {
     var total = 0;
     if (this.showActivityAttachments && this.activityAttachments) {
       total = total + this.activityAttachments.length;
@@ -261,7 +264,8 @@
     if (this.showProcessDocuments && this.processAttachments) {
       total = total + this.processAttachments.length;
     }
-    return total;
+    
+    this.propertiesPageService.setTotalDocuments(total);
   };
 
   /**
@@ -431,7 +435,7 @@
 
   // inject dependencies
   ProcessDocumentsController.$inject = ["processDocumentsService", "sdViewUtilService", "sdUtilService",
-      "sgI18nService", 'sdMimeTypeService', "$scope"];
+      "sgI18nService", 'sdMimeTypeService', "$scope", "sdPropertiesPageService"];
 
   // register controller
   app.controller('processDocumentsPanelCtrl', ProcessDocumentsController);

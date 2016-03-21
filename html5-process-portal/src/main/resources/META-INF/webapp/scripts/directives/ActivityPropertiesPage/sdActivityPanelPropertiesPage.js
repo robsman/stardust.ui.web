@@ -23,23 +23,66 @@
  * @author Yogesh.Manware
  */
 
-
 (function() {
 
   console.log("Initializing Activities Properties pages...")
 
   var app = angular.module('bpm-common.directives');
+  // define service
+
+  function PropertiesPageService() {
+    var totalNotes = 0;
+    var totalDocuments = 0;
+  }
+
+  angular.extend(PropertiesPageService.prototype, {
+    getTotalNotes: function() {
+      return this.totalNotes;
+    },
+    setTotalNotes: function(notesCount) {
+      this.totalNotes = notesCount;
+    }
+  });
+
+  angular.extend(PropertiesPageService.prototype, {
+    getTotalDocuments: function() {
+      return this.totalDocuments;
+    },
+    setTotalDocuments: function(documentsCount) {
+      this.totalDocuments = documentsCount;
+    }
+  });
+
+  // register service
+  app.service('sdPropertiesPageService', PropertiesPageService);
 
   // define controller
-  function PropertiesPageController($scope, sgI18nService) {
+  function PropertiesPageController($scope, sgI18nService, sdPropertiesPageService) {
     var self = this;
     this.activityInstanceOid = $scope.activityInstanceOid;
     this.processInstanceOid = $scope.processInstanceOid;
     self.$scope = $scope;
     this.sdI18n = $scope.$root.sdI18n;
     this.selectedPropertiesPage = "notes";
+    this.propertiesPageService = sdPropertiesPageService;
     self.initialize();
   }
+
+  Object.defineProperty(PropertiesPageController.prototype, 'totalNotes', {
+    enumerable: true, // indicate that it supports enumerations
+    configurable: false, // disable delete operation
+    get: function() {
+      return this.propertiesPageService.getTotalNotes();
+    }
+  });
+
+  Object.defineProperty(PropertiesPageController.prototype, 'totalDocuments', {
+    enumerable: true, // indicate that it supports enumerations
+    configurable: false, // disable delete operation
+    get: function() {
+      return this.propertiesPageService.getTotalDocuments();
+    }
+  });
 
   PropertiesPageController.prototype.initialize = function() {
     this.propertiesPageVisible = true;
@@ -63,17 +106,9 @@
       }
     });
   }
-
-  PropertiesPageController.prototype.getNotesTotalCount = function() {
-    return 10;
-  }
-
-  PropertiesPageController.prototype.getDocumentsTotalCount = function() {
-    return 12;
-  }
-
+  
   // inject dependencies
-  PropertiesPageController.$inject = ["$scope", "sgI18nService"];
+  PropertiesPageController.$inject = ["$scope", "sgI18nService", "sdPropertiesPageService"];
 
   // register controller
   app.controller('sdActivityPanelPropertiesPageController', PropertiesPageController);

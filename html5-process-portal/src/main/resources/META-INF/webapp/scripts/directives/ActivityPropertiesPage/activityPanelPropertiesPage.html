@@ -38,7 +38,7 @@
 }
 
 .properties-panel .propertiesContent {
-
+	
 }
 
 .properties-panel textarea {
@@ -114,15 +114,14 @@
 								</tr>
 								<tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
-									<td ng-show="propertiesPageController.getNotesTotalCount() > 0"
+									<td ng-show="propertiesPageController.totalNotes > 0"
 										style="text-align: center"><a href='#'
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesPanel')}}"
 										class='heading'
 										style='cursor: pointer; text-decoration: none;'> <i
 											class='pi pi-notes pi-lg'></i>
 									</a></td>
-									<td
-										ng-show="propertiesPageController.getNotesTotalCount() == 0"
+									<td ng-show="propertiesPageController.totalNotes == 0"
 										style="text-align: center"><a href='#'
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesView')}}"
 										class='heading'
@@ -130,39 +129,37 @@
 											class='pi pi-notes-empty pi-lg'></i>
 									</a></td>
 								</tr>
-								<!-- <tr
+								<tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
 									<td style="text-align: center"><a
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesView')}}"
 										href='#'> <span>
-												{{propertiesPageController.getNotesTotalCount()}} </span></a></td>
-								</tr> -->
+												{{propertiesPageController.totalNotes}} </span></a></td>
+								</tr>
 								<tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
-									<td
-										ng-show="propertiesPageController.getDocumentsTotalCount() > 0"
-										style="text-align: center"><a href='#'
-										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
-										class='heading'
-										style='cursor: pointer; text-decoration: none;'> <i
-											class='pi pi-text pi-lg'></i>
-									</a></td>
-									<td
-										ng-show="propertiesPageController.getDocumentsTotalCount() == 0"
+									<td ng-show="propertiesPageController.totalDocuments > 0"
 										style="text-align: center"><a href='#'
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
 										class='heading'
 										style='cursor: pointer; text-decoration: none;'> <i
 											class='pi pi-invert pi-lg'></i>
 									</a></td>
+									<td ng-show="propertiesPageController.totalDocuments == 0"
+										style="text-align: center"><a href='#'
+										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
+										class='heading'
+										style='cursor: pointer; text-decoration: none;'> <i
+											class='pi pi-text pi-lg'></i>
+									</a></td>
 								</tr>
-								<!-- <tr
+								<tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
 									<td style="text-align: center"><a
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
 										href='#'> <span>
-												{{propertiesPageController.getDocumentsTotalCount()}} </span></a></td>
-								</tr> -->
+												{{propertiesPageController.totalDocuments}} </span></a></td>
+								</tr>
 							</tbody>
 						</table>
 					</td>

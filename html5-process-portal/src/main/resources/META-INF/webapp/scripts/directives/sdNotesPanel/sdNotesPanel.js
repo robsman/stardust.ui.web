@@ -93,12 +93,14 @@
   /**
    * 
    */
-  function NotesController(notesService, sdViewUtilService, sdUtilService, sgI18nService, $scope) {
+  function NotesController(notesService, sdViewUtilService, sdUtilService, sgI18nService, $scope,
+          sdPropertiesPageService) {
     this.$scope = $scope;
     this.notesService = notesService;
     this.sdViewUtilService = sdViewUtilService;
     this.rootUrl = sdUtilService.getBaseUrl();
     this.sdI18n = $scope.$root.sdI18n;
+    this.propertiesPageService = sdPropertiesPageService;
     this.initialize();
 
   }
@@ -126,6 +128,7 @@
     if (self.showProcessNotes) {
       self.notesService.getProcessNotes(self.$scope.processInstanceOid).then(function(data) {
         self.processNotes = data.data;
+        self.publishTotalCount();
       });
     }
   }
@@ -144,6 +147,7 @@
     if (self.showActivityNotes) {
       self.notesService.getActivityNotes(self.$scope.activityInstanceOid).then(function(data) {
         self.activityNotes = data.data;
+        self.publishTotalCount();
       });
     }
   }
@@ -212,7 +216,7 @@
   /**
    * @returns
    */
-  NotesController.prototype.getTotalCount = function() {
+  NotesController.prototype.publishTotalCount = function() {
     var total = 0;
     if (this.showActivityNotes && this.activityNotes) {
       total = total + this.activityNotes.totalCount;
@@ -221,11 +225,13 @@
     if (this.showProcessNotes && this.processNotes) {
       total = total + this.processNotes.totalCount;
     }
-    return total;
+
+    this.propertiesPageService.setTotalNotes(total);
   };
 
   // inject dependencies
-  NotesController.$inject = ["notesService", "sdViewUtilService", "sdUtilService", "sgI18nService", "$scope"];
+  NotesController.$inject = ["notesService", "sdViewUtilService", "sdUtilService", "sgI18nService", "$scope",
+      "sdPropertiesPageService"];
 
   // register controller
   app.controller('notesPanelCtrl', NotesController);

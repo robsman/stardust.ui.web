@@ -8,7 +8,7 @@
 	color: #A69A88
 }
 
-.properties-panel.renameComplete {
+.properties-panel-renameComplete {
 	padding: 0px;
 }
 </style>
@@ -30,7 +30,7 @@
 				ng-show="processDocumentsCtrl.documentActionControl[document.uuid].edit">
 				<input type="text"
 				ng-model="processDocumentsCtrl.documentActionControl[document.uuid].name">
-				<button class="renameComplete"
+				<button class="properties-panel-renameComplete"
 					ng-click="processDocumentsCtrl.renameComplete()">
 					<i class="pi pi-check pi-lg"></i>
 				</button>
@@ -64,7 +64,7 @@
 				ng-show="processDocumentsCtrl.documentActionControl[document.uuid].edit">
 				<input type="text"
 				ng-model="processDocumentsCtrl.documentActionControl[document.uuid].name">
-				<button class="renameComplete"
+				<button class="properties-panel-renameComplete"
 					ng-click="processDocumentsCtrl.renameComplete()">
 					<i class="pi pi-check pi-lg"></i>
 				</button>
