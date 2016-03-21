@@ -157,7 +157,6 @@
 	    * 
 	    */
 	   function addCustomizationParameters(postData, query) {
-		   debugger;
 		   //adding descriptor values
 		   if(query.fetchDescriptors) {
 			   if( typeof(query.fetchDescriptors) === "boolean") {
@@ -171,10 +170,12 @@
 			   }
 		   }
 
+		   //Adding sort Criteria
 		   if(query.sortBy) { 
 			   query.options.order = query.sortBy;
 		   }
-
+		   
+		   //Adding filter Criteria
 		   if(query.filterBy) {
 			   if(!postData.filters) {
 				   postData.filters = {};

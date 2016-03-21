@@ -218,6 +218,7 @@
 		var enableStateSave  = false;
 		var stateSuffixForPreference = ".columnFilterAndSortOrder"
 		var saveColumnAttributes = false;
+		var bodyRowClass,bodyRowStyle;
 
 		// Setup component instance
 		setup();
@@ -480,6 +481,12 @@
 				i18nScope = head.attr('sda-i18n-scope');
 			}
 
+			var bodyRow = element.find('> tbody > tr')
+			if (bodyRow.length === 1) {
+				bodyRowClass = jQuery(bodyRow[0]).attr('class');
+				bodyRowStyle = jQuery(bodyRow[0]).attr('style');
+			}
+			
 			var headCols = element.find('> thead > tr > th');
 			var bodyCols = element.find('> tbody > tr > td');
 
@@ -1630,8 +1637,32 @@
 					cell.attr('style', value);
 				}
 			});
+			
+			
+			if (bodyRowClass || bodyRowClass) {
+					if (bodyRowClass) {
+						row.addClass(bodyRowClass);
+					}
+					if (bodyRowClass) {
+						row.attr('style', bodyRowStyle);
+					}
+			}
+			
+			if (bodyRowClass || bodyRowClass) {
+				var rows = angular.element(theTable.find('> tbody > tr'));
 
+				for(var index = 0; index < rows.length; index++) {
+					if (bodyRowClass) {
+						addClass(angular.element(rows[index]), bodyRowClass)
+					}
+					if (bodyRowClass) {
+						angular.element(rows[index]).attr('style', bodyRowStyle);
+					}
+				}
+			}
+			
 			row.attr('sd-data-table-row', dataIndex); // Another directive, which will handle setting of rowData
+			
 		}
 
 		/*
@@ -1677,7 +1708,6 @@
 			if(firstInitiaizingDraw) {
 				firstInitiaizingDraw = false;
 				enableRowSelection();
-
 				$timeout(function() {
 					reorderColumns(null, null); // This will cause another draw, at that time further initialization is to be done
 					exposeScopeInfo();
@@ -1691,7 +1721,6 @@
 					// Show Pagination Info
 					var dataTablesInfo = angular.element(theTable.parent()).find('.dataTables_info');
 					showElement(dataTablesInfo, true);
-
 					logCompilationTime();
 				} else {
 					clearState(); // Subsequent draws will pass from here
@@ -1701,6 +1730,7 @@
 				sdUtilService.safeApply(elemScope);
 			}
 		}
+		
 
 		/*
 		 *
