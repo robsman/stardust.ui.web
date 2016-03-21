@@ -36,6 +36,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
@@ -54,6 +55,7 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkActivityStatisticsQuery;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.component.exception.NotificationMapException;
 import org.eclipse.stardust.ui.web.rest.component.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.component.service.DelegationComponent;
 import org.eclipse.stardust.ui.web.rest.component.service.ParticipantSearchComponent;
@@ -809,11 +811,20 @@ public class ActivityInstanceResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/activate")
-   public Response activate(String postedData)
+   public Response activate(@QueryParam("interactionAware") @DefaultValue("false") Boolean interactionAware, String postedData)
    {
-      Map<String, Object> data = JsonDTO.getAsMap(postedData);
-      NotificationMap result = activityInstanceService.activate(Long.valueOf(data.get("activityOID").toString()));
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
+      try
+      {
+         Map<String, Object> data = JsonDTO.getAsMap(postedData);
+         ActivityInstanceDTO dto = activityInstanceService.activate(Long.valueOf(data.get("activityOID").toString()), interactionAware);
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(dto), MediaType.APPLICATION_JSON).build();
+      }
+      catch (NotificationMapException e)
+      {
+         ResponseBuilder rb = Response.ok(GsonUtils.toJsonHTMLSafeString(e.getNotificationMap()), MediaType.APPLICATION_JSON);
+         rb.status(Status.BAD_REQUEST);
+         return rb.build();
+      }
    }
 
    /**

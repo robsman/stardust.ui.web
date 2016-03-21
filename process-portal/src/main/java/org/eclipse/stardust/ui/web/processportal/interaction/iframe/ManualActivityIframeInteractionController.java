@@ -52,6 +52,8 @@ import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionCo
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.AbstractDocumentContentInfo;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * @author Subodh.Godbole
@@ -71,9 +73,8 @@ public class ManualActivityIframeInteractionController implements IActivityInter
     */
    public String providePanelUri(ActivityInstance ai)
    {
-      FacesContext fc = FacesContext.getCurrentInstance();
-      HttpServletRequest req = (HttpServletRequest) fc.getExternalContext().getRequest();
-      
+      HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
       String contextUri = "/${request.contextPath}";
       contextUri = contextUri.replace("/${request.contextPath}", req.getContextPath());
       

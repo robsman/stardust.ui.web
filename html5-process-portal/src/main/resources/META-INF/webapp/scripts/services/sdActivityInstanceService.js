@@ -59,12 +59,14 @@
 		/*
 		 * 
 		 */
-		ActivityInstanceService.prototype.activate = function(activityOID) {
-
+		ActivityInstanceService.prototype.activate = function(activityOID, interactionAware) {
 			var data = {
 				activityOID : activityOID
-			}
-			return sdUtilService.ajax(REST_BASE_URL, 'activate', data);
+			};
+
+			var path = interactionAware ? 'activate?interactionAware=true' : 'activate';
+
+			return sdUtilService.ajax(REST_BASE_URL, path, data);
 		};
 
 		/*

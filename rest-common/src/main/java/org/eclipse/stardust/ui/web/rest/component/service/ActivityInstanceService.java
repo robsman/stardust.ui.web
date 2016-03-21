@@ -42,6 +42,7 @@ import org.eclipse.stardust.engine.api.runtime.TransitionReport;
 import org.eclipse.stardust.engine.api.runtime.TransitionTarget;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.component.exception.NotificationMapException;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityStatisticsUtils;
@@ -51,6 +52,7 @@ import org.eclipse.stardust.ui.web.rest.component.util.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceIntractionDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.CompletedActivitiesStatisticsDTO;
@@ -469,37 +471,53 @@ public class ActivityInstanceService
    }
 
    /**
-    *
     * @param activityOID
+    * @param interactionAware
     * @return
     */
-   public NotificationMap activate(Long activityOID)
+   public ActivityInstanceDTO activate(Long activityOID, boolean interactionAware) throws NotificationMapException
    {
       NotificationMap notification = new NotificationMap();
       ActivityInstance ai = null;
       try
       {
-         notification = activityInstanceUtils.activate(activityOID);
+         ai = activityInstanceUtils.activate(activityOID);
+         if (interactionAware)
+         {
+            ActivityInstanceIntractionDTO dto = DTOBuilder.build(ai, ActivityInstanceIntractionDTO.class);
+            dto.panelUri = activityInstanceUtils.initializeInteractionController(ai);
+            return dto;
+         }
+         else
+         {
+            return DTOBuilder.build(ai, ActivityInstanceDTO.class);
+         }
+      }
+      catch(NotificationMapException ne)
+      {
+         throw ne;
       }
       catch (ConcurrencyException ce)
       {
          trace.error("Unable to activate Activity, activity not in worklist", ce);
          String msg = restCommonClientMessages.getString("activity.concurrencyError");
          notification.addFailure(new NotificationDTO(activityOID, activityInstanceUtils.getActivityLabel(ai), msg));
+         throw new NotificationMapException(notification);
       }
       catch (AccessForbiddenException af)
       {
          trace.error("User not authorized to activate", af);
          String msg = restCommonClientMessages.getString("activity.acccessForbiddenError");
          notification.addFailure(new NotificationDTO(activityOID, activityInstanceUtils.getActivityLabel(ai), msg));
+         throw new NotificationMapException(notification);
       }
       catch (Exception e)
       {
          trace.error("Exception occurred while activating", e);
          String msg = e.getMessage();
          notification.addFailure(new NotificationDTO(activityOID, activityInstanceUtils.getActivityLabel(ai), msg));
+         throw new NotificationMapException(notification);
       }
-      return notification;
    }
 
    /**

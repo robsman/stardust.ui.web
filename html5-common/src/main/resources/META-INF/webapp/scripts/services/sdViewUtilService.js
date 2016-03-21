@@ -91,12 +91,19 @@
 		 * 
 		 */
 		ViewUtilService.prototype.openView = function(viewId, viewKey, params, nested) {
+			var eventParams = null;
+
+			if (params && params.eventParams) {
+				eventParams = params.eventParams;
+				delete params.eventParams;
+			}
+
 			var eventInterceptor = sdEnvConfigService.getEventInterceptor();
 			if (eventInterceptor && eventInterceptor.openView) {
 				var config = {
 					viewId: viewId,
 					viewKey: viewKey,
-					params: params,
+					params: eventParams,
 					nested: nested
 				};
 

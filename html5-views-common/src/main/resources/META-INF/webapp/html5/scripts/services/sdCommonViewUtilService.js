@@ -113,8 +113,13 @@
 		/**
 		 * 
 		 */
-		CommonViewUtilService.prototype.openActivityView = function(activityOID, nested, query) {
+		CommonViewUtilService.prototype.openActivityView = function(activityOID, nested, query, eventParams) {
 			var params = {"oid" : "" + activityOID};
+
+			if (eventParams) {
+				params.eventParams = eventParams;
+			}
+
 			// Add query param only of being activated from a worklist
 			if (query && (query.type || query.participantQId || query.processQId)) {
 				// TODO - check if the character replacement has a better alternative

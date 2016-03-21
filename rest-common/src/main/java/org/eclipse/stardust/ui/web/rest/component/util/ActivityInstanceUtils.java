@@ -73,6 +73,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
+import org.eclipse.stardust.ui.web.rest.component.exception.NotificationMapException;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
@@ -85,8 +86,10 @@ import org.eclipse.stardust.ui.web.rest.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.util.ActivityInteractionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
@@ -621,27 +624,53 @@ public class ActivityInstanceUtils
      *
      */
 
-   public NotificationMap activate(Long activityOID)
+   public ActivityInstance activate(Long activityOID) throws NotificationMapException
    {
       NotificationMap notification = new NotificationMap();
+
       ActivityInstance ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils
             .getActivityInstance(activityOID);
       if (!isSupportsWeb(ai.getActivity()))
       {
          notification.addFailure(new NotificationDTO(activityOID, ai.getActivity().getName(), MessagesViewsCommonBean
                .getInstance().getString("views.common.notSupportedOnWeb")));
-         return notification;
+         throw new NotificationMapException(notification);
       }
 
       if (!isActivatable(ai))
       {
          notification.addFailure(new NotificationDTO(activityOID, ai.getActivity().getName(), MessagesViewsCommonBean
                .getInstance().getString("views.common.notActivatable")));
-         return notification;
+         throw new NotificationMapException(notification);
       }
+
       ai = serviceFactoryUtils.getWorkflowService().activate(ai.getOID());
-      notification.addSuccess(new NotificationDTO(activityOID, ai.getActivity().getName(), null));
-      return notification;
+      return ai;
+   }
+
+   /**
+    * @param activityInstance
+    */
+   public String initializeInteractionController(ActivityInstance activityInstance)
+   {
+      IActivityInteractionController interactionController = ActivityInteractionUtils
+            .getInteractionController(activityInstance.getActivity());
+
+      if (null != interactionController)
+      {
+         String contextId = interactionController.getContextId(activityInstance);
+
+         WorkflowService ws = serviceFactoryUtils.getWorkflowService();
+
+         Map<String, Serializable> inData = (null != ws) //
+               ? ws.getInDataValues(activityInstance.getOID(), contextId, null)
+               : Collections.<String, Serializable> emptyMap();
+
+         interactionController.initializePanel(activityInstance, inData);
+         return interactionController.providePanelUri(activityInstance);
+      }
+
+      return "";
    }
 
    /**

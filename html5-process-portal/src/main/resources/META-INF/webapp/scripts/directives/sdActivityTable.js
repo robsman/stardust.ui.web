@@ -19,7 +19,7 @@
 
     angular.module('bpm-common').directive(
 	    'sdActivityTable',
-	    [ '$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService',
+	    [ '$parse', '$q', 'sdEnvConfigService', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService',
 		    'sdWorklistService', 'sdActivityInstanceService', 'sdProcessInstanceService', 'sdProcessDefinitionService',
 		    'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter', 'sgI18nService',
 		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService','sdWorklistConstants', '$sce',
@@ -28,7 +28,7 @@
     /*
      *
      */
-    function ActivityTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService,
+    function ActivityTableDirective($parse, $q, sdEnvConfigService, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService,
 	    sdWorklistService, sdActivityInstanceService, sdProcessInstanceService, sdProcessDefinitionService, sdCriticalityService,
 	    sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout, sdLoggedInUserService,
 	    sdDialogService, sdCommonViewUtilService, sdWorklistConstants, $sce) {
@@ -606,20 +606,22 @@
 	     * @param rowItem
 	     */
 	    this.activateAndOpenView = function( rowItem ) {
-		sdActivityInstanceService.activate(rowItem.activityOID).then(
-			function(result) {
-			    if (result.failure.length > 0) {
-				trace.error("Error in activating worklist item : ",rowItem.activityOID,".Error : ",  result.failure[0].message);
-				var options = {
-						title : sgI18nService.translate('views-common-messages.common-error', 'Error')
-						};
-				var message = result.failure[0].message;
-				sdDialogService.error(scope, message, options)
-			    } else {
-			    	sdCommonViewUtilService.openActivityView(rowItem.activityOID, null, (rowItem.trivial ? self.cachedQuery : undefined));
-				self.refresh();
-			    }
-			});
+	    	var interactionAware = sdEnvConfigService.getEventInterceptor() ? true : false;
+
+	    	sdActivityInstanceService.activate(rowItem.activityOID, interactionAware).then(
+				function(result) {
+			    	sdCommonViewUtilService.openActivityView(rowItem.activityOID, null, (rowItem.trivial ? self.cachedQuery : undefined), result);
+			    	self.refresh();
+				},
+				function(result) {
+					trace.error("Error in activating worklist item : ",rowItem.activityOID,".Error : ",  result.failure[0].message);
+					var options = {
+							title : sgI18nService.translate('views-common-messages.common-error', 'Error')
+					};
+					var message = result.failure[0].message;
+					sdDialogService.error(scope, message, options);
+				}
+	    	);
 	    };
 
 	    this.fetchDescriptorCols(element, attr);
