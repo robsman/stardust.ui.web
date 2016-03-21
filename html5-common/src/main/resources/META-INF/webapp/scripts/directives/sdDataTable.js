@@ -137,7 +137,7 @@
 						' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}">\n' +
 						'<i class="pi pi-export pi-lg"></i>\n' +
 					'</button>\n' +
-					'<button ng-disabled="!$dtApi.enableExportCSV" class="button-link tbl-toolbar-item tbl-tool-link" sd-popover sda-template="\'exportAsCSV.html\'" '+
+					'<button ng-if="$dtApi.enableExportCSV" class="button-link tbl-toolbar-item tbl-tool-link" sd-popover sda-template="\'exportAsCSV.html\'" '+
 					  'sda-placement="auto bottom-left"  ng-click="$dtApi.setExportPopoverVisibility()">\n' +
 						'<i class="pi pi-bottom pi-menu-dropdown"></i>\n' +
 					'</button>'+
