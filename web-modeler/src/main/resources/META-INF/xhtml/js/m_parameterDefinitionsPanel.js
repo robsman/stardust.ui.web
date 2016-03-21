@@ -134,7 +134,9 @@ define(
 					m_utils.jQuerySelect(this.options.scope
 		                     + "label[for='parameterDefinitionLinkTextInput']").text(
 		                              m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.dataPath.type.linkText"));
-					
+					m_utils.jQuerySelect(this.options.scope
+		                     + "label[for='useServerTimeInput']").text(
+		                              m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.dataPath.useServerTimeInput"));
 					m_utils.jQuerySelect(this.options.scope
                         + "label[for='dataTypeSelect']").text(
                                  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.dataType"));
@@ -180,6 +182,8 @@ define(
 							+ " #parameterDefinitionValueInput");
 					this.parameterDefinitionLinkTextInput = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionLinkTextInput");
+					this.useServerTimeInput = m_utils.jQuerySelect(this.options.scope + " #useServerTimeInput");
+					this.useServerTimeLabel = m_utils.jQuerySelect(this.options.scope + "label[for='useServerTimeInput']")
 					
 					this.addParameterDefinitionButton = m_utils.jQuerySelect(this.options.scope
 							+ " #addParameterDefinitionButton");
@@ -385,6 +389,8 @@ define(
 												event.data.panel.currentFocusInput = null;
 											}
 
+											event.data.panel.resetUseServerTimeIfNotSupported(event.data.panel.currentParameterDefinition);
+											
 											event.data.panel.submitChanges();
 										});
 						this.keyDescriptorInput
@@ -453,6 +459,19 @@ define(
 											event.data.panel.submitChanges();
 									}
 								});
+						this.useServerTimeInput
+						.change(
+								{
+									panel : this
+								},
+								function(event) {
+									if (event.data.panel.currentParameterDefinition != null) {
+										event.data.panel.currentParameterDefinition.attributes = event.data.panel.currentParameterDefinition.attributes ? event.data.panel.currentParameterDefinition.attributes
+												: {};
+										event.data.panel.currentParameterDefinition.useServerTime = event.data.panel.useServerTimeInput.prop("checked");
+										event.data.panel.submitChanges();
+									}
+								});
 					}
 
 					if (this.options.supportsDataMappings) {
@@ -480,6 +499,8 @@ define(
 												event.data.panel.setAutoCompleteMatches(event.data.panel.currentParameterDefinition); 
 												event.data.panel.currentFocusInput = null;
 
+												event.data.panel.resetUseServerTimeIfNotSupported(event.data.panel.currentParameterDefinition);
+												
 												event.data.panel
 														.submitChanges();
 											}
@@ -1133,6 +1154,16 @@ define(
 							this.currentFocusInput.focus();
 							this.currentFocusInput.select();
 						}
+						
+						if (this.parameterSupportsUseServertime(this.currentParameterDefinition)) {
+							this.useServerTimeInput.prop("checked", this.currentParameterDefinition.useServerTime ? this.currentParameterDefinition.useServerTime : false);
+							this.useServerTimeInput.show();
+							this.useServerTimeLabel.show();
+						} else {
+							this.useServerTimeInput.prop("checked", false);
+							this.useServerTimeInput.hide();
+							this.useServerTimeLabel.hide();
+						}
 					}
 
 					if (this.scopeModel && this.scopeModel.isReadonly()
@@ -1165,6 +1196,25 @@ define(
 			        		  this.parameterDefinitionDirectionSelect.removeAttr("disabled");
 			          }
 			          
+				};
+				
+				ParameterDefinitionsPanel.prototype.resetUseServerTimeIfNotSupported = function(parameterDefinition) {
+					if (!this.parameterSupportsUseServertime(parameterDefinition)) {
+						parameterDefinition.useServerTime = false;
+					}
+				}
+				
+				ParameterDefinitionsPanel.prototype.parameterSupportsUseServertime = function(parameterDefinition) {
+					if (parameterDefinition.dataFullId) {
+						var data = m_model.findData(parameterDefinition.dataFullId);
+						// TODO - check condition
+						if (parameterDefinition.descriptor && data 
+								&& data.dataType === "primitive" && data.primitiveDataType == 'Timestamp') {
+							return true;
+						}
+					}
+					
+					return false;
 				};
 
 				ParameterDefinitionsPanel.prototype.isPredefinedAccessPoint = function(currentParameterDefinition) {
