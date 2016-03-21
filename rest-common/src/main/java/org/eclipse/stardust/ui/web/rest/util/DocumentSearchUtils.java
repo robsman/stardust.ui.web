@@ -11,7 +11,7 @@
 /**
  * @author Abhay.Thappan
  */
-package org.eclipse.stardust.ui.web.rest.component.util;
+package org.eclipse.stardust.ui.web.rest.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,12 +72,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlersRegistryBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRVersionTracker;
-import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
-// TODO: This class can be made completely static after removed the deprecated method
-@Component
 public class DocumentSearchUtils
 {
 
@@ -105,7 +102,7 @@ public class DocumentSearchUtils
 
    private static final String VIEW_ACTIVITY_PANEL = "activityPanel";
 
-   private MessagesViewsCommonBean messageCommonBean;
+   private static MessagesViewsCommonBean messageCommonBean;
 
    private static final Logger trace = LogManager.getLogger(DocumentSearchUtils.class);
 
@@ -113,7 +110,7 @@ public class DocumentSearchUtils
     * 
     * @return
     */
-   public String getFilterAttributes()
+   public static String getFilterAttributes()
    {
 
       messageCommonBean = MessagesViewsCommonBean.getInstance();
@@ -174,12 +171,12 @@ public class DocumentSearchUtils
     * @param mimeType
     * @return
     */
-   private SelectItemDTO getMimeTypeInSelectItemFormat(MIMEType mimeType)
+   private static SelectItemDTO getMimeTypeInSelectItemFormat(MIMEType mimeType)
    {
       return new SelectItemDTO(mimeType.getType(), getI18nLabel(mimeType));
    }
 
-   private String getI18nLabel(MIMEType mimeType)
+   private static String getI18nLabel(MIMEType mimeType)
    {
       String label = messageCommonBean.getString(MIME_TYPE_PREFIX + mimeType.getType());
       if (label == null)
@@ -193,7 +190,7 @@ public class DocumentSearchUtils
     * 
     * @return
     */
-   public ArrayList<SelectItemDTO> getAllRegisteredMimeFileTypes()
+   public static ArrayList<SelectItemDTO> getAllRegisteredMimeFileTypes()
    {
 
       DocumentHandlersRegistryBean documentHandlersRegistryBean = DocumentHandlersRegistryBean.getInstance();
@@ -423,7 +420,7 @@ public class DocumentSearchUtils
     * @param documentId
     * @return
     */
-   public List<ProcessInstanceDTO> getProcessInstancesFromDocument(String documentId)
+   public static List<ProcessInstanceDTO> getProcessInstancesFromDocument(String documentId)
    {
       ProcessInstanceQuery query = new ProcessInstanceQuery();
 
@@ -490,7 +487,7 @@ public class DocumentSearchUtils
     * @return
     * @throws ResourceNotFoundException
     */
-   public List<DocumentVersionDTO> getDocumentVersions(String id) throws ResourceNotFoundException
+   public static List<DocumentVersionDTO> getDocumentVersions(String id) throws ResourceNotFoundException
    {
       Document document = DocumentMgmtUtility.getDocument(id);
       JCRVersionTracker vt = new JCRVersionTracker(document);
@@ -543,7 +540,7 @@ public class DocumentSearchUtils
     * 
     * @return
     */
-   public List<SelectItemDTO> loadAvailableProcessDefinitions()
+   public static List<SelectItemDTO> loadAvailableProcessDefinitions()
    {
       List<View> openViews = PortalApplication.getInstance().getOpenViews();
       List<SelectItemDTO> allProcessDefns = new ArrayList<SelectItemDTO>();
@@ -575,7 +572,7 @@ public class DocumentSearchUtils
     * @return
     * @throws ResourceNotFoundException
     */
-   public InfoDTO attachDocuments(Long processOid, List<String> documentIds) throws ResourceNotFoundException
+   public static InfoDTO attachDocuments(Long processOid, List<String> documentIds) throws ResourceNotFoundException
    {
       InfoDTO infoDTO = null;
       ProcessInstance pi = null;

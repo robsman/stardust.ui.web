@@ -37,7 +37,7 @@ import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryProviderInfo;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
-import org.eclipse.stardust.ui.web.rest.component.util.DocumentSearchUtils;
+import org.eclipse.stardust.ui.web.rest.util.DocumentSearchUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
