@@ -16,43 +16,48 @@
 (function () {
 
 	angular.module('bpm-common.services').provider('sdSsoService', function () {
-		this.$get = ['$injector', 'sdLoggerService', 'sdEnvConfigService', function ($injector, sdLoggerService, sdEnvConfigService) {
-			var service = new sdSsoService($injector, sdLoggerService, sdEnvConfigService);
+		this.$get = ['$injector', 'sdLoggerService', 'sdEnvConfigService','$q', function ($injector, sdLoggerService, sdEnvConfigService, $q) {
+			var service = new sdSsoService($injector, sdLoggerService, sdEnvConfigService, $q);
 			return service;
 		}];
 	});
 
-	angular.module('bpm-common.services').run(['sdEnvConfigService', 'sdSsoService', function (sdEnvConfigService, sdSsoService) {
-		var ssoServiceURL = sdEnvConfigService.getSsoServiceUrl();
-		if (ssoServiceURL) {
-			sdSsoService.initialize();
-		}
-
-	}]);
-
-	
 	/*
-	 * 
+	 *
 	 */
-	function sdSsoService ($injector, sdLoggerService, sdEnvConfigService) {
+	function sdSsoService ($injector, sdLoggerService, sdEnvConfigService, $q) {
 
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdSsoService');
 		var ippBaseUrl = sdEnvConfigService.getBaseUrl();
 		var ssoServiceURL = sdEnvConfigService.getSsoServiceUrl();
 		/*
-		 * 
+		 *
 		 */
 		this.initialize = function () {
-			beginInitilization();
+			var deferred = $q.defer();
+			
+			beginInitilization()
+				.done(function(data) {
+				var msg = "IPP intialization Successfull."
+				trace.log(msg)
+				deferred.resolve( data );
+			  })
+			  .fail(function (data) {
+				var msg = "IPP Intialization failed."
+				trace.log(msg)
+				deferred.reject( data );
+			});
+			
+			return  deferred.promise;
 		};
-		
+
 
 		function beginInitilization () {
-			getSAMLResponse().then(loginIPPWithSAML).then(initializeIPP, loginInFailure).then(handleSuccess);
+			return getSAMLResponse().then(loginIPPWithSAML).then(initializeIPP);
 		}
 
 		function getSAMLResponse () {
-			console.log("Calling IDP to retrieve SAML Response");
+			trace.debug("Calling IDP to retrieve SAML Response");
 			return jQuery.ajax({
 				type : "GET",
 				url : ssoServiceURL
@@ -93,15 +98,6 @@
 				type : "GET",
 				url : url
 			});
-		}
-
-		function loginInFailure () {
-			//TODO look at this error scenario again
-			trace.debug("User Already logged in");
-		}
-
-		function handleSuccess (data) {
-			trace.debug("IPP Initizalized Successfully.");
 		}
 	}
 })();
