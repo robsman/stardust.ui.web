@@ -147,8 +147,25 @@
 			return empty;
 		};
 		
+		
+	/**
+	 * 
+	 */	
+	 UtilService.prototype.removeFormErrors = function(form, errorFields){
+		 angular.forEach(errorFields, function(field){
+			   delete form.$error[field]; 
+		 });
+		 	        
+			if(this.isObjectEmpty(form.$error)){
+				form.$valid = true;
+	        } 
+	 }
+		
+			
 
-
+     /**
+      * 
+      */
 	  UtilService.prototype.isObjectEmpty = function(obj) {
 			  for ( var key in obj) {
 				if (obj.hasOwnProperty(key))
@@ -386,7 +403,7 @@
 			var passwordValidationMsg = "";
 				if (this.isEmpty(passwordConfirmation) || this.isEmpty(password)) {
 					passwordValidationMsg = "views.createUser.password.empty";
-				} else if (passwordConfirmation != password) {
+				} else if (passwordConfirmation !== password) {
 					passwordValidationMsg = "views.createUser.password.mismatch";
 				}
 			return passwordValidationMsg;

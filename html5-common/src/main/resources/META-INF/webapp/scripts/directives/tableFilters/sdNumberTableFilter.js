@@ -55,11 +55,8 @@
 
 				
 				scope.handlers.applyFilter = function() {
-					delete scope.filterForm.$error.range;
-                    
-					if(sdUtilService.isObjectEmpty(scope.filterForm.$error)){
-                    	scope.filterForm.$valid = true;
-                    }
+					
+					sdUtilService.removeFormErrors(scope.filterForm,['range']);
 					
 					if (scope.filterForm.$valid) {
 						if (sdUtilService.isEmpty(scope.filterData.from) && sdUtilService.isEmpty(scope.filterData.to)) {

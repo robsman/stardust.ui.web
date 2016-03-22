@@ -281,6 +281,9 @@
 	 */
 	DeputyManagementCtrl.prototype.onConfirmAddEditDeputy = function(res) {
 		var self = this;
+		
+		// removing any custom error and setting $valid to true 
+		_sdUtilService.removeFormErrors(self.addEditDeputyForm,['invalidDeputy', 'invalidFromDate', 'invalidToDate', 'invalidDateRange', 'noAuthsSelected']);
 		// validating data
 		if (self.addEditDeputyForm.$valid) {
 			var error = this.validateData();

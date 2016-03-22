@@ -322,6 +322,10 @@
   ParticipantManagementCtrl.prototype.onConfirmFromCreateUser = function(res) {
     var self = this;
     self.submitted = true;
+    _sdUtilService.removeFormErrors(self.userProfileForm,['invalidDateRange', 
+                                                          'passwordMismatch', 
+                                                          'passwordValidationMsg', 
+                                                          'validationMsg']);
     if (self.userProfileForm.$valid) {
       var error = this.validateData();
       if (error) {
@@ -378,7 +382,7 @@
     }
 
     // Validate password
-    if (self.user.changePassword && self.user.internalAuthentication) {
+    if (self.user.changePassword && self.user.isInternalAuthentication) {
       if (_sdUtilService.validatePassword(self.user.password, self.user.confirmPassword)) {
         error = true;
         self.userProfileForm.$error.passwordMismatch = true;
