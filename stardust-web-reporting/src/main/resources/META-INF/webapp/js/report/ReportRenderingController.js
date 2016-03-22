@@ -1514,7 +1514,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 			}else{
 				if (parent.iPopupDialog) {
 					parent.iPopupDialog.openPopup(self.prepareSaveReportInstance());
-					deferred.reject(data);
+					deferred.reject();
 				}
 			}
         	return deferred.promise();
@@ -1567,7 +1567,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 					var popupData = {
 						attributes : {
 							width : "650px",
-							height : "290px",
+							height : "310px",
 							src : this.reportingService.getRootUrl()
 									+ "/plugins/bpm-reporting/views/templates/reportStoragePopup.html"
 						},

@@ -28,6 +28,16 @@
 		</div>
 		<div class="iPopupDialogContentArea">
 			<div class="iPopupDialogSpacerDiv"></div>
+			<td>
+				<div ng-show="showSaveMessage">
+					<div style="float: left; padding: 10px">
+						<i class="pi pi-allow pi-lg"> </i>
+					</div>
+					<div style="padding: 10px">
+						{{saveMessage}}	
+					</div>
+				</div>
+			</td>
 			<td class="iPopupDialogContentTabCol2"><span id="contentText"
 				class="iPopupDialogContentText"></span></td> <label>{{getI18N('reporting.storage.saveInstance')}}</label>
 			<table>
@@ -73,7 +83,7 @@
 		<div id="controlsBar" class="iPopupDialogControlsArea">
 			<input id="auto-reporting-popup-saveRI"  type="button" value="{{getI18N('reporting.definitionView.save.label')}}" class="iPopupDialogControlButton"
 				ng-click="saveReportInstance()" /> <input type="button"
-				value="{{getI18N('reporting.storage.cancel.label')}}" onClick="closePopup();"
+				value="{{getI18N('common.close')}}" onClick="closePopup();"
 				class="iPopupDialogControlButton" />
 		</div>
 	</div>

@@ -58,6 +58,8 @@ define([ "bpm-reporting/js/report/I18NUtils" ], function(I18NUtils) {
 			this.reportMetada = {
 				location : "personalFolder"
 			};
+			this.showSaveMessage = false;
+			this.saveMessage = "";
 			this.updateView();
 			jQuery("#reportStoragePopup").css("visibility", "visible");			
 		};
@@ -74,7 +76,13 @@ define([ "bpm-reporting/js/report/I18NUtils" ], function(I18NUtils) {
 		 */
 		ReportStorageController.prototype.saveReportInstance = function() {
 			payloadObj.acceptFunction(this.reportMetada);
-			closePopup();
+			var self = this;
+			self.showSaveMessage = true;
+            self.saveMessage = I18NUtils.getProperty('reporting.definitionView.saveReport.message').replace("{0}", self.reportMetada.name);
+            setTimeout(function () {
+                self.showSaveMessage = false;
+                self.updateView();
+            }, 5000);
 		};
 
 		/**
