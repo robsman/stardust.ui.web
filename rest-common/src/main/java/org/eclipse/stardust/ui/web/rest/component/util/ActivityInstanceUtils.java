@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Resource;
+import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
@@ -634,14 +635,14 @@ public class ActivityInstanceUtils
       {
          notification.addFailure(new NotificationDTO(activityOID, ai.getActivity().getName(), MessagesViewsCommonBean
                .getInstance().getString("views.common.notSupportedOnWeb")));
-         throw new NotificationMapException(notification);
+         throw new NotificationMapException(notification, Status.NOT_IMPLEMENTED);
       }
 
       if (!isActivatable(ai))
       {
          notification.addFailure(new NotificationDTO(activityOID, ai.getActivity().getName(), MessagesViewsCommonBean
                .getInstance().getString("views.common.notActivatable")));
-         throw new NotificationMapException(notification);
+         throw new NotificationMapException(notification, Status.NOT_ACCEPTABLE);
       }
 
       ai = serviceFactoryUtils.getWorkflowService().activate(ai.getOID());

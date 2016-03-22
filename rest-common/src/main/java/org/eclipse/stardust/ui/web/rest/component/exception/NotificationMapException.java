@@ -11,6 +11,8 @@
 
 package org.eclipse.stardust.ui.web.rest.component.exception;
 
+import javax.ws.rs.core.Response.StatusType;
+
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap;
 
 /**
@@ -20,29 +22,38 @@ import org.eclipse.stardust.ui.web.rest.dto.NotificationMap;
 public class NotificationMapException extends Exception
 {
    private static final long serialVersionUID = 1L;
-   
+
    private NotificationMap notificationMap;
+   private StatusType status;
 
    /**
     * @param notificationMap
+    * @param status
     */
-   public NotificationMapException(NotificationMap notificationMap)
+   public NotificationMapException(NotificationMap notificationMap, StatusType status)
    {
-      this(notificationMap, null);
+      this(notificationMap, status, null);
    }
 
    /**
     * @param notificationMap
+    * @param status
     * @param t
     */
-   public NotificationMapException(NotificationMap notificationMap, Throwable t)
+   public NotificationMapException(NotificationMap notificationMap, StatusType status, Throwable t)
    {
       super(t);
       this.notificationMap = notificationMap;
+      this.status = status;
    }
    
    public NotificationMap getNotificationMap()
    {
       return notificationMap;
+   }
+
+   public StatusType getStatus()
+   {
+      return status;
    }
 }

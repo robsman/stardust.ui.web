@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.CollectionUtils;
@@ -502,21 +503,21 @@ public class ActivityInstanceService
          trace.error("Unable to activate Activity, activity not in worklist", ce);
          String msg = restCommonClientMessages.getString("activity.concurrencyError");
          notification.addFailure(new NotificationDTO(activityOID, activityInstanceUtils.getActivityLabel(ai), msg));
-         throw new NotificationMapException(notification);
+         throw new NotificationMapException(notification, Status.CONFLICT);
       }
       catch (AccessForbiddenException af)
       {
          trace.error("User not authorized to activate", af);
          String msg = restCommonClientMessages.getString("activity.acccessForbiddenError");
          notification.addFailure(new NotificationDTO(activityOID, activityInstanceUtils.getActivityLabel(ai), msg));
-         throw new NotificationMapException(notification);
+         throw new NotificationMapException(notification, Status.UNAUTHORIZED);
       }
       catch (Exception e)
       {
          trace.error("Exception occurred while activating", e);
          String msg = e.getMessage();
          notification.addFailure(new NotificationDTO(activityOID, activityInstanceUtils.getActivityLabel(ai), msg));
-         throw new NotificationMapException(notification);
+         throw new NotificationMapException(notification, Status.INTERNAL_SERVER_ERROR);
       }
    }
 

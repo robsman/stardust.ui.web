@@ -822,7 +822,7 @@ public class ActivityInstanceResource
       catch (NotificationMapException e)
       {
          ResponseBuilder rb = Response.ok(GsonUtils.toJsonHTMLSafeString(e.getNotificationMap()), MediaType.APPLICATION_JSON);
-         rb.status(Status.BAD_REQUEST);
+         rb.status(e.getStatus());
          return rb.build();
       }
    }
