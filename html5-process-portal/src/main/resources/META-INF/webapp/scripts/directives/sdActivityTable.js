@@ -353,11 +353,12 @@
 
 		if (!attr.sdData) {
 			var queryGetter = $parse(attr.sdaQuery);
-			var query = queryGetter(scope);
-			if (query === undefined) {
-				throw 'Query evaluated to "nothing" for activity table.';
-			}
-			this.query = query;
+	  		var query = queryGetter(scope);
+	  		if (query === undefined) {
+	  			throw 'Query evaluated to "nothing" for activity table.';
+	  		}
+	  		
+	  		this.query = query;
 		}
 
 		// Mode Selector
@@ -493,7 +494,7 @@
 	    	}
 	    	return preferenceStore;
 	    };
-
+	    
 	    /**
 	     *
 	     */
@@ -752,6 +753,19 @@
 						rowItems);
 			});
 	    };
+	    
+	    /**
+	     * 
+	     */
+	    ActivityTableCompiler.prototype.getQuery = function() {
+	    	var queryGetter = $parse(attr.sdaQuery);
+	  		var query = queryGetter(scope);
+	  		if (query === undefined) {
+	  			throw 'Query evaluated to "nothing" for activity table.';
+	  		}
+	  		return query;
+	    }
+	  
 	};
 
 	/**
@@ -927,6 +941,11 @@
 		var self = this;
 		var deferred = $q.defer();
 		self.cleanLocals();
+		
+		//Getting latest query
+		if(this.query) {
+			this.query = self.getQuery();
+		}
 
 		self.cachedQuery = angular.extend({}, this.query);
 		options.descriptorColumns = self.descriptorCols;
