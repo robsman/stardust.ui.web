@@ -2661,10 +2661,14 @@ public class ModelElementMarshaller implements ModelMarshaller
       if (jsonDataId instanceof JsonPrimitive)
       {
          String dataId = jsonDataId.getAsString();
-         DataType data = ModelUtils.findIdentifiableElement(model.getData(), dataId);
-         if (data != null && data.eIsProxy())
+         if (model != null)
          {
-            jsonAttributes.addProperty(PredefinedConstants.BINDING_DATA_ID_ATT, getDataFullID(model, data));
+            DataType data = ModelUtils.findIdentifiableElement(model.getData(), dataId);
+            if (data != null && data.eIsProxy())
+            {
+               jsonAttributes.addProperty(PredefinedConstants.BINDING_DATA_ID_ATT,
+                     getDataFullID(model, data));
+            }
          }
       }
 
