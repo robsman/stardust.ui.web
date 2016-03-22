@@ -93,7 +93,7 @@
   /**
    * 
    */
-  function NotesController(notesService, sdViewUtilService, sdUtilService, sgI18nService, $scope,
+  function NotesController(notesService, sdViewUtilService, sdUtilService, sdI18nService, $scope,
           sdPropertiesPageService) {
     this.$scope = $scope;
     this.notesService = notesService;
@@ -230,7 +230,7 @@
   };
 
   // inject dependencies
-  NotesController.$inject = ["notesService", "sdViewUtilService", "sdUtilService", "sgI18nService", "$scope",
+  NotesController.$inject = ["notesService", "sdViewUtilService", "sdUtilService", "sdI18nService", "$scope",
       "sdPropertiesPageService"];
 
   // register controller

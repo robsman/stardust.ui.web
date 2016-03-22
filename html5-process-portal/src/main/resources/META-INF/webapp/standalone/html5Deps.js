@@ -59,20 +59,22 @@ var html5Deps = function() {
         'sdDialog' : [ 'html5-common/scripts/directives/dialogs/sdDialog' ],
         'sdDialogService' : [ 'html5-common/scripts/services/sdDialogService' ],
         'sdPortalConfigurationService' : [ 'html5-common/scripts/services/sdPortalConfigurationService' ],
-          'sdLocalizationService' : [ 'html5-common/scripts/services/sdLocalizationService' ],
-          'sdDatePicker': ['html5-common/scripts/directives/sdDatePicker'],
-          'sdPopover': ['html5-common/scripts/directives/sdPopover'],
-          'sdAutoComplete': ['html5-common/scripts/directives/sdAutoComplete'],
-          'sdRichTextEditor':['html5-common/scripts/directives/sdRichTextEditor'],
-          'sdTree' : ['html5-common/scripts/directives/sdTree'],
-          'sdFolderTree' : ['html5-common/scripts/directives/sdFolderTree/sdFolderTree'],
-          'sdProcessDocumentTree': ['html5-common/scripts/directives/sdProcessDocumentsTree/sdProcessDocumentsTree'],
-          'uiBootstrap':['html5-common/libs/ui-bootstrap/ui-bootstrap-tpls-1.2.1.min'],   
-          'sdDateTimeFilter' : [ 'html5-common/scripts/filters/sdDateTimeFilter'],
-          'sdNotesPanel': ['html5-process-portal/scripts/directives/sdNotesPanel/sdNotesPanel'],
-          'sdMimeTypeService': ['html5-process-portal/scripts/services/sdMimeTypeService'],
-          'sdActivityPanelPropertiesPage': ['html5-process-portal/scripts/directives/ActivityPropertiesPage/sdActivityPanelPropertiesPage'],
-          'sdProcessDocumentsPanel': ['html5-process-portal/scripts/directives/sdProcessDocumentsPanel/sdProcessDocumentsPanel']
+        'sdLocalizationService' : [ 'html5-common/scripts/services/sdLocalizationService' ],
+        'sdDatePicker': ['html5-common/scripts/directives/sdDatePicker'],
+        'sdPopover': ['html5-common/scripts/directives/sdPopover'],
+        'sdAutoComplete': ['html5-common/scripts/directives/sdAutoComplete'],
+        'sdRichTextEditor':['html5-common/scripts/directives/sdRichTextEditor'],
+        'sdTree' : ['html5-common/scripts/directives/sdTree'],
+        'sdFolderTree' : ['html5-common/scripts/directives/sdFolderTree/sdFolderTree'],
+        'sdProcessDocumentTree': ['html5-common/scripts/directives/sdProcessDocumentsTree/sdProcessDocumentsTree'],
+        'uiBootstrap':['html5-common/libs/ui-bootstrap/ui-bootstrap-tpls-1.2.1.min'],   
+        'sdDateTimeFilter' : [ 'html5-common/scripts/filters/sdDateTimeFilter'],
+        'sdNotesPanel': ['html5-process-portal/scripts/directives/sdNotesPanel/sdNotesPanel'],
+        'sdMimeTypeService': ['html5-process-portal/scripts/services/sdMimeTypeService'],
+        'sdActivityPanelPropertiesPage': ['html5-process-portal/scripts/directives/ActivityPropertiesPage/sdActivityPanelPropertiesPage'],
+        'sdProcessDocumentsPanel': ['html5-process-portal/scripts/directives/sdProcessDocumentsPanel/sdProcessDocumentsPanel'],
+        'sdFileDropbox' : [ 'html5-common/scripts/directives/sdFileDropbox'],
+        'sdUtilDirectives' : [ 'html5-common/scripts/directives/sdUtilDirectives']
       },
       shim : {
         'jquery.dataTables' : [ 'jquery' ],
@@ -96,26 +98,27 @@ var html5Deps = function() {
         'sdDialog' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap', 'sdEnvConfigService', 'sdUtilService', 'sdLoggerService'],
         'sdDialogService' : [ 'sdDialog' ],
         'sdPortalConfigurationService' : [ 'html5CommonMain' ],
-          'sdLocalizationService' : [ 'html5CommonMain' ],
-          'sdDatePicker' : [ 'html5CommonMain', 'sdLocalizationService' ],
-          'sdPopover' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap'],
-          'sdAutoComplete' :['html5CommonMain'],
-          'sdRichTextEditor':['html5CommonMain','ckeditor'],
-          'sdTree' :['html5CommonMain','ckeditor'] ,
-          'sdFolderTree' : ['html5CommonMain','sdUtilService','sdTree'],
-          'sdProcessDocumentTree':['html5CommonMain','sdUtilService','sdTree'],
-          'sdDateTimeFilter' : ['sdLocalizationService'],
-          'sdNotesPanel':['html5CommonMain','sdUtilService', 'sdDateTimeFilter'],
-          'sdProcessDocumentsPanel':['html5CommonMain','sdUtilService', 'sdMimeTypeService', 'sdPopover'],
-          'sdMimeTypeService': ['html5CommonMain'],
-          'sdActivityPanelPropertiesPage': ['sdNotesPanel', 'sdProcessDocumentsPanel']
+        'sdLocalizationService' : [ 'html5CommonMain' ],
+        'sdDatePicker' : [ 'html5CommonMain', 'sdLocalizationService' ],
+        'sdPopover' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap'],
+        'sdAutoComplete' :['html5CommonMain'],
+        'sdRichTextEditor':['html5CommonMain','ckeditor'],
+        'sdTree' :['html5CommonMain','ckeditor'] ,
+        'sdFolderTree' : ['html5CommonMain','sdUtilService','sdTree'],
+        'sdProcessDocumentTree':['html5CommonMain','sdUtilService','sdTree'],
+        'sdDateTimeFilter' : ['sdLocalizationService'],
+        'sdNotesPanel':['html5CommonMain','sdUtilService', 'sdDateTimeFilter'],
+        'sdProcessDocumentsPanel':['html5CommonMain','sdUtilService', 'sdMimeTypeService', 'sdPopover'],
+        'sdMimeTypeService': ['html5CommonMain'],
+        'sdActivityPanelPropertiesPage': ['sdNotesPanel', 'sdProcessDocumentsPanel'],
+        'sdFileDropbox':  ['html5CommonMain']
       },
       deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap","ckeditor","portalApplication",
           "html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
           "sdLoggerService", "sdData", "sdDataTable", "sdEnvConfigService",
           'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover', 
           'sdAutoComplete','sdRichTextEditor','sdTree','sdFolderTree','sdProcessDocumentTree', 'sdDateTimeFilter', 'sdNotesPanel', 
-          'sdActivityPanelPropertiesPage', 'sdProcessDocumentsPanel', 'uiBootstrap']
+          'sdActivityPanelPropertiesPage', 'sdProcessDocumentsPanel', 'uiBootstrap', 'sdFileDropbox', 'sdUtilDirectives']
 
     };
 
@@ -201,7 +204,6 @@ var html5Deps = function() {
               if (parentScope && parentScope.sdI18n) {
                 service.translate = parentScope.sdI18n;
                 $rootScope.i18n = parentScope.sdI18n; //TODO: should have sgi18n??
-                $rootScope.sdI18n = parentScope.sdI18n;
               } else {
                 // provide dummy implementation if i18n not
                 // available from parent
@@ -217,6 +219,30 @@ var html5Deps = function() {
               return service;
           }];
       });
+
+      module.provider('sdI18nService', function () {
+        this.$get = ['$rootScope', function ($rootScope) {
+            var service = {};
+            var parentScope = parent.window.angular.element(parent.document.body).scope();
+            // use parent i18n implementation
+            if (parentScope && parentScope.sdI18n) {
+              service.translate = parentScope.sdI18n;
+              $rootScope.sdI18n = parentScope.sdI18n;
+            } else {
+              // provide dummy implementation if i18n not
+              // available from parent
+              service.translate = function(key, value) {
+                  if(value){
+                    return value;
+                  }else{
+                    return key;
+                  }
+              };
+              $rootScope.i18n = service.translate;  
+            }
+            return service;
+        }];
+    });
       
     var modules = portalApplication.getModules();
     if (modules != null && modules.length > 0) {

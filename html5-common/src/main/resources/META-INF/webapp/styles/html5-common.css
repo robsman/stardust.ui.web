@@ -570,3 +570,18 @@ button.close {
    border-top: 1px solid #DDD;
 }
 
+.filedropbox-overlay {
+  font-size: 40px;
+  font-wight: bold;
+  text-align: center;
+  opacity: 0.3;
+  z-index: 10;
+}
+
+.filedropbox-content {
+  position: absolute;
+  opacity: 0.2;
+  background: #F8F8F8;
+  border: 5px dashed lightgray;
+  width:97%;
+}

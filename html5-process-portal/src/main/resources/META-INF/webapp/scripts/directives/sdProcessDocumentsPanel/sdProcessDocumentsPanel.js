@@ -126,22 +126,6 @@
     return deferred.promise;
   }
 
-  /**
-   * @param data
-   * @returns
-   */
-  ProcessDocumentsService.prototype.uploadDocument = function(data) {
-    var url = this.rootUrl + "services/rest/portal/notes/save";
-    var deferred = this.$q.defer();
-
-    this.$http.post(url, data).then(function(data) {
-      deferred.resolve(data);
-    }, function(error) {
-      deferred.reject(error);
-    })
-    return deferred.promise;
-  }
-
   // inject dependencies
   ProcessDocumentsService.$inject = ["$http", "$q", "sdUtilService"];
 
@@ -160,13 +144,19 @@
     this.rootUrl = sdUtilService.getBaseUrl();
     this.sdMimeTypeService = sdMimeTypeService;
     this.sdI18n = $scope.$root.sdI18n;
-    this.propertiesPageService = sdPropertiesPageService
+    this.propertiesPageService = sdPropertiesPageService;
 
     this.documentMenuPopupUrl = sdUtilService.getBaseUrl()
             + "plugins/html5-views-common/html5/partials/views/documentMenuPopover.html";
 
     this.documentHistoryPopupUrl = sdUtilService.getBaseUrl()
             + "plugins/html5-views-common/html5/partials/views/documentHistory.html";
+
+    this.processAttachmentUrl_ = sdUtilService.getBaseUrl()
+            + "services/rest/portal/process-instances/{{OID}}/documents";
+
+    this.activityAttachmentUrl_ = sdUtilService.getBaseUrl()
+            + "services/rest/portal/activity-instances/{{OID}}/documents";
 
     this.initialize();
   }
@@ -188,11 +178,13 @@
     var self = this;
     if (self.$scope.processInstanceOid) {
       self.showProcessDocuments = true;
+      self.processAttachmentUrl = this.processAttachmentUrl_.replace("{{OID}}", self.$scope.processInstanceOid);
     } else {
       self.showProcessDocuments = false;
     }
     if (self.$scope.activityInstanceOid) {
       self.showActivityAttachments = true;
+      self.activityAttachmentUrl = this.activityAttachmentUrl_.replace("{{OID}}", self.$scope.activityInstanceOid);
     } else {
       self.showActivityAttachments = false;
     }
@@ -220,23 +212,10 @@
         for (var int = 0; int < self.activityAttachments.length; int++) {
           self.documentActionControl[self.activityAttachments[int].uuid] = {};
         }
-        
+
         self.publishTotalCount();
       });
     }
-  }
-
-  /**
-   * 
-   */
-  ProcessDocumentsController.prototype.uploadProcessDocuments = function() {
-
-  }
-
-  /**
-   * 
-   */
-  ProcessDocumentsController.prototype.uploadactivityAttachments = function() {
   }
 
   /**
@@ -264,7 +243,7 @@
     if (this.showProcessDocuments && this.processAttachments) {
       total = total + this.processAttachments.length;
     }
-    
+
     this.propertiesPageService.setTotalDocuments(total);
   };
 
@@ -394,6 +373,21 @@
    */
   ProcessDocumentsController.prototype.closeHistory = function() {
     this.documentHistoryDialog.close();
+  }
+
+  /**
+   * @param event
+   */
+  ProcessDocumentsController.prototype.attachmentDropHandler = function(event) {
+    if (event.type === "error") {
+      console.log("ERROR!");
+    }
+    if (event.type === "success") {
+      this.initializeDocuments();
+    }
+    if (event.type === "dropped") {
+      console.log("dropped");
+    }
   }
 
   /**

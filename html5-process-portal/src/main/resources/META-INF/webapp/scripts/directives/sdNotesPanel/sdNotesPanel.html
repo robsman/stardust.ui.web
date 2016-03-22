@@ -7,84 +7,111 @@
 	opacity: 0.7;
 	font-weight: bolder;
 }
+
+tr.notesRow>td {
+	padding-bottom: 0.5em;
+}
+
+.addNotesLink:focus {
+	border: solid 2px skyblue;
+}
 </style>
 <div>
-	<table>
-		<tr ng-show="notesCtrl.showProcessNotes">
-			<td colspan="2"><h2>{{notesCtrl.processNotes.label}}</h2></td>
-		</tr>
-		<tr ng-show="notesCtrl.showProcessNotes"
-			ng-repeat="note in notesCtrl.processNotes.list">
-			<td class="properties-panel-content"><img
-				ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-				ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
-				width="24px" height="24px" /> <i
-				class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
-				ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-				style="margin-top: 3px; margin-left: 3px;"></i></td>
-			<td>
-				<table>
-					<tr>
-						<td><span class="noteUser">{{note.creatorName}}</span></td>
-					</tr>
-					<tr>
-						<td><span class="noteDate">{{note.created |
-								sdDateTimeFilter}}</span></td>
-					</tr>
-					<tr>
-						<td><span class="noteText">{{note.note}}</span></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<tr class="border">
-			<td colspan="2"><textarea type="text"
-					ng-model="notesCtrl.processNote"
-					placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addProcessNote')}}">
-                       							</textarea> <a href='#' class='heading'
-				style='cursor: pointer; text-decoration: none;'
-				ng-click="notesCtrl.addProcessNotes()"> <i
-					title="{{notesCtrl.sdI18n('processportal.views.notesPanel.header.addNote')}}"
-					class='pi pi-expand-all pi-lg'></i>
-			</a></td>
-		</tr>
-		<tr ng-show="notesCtrl.showActivityNotes">
-			<td colspan="2"><h2>{{notesCtrl.activityNotes.label}}</h2></td>
-		</tr>
-		<tr ng-show="notesCtrl.showActivityNotes"
-			ng-repeat="note in notesCtrl.activityNotes.list">
-			<td class="properties-panel-content"><img
-				ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-				ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
-				width="24px" height="24px" /> <i
-				class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
-				ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-				style="margin-top: 3px; margin-left: 3px;"></i></td>
-			<td>
-				<table>
-					<tr>
-						<td><span class="noteUser">{{note.creatorName}}</span></td>
-					</tr>
-					<tr>
-						<td><span class="noteDate">{{note.created |
-								sdDateTimeFilter}}</span></td>
-					</tr>
-					<tr>
-						<td><span class="noteText">{{note.note}}</span></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<tr class="border">
-			<td colspan="2"><textarea type="text"
-					ng-model="notesCtrl.activityNote"
-					placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addActivityNote')}}">
-                        						</textarea> <a href='#' class='heading'
-				style='cursor: pointer; text-decoration: none;'
-				ng-click="notesCtrl.addActivityNotes()"> <i
-					title="{{notesCtrl.sdI18n('processportal.views.notesPanel.header.addNote')}}"
-					class='pi pi-expand-all pi-lg'></i>
-			</a></td>
-		</tr>
-	</table>
+
+	<div class="propertiesContent">
+		<table>
+			<tr ng-show="notesCtrl.showProcessNotes">
+				<td colspan="2"><h2>{{notesCtrl.processNotes.label}}</h2></td>
+			</tr>
+			<tr ng-show="notesCtrl.processNotes.list.length==0">
+				<td class="properties-panel-content">
+					{{notesCtrl.sdI18n('views-common-messages.propertiesPage.noNotes')}}</td>
+			</tr>
+			<tr class="notesRow" ng-show="notesCtrl.showProcessNotes"
+				ng-repeat="note in notesCtrl.processNotes.list">
+				<td class="properties-panel-content"><img
+					ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+					ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
+					width="24px" height="24px" /> <i
+					class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
+					ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+					style="margin-top: 3px; margin-left: 3px;"></i></td>
+				<td>
+					<table>
+						<tr>
+							<td><span class="noteUser">{{note.creatorName}}</span></td>
+						</tr>
+						<tr>
+							<td><span class="noteDate">{{note.created |
+									sdDateTimeFilter}}</span></td>
+						</tr>
+						<tr>
+							<td><span class="noteText">{{note.note}}</span></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="border" style="overflow: auto">
+		<textarea type="text" ng-model="notesCtrl.processNote" rows="3"
+			sd-auto-tab-to="addProcessNoteId"
+			placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addProcessNote')}}">
+                       							</textarea>
+		<a href='#' class='addNotesLink' id="addProcessNoteId"
+			style='cursor: pointer; text-decoration: none;'
+			ng-click="notesCtrl.addProcessNotes()"> <i id="addProcessNoteId"
+			style="margin-top: 3px"
+			title="{{notesCtrl.sdI18n('processportal.views.notesPanel.header.addNote')}}"
+			class='pi pi-expand-all pi-lg'></i>
+		</a>
+	</div>
+	<div class="propertiesContent">
+		<table>
+			<tr ng-show="notesCtrl.showActivityNotes">
+				<td colspan="2"><h2>{{notesCtrl.activityNotes.label}}</h2></td>
+			</tr>
+			<tr ng-show="notesCtrl.activityNotes.list.length==0">
+				<td class="properties-panel-content">
+					{{notesCtrl.sdI18n('views-common-messages.propertiesPage.noNotes')}}</td>
+			</tr>
+			<tr class="notesRow" ng-show="notesCtrl.showActivityNotes"
+				ng-repeat="note in notesCtrl.activityNotes.list">
+				<td class="properties-panel-content"><img
+					ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+					ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
+					width="24px" height="24px" /> <i
+					class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
+					ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
+					style="margin-top: 3px; margin-left: 3px;"></i></td>
+				<td>
+					<table>
+						<tr>
+							<td><span class="noteUser">{{note.creatorName}}</span></td>
+						</tr>
+						<tr>
+							<td><span class="noteDate">{{note.created |
+									sdDateTimeFilter}}</span></td>
+						</tr>
+						<tr>
+							<td><span class="noteText">{{note.note}}</span></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="border" style="overflow: auto">
+		<textarea type="text" ng-model="notesCtrl.activityNote" rows="3"
+			sd-auto-tab-to="addActivityNoteId"
+			placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addActivityNote')}}">
+                        						</textarea>
+		<a href='#' class='addNotesLink' id="addActivityNoteId"
+			style='cursor: pointer; text-decoration: none;'
+			ng-click="notesCtrl.addActivityNotes()"> <i
+			style="margin-top: 3px"
+			title="{{notesCtrl.sdI18n('processportal.views.notesPanel.header.addNote')}}"
+			class='pi pi-expand-all pi-lg'></i>
+		</a>
+	</div>
 </div>
