@@ -188,7 +188,7 @@
 
 				<th sda-column-type="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols"
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"
-					sda-sortable="{{activityTableCtrl.isDefinedSortable(descCol.id, descCol.id)}}"
+					sda-sortable="{{activityTableCtrl.isDefinedSortable(descCol.id, descCol.sortable)}}"
 				    sda-visible="{{activityTableCtrl.isColumnVisible(descCol.id)}}"
 					sda-filterable="{{activityTableCtrl.isDefinedFilterable(descCol.id, descCol.filterable)}}"
 					sda-fixed="{{activityTableCtrl.isDefinedFixed(descCol.id, false)}}">

@@ -491,28 +491,8 @@ public class ActivityTableUtils
    public static void addSortCriteria(Query query, DataTableOptionsDTO options)
    {
       boolean worklistQuery = query instanceof WorklistQuery;
-
-      if (options.visibleDescriptorColumns != null
-            && options.visibleDescriptorColumns.contains(options.orderBy))
-      {
-         Map<String, DataPath> allDescriptors = ProcessDefinitionUtils.getAllDescriptors(false);
-         String descriptorName = options.orderBy;
-         if (allDescriptors.containsKey(descriptorName))
-         {
-            DescriptorUtils.applyDescriptorPolicy(query, options);
-            String columnName = DescriptorUtils.getDescriptorColumnName(descriptorName, allDescriptors);
-            if (CommonDescriptorUtils.isStructuredData(allDescriptors.get(descriptorName)))
-            {
-               query.orderBy(new DataOrder(columnName,
-                     DescriptorUtils.getXpathName(descriptorName, allDescriptors), options.asc));
-            }
-            else
-            {
-               query.orderBy(new DataOrder(columnName, options.asc));
-            }
-         }
-      }
-      else if (COL_ACTIVITY_NAME.equals(options.orderBy))
+     
+       if (COL_ACTIVITY_NAME.equals(options.orderBy))
       {
          query.orderBy(ActivityInstanceQuery.ACTIVITY_NAME.ascendig(options.asc));
       }
@@ -555,6 +535,32 @@ public class ActivityTableUtils
       else if (COL_BENCHMARK.equals(options.orderBy))
       {
          query.orderBy(ActivityInstanceQuery.BENCHMARK_VALUE, options.asc);
+      }
+      else
+      {
+         Map<String, DataPath> allDescriptors = ProcessDefinitionUtils.getAllDescriptors(false);
+         
+         if (options.visibleDescriptorColumns != null
+               && allDescriptors.keySet().contains(options.orderBy))
+         {
+            String descriptorName = options.orderBy;
+            if (allDescriptors.containsKey(descriptorName))
+            {
+               DescriptorUtils.applyDescriptorPolicy(query, options);
+               String columnName = DescriptorUtils.getDescriptorColumnName(
+                     descriptorName, allDescriptors);
+               if (CommonDescriptorUtils.isStructuredData(allDescriptors
+                     .get(descriptorName)))
+               {
+                  query.orderBy(new DataOrder(columnName, DescriptorUtils.getXpathName(
+                        descriptorName, allDescriptors), options.asc));
+               }
+               else
+               {
+                  query.orderBy(new DataOrder(columnName, options.asc));
+               }
+            }
+         }
       }
    }
 
