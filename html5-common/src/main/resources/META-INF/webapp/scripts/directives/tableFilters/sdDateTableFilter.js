@@ -50,8 +50,12 @@
 				 * 
 				 */
 				scope.handlers.applyFilter = function() {
-					scope.filterForm.$error.range = false;
+					delete scope.filterForm.$error.range;
 
+					if(sdUtilService.isObjectEmpty(scope.filterForm.$error)){
+                    	scope.filterForm.$valid = true;
+                    }
+					
 					if (scope.filterForm.$valid) {
 						if (sdUtilService.isEmpty(scope.filterData.from) && sdUtilService.isEmpty(scope.filterData.to)) {
 							scope.filterForm.$error.range = true;

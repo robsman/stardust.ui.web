@@ -31,7 +31,7 @@
 							'<td><label class="label-item">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-first\')}}</label></td>' +
 							'<td>' +
 								'<input type="number" id="from" name="from" ng-model="filterData.from" style="text-align: left;" ng-model-onblur sd-validate="integer" />' +
-								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.number || filterForm[\'from\'].$error.validate">' +
+								'<div class="msg-error" ng-show="filterForm.from.$error.number || filterForm.from.$error.validate">' +
 									'{{i18n(\'html5-common.converter-number-error\')}}' +
 								'</div>' +
 							'</td>' +
@@ -40,7 +40,7 @@
 							'<td><label class="label-item">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-last\')}}</label></td>' +
 							'<td>' +
 								'<input type="number" id="to" name="to" ng-model="filterData.to" style="text-align: left;" ng-model-onblur sd-validate="integer" />' +
-								'<div class="msg-error" ng-show="filterForm[\'to\'].$error.number || filterForm[\'to\'].$error.validate">' +
+								'<div class="msg-error" ng-show="filterForm.to.$error.number || filterForm.to.$error.validate">' +
 									'{{i18n(\'html5-common.converter-number-error\')}}' +
 								'</div>' +
 							'</td>' +
@@ -52,9 +52,15 @@
 				/*
 				 * 
 				 */
-				scope.handlers.applyFilter = function() {
-					scope.filterForm.$error.range = false;
 
+				
+				scope.handlers.applyFilter = function() {
+					delete scope.filterForm.$error.range;
+                    
+					if(sdUtilService.isObjectEmpty(scope.filterForm.$error)){
+                    	scope.filterForm.$valid = true;
+                    }
+					
 					if (scope.filterForm.$valid) {
 						if (sdUtilService.isEmpty(scope.filterData.from) && sdUtilService.isEmpty(scope.filterData.to)) {
 							scope.filterForm.$error.range = true;
@@ -78,7 +84,6 @@
 							}
 						}
 					}
-
 					return false;
 				};
 
