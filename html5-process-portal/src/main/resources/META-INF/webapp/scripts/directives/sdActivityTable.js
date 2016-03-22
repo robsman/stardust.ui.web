@@ -944,7 +944,7 @@
 		
 		//Getting latest query
 		if(this.query) {
-			this.query = self.getQuery();
+			//this.query = self.getQuery();
 		}
 
 		self.cachedQuery = angular.extend({}, this.query);
