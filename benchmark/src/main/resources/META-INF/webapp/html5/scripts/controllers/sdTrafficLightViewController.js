@@ -240,7 +240,7 @@
 									queryData.selectedBusinessObjectInstances = boInstances;
 								}
 
-								if (self.selectedRelatedBusinessObject.businessObjectQualifiedId != undefined) {
+								if (self.selectedRelatedBusinessObject != null && self.selectedRelatedBusinessObject.businessObjectQualifiedId != undefined) {
 									queryData.groupBybusinessQualifiedId = self.selectedRelatedBusinessObject.businessObjectQualifiedId;
 									queryData.groupBybusinessObjectType = self.bOPrimaryKeyTypeMap[self.selectedRelatedBusinessObject.businessObjectQualifiedId];
 									if (!_sdUtilService.isEmpty(self.selectedRelatedBusinessObjectInstances)) {
@@ -771,24 +771,30 @@
 		var self = this;
 		self.selectedRelatedBusinessObjectInstances = [];
 		var primaryKeys = [];
-		angular.forEach(self.selectedBusinessObjectInstances, function(selBOInstance) {
-			angular.forEach(selBOInstance[self.selectedRelatedBusinessObject.otherForeignKeyField], function(id) {
-				if (id != null) {
-					primaryKeys.push(id);
-				}
+		if (self.selectedRelatedBusinessObject != null) {
+			angular.forEach(self.selectedBusinessObjectInstances, function(selBOInstance) {
+
+				angular.forEach(selBOInstance[self.selectedRelatedBusinessObject.otherForeignKeyField], function(id) {
+					if (id != null) {
+						primaryKeys.push(id);
+					}
+
+				});
 
 			});
-		});
-		_sdBusinessObjectManagementService.getRelatedBusinessObjectInstances(
-				self.selectedRelatedBusinessObject.businessObjectQualifiedId, primaryKeys).then(function(data) {
-			self.realatedBusinessObjectInstances = data;
-			if (favSelectedRelatedBusinessObjectInstances != undefined) {
-				self.selectedRelatedBusinessObjectInstances = favSelectedRelatedBusinessObjectInstances;
-			}
 
-		}, function(error) {
-			trace.log(error);
-		});
+			_sdBusinessObjectManagementService.getRelatedBusinessObjectInstances(
+					self.selectedRelatedBusinessObject.businessObjectQualifiedId, primaryKeys).then(function(data) {
+				self.realatedBusinessObjectInstances = data;
+				if (favSelectedRelatedBusinessObjectInstances != undefined) {
+					self.selectedRelatedBusinessObjectInstances = favSelectedRelatedBusinessObjectInstances;
+				}
+
+			}, function(error) {
+				trace.log(error);
+			});
+
+		}
 	};
 	/**
 	 * 

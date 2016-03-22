@@ -78,7 +78,8 @@
 				      <td><select size="1" ng-model="ctrl.selectedRelatedBusinessObject" style="height: 20px; padding: 0;"
 						ng-options="businessObject as businessObject.label for businessObject in ctrl.relatedBusinessObjects"
 						ng-change="ctrl.getRelatedBOInstances()"
-						aid="COM-benchmark-tlv-selectRelatedBusinessObject"></select>
+						aid="COM-benchmark-tlv-selectRelatedBusinessObject">
+						<option value=""></option></select>
 			     	 </td>
 			     	 <td>
 			     	   <div sd-auto-complete sda-matches="ctrl.relatedBusinessObjectInstancesData" sda-match-str="ctrl.relatedMatchVal"
