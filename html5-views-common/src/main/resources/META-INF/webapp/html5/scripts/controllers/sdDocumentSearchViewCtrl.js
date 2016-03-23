@@ -221,7 +221,9 @@
 	DocumentSearchViewCtrl.prototype.validateSearchCriteria = function() {
 		var self = this;
 		var error = false;
-
+		//removing the custom error flag.
+		_sdUtilService.removeFormErrors(self.searchCriteriaForm, ['createDateRange', 'modificationDateRange']);
+		
 		if (self.searchCriteriaForm.$valid) {
 			// validating the createDateTo and createDateFrom
 			if (!_sdUtilService.validateDateRange(self.query.documentSearchCriteria.createDateFrom,
