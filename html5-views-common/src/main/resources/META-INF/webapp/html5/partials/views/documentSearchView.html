@@ -16,7 +16,8 @@
 						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-createDate-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
-						<td><div sd-date-time-picker ng-model-onblur
+						<td><div sd-date-time-condensed 
+								ng-model-onblur
 								ng-model="docSearchViewCtrl.query.documentSearchCriteria.createDateFrom"
 								name="createDateFrom"
 								sda-aid-prefix="COM-SrchDoc-CreateDateFrom"></div>
@@ -28,7 +29,7 @@
 						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-createDateTo-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
-						<td><div sd-date-time-picker ng-model-onblur
+						<td><div sd-date-time-condensed ng-model-onblur
 								name="createDateTo"
 								ng-model="docSearchViewCtrl.query.documentSearchCriteria.createDateTo"
 								sda-aid-prefix="COM-SrchDoc-CreateDateTo"></div>
@@ -47,7 +48,7 @@
 						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-modificationDate-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
-						<td><div sd-date-time-picker ng-model-onblur
+						<td><div sd-date-time-condensed ng-model-onblur
 								name="modificationDateFrom"
 								ng-model="docSearchViewCtrl.query.documentSearchCriteria.modificationDateFrom"
 								sda-aid-prefix="COM-SrchDoc-ModificationDateFrom"></div>
@@ -59,7 +60,7 @@
 						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-modificationDateTo-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
-						<td><div sd-date-time-picker ng-model-onblur
+						<td><div sd-date-time-condensed ng-model-onblur
 								name="modificationDateTo"
 								ng-model="docSearchViewCtrl.query.documentSearchCriteria.modificationDateTo"
 								sda-aid-prefix="COM-SrchDoc-ModificationDateTo"></div>
