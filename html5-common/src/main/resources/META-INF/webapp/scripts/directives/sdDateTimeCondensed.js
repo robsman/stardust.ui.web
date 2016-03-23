@@ -287,7 +287,8 @@
 	/**
 	 * This is the fx that tries to keep our ngModel value (selectedDateTime),
 	 * synced with the changes occuring in our underlying values, timeComponent and selectedDate.
-	 * Both sub components must be valid before the ngModel value will update.
+	 * Both sub components must be valid before the ngModel value will update. Important behavior to
+	 * be aware of is that on any invalid dateLong or timeStr we will set our view value to null.
 	 * @param  {[type]} dateLong [description]
 	 * @param  {[type]} timeStr  [description]
 	 * @return {[type]}          [description]
@@ -297,14 +298,18 @@
 		var timeParts;
 		var now; 
 		
-		//Special case where user just opens and closes the datePicker without selecting anything.
-		//We wont worry about validity in this instance and just ignore this round of updates.
-		if(dateLong===""){
+		//Special case where user just opens and closes the datePicker without selecting anything or
+		//where the user has blanked out both values in the control. We will treat this like a reset
+		//to the control and explicitly set validity to true and our view value to null.
+		if(dateLong==="" && timeStr ===""){
+			this.ngModelCtrl.$setViewValue(null);
+			this.ngModelCtrl.$setValidity('validate', true);
 			return
 		};
 
 		//Do we have a number we can use?
 		if(!angular.isNumber(dateLong) || !isFinite(dateLong)){
+			this.ngModelCtrl.$setViewValue(null);
 			this.setValidity(dateLong,timeStr);
 			return;
 		}
@@ -329,6 +334,9 @@
 			if (angular.isFunction(this.ngModelCtrl.$apply)) {
 				this.ngModelCtrl.$apply();
 			}
+		}
+		else{
+			this.ngModelCtrl.$setViewValue(null);
 		}
 
 	};
@@ -378,7 +386,7 @@
 	 * @return {Boolean}          [description]
 	 */
 	Controller.prototype.isDateValid = function(dateLong){
-		var result = isFinite(dateLong);
+		var result = (dateLong !=="" && isFinite(dateLong));
 		return result;
 	};
 
