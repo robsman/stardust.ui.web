@@ -179,10 +179,10 @@
   ProcessDocumentsController.prototype.initializeDocuments = function() {
     var self = this;
     if (self.$scope.processInstanceOid) {
-      self.showProcessDocuments = true;
+      self.showProcessAttachments = true;
       self.processAttachmentUrl = this.processAttachmentUrl_.replace("{{OID}}", self.$scope.processInstanceOid);
     } else {
-      self.showProcessDocuments = false;
+      self.showProcessAttachments = false;
     }
     if (self.$scope.activityInstanceOid) {
       self.showActivityAttachments = true;
@@ -192,7 +192,7 @@
     }
 
     // to get activity and process labels
-    if (self.showProcessDocuments || self.showActivityAttachments) {
+    if (self.showProcessAttachments || self.showActivityAttachments) {
       self.processDocumentsService.getActivityInstance(self.$scope.activityInstanceOid).then(function(data) {
         self.activityInstance = data.data;
         self.processInstance = data.data.processInstance;
@@ -201,7 +201,7 @@
       });
     }
 
-    if (self.showProcessDocuments || self.showActivityAttachments) {
+    if (self.showProcessAttachments || self.showActivityAttachments) {
       self.processDocumentsService.getProcessDocuments(self.$scope.processInstanceOid).then(function(data) {
         var allDocs = self.normalizeData(data.data);
         self.processAttachments = allDocs.processAttachments;
@@ -223,8 +223,49 @@
   /**
    * @param api
    */
-  ProcessDocumentsController.prototype.initializeUploadDialog = function(api) {
-    this.uploadDialogApi = api;
+  ProcessDocumentsController.prototype.initializeActivityAttUploadDialog = function(api) {
+    this.uploadActivityAttDialogApi = api;
+  };
+
+  /**
+   * 
+   */
+  ProcessDocumentsController.prototype.uploadNewActivityAttachment = function() {
+    var self = this;
+    this.uploadActivityAttDialogApi.open().then(function(files) {
+      if (files.length > 0) {
+        self.initializeDocuments();
+      }
+    });
+  };
+
+  
+  
+  
+  /**
+   * @param api
+   */
+  ProcessDocumentsController.prototype.initializeProcessAttUploadDialog = function(api) {
+    this.uploadProcessAttDialogApi = api;
+  };
+
+  /**
+   * 
+   */
+  ProcessDocumentsController.prototype.uploadNewProcessAttachment = function() {
+    var self = this;
+    this.uploadProcessAttDialogApi.open().then(function(files) {
+      if (files.length > 0) {
+        self.initializeDocuments();
+      }
+    });
+  };
+
+  /**
+   * @param api
+   */
+  ProcessDocumentsController.prototype.initializeVersionUploadDialog = function(api) {
+    this.versionUploadDialogApi = api;
   };
 
   /**
@@ -232,7 +273,7 @@
    */
   ProcessDocumentsController.prototype.uploadNewVersion = function() {
     var self = this;
-    this.uploadDialogApi.open().then(function(files) {
+    this.versionUploadDialogApi.open().then(function(files) {
       if (files.length > 0) {
         self.replaceDocumentOnUI(files[0]);
       }
@@ -268,7 +309,7 @@
       total = total + this.activityAttachments.length;
     }
 
-    if (this.showProcessDocuments && this.processAttachments) {
+    if (this.showProcessAttachments && this.processAttachments) {
       total = total + this.processAttachments.length;
     }
 

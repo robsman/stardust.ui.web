@@ -21,7 +21,7 @@
       'sdI18nService',
       function($http, sdI18nService) {
         var sdI18n;
-        
+
         if (sdI18nService && sdI18nService.getInstance) {
           sdI18n = sdI18nService.translate;
         }
@@ -56,6 +56,9 @@
 
             var counter = 0;
             element.on('dragleave', function(event) {
+              event.preventDefault();
+              event.stopPropagation();
+
               counter--;
               if (counter === 0) {
                 scope.$apply(function() {
@@ -63,30 +66,26 @@
                   scope.showOverlay = false;
                 })
               }
-              event.preventDefault();
-              event.stopPropagation();
             });
 
             element.on('dragenter', function(event) {
               counter++;
+              event.preventDefault();
+              event.stopPropagation();
               scope.$apply(function() {
                 scope.boxContentClass = "filedropbox-content";
                 scope.showOverlay = true;
               })
-
-              event.preventDefault();
-              event.stopPropagation();
             });
 
             element.on('drop', function(event) {
-
+              event.preventDefault();
+              event.stopPropagation();
+              counter = 0;
               scope.$apply(function() {
                 scope.boxContentClass = "";
                 scope.showOverlay = false;
               })
-
-              event.preventDefault();
-              event.stopPropagation();
 
               var dataTransfer;
               if (event.dataTransfer) {

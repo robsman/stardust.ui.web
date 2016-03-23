@@ -20,100 +20,138 @@ tr.documentRow>td {
 	padding: 0px;
 	border: solid 2px skyblue;
 }
+
+.properties-panel-upload {
+	float: right;
+	padding-right: 10px;
+	padding-bottom: 20px;
+}
 </style>
 <div>
-	<div ng-show="processDocumentsCtrl.showProcessDocuments"
-		sd-file-dropbox
-		sda-url="{{processDocumentsCtrl.processAttachmentUrl}}"
-		sda-placeholder="{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.processAttachment')}}"
-		sda-handler="processDocumentsCtrl.attachmentDropHandler(event)">
-		<div class="propertiesContent borderBottom">
-			<table>
-				<tr>
-					<td><h2>{{processDocumentsCtrl.processLabel}}</h2></td>
-				</tr>
-				<tr ng-show="processDocumentsCtrl.processAttachments.length==0">
-					<td class="properties-panel-content">{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.noAttachments')}}</td>
-				</tr>
-				<tr class="documentRow"
-					ng-repeat="document in processDocumentsCtrl.processAttachments">
-					<td class="properties-panel-content"
-						ng-show="!processDocumentsCtrl.documentActionControl[document.uuid].edit"><i
-						class="{{processDocumentsCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>
-						<span> <a href="#"
-							ng-click="processDocumentsCtrl.openDocumentView(document.uuid);"
-							aid="PP-DocumentsPanelP-DocName"> {{document.name}} </a>
-					</span></td>
-					<td class="properties-panel-content" style="padding: 0px"
-						ng-show="processDocumentsCtrl.documentActionControl[document.uuid].edit">
-						<input type="text" sd-auto-tab-to="{{$index}}"
-						ng-model="processDocumentsCtrl.documentActionControl[document.uuid].name">
-						<button class="properties-panel-renameComplete" id="{{$index}}"
-							ng-click="processDocumentsCtrl.renameComplete()">
-							<i class="pi pi-check pi-lg"></i>
-						</button>
-					</td>
-					<td style="padding-right: 10px"
-						ng-click="processDocumentsCtrl.showDocumentMenuPopover(document)">
-						<button class="button-link tbl-tool-link"
-							aid="PP-DocumentsPanelP-menuPopover" sd-popover
-							sda-template="processDocumentsCtrl.documentMenuPopupUrl"
-							sda-placement="left auto" sda-trigger="none"
-							sda-is-open="processDocumentsCtrl.documentActionControl[document.uuid].popover">
-							<i class="pi pi-next-page pi-lg"></i>
-						</button>
-					</td>
-				</tr>
-			</table>
-		</div>
-	</div>
-	<div ng-show="processDocumentsCtrl.showActivityAttachments"
-		sd-file-dropbox
-		sda-url="{{processDocumentsCtrl.activityAttachmentUrl}}"
-		sda-placeholder="{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.activityAttachment')}}"
-		sda-handler="processDocumentsCtrl.attachmentDropHandler(event)">
-		<div class="propertiesContent borderBottom">
-			<Table>
-				<tr>
-					<td><h2>{{processDocumentsCtrl.activityLabel}}</h2></td>
-				</tr>
-				<tr ng-show="processDocumentsCtrl.activityAttachments.length==0">
-					<td class="properties-panel-content">
-						{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.noAttachments')}}</td>
-				</tr>
-				<tr class="documentRow"
-					ng-repeat="document in processDocumentsCtrl.activityAttachments">
-					<td class="properties-panel-content"
-						ng-show="!processDocumentsCtrl.documentActionControl[document.uuid].edit"><i
-						class="{{processDocumentsCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>
-						<span> <a href="#"
-							ng-click="processDocumentsCtrl.openDocumentView(document.uuid);"
-							aid="PP-DocumentsPanel-DocName"> {{document.name}} </a>
-					</span></td>
-					<td class="properties-panel-content"
-						ng-show="processDocumentsCtrl.documentActionControl[document.uuid].edit">
-						<input type="text"
-						ng-model="processDocumentsCtrl.documentActionControl[document.uuid].name">
-						<button class="properties-panel-renameComplete"
-							aid="PP-DocumentsPanel-renameComplete"
-							ng-click="processDocumentsCtrl.renameComplete()">
-							<i class="pi pi-check pi-lg"></i>
-						</button>
-					</td>
-					<td style="padding-right: 10px"
-						ng-click="processDocumentsCtrl.showDocumentMenuPopover(document)">
-						<button class="button-link tbl-tool-link"
-							aid="PP-DocumentsPanel-MenuPopover" sd-popover
-							sda-template="processDocumentsCtrl.documentMenuPopupUrl"
-							sda-placement="left auto" sda-trigger="none"
-							sda-is-open="processDocumentsCtrl.documentActionControl[document.uuid].popover">
-							<i class="pi pi-next-page pi-lg"></i>
-						</button>
-					</td>
-				</tr>
-			</table>
-		</div>
-	</div>
+	<table>
+		<tr>
+			<td>
+				<div ng-show="processDocumentsCtrl.showProcessAttachments"
+					sd-file-dropbox
+					sda-url="{{processDocumentsCtrl.processAttachmentUrl}}"
+					sda-placeholder="{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.processAttachment')}}"
+					sda-handler="processDocumentsCtrl.attachmentDropHandler(event)">
+					<div class="propertiesContent">
+						<table>
+							<tr>
+								<td><h2>{{processDocumentsCtrl.processLabel}}</h2></td>
+							</tr>
+							<tr ng-show="processDocumentsCtrl.processAttachments.length==0">
+								<td class="properties-panel-content">{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.noAttachments')}}</td>
+							</tr>
+							<tr class="documentRow"
+								ng-repeat="document in processDocumentsCtrl.processAttachments">
+								<td class="properties-panel-content"
+									ng-show="!processDocumentsCtrl.documentActionControl[document.uuid].edit"><i
+									class="{{processDocumentsCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>
+									<span> <a href="#"
+										ng-click="processDocumentsCtrl.openDocumentView(document.uuid);"
+										aid="PP-DocumentsPanelP-DocName"> {{document.name}} </a>
+								</span></td>
+								<td class="properties-panel-content" style="padding: 0px"
+									ng-show="processDocumentsCtrl.documentActionControl[document.uuid].edit">
+									<input type="text" sd-auto-tab-to="{{$index}}"
+									ng-model="processDocumentsCtrl.documentActionControl[document.uuid].name">
+									<button class="properties-panel-renameComplete" id="{{$index}}"
+										ng-click="processDocumentsCtrl.renameComplete()">
+										<i class="pi pi-check pi-lg"></i>
+									</button>
+								</td>
+								<td style="padding-right: 10px"
+									ng-click="processDocumentsCtrl.showDocumentMenuPopover(document)">
+									<button class="button-link tbl-tool-link"
+										aid="PP-DocumentsPanelP-menuPopover" sd-popover
+										sda-template="processDocumentsCtrl.documentMenuPopupUrl"
+										sda-placement="left auto" sda-trigger="none"
+										sda-is-open="processDocumentsCtrl.documentActionControl[document.uuid].popover">
+										<i class="pi pi-next-page pi-lg"></i>
+									</button>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="borderBottom"><div
+					ng-show="processDocumentsCtrl.showProcessAttachments"
+					class="properties-panel-upload"
+					ng-click="processDocumentsCtrl.uploadNewProcessAttachment()">
+					<button class="button-link tbl-tool-link"
+						title="Upload Process Attachment"
+						aid="PP-DocumentsPanelP-uploadProcessAtt">
+						<i class="pi pi-upload pi-lg"></i>
+					</button>
+				</div></td>
+		</tr>
+		<tr>
+			<td><div ng-show="processDocumentsCtrl.showActivityAttachments"
+					sd-file-dropbox
+					sda-url="{{processDocumentsCtrl.activityAttachmentUrl}}"
+					sda-placeholder="{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.activityAttachment')}}"
+					sda-handler="processDocumentsCtrl.attachmentDropHandler(event)">
+					<div class="propertiesContent">
+						<Table>
+							<tr>
+								<td><h2>{{processDocumentsCtrl.activityLabel}}</h2></td>
+							</tr>
+							<tr ng-show="processDocumentsCtrl.activityAttachments.length==0">
+								<td class="properties-panel-content">
+									{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.noAttachments')}}</td>
+							</tr>
+							<tr class="documentRow"
+								ng-repeat="document in processDocumentsCtrl.activityAttachments">
+								<td class="properties-panel-content"
+									ng-show="!processDocumentsCtrl.documentActionControl[document.uuid].edit"><i
+									class="{{processDocumentsCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>
+									<span> <a href="#"
+										ng-click="processDocumentsCtrl.openDocumentView(document.uuid);"
+										aid="PP-DocumentsPanel-DocName"> {{document.name}} </a>
+								</span></td>
+								<td class="properties-panel-content"
+									ng-show="processDocumentsCtrl.documentActionControl[document.uuid].edit">
+									<input type="text"
+									ng-model="processDocumentsCtrl.documentActionControl[document.uuid].name">
+									<button class="properties-panel-renameComplete"
+										aid="PP-DocumentsPanel-renameComplete"
+										ng-click="processDocumentsCtrl.renameComplete()">
+										<i class="pi pi-check pi-lg"></i>
+									</button>
+								</td>
+								<td style="padding-right: 10px"
+									ng-click="processDocumentsCtrl.showDocumentMenuPopover(document)">
+									<button class="button-link tbl-tool-link"
+										aid="PP-DocumentsPanel-MenuPopover" sd-popover
+										sda-template="processDocumentsCtrl.documentMenuPopupUrl"
+										sda-placement="left auto" sda-trigger="none"
+										sda-is-open="processDocumentsCtrl.documentActionControl[document.uuid].popover">
+										<i class="pi pi-next-page pi-lg"></i>
+									</button>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div></td>
+		</tr>
+		<tr>
+			<td class="borderBottom"><div
+					ng-show="processDocumentsCtrl.showActivityAttachments"
+					class="properties-panel-upload"
+					ng-click="processDocumentsCtrl.uploadNewActivityAttachment()">
+					<button class="button-link tbl-tool-link"
+						title="Upload Activity Attachment"
+						aid="PP-DocumentsPanelP-uploadActivityAtt">
+						<i class="pi pi-upload pi-lg"></i>
+					</button>
+				</div></td>
+		</tr>
+	</table>
 
 	<div sd-dialog="processDocumentsCtrl.documentHistoryDialog"
 		sda-title="{{'Attachment Version History'}}"
@@ -123,7 +161,15 @@ tr.documentRow>td {
 		sda-scope="this"></div>
 
 	<div sd-repository-upload-dialog
+		sda-url="{{processDocumentsCtrl.processAttachmentUrl}}"
+		sda-on-init="processDocumentsCtrl.initializeProcessAttUploadDialog(api)"></div>
+
+	<div sd-repository-upload-dialog
+		sda-url="{{processDocumentsCtrl.activityAttachmentUrl}}"
+		sda-on-init="processDocumentsCtrl.initializeActivityAttUploadDialog(api)"></div>
+
+	<div sd-repository-upload-dialog
 		sda-target-document="processDocumentsCtrl.selectedDocument.uuid"
 		sda-url="{{processDocumentsCtrl.versionUploadUrl}}"
-		sda-on-init="processDocumentsCtrl.initializeUploadDialog(api)"></div>
+		sda-on-init="processDocumentsCtrl.initializeVersionUploadDialog(api)"></div>
 </div>
