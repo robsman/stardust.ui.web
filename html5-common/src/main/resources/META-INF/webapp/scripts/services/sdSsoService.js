@@ -36,17 +36,37 @@
 		this.initialize = function () {
 			var deferred = $q.defer();
 			
-			beginInitilization()
-				.done(function(data) {
-				var msg = "IPP intialization Successfull."
-				trace.log(msg)
-				deferred.resolve( data );
-			  })
-			  .fail(function (data) {
-				var msg = "IPP Intialization failed."
-				trace.log(msg)
-				deferred.reject( data );
-			});
+			var ssoServiceURL = sdEnvConfigService.getSsoServiceUrl();
+			
+			if (ssoServiceURL) {
+				
+				beginInitilization().
+				done(function (data) {
+					
+					trace.debug("Success response", data);
+					var msg = "IPP Intialization successfull."
+					var success = {
+							Message : msg
+						};
+					deferred.resolve(success);
+					
+				}).fail(function (data) {
+					
+					trace.debug("Failure response", data);
+					var msg = "IPP Intialization failed."
+					var failure = {
+							Message : msg
+						};
+					deferred.reject(failure);
+					
+				});
+			} else {
+				var noURlfailure = {
+						Message : "Couldn't find ssoServiceURL in Env config."
+					};
+					
+				deferred.reject(noURlfailure);
+			}
 			
 			return  deferred.promise;
 		};
@@ -99,5 +119,6 @@
 				url : url
 			});
 		}
+		
 	}
 })();

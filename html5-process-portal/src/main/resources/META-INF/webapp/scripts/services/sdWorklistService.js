@@ -69,10 +69,13 @@
 						restUrl = restUrl + "personalItems";
 
 				} else if(query.type === sdWorklistConstants.Types.UNIFIED) {
+					if( query.userId ) {
 						restUrl = restUrl + "unified/:type/:id";
 						urlTemplateParams.type = "user";
-			  	  urlTemplateParams.id = query.userId;
-
+						urlTemplateParams.id = query.userId;
+					}else {
+						 restUrl = restUrl + "unified";
+					}
 				} else if(query.type === sdWorklistConstants.Types.WORK_SINCE) {
 					 restUrl = restUrl  + ":type/:id";
 			 	   urlTemplateParams.type = "date";

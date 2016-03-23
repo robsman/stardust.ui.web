@@ -192,7 +192,13 @@ public class WorklistUtils
     */
    public QueryResult< ? > getUnifiedWorklistForUser(String userId, DataTableOptionsDTO options)
    {
-      User user = serviceFactoryUtils.getUserService().getUser(userId);
+      User user = null;
+      if(StringUtils.isNotEmpty(userId)) {
+         user = serviceFactoryUtils.getUserService().getUser(userId);
+      }
+      else {
+         user = SessionContext.findSessionContext().getUser();
+      }
 
       if (null != user)
       {
