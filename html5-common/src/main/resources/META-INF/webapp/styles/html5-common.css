@@ -585,3 +585,48 @@ button.close {
   border: 5px dashed lightgray;
   width:97%;
 }
+
+/*Section for the Condensed Date Time Picker directive*/
+/******************************************************/
+[sd-date-time-condensed]{
+	display:inline-block;
+}
+
+.sda-date-time-condensed{
+	display:inline-block;
+	border: solid 1px #ddd;
+}
+
+[sd-date-time-condensed].ng-invalid-validate > .sda-date-time-condensed{
+	border-color: #990000;
+}
+
+.sda-date-time-condensed input{
+	padding-left:2px;
+	border-radius:0;
+	border: none !important;
+	text-align:center;
+	line-height: 20px !important;
+	height:20px !important;
+}
+
+.sda-date-time-condensed input.time-part{
+	width:65px;
+	border-left-style: solid !important;
+	border-left-style: solid !important;
+    border-left-width: 1px !important;
+    border-left-color: #ddd !important;
+}
+
+.sda-date-time-condensed input.date-part{
+	width:80px;
+}
+
+.sda-date-time-condensed input.invalid{
+	color: #990000;
+}
+
+/*hide the jquery calendar button*/
+.sda-date-time-condensed .ui-datepicker-trigger{
+	display:none;
+}
