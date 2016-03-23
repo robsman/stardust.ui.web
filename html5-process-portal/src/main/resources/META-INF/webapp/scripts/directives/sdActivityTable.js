@@ -946,7 +946,14 @@
 		
 		options.descriptorColumns = self.descriptorCols;
 		
-		self.cachedQuery = angular.extend({}, self.getQuery());
+		if(this.query) {
+			//Worklist mode
+			self.cachedQuery = angular.extend({}, self.getQuery());
+		} else {
+			//Activity mode
+			self.cachedQuery = {};
+		}
+		
 		self.cachedQuery.options = options;
 
 		var showResubmitLink = false;
