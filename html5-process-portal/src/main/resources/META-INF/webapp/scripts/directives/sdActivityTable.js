@@ -757,13 +757,15 @@
 	    /**
 	     * 
 	     */
-	    ActivityTableCompiler.prototype.getQuery = function() {
+	    self.getQuery = function() {
 	    	var queryGetter = $parse(attr.sdaQuery);
-	  		var query = queryGetter(scope);
-	  		if (query === undefined) {
-	  			throw 'Query evaluated to "nothing" for activity table.';
-	  		}
-	  		return query;
+	    	var query = queryGetter(scope);
+	    	if (query === undefined) {
+	    		throw 'Query evaluated to "nothing" for activity table.';
+	    	}
+	    	var queryValue = {};
+	    	angular.copy(query,queryValue);
+	    	return queryValue;
 	    }
 	  
 	};
@@ -942,13 +944,9 @@
 		var deferred = $q.defer();
 		self.cleanLocals();
 		
-		//Getting latest query
-		if(this.query) {
-			//this.query = self.getQuery();
-		}
-
-		self.cachedQuery = angular.extend({}, this.query);
 		options.descriptorColumns = self.descriptorCols;
+		
+		self.cachedQuery = angular.extend({}, self.getQuery());
 		self.cachedQuery.options = options;
 
 		var showResubmitLink = false;
