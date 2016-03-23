@@ -145,6 +145,7 @@
     this.sdMimeTypeService = sdMimeTypeService;
     this.sdI18n = $scope.$root.sdI18n;
     this.propertiesPageService = sdPropertiesPageService;
+    this.sdUtilService = sdUtilService;
 
     this.documentMenuPopupUrl = sdUtilService.getBaseUrl()
             + "plugins/html5-views-common/html5/partials/views/documentMenuPopover.html";
@@ -157,6 +158,7 @@
 
     this.activityAttachmentUrl_ = sdUtilService.getBaseUrl()
             + "services/rest/portal/activity-instances/{{OID}}/documents";
+    this.versionUploadUrl = sdUtilService.getBaseUrl() + "services/rest/portal/documents/upload"
 
     this.initialize();
   }
@@ -217,6 +219,32 @@
       });
     }
   }
+
+  /**
+   * @param api
+   */
+  ProcessDocumentsController.prototype.initializeUploadDialog = function(api) {
+    this.uploadDialogApi = api;
+  };
+
+  /**
+   * 
+   */
+  ProcessDocumentsController.prototype.uploadNewVersion = function() {
+    var self = this;
+    this.uploadDialogApi.open().then(function(files) {
+      if (files.length > 0) {
+        self.replaceDocumentOnUI(files[0]);
+      }
+    });
+  };
+
+  /**
+   * @param doc
+   */
+  ProcessDocumentsController.prototype.download = function() {
+    this.sdUtilService.downloadDocument(this.selectedDocument.uuid, this.selectedDocument.name);
+  };
 
   /**
    * 
@@ -304,22 +332,31 @@
 
     if (newName && (newName != this.selectedDocument.name)) {
       this.processDocumentsService.rename(this.selectedDocument, newName).then(function(result) {
-        for (var int = 0; int < self.processAttachments.length; int++) {
-          if (self.processAttachments[int].uuid === result.data.uuid) {
-            self.processAttachments[int] = result.data;
-            self.selectedDocument = result.data;
-          }
-        }
-        for (var int = 0; int < self.activityAttachments.length; int++) {
-          if (self.activityAttachments[int].uuid === result.data.uuid) {
-            self.activityAttachments[int] = result.data;
-            self.selectedDocument = result.data;
-          }
-        }
+        self.replaceDocumentOnUI(result.data);
       }, function(error) {
         console.error(error);
       })
     }
+  }
+
+  /**
+   * @param newFile
+   */
+  ProcessDocumentsController.prototype.replaceDocumentOnUI = function(newFile) {
+    var self = this;
+    for (var int = 0; int < self.processAttachments.length; int++) {
+      if (self.processAttachments[int].uuid === newFile.uuid) {
+        self.processAttachments[int] = newFile;
+        self.selectedDocument = newFile;
+      }
+    }
+    for (var int = 0; int < self.activityAttachments.length; int++) {
+      if (self.activityAttachments[int].uuid === newFile.uuid) {
+        self.activityAttachments[int] = newFile;
+        self.selectedDocument = newFile;
+      }
+    }
+
   }
 
   /**

@@ -74,7 +74,8 @@ var html5Deps = function() {
         'sdActivityPanelPropertiesPage': ['html5-process-portal/scripts/directives/ActivityPropertiesPage/sdActivityPanelPropertiesPage'],
         'sdProcessDocumentsPanel': ['html5-process-portal/scripts/directives/sdProcessDocumentsPanel/sdProcessDocumentsPanel'],
         'sdFileDropbox' : [ 'html5-common/scripts/directives/sdFileDropbox'],
-        'sdUtilDirectives' : [ 'html5-common/scripts/directives/sdUtilDirectives']
+        'sdUtilDirectives' : [ 'html5-common/scripts/directives/sdUtilDirectives'],
+        'sdRepositoryUploadDialog': [ 'html5-common/scripts/directives/dialogs/sdRepositoryUploadDialog']
       },
       shim : {
         'jquery.dataTables' : [ 'jquery' ],
@@ -108,10 +109,12 @@ var html5Deps = function() {
         'sdProcessDocumentTree':['html5CommonMain','sdUtilService','sdTree'],
         'sdDateTimeFilter' : ['sdLocalizationService'],
         'sdNotesPanel':['html5CommonMain','sdUtilService', 'sdDateTimeFilter'],
-        'sdProcessDocumentsPanel':['html5CommonMain','sdUtilService', 'sdMimeTypeService', 'sdPopover'],
+        'sdProcessDocumentsPanel':['html5CommonMain','sdUtilService', 'sdMimeTypeService', 'sdPopover', 'sdRepositoryUploadDialog'],
         'sdMimeTypeService': ['html5CommonMain'],
         'sdActivityPanelPropertiesPage': ['sdNotesPanel', 'sdProcessDocumentsPanel'],
-        'sdFileDropbox':  ['html5CommonMain']
+        'sdFileDropbox':  ['html5CommonMain'],
+        'sdRepositoryUploadDialog' : ['html5CommonMain'],
+        'sdUtilDirectives': ['html5CommonMain']
       },
       deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap","ckeditor","portalApplication",
           "html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
@@ -228,6 +231,15 @@ var html5Deps = function() {
             if (parentScope && parentScope.sdI18n) {
               service.translate = parentScope.sdI18n;
               $rootScope.sdI18n = parentScope.sdI18n;
+              
+              service.getInstance = function(prefix) {
+                var self = this;
+                return {
+                  translate: function(key, defVal, params) {
+                    return self.translate(prefix + "." + key, defVal, params);
+                  }
+                }
+              }
             } else {
               // provide dummy implementation if i18n not
               // available from parent
@@ -238,6 +250,7 @@ var html5Deps = function() {
                     return key;
                   }
               };
+              
               $rootScope.i18n = service.translate;  
             }
             return service;

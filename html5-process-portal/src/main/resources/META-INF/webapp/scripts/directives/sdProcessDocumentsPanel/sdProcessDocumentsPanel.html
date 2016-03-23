@@ -15,6 +15,11 @@ tr.documentRow>td {
 .properties-panel-renameComplete {
 	padding: 0px;
 }
+
+.properties-panel-renameComplete:focus {
+	padding: 0px;
+	border: solid 2px skyblue;
+}
 </style>
 <div>
 	<div ng-show="processDocumentsCtrl.showProcessDocuments"
@@ -37,13 +42,13 @@ tr.documentRow>td {
 						class="{{processDocumentsCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>
 						<span> <a href="#"
 							ng-click="processDocumentsCtrl.openDocumentView(document.uuid);"
-							aid="COM-SrchDoc-DocSrchTbl-DocName"> {{document.name}} </a>
+							aid="PP-DocumentsPanelP-DocName"> {{document.name}} </a>
 					</span></td>
-					<td class="properties-panel-content"
+					<td class="properties-panel-content" style="padding: 0px"
 						ng-show="processDocumentsCtrl.documentActionControl[document.uuid].edit">
-						<input type="text"
+						<input type="text" sd-auto-tab-to="{{$index}}"
 						ng-model="processDocumentsCtrl.documentActionControl[document.uuid].name">
-						<button class="properties-panel-renameComplete"
+						<button class="properties-panel-renameComplete" id="{{$index}}"
 							ng-click="processDocumentsCtrl.renameComplete()">
 							<i class="pi pi-check pi-lg"></i>
 						</button>
@@ -51,7 +56,7 @@ tr.documentRow>td {
 					<td style="padding-right: 10px"
 						ng-click="processDocumentsCtrl.showDocumentMenuPopover(document)">
 						<button class="button-link tbl-tool-link"
-							aid="PP-ProcessTable-AbortAllPopover" sd-popover
+							aid="PP-DocumentsPanelP-menuPopover" sd-popover
 							sda-template="processDocumentsCtrl.documentMenuPopupUrl"
 							sda-placement="left auto" sda-trigger="none"
 							sda-is-open="processDocumentsCtrl.documentActionControl[document.uuid].popover">
@@ -83,13 +88,14 @@ tr.documentRow>td {
 						class="{{processDocumentsCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>
 						<span> <a href="#"
 							ng-click="processDocumentsCtrl.openDocumentView(document.uuid);"
-							aid="COM-SrchDoc-DocSrchTbl-DocName"> {{document.name}} </a>
+							aid="PP-DocumentsPanel-DocName"> {{document.name}} </a>
 					</span></td>
 					<td class="properties-panel-content"
 						ng-show="processDocumentsCtrl.documentActionControl[document.uuid].edit">
 						<input type="text"
 						ng-model="processDocumentsCtrl.documentActionControl[document.uuid].name">
 						<button class="properties-panel-renameComplete"
+							aid="PP-DocumentsPanel-renameComplete"
 							ng-click="processDocumentsCtrl.renameComplete()">
 							<i class="pi pi-check pi-lg"></i>
 						</button>
@@ -97,7 +103,7 @@ tr.documentRow>td {
 					<td style="padding-right: 10px"
 						ng-click="processDocumentsCtrl.showDocumentMenuPopover(document)">
 						<button class="button-link tbl-tool-link"
-							aid="PP-ProcessTable-AbortAllPopover" sd-popover
+							aid="PP-DocumentsPanel-MenuPopover" sd-popover
 							sda-template="processDocumentsCtrl.documentMenuPopupUrl"
 							sda-placement="left auto" sda-trigger="none"
 							sda-is-open="processDocumentsCtrl.documentActionControl[document.uuid].popover">
@@ -109,11 +115,15 @@ tr.documentRow>td {
 		</div>
 	</div>
 
-	<div sd-dialog
-		sda-dialog-handle="processDocumentsCtrl.documentHistoryDialog"
+	<div sd-dialog="processDocumentsCtrl.documentHistoryDialog"
 		sda-title="{{'Attachment Version History'}}"
 		sda-confirm-action-label="confirm" sda-cancel-action-label="cancel"
 		sda-modal="true"
 		sda-template="{{processDocumentsCtrl.documentHistoryPopupUrl}}"
 		sda-scope="this"></div>
+
+	<div sd-repository-upload-dialog
+		sda-target-document="processDocumentsCtrl.selectedDocument.uuid"
+		sda-url="{{processDocumentsCtrl.versionUploadUrl}}"
+		sda-on-init="processDocumentsCtrl.initializeUploadDialog(api)"></div>
 </div>
