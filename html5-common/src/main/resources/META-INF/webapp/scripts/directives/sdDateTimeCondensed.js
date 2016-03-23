@@ -84,6 +84,7 @@
 								'ng-model="ctrl.selectedDate" aid="{{ctrl.aidDate}}" / >'+
 							'<input class="time-part" ' +
 								'ng-blur="ctrl.updateView(ctrl.selectedDate,ctrl.timeComponent);ctrl.isDirty = true" ' +
+								'ng-keydown="ctrl.keyMonitor($event)"' +
 								'ng-model="ctrl.timeComponent" ' +
 								'ng-class="{invalid:!ctrl.isTimeValid(ctrl.timeComponent) && ctrl.isDirty}" ' +
 								'placeholder="{{ctrl.formatObj.timeFormat}}"></input>' +
@@ -149,6 +150,76 @@
 
 		
 	}
+
+	/**
+	 * Provide spinner like capabilities via up down arrows for our
+	 * time component.
+	 * @param  {[type]} $event [description]
+	 * @return {[type]}        [description]
+	 */
+	Controller.prototype.keyMonitor = function($event){
+
+		var keyCode = $event.keyCode;
+		var caretPos; 
+		var subStr;
+		var calculatedVal;
+		var calculatedTimeStr;
+		var that = this;
+		var modifier;
+		var mode;
+
+		if(keyCode !== 38 && keyCode !==40){return;}
+
+		if(!this.isTimeValid(this.timeComponent) || !this.isDateValid(this.selectedDateTime)){
+			return;
+		}
+
+		modifier = (keyCode===38)?1:-1;
+		calculatedVal = this.selectedDateTime.getTime();
+		caretPos = $event.target.selectionStart;
+		subStr = this.timeComponent.substr(caretPos);
+
+		//we are before the colon thus adjust hours
+		if(subStr.indexOf(":") > -1){
+			mode="h"
+			calculatedVal += modifier*(1000*60*60);
+		}
+		//we are before the space between minutes and meridian, so adjust minutes
+		else if(subStr.indexOf(" ") > -1){
+			mode="m"
+			calculatedVal += modifier*(1000*60);
+		}
+		//adjust meridian, arrow direction does not matter here, more of a toggle
+		else{
+			mode="a";
+			modifier = (subStr.indexOf(this.meridianOptions.AM)>-1)?1:-1;
+			calculatedVal += modifier*(1000*60*60*12);
+		}
+		calculatedTimeStr = this.buildTimeString(calculatedVal);
+		this.timeComponent=calculatedTimeStr;
+
+		this.updateView(calculatedVal,calculatedTimeStr);
+
+		//reset cursor position after view updates
+		this.$timeout(function(){
+			if(mode==="m"){
+				$event.target.selectionStart = that.timeComponent.indexOf(":") + 1;
+				$event.target.selectionEnd = that.timeComponent.indexOf(" "); 
+			}
+			else if(mode==="h"){
+				$event.target.selectionStart = 0;
+				$event.target.selectionEnd = that.timeComponent.indexOf(":");
+			}
+			else if(mode==="a"){
+				$event.target.selectionStart = that.timeComponent.indexOf(" ")+1;
+				$event.target.selectionEnd = that.timeComponent.length;
+			}
+		},0);
+
+		$event.preventDefault();
+		$event.stopPropagation();
+		$event.stopImmediatePropagation();
+	};
 
 	/**
 	 * Do some basic adjustments on dates. Won't handle edge cases such as adding
@@ -367,7 +438,17 @@
 
 			if(this.is24HourClock===false && strParts.length === 3 ){
 				result.meridian  = strParts[2];
-				if(result.meridian === this.meridianOptions.PM){
+
+				//handle case where 12AM needs to be converted to 0
+				if(result.meridian === this.meridianOptions.AM && result.hour===12){
+					result.hour = 0;
+				}
+				//handle the case where result is midday and no adjustment needed
+				if(result.meridian === this.meridianOptions.PM && result.hour===12){
+					result.hour = 12;
+				}
+				//now handle all other PM cases where we need to add 12 hours
+				else if(result.meridian === this.meridianOptions.PM){
 					result.hour = result.hour + 12;
 				}
 			}
