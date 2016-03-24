@@ -1,0 +1,59 @@
+
+<!--File Version History Dialog-->
+<div sd-dialog="verHistoryCtrl.fileVersionHistoryDialog" 
+    sda-title="{{verHistoryCtrl.title}}"
+    sda-type="alert" 
+    sda-confirm-action-label="{{verHistoryCtrl.textMap.confirm}}"
+    sda-cancel-action-label="{{verHistoryCtrl.textMap.close}}"
+    sda-modal="true"
+    sda-on-close="verHistoryCtrl.onClose(res)"
+    sda-template="tmplVersionHistoryDialog"
+    sda-scope="this">
+</div>
+
+<script type="text/ng-template" id="tmplVersionHistoryDialog">
+	
+	<div style="min-width:640px;min-height:185px;">
+		<table sd-data-table="verHistoryCtrl.fvhTableApi"
+			   sda-mode="local"
+			   sda-selectable="row"
+			   sda-sortable="single"
+			   sda-sort-by ="{revisionName : 'revisionName', dir : 'desc'}"
+			   sda-page-size = "5"
+			   sda-on-select="verHistoryCtrl.fileSelected(d)"
+			   sd-data ="verHistoryCtrl.currentFileVersionHistory">
+			   <thead>
+				   	<tr>
+				   		<th sda-name="revisionName" sda-label="{{verHistoryCtrl.textMap.versionNo}}"></th>
+				   		<th sda-name="name" sda-label="{{verHistoryCtrl.textMap.documentName}}"></th>
+				   		<th sda-name="owner" sda-label="{{verHistoryCtrl.textMap.author}}"></th>
+				   		<th sda-name="dateLastModified" sda-label="{{verHistoryCtrl.textMap.modificationDate}}"></th>
+				   	</tr>
+			   </thead>
+			   <tbody>
+			   		<tr>
+			   			<td sda-field="revisionName">
+			   				<div ng-click="verHistoryCtrl.fileVersionHistoryDialog.close()">
+				   				<a sd-open-document-link
+				   				   sda-name="rowData.revisionName"
+				   				   sda-stop-event="false"
+				   				   sda-document-id="rowData.revisionId"
+				   				   sda-mime-type="rowData.contentType"
+				   				   href="#">
+				   				</a>
+			   				</div>
+			   			</td>
+			   			<td sda-field="name"></td>
+			   			<td sda-field="owner"></td>
+			   			<td sda-field="dateLastModified"
+			   				sda-data-type="DateTime">
+			   				<span>
+			   				{{rowData.dateLastModified | date:'short'}}
+			   				</span>
+			   			</td>
+			   		</tr>
+			   </tbody>
+		</table>
+	</div>
+
+</script>

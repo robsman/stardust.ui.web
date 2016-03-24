@@ -28,7 +28,7 @@
     this.i18n = sdI18nService.getInstance('views-common-messages');
     this.showSearchFilter = $scope.showSearchFilter;
     this.textMap = this.getTextMap(this.i18n);
-
+    this.testDate = new Date("12/24/2005").getTime();
     this.selectedRepo = {};
     this.repositoryProviders =[]; 
     this.selectedMatches = []; //matched from our sdAutocomplete directive
@@ -798,12 +798,8 @@
   }
   
   docRepoController.prototype.openFileVersionHistoryDialog = function(doc){
-    var that = this;
-    this.documentService.getFileVersionHistory(doc.id)
-    .then(function(fvh){
-      that.currentFileVersionHistory = fvh.data;
-      that.fileVersionHistoryDialog.open(doc);
-    });
+    this.versionHistoryDocId = doc.id;
+    this.showVersionHistoryDialog = true;
   };
   
   docRepoController.prototype.createSubFolder = function(parentFolderNode){
