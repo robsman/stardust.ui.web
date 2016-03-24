@@ -15,11 +15,11 @@
  * @ATTRIBUTES
  * ---------------------------------------
  * sd-version-history-dialog : [@] Name of property on parent controller we will assign the dialog api to. This will be the api
- * 								   leveraged to open or close the dialog programatically.
+ * 								   leveraged to open or close the dialog programatically (attr.open() | attr.close()).
  * 								   
  * sda-document-id: [=] The doucment ID we will retrieve file history for, and display in our dialog.
  * 
- * sda-show: [=]{bool} ALternate method of opening the dialog. WHen true the dialog will open. Upon closing the dialog will
+ * sda-show: [=]{bool} ALternate method of opening the dialog. When true the dialog will open. Upon closing the dialog will
  * 			 update this value to false so there is no real need to set this to false by the directive user.
  * 
  */
@@ -114,6 +114,14 @@
 
 	};
 
+	/**
+	 * Callback we handle when the dialog closes. Without fail we will always set our
+	 * show value to false. This is the same scoped value that is tied to the sda-show
+	 * attribute which may be optionally supplied by our directive user. If we did not do this the
+	 * user would be tasked with maintaining this state.
+	 * @param  {[type]} res [description]
+	 * @return {[type]}     [description]
+	 */
 	sdVersionHistoryDialogCtrl.prototype.onClose = function(res){
 		this.$scope.show = false;
 	};
