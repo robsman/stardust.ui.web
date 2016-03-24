@@ -353,13 +353,12 @@
 			return model.processDefinitions.some(function(procDef){
 				if(actId && procDef.id === pdId){
 					return procDef.activities.some(function(act){
-						return act.id === actId;
+						return (act.id === actId && act.enableBenchmark===true);
 					});
 				}
-				else{return procDef.id === pdId;}
+				else{return (procDef.id === pdId && procDef.enableBenchmark===true);}
 			});
 		});
-		
 	}
 	
 	/**
@@ -1240,6 +1239,7 @@
 			parentPd,     //Parent process definition
 			isSelected=false,   //if the benchmark element is on our benchmarkDataRows collection
 			nodeItem,
+			that = this,
 			hasBenchmark = false;
 		
 		nodeItem = this.treeApi.childNodes[d.nodeId];
@@ -1252,8 +1252,18 @@
 			}
 			if(this.selectedBenchmark){
 				hasBenchmark = this.selectedBenchmark.models.some(function(model){
+					parentModel = model;
 					return model.id === d.id;
 				});
+
+				if(hasBenchmark===true){
+					hasBenchmark = parentModel.processDefinitions.some(function(pd){
+						return  pd.enableBenchmark===true ||
+								pd.activities.some(function(act){
+									return act.enableBenchmark === true;
+								});
+					});
+				}
 			}
 		}
 		else if(d.nodeType === "process"){
