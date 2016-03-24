@@ -141,6 +141,7 @@ span.heading{
 	border-bottom: 1px solid #CCCCCC;
 	padding: 5px 0px 5px 0px;
     white-space: nowrap;
+    position:relative;
 }
 
 .popup-dlg-hdr-txt {
@@ -151,7 +152,8 @@ span.heading{
 }
 
 .popup-dlg-cls {
-	float: right;
+	position:absolute;
+	right:0;
 	cursor: pointer;
 }
 
