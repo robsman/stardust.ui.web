@@ -16,6 +16,7 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtil
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isSupportsWeb;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -59,6 +60,8 @@ public class ActivityInstanceUtils
    private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
 
    private static final String STATUS_PREFIX = "views.activityTable.statusFilter.";
+   
+   private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
@@ -238,11 +241,17 @@ public class ActivityInstanceUtils
                   if (entry.getKey().equals(pathDto.id))
                   {
                 	 Serializable value = entry.getValue();
-                	 // Send date as long value
-                	 if (entry.getValue() instanceof Date)
-                	 {
-                		 value = ((Date) entry.getValue()).getTime();
-                	 }
+                     if (value instanceof Date)
+                     {
+                    	 if ("java.util.Date".equals(pathDto.typeName))
+                         {
+                             value = ((Date) value).getTime();
+                         }
+                    	 else
+                    	 {
+                    		 value = new SimpleDateFormat(DATE_TIME_FORMAT).format(value);
+                    	 }
+                     }
                      dto.inOutData.put(entry.getKey(), value);
                      break;
                   }

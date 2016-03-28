@@ -1075,10 +1075,16 @@
 				if (self.completeDialog.confirmationType === 'dataMapping') {
 					// When data fields are filled in a dialog
 					angular.forEach(selectedItems, function(item, index) {
-						var outData = self.completeDialog.outData;
+						var outData = {};
 						var dataMappings = {};
 						angular.forEach(self.completeDialog.dataMappings, function(mapping) {
 							dataMappings[mapping.id] = mapping.typeName;
+							if (mapping.typeName === 'date') {
+								var dt = new Date(self.completeDialog.outData[mapping.id]);
+								outData[mapping.id] = dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate() + "T00:00:00";
+							} else {
+								outData[mapping.id] = self.completeDialog.outData[mapping.id];
+							}
 						});
 						activitiesData.push({
 							oid : item.activityOID,
@@ -1093,11 +1099,17 @@
 					angular.forEach(selectedItems,
 							function(item, index) {
 						if (item.dataMappings) {
-							var outData = item.inOutData;
+							var outData = {};
 							var dataMappings = {};
 							angular.forEach(item.dataMappings, function(
 									mapping) {
 								dataMappings[mapping.id] = mapping.typeName;
+								if (mapping.typeName === 'date') {
+									var dt = new Date(item.inOutData[mapping.id]);
+									outData[mapping.id] = dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate() + "T00:00:00";
+								} else {
+									outData[mapping.id] = item.inOutData[mapping.id];
+								}
 							});
 
 							activitiesData.push({
