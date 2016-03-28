@@ -87,6 +87,10 @@ public class JsonDTO
       {
          return jElem.getAsFloat();
       }
+      else if(type == String.class)
+      {
+         return jElem.getAsString();
+      }
       else
       {
          throw new RuntimeException("Not supported");

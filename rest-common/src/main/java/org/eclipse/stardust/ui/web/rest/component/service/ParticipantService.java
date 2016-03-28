@@ -63,4 +63,10 @@ public interface ParticipantService
     * @return
     */
    public List<ParticipantDTO> getUserGrants(String account);
+
+   /**
+    * @param participantIds
+    * @return
+    */
+   public List<ParticipantDTO> getParticipantDTOFromQualifiedId(List<String> participantIds);
 }

@@ -279,51 +279,60 @@ public class ParticipantServiceImpl implements ParticipantService
       ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(participantQidIn);
       return getSubParticipants(participantContainer, lazyLoad);
    }
-
+   
    /**
     * @param participantQidIn
     * @return
     */
-   public ParticipantDTO getParticipantDTOFromQualifiedId(String participantQidIn)
+   @Override
+   public List<ParticipantDTO> getParticipantDTOFromQualifiedId(List<String> participantIds)
    {
-      ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(participantQidIn);
-      QualifiedModelParticipantInfo modelparticipant = participantContainer.modelparticipant;
-      Department department = participantContainer.department;
-      String pTypeStr = participantContainer.participantType;
+      List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
 
-      ParticipantType pType = ParticipantType.valueOf(pTypeStr);
-
-      ParticipantDTO participantDTO = null;
-
-      switch (pType)
+      for (String participantQidIn : participantIds)
       {
-      case ORGANIZATION_UNSCOPED:
-      case ORGANIZATON_SCOPED_IMPLICIT:
-      case ORGANIZATON_SCOPED_EXPLICIT:
-      case ROLE_SCOPED:
-      case ROLE_UNSCOPED:
-         participantDTO = getParticipant(modelparticipant, department, false);
-         break;
+         ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(participantQidIn);
+         QualifiedModelParticipantInfo modelparticipant = participantContainer.modelparticipant;
+         Department department = participantContainer.department;
+         String pTypeStr = participantContainer.participantType;
 
-      case DEPARTMENT:
-      case DEPARTMENT_DEFAULT:
-         participantDTO = getParticipant(department);
-         break;
+         ParticipantType pType = ParticipantType.valueOf(pTypeStr);
 
-      case USERGROUP:
-         participantDTO = new ParticipantDTO(userGroupUtils.getUserGroup(participantContainer.dynamicParticipantInfoId));
-         break;
+         ParticipantDTO participantDTO = null;
 
-      default:
-         if (trace.isDebugEnabled())
+         switch (pType)
          {
-            trace.debug("Not supported to expand: " + pTypeStr);
+         case ORGANIZATION_UNSCOPED:
+         case ORGANIZATON_SCOPED_IMPLICIT:
+         case ORGANIZATON_SCOPED_EXPLICIT:
+         case ROLE_SCOPED:
+         case ROLE_UNSCOPED:
+            participantDTO = getParticipant(modelparticipant, department, false);
+            break;
+
+         case DEPARTMENT:
+         case DEPARTMENT_DEFAULT:
+            participantDTO = getParticipant(department);
+            break;
+
+         case USERGROUP:
+            participantDTO = new ParticipantDTO(
+                  userGroupUtils.getUserGroup(participantContainer.dynamicParticipantInfoId));
+            break;
+
+         default:
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("Not supported to expand: " + pTypeStr);
+            }
+            break;
          }
-         break;
+
+         participantDTOs.add(participantDTO);
       }
-      return participantDTO;
+      return participantDTOs;
    }
-   
+
    /**
     * @param participantContainer
     * @param lazyLoad

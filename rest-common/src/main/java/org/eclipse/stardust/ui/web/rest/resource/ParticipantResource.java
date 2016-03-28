@@ -121,6 +121,20 @@ public class ParticipantResource
       return Response.ok(AbstractDTO.toJson(modelParticipants), MediaType.APPLICATION_JSON).build();
    }
    
+   // get grants for given account id
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("participant/findUsingQualifiedId")
+   @ResponseDescription("List of ParticipantDTO json")
+   public Response getParticipants(String postedData)
+         throws UnsupportedEncodingException
+   {
+      List<String> participantIds = JsonDTO.getAsList(postedData, String.class);
+      List<ParticipantDTO> modelParticipants = participantService.getParticipantDTOFromQualifiedId(participantIds);
+      return Response.ok(AbstractDTO.toJson(modelParticipants), MediaType.APPLICATION_JSON).build();
+   }
+   
    // get sub-participants for give participant Id
    @GET
    @Produces(MediaType.APPLICATION_JSON)

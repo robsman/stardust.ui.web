@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ReportingResource
 {
    @Autowired
-   private ReportingService reportingResource;
+   private ReportingService reportingService;
 
    /**
     * @return
@@ -42,7 +42,7 @@ public class ReportingResource
    @ResponseDescription("Returns grant level reports of the logged in user in the form of List<FolderDTO> json")
    public Response getPersonalReports()
    {
-      return Response.ok(RepositoryProviderDTO.toJson(reportingResource.getPersonalReports()),
+      return Response.ok(RepositoryProviderDTO.toJson(reportingService.getPersonalReports()),
             MediaType.APPLICATION_JSON).build();
    }
 }
