@@ -1203,7 +1203,7 @@
 	  $q.all([promise1, promise2]).finally(function() {
 	    rowItem.contentLoaded = true;
 	    self.processPopover.data = rowItem;
-	    self.processPopover.data.showDocumentPopover = true;
+	    self.processPopover.showDocumentPopover = true;
 	  });
 	}
 

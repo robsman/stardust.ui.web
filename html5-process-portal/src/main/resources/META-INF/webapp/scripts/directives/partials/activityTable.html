@@ -1,4 +1,4 @@
-<div class="activity-table-wrapper ng-hide" ng-show="true" ng-click="activityTableCtrl.processPopover.data.showDocumentPopover=false">
+<div class="activity-table-wrapper ng-hide" ng-show="true" ng-click="activityTableCtrl.processPopover.showDocumentPopover=false">
 	<div class="worklist-title tbl-title" ng-bind="activityTableCtrl.title"></div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
@@ -414,7 +414,7 @@
 									sda-aid-prefix="RelocationDialog-confirm"></div>
 						</button>
 							<button ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance" title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}"activityOid
-							sd-popover  sda-trigger="none" sda-is-open="rowData.showDocumentPopover && rowData.activityOID == activityTableCtrl.processPopover.data.activityOID" sda-template="activityTableCtrl.openDocumentTemplateUrl"  sda-action-type="processDocuments" sda-placement ="left auto" 	ng-click="activityTableCtrl.openProcessDocumentsPopover(rowData)" class="button-link tbl-tool-link">
+							sd-popover  sda-trigger="none" sda-is-open="activityTableCtrl.processPopover.showDocumentPopover && rowData.activityOID == activityTableCtrl.processPopover.data.activityOID" sda-template="activityTableCtrl.openDocumentTemplateUrl"  sda-action-type="processDocuments" sda-placement ="left auto" 	ng-click="activityTableCtrl.openProcessDocumentsPopover(rowData)" class="button-link tbl-tool-link">
 		  		  					<i class="pi pi-process-documents pi-lg"></i>
 							</button>
 					</div>
