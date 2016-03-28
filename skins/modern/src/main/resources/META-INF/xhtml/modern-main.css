@@ -9785,3 +9785,11 @@ img[src *='world_go.png'].nodeMenuIcon {
 	color: #906C37 !important;
 }
 /*************** Sidebar - End ***************/
+
+/*************** Fix for FF when Arial font rendering fails********************/
+#processDefinitionView text,
+#processDefinitionView tspan{
+	font-family: Arial, sans-serif !important;
+}
+
+
