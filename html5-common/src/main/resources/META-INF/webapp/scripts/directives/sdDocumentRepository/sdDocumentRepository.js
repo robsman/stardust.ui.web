@@ -197,6 +197,7 @@
     textMap.confirmDelete = i18n.translate("common.confirmDelete.title");
     textMap.confirmDeleteQuestion = i18n.translate("common.confirmDeleteRes.message.label").split("<br/>")[0];
     textMap.error =  i18n.translate("common.error");
+    textMap.fileAlreadyPresent = i18n.translate("views.myDocumentsTreeView.fileUploadDialog.fileAlreadyPresent");
     textMap.bind = {};
     textMap.bind.capabilities = i18n.translate("views.bindRepositoryDialog.provider.capabilities");
     textMap.bind.fullTextSearch = i18n.translate("views.bindRepositoryDialog.provider.capabilities.fullSearch");
@@ -549,6 +550,11 @@
     var doc = dropEvt.dropData;
     var newPath = dropEvt.valueItem.path;
     var that = this;
+    var srcNode;
+
+    //retrieve original node
+    srcNode = this.treeApi.childNodes[dropEvt.valueItem.id];
+
     //1: Get target folders children from server so we can check
     //   for file name collisions (dont trust stale client collection).
     this.documentService.getChildren(dropEvt.valueItem.id)
@@ -560,19 +566,27 @@
 
        //open confirmation dialog
       if(hasCollision===true){
-       alert("TODO:collision confirmation dialog");
+       that.errorMessage=that.textMap.fileAlreadyPresent;
+       that.errorDialog.open();
       }
       //safe to move with revision.
       else{
+        //TODO: We dont seem to have a move endpoint on the server so
+        //for now we will do a PUT to the /copy endpoint.
         return that.documentService.moveDocument(doc.id, newPath, true);
-      }
+      };
 
     })
     .then(function(res){
-      alert("TODO:success->refresh tree nodes,open drop target node");
+      var destNode = that.treeApi.childNodes[dropEvt.nodeId];
+      that.refreshFolder(srcNode.nodeItem);
+      srcNode.isVisible = true;
+      that.refreshFolder(destNode.nodeItem);
+      destNode.isVisible = true;//expand dest node
     })
     ["catch"](function(err){
-      alert("error");
+      that.errorMessage=that.textMap.error;
+      that.errorDialog.open();
     })
     ["finally"](function(){
       dropEvt.deferred.resolve();
