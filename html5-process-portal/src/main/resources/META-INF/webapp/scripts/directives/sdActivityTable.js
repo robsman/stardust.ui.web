@@ -1174,6 +1174,7 @@
 	 */
 	ActivityTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem) {
 	  var self = this;
+
 	  self.processPopover = {
 	    data: rowItem
 	  }
@@ -1202,6 +1203,7 @@
 	  $q.all([promise1, promise2]).finally(function() {
 	    rowItem.contentLoaded = true;
 	    self.processPopover.data = rowItem;
+	    self.processPopover.data.showDocumentPopover = true;
 	  });
 	}
 
