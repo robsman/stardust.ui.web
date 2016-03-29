@@ -21,6 +21,7 @@
 					'sdProcessSearchService', '$q', '$filter','sdLoggerService',
 					ProcessSearchViewCtrl ]);
 
+	var _sdUtilService;
 	var _sdViewUtilService;
 	var _sdProcessSearchService;
 	var _q;
@@ -37,6 +38,7 @@
 				this);
 
 		// Preserve to use later in life-cycle
+		_sdUtilService = sdUtilService;
 		_sdViewUtilService = sdViewUtilService;
 		_sdProcessSearchService = sdProcessSearchService;
 		_q = $q;
@@ -457,6 +459,10 @@
 	 * 
 	 */
 	ProcessSearchViewCtrl.prototype.search = function() {
+		if(!this.validateData()) {
+			return;
+		}
+			
 		this.processSearchData();
 		this.showSearchCriteria = false;
 		this.showProcSearchResult = true;
@@ -517,6 +523,7 @@
 	 * 
 	 */
 	ProcessSearchViewCtrl.prototype.reset = function() {
+		this.removeFormErrors();
 		this.defineData();
 		this.query.processSearchCriteria.filterObject = this.searchOptions[0].value;
 		this.procSrchProcessSelected = [ this.procSrchProcess[0] ];
@@ -1344,6 +1351,58 @@
 		this.showSearchCriteria = !this.showSearchCriteria;
 	};
 	
+	/**
+	 * 
+	 */
+	ProcessSearchViewCtrl.prototype.validateData = function() {
+		this.removeFormErrors();
+		
+		if (!(this.processSearchForm.$valid)) {
+			return false;
+		}
+		if (this.query.processSearchCriteria.filterObject == 0) {
+			if (!_sdUtilService.validateDateRange(this.query.processSearchCriteria.procStartFrom, this.query.processSearchCriteria.procStartTo)) {
+				this.processSearchForm.$error.procStartTimeRange = true;
+				return false;
+			}
+			if (!_sdUtilService.validateDateRange(this.query.processSearchCriteria.procEndFrom, this.query.processSearchCriteria.procEndTo)) {
+				this.processSearchForm.$error.procEndTimeRange = true;
+				return false;
+			}
+			if (this.query.processSearchCriteria.processSrchRootProcessOID && isNaN(this.query.processSearchCriteria.processSrchRootProcessOID)) {
+				this.processSearchForm.$error.invalidRootProcessOID = true;
+				return false;
+			}
+			if (this.query.processSearchCriteria.processSrchProcessOID && isNaN(this.query.processSearchCriteria.processSrchProcessOID)) {
+				this.processSearchForm.$error.invalidProcessOID = true;
+				return false;
+			}
+		} else {
+			if (!_sdUtilService.validateDateRange(this.query.processSearchCriteria.actStartFrom, this.query.processSearchCriteria.actStartTo)) {
+				this.processSearchForm.$error.actStartTimeRange = true;
+				return false;
+			}
+			if (!_sdUtilService.validateDateRange(this.query.processSearchCriteria.actModifyFrom, this.query.processSearchCriteria.actModifyTo)) {
+				this.processSearchForm.$error.actModifyTimeRange = true;
+				return false;
+			}
+			if (this.query.processSearchCriteria.activitySrchActivityOID && isNaN(this.query.processSearchCriteria.activitySrchActivityOID)) {
+				this.processSearchForm.$error.invalidActivityOID = true;
+				return false;
+			}
+		}
+		return true;
+	};
+	
+	/**
+	 * 
+	 */
+	ProcessSearchViewCtrl.prototype.removeFormErrors = function() {
+		_sdUtilService.removeFormErrors(this.processSearchForm, [
+				'procStartTimeRange', 'procEndTimeRange', 'actStartTimeRange',
+				'actModifyTimeRange', 'invalidRootProcessOID',
+				'invalidProcessOID', 'invalidActivityOID' ]);
+	};
 	
 	/*
 	 * 

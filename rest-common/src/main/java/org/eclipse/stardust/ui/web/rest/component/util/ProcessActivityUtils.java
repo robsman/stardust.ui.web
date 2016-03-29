@@ -114,8 +114,29 @@ public class ProcessActivityUtils
    public QueryResult<ProcessInstance> performProcessSearch(DataTableOptionsDTO options,
          String postData, ProcessSearchCriteriaDTO processSearchAttributes, List<DescriptorColumnDTO> availableDescriptors)
    {
+      
+      // Validate start time and end time
+      if (!org.eclipse.stardust.ui.web.viewscommon.utils.DateUtils.validateDateRange(processSearchAttributes.procStartFrom , processSearchAttributes.procStartTo ))
+      {
+         return null;
+      }
 
-      // TODO Validation for Process Search
+      if (!org.eclipse.stardust.ui.web.viewscommon.utils.DateUtils.validateDateRange(processSearchAttributes.procEndFrom, processSearchAttributes.procEndTo))
+      {
+         return null;
+      }
+      
+      
+      if (!isValidOID(processSearchAttributes.processSrchRootProcessOID))
+      {
+         return null;
+      }
+      
+      if (!isValidOID(processSearchAttributes.processSrchProcessOID ))
+      {
+         return null;
+      }
+      
       // set case attributes
       if (processSearchAttributes.procSearchHierarchySelected.equals(ProcessSearchParameterConstants.HIERARCHY_CASE)
             && processSearchAttributes.processSrchCaseOwner != null)
@@ -193,7 +214,21 @@ public class ProcessActivityUtils
    public QueryResult<ActivityInstance> performActivitySearch(DataTableOptionsDTO options,
          String postData, ProcessSearchCriteriaDTO processSearchAttributes, List<DescriptorColumnDTO> availableDescriptors)
    {
-      // TODO Validation for Activity Search
+      // Validate start time and modify time
+      if (!org.eclipse.stardust.ui.web.viewscommon.utils.DateUtils.validateDateRange(processSearchAttributes.actStartFrom , processSearchAttributes.actStartTo))
+      {
+         return null;
+      }
+
+      if (!org.eclipse.stardust.ui.web.viewscommon.utils.DateUtils.validateDateRange(processSearchAttributes.actModifyFrom, processSearchAttributes.actModifyTo))
+      {
+         return null;
+      }
+
+      if (!isValidOID(processSearchAttributes.activitySrchActivityOID))
+      {
+         return null;
+      }
 
       activityFilterAttributesDTO = new ActivityFilterAttributesDTO();
 
@@ -733,6 +768,28 @@ public class ProcessActivityUtils
          }
       }
       return caseDescriptorItems;
+   }
+   
+   /**
+    * 
+    * @param dp
+    * @return
+    */
+   private boolean isValidOID(String oid)
+   {
+      if (oid != null && !oid.isEmpty())
+      {
+         try
+         {
+            Integer.parseInt(oid);
+         }
+         catch (NumberFormatException e1)
+         {
+            e1.printStackTrace();
+            return false;
+         }
+      }
+      return true;
    }
 
 }

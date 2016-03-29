@@ -1771,20 +1771,24 @@ public class ProcessInstanceUtils
    {
       List<ProcessInstanceDTO> list = new ArrayList<ProcessInstanceDTO>();
 
-      for (Object object : queryResult)
+      if (queryResult != null)
       {
-         if (object instanceof ProcessInstance)
+         for (Object object : queryResult)
          {
+            if (object instanceof ProcessInstance)
+            {
 
-            ProcessInstanceDTO dto = buildProcessInstanceDTO((ProcessInstance) object);
+               ProcessInstanceDTO dto = buildProcessInstanceDTO((ProcessInstance) object);
 
-            list.add(dto);
+               list.add(dto);
+            }
          }
-      }
 
+      }
+      
       QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = list;
-      resultDTO.totalCount = queryResult.getTotalCount();
+      resultDTO.totalCount = (queryResult == null) ? 0: queryResult.getTotalCount();
 
       return resultDTO;
    }

@@ -9,6 +9,7 @@
 				class="pi pi-trigger-collapsed pi-lg"></i>
 			<span>{{i18n('business-control-center-messages.views-processSearchView-searchCriteria-label')}}</span>
 		</div>
+		<form name="procSearchViewCtrl.processSearchForm">
 		<div ng-show="procSearchViewCtrl.showSearchCriteria">
 			<table style="margin-left: 5px;">
 				<tr>
@@ -70,6 +71,13 @@
 								<td></td>
 							</tr>
 							<tr>
+								<td></td>
+								<td class="msg-error"
+									ng-show="procSearchViewCtrl.processSearchForm.$error.procStartTimeRange">
+									{{i18n('portal-common-messages.common-filterPopup-betweenFilter-message-rangeNotValid')}}
+								<td></td>
+							</tr>
+							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-endTimeFrom-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><div sd-date-time-picker ng-model-onblur
@@ -87,6 +95,13 @@
 									name="procEndTo"
 									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
 									sda-aid-prefix="BCC-ProcSrch-ProcEndTo"/></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td class="msg-error"
+									ng-show="procSearchViewCtrl.processSearchForm.$error.procEndTimeRange">
+									{{i18n('portal-common-messages.common-filterPopup-betweenFilter-message-rangeNotValid')}}
 								<td></td>
 							</tr>
 							<tr>
@@ -176,12 +191,26 @@
 								<td></td>
 							</tr>
 							<tr>
+								<td></td>
+								<td class="msg-error"
+									ng-show="procSearchViewCtrl.processSearchForm.$error.invalidRootProcessOID">
+									{{i18n('portal-common-messages.common-invalid-number-message')}}
+								<td></td>
+							</tr>
+							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processOverviewView-processTable-column-pOID')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><input type="text" id="processOID"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchProcessOID"
 									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
 									aid="BCC-ProcSrch-POID"></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td class="msg-error"
+									ng-show="procSearchViewCtrl.processSearchForm.$error.invalidProcessOID">
+									{{i18n('portal-common-messages.common-invalid-number-message')}}
 								<td></td>
 							</tr>
 						</table>
@@ -215,6 +244,13 @@
 								<td></td>
 							</tr>
 							<tr>
+								<td></td>
+								<td class="msg-error"
+									ng-show="procSearchViewCtrl.processSearchForm.$error.actStartTimeRange">
+									{{i18n('portal-common-messages.common-filterPopup-betweenFilter-message-rangeNotValid')}}
+								<td></td>
+							</tr>
+							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-modifyTimeFrom-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><div sd-date-time-picker ng-model-onblur
@@ -230,6 +266,13 @@
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actModifyTo"
 									name="actModifyTo" 
 									sda-aid-prefix="BCC-ActivitySrch-ModifyTimeTo"/></td>
+								<td></td>
+							</tr>
+								<tr>
+								<td></td>
+								<td class="msg-error"
+									ng-show="procSearchViewCtrl.processSearchForm.$error.actModifyTimeRange">
+									{{i18n('portal-common-messages.common-filterPopup-betweenFilter-message-rangeNotValid')}}
 								<td></td>
 							</tr>
 							<tr>
@@ -320,6 +363,14 @@
 								<td><input type="text" id="activityOID"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.activitySrchActivityOID"
 									aid="BCC-ActivitySrch-AOID"></td>
+								<td></td>
+							</tr>
+							</tr>
+								<tr>
+								<td></td>
+								<td class="msg-error"
+									ng-show="procSearchViewCtrl.processSearchForm.$error.invalidActivityOID">
+									{{i18n('portal-common-messages.common-invalid-number-message')}}
 								<td></td>
 							</tr>
 							<tr>
@@ -431,6 +482,7 @@
 				</tr>
 			</table>
 		</div>
+		</form>
 		<div
 			ng-show="procSearchViewCtrl.showProcSearchResult && procSearchViewCtrl.query.processSearchCriteria.filterObject == '0'"
 			ng-include="'plugins/html5-process-portal/partials/views/processSearchResult.html'">
