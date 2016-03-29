@@ -239,9 +239,6 @@
     });
   };
 
-  
-  
-  
   /**
    * @param api
    */
@@ -457,14 +454,8 @@
    * @param event
    */
   ProcessDocumentsController.prototype.attachmentDropHandler = function(event) {
-    if (event.type === "error") {
-      console.log("ERROR!");
-    }
     if (event.type === "success") {
       this.initializeDocuments();
-    }
-    if (event.type === "dropped") {
-      console.log("dropped");
     }
   }
 

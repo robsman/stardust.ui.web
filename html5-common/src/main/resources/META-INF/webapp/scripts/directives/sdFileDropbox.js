@@ -7,10 +7,21 @@
  ******************************************************************************/
 
 /**
- * adds wrapper div around the content to make a complete content area a drop
- * box.
- * 
  * @author Yogesh.Manware
+ * @description - adds wrapper div around the content to make a complete content
+ *              area a drop box. It support multiple file drag drop. It accepts
+ *              following parameters
+ * @param "=sdaParams"
+ *          parameters to be sent with each file,
+ * @param "@sdaPlaceholder"
+ *          message to be displayed when mouse enters the drop area during drag
+ *          operation
+ * @param "@sdaUrl" -
+ *          File will be posted to this URL
+ * @param "&sdaHandler -
+ *          callback function to handle events - dropped, success, error
+ * @param "@sdaOverlayClass" -
+ *          style class prefix for the content and overlay
  */
 (function() {
 
@@ -31,12 +42,13 @@
           transclude: true,
           scope: {
             params: "=sdaParams",
-            placeHolder: "@sdaPlaceholder",
+            placeHolder_: "@sdaPlaceholder",
             url: "@sdaUrl",
-            eventHandlerCallback: "&sdaHandler"
+            eventHandlerCallback: "&sdaHandler",
+            overlayClass_: "@sdaOverlayClass"
           },
           template: '<div ng-class="boxContentClass">' + '<ng-transclude></ng-transclude>' + '</div>'
-                  + '<div ng-show="showOverlay" class="filedropbox-overlay"> <span">{{placeHolder}}</span></div>',
+                  + '<div ng-show="showOverlay" ng-class="overlayClass"> <span">{{placeHolder}}</span></div>',
 
           link: function(scope, element, attrs) {
 
@@ -45,8 +57,13 @@
               sdI18n = scope.$root.sdI18n;
             }
 
-            if (!scope.placeHolder) {
-              scope.placeHolder = sdI18n("views-common-messages.fileDropbox.drophere");
+            if (!scope.placeHolder_) {
+              scope.placeHolder_ = sdI18n("views-common-messages.fileDropbox.drophere");
+            }
+            scope.placeHolder = scope.placeHolder_;
+
+            if (!scope.overlayClass_) {
+              scope.overlayClass_ = "filedropbox";
             }
 
             element.on('dragover', function(event) {
@@ -69,11 +86,15 @@
             });
 
             element.on('dragenter', function(event) {
+              if (counter == 0) {
+                scope.overlayClass = scope.overlayClass_ + "-overlay";
+                scope.placeHolder = scope.placeHolder_;
+              }
               counter++;
               event.preventDefault();
               event.stopPropagation();
               scope.$apply(function() {
-                scope.boxContentClass = "filedropbox-content";
+                scope.boxContentClass = scope.overlayClass_ + "-content";
                 scope.showOverlay = true;
               })
             });
@@ -82,10 +103,6 @@
               event.preventDefault();
               event.stopPropagation();
               counter = 0;
-              scope.$apply(function() {
-                scope.boxContentClass = "";
-                scope.showOverlay = false;
-              })
 
               var dataTransfer;
               if (event.dataTransfer) {
@@ -99,9 +116,15 @@
                   scope.eventHandlerCallback({
                     event: {
                       type: "dropped",
-                      file: dataTransfer.files[0]
+                      files: dataTransfer.files
                     }
                   })
+                  scope.$apply(function() {
+                    scope.overlayClass = scope.overlayClass_ + "-progress";
+                    scope.placeHolder = sdI18n("views-common-messages.fileDropbox.inProgress",
+                            "Transmitting {0} files", [dataTransfer.files.length]);
+                  })
+
                   postFile(dataTransfer.files);
                 }
               }
@@ -128,19 +151,45 @@
                 headers: {
                   "Content-Type": "multipart/form-data"
                 }
-              }).success(function() {
-                scope.eventHandlerCallback({
-                  event: {
-                    type: "success"
-                  }
-                })
-              }).error(function() {
-                scope.eventHandlerCallback({
-                  event: {
-                    type: "error"
-                  }
-                })
-              });
+              }).success(
+                      function(data) {
+                        scope.placeHolder = sdI18n("views-common-messages.fileDropbox.success",
+                                "File(s) Successfully Transmitted");
+                        scope.overlayClass = scope.overlayClass_ + "-success";
+
+                        setTimeout(function() {
+                          scope.$apply(function() {
+                            scope.boxContentClass = "";
+                            scope.showOverlay = false;
+                          });
+                        }, 2000);
+
+                        scope.eventHandlerCallback({
+                          event: {
+                            type: "success",
+                            data: data
+                          }
+                        })
+                      }).error(
+                      function(error) {
+                        scope.placeHolder = sdI18n("views-common-messages.fileDropbox.error",
+                                "Error occurred while transmitting files. Please check logs");
+                        scope.overlayClass = scope.overlayClass_ + "-error";
+
+                        setTimeout(function() {
+                          scope.$apply(function() {
+                            scope.boxContentClass = "";
+                            scope.showOverlay = false;
+                          });
+                        }, 2000);
+
+                        scope.eventHandlerCallback({
+                          event: {
+                            type: "error",
+                            error: error
+                          }
+                        })
+                      });
             };
           }
         };

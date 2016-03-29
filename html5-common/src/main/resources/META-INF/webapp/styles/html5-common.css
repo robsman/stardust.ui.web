@@ -572,7 +572,18 @@ button.close {
    border-top: 1px solid #DDD;
 }
 
+/*Section for FileDropBox directive*/
+/******************************************************/
+.filedropbox-content {
+  opacity: 0.2;
+  background: #F8F8F8;
+  border: 5px dashed lightgray;
+  width:97%;
+}
+
 .filedropbox-overlay {
+  position: absolute;
+  margin-top: -200px;
   font-size: 40px;
   font-wight: bold;
   text-align: center;
@@ -580,13 +591,34 @@ button.close {
   z-index: 10;
 }
 
-.filedropbox-content {
+.filedropbox-error {
   position: absolute;
-  opacity: 0.2;
-  background: #F8F8F8;
-  border: 5px dashed lightgray;
-  width:97%;
+  margin-top: -100px;
+  font-size: 20px;
+  text-align: center;
+  opacity: 0.5;
+  z-index: 10;
+  color: red;
 }
+
+.filedropbox-success {
+  position: absolute;
+  margin-top: -100px;
+  font-size: 20px;
+  text-align: center;
+  opacity: 0.5;
+  z-index: 10;
+}
+
+.filedropbox-progress {
+  position: absolute;
+  margin-top: -100px;
+  font-size: 20px;
+  text-align: center;
+  opacity: 0.5;
+  z-index: 10;
+}
+
 
 /*Section for the Condensed Date Time Picker directive*/
 /******************************************************/
