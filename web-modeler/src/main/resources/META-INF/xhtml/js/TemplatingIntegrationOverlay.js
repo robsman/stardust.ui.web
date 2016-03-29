@@ -287,7 +287,7 @@ define(
                                              }
                                           }, true);
                                           event.data.panel.parameterDefinitionsPanel.setParameterDefinitions(filteredAccessPoints)
-                                          event.data.panel.view.submitModelElementAttributeChange("carnot:engine:camel::routeEntries",event.data.panel.getRoute());
+//                                          event.data.panel.view.submitModelElementAttributeChange("carnot:engine:camel::routeEntries",event.data.panel.getRoute());
                                           event.data.panel.view.validate();
                                      }
                                     });
@@ -339,7 +339,7 @@ define(
                                  }
                               }, true);
                               event.data.panel.parameterDefinitionsPanel.setParameterDefinitions(accessPointList);
-                              event.data.panel.view.submitModelElementAttributeChange("carnot:engine:camel::routeEntries",event.data.panel.getRoute());
+//                              event.data.panel.view.submitModelElementAttributeChange("carnot:engine:camel::routeEntries",event.data.panel.getRoute());
                            });
                   this.update();
                };
@@ -613,43 +613,43 @@ define(
                /**
                 * returns camel route definition
                 */
-               TemplatingIntegrationOverlay.prototype.getRoute = function()
-               {
-
-                  var accessPoints =this.parameterDefinitionsPanel.parameterDefinitions;
-                  var outAccessPoint = m_routeDefinitionUtils.findAccessPoint(accessPoints, "defaultOutputAp");
-                  var defaultInputAp = m_routeDefinitionUtils.findAccessPoint(accessPoints, "defaultInputAp");
-                  var route = m_routeDefinitionUtils.createTemplatingHandlerRouteDefinition(
-                           this.formatInput.val(), this.locationInput.val(),
-                           this.codeEditor.getEditor().getSession().getValue(),
-                           this.templateInput.val(), this.outputNameInput.val(),
-                           this.convertToPdfInput.prop("checked"),defaultInputAp);
-                  if (this.formatInput.val() != "docx")
-                  {
-                     if (outAccessPoint!=null && outAccessPoint.dataType == "dmsDocument")
-                     {
-                        route += "<setHeader headerName=\"ippDmsDocumentName\">\n";
-                        route += "   <simple>$simple{header.CamelTemplatingOutputName}</simple>\n";
-                        route += "</setHeader>\n";
-                        route += "<to uri=\"bean:documentHandler?method=toDocument\"/>";
-                        route += "<setHeader headerName=\"defaultOutputAp\">\n";
-                        route += "<simple>$simple{body}</simple>\n";
-                        route += "</setHeader>\n";
-                     }
-                     else if(outAccessPoint.dataType == "primitive" && outAccessPoint.primitiveDataType=="String")
-                     {
-                        route += "<setHeader headerName=\"defaultOutputAp\">\n";
-                        route += "<simple>$simple{bodyAs(String)}</simple>\n";
-                        route += "</setHeader>\n";
-                     }else{
-                        route += "<setHeader headerName=\"defaultOutputAp\">\n";
-                        route += "<simple>$simple{body}</simple>\n";
-                        route += "</setHeader>\n";
-                     }
-                  }
-                  m_utils.debug(route);
-                  return route;
-               };
+//               TemplatingIntegrationOverlay.prototype.getRoute = function()
+//               {
+//
+//                  var accessPoints =this.parameterDefinitionsPanel.parameterDefinitions;
+//                  var outAccessPoint = m_routeDefinitionUtils.findAccessPoint(accessPoints, "defaultOutputAp");
+//                  var defaultInputAp = m_routeDefinitionUtils.findAccessPoint(accessPoints, "defaultInputAp");
+//                  var route = m_routeDefinitionUtils.createTemplatingHandlerRouteDefinition(
+//                           this.formatInput.val(), this.locationInput.val(),
+//                           this.codeEditor.getEditor().getSession().getValue(),
+//                           this.templateInput.val(), this.outputNameInput.val(),
+//                           this.convertToPdfInput.prop("checked"),defaultInputAp);
+//                  if (this.formatInput.val() != "docx")
+//                  {
+//                     if (outAccessPoint!=null && outAccessPoint.dataType == "dmsDocument")
+//                     {
+//                        route += "<setHeader headerName=\"ippDmsDocumentName\">\n";
+//                        route += "   <simple>$simple{header.CamelTemplatingOutputName}</simple>\n";
+//                        route += "</setHeader>\n";
+//                        route += "<to uri=\"bean:documentHandler?method=toDocument\"/>";
+//                        route += "<setHeader headerName=\"defaultOutputAp\">\n";
+//                        route += "<simple>$simple{body}</simple>\n";
+//                        route += "</setHeader>\n";
+//                     }
+//                     else if(outAccessPoint.dataType == "primitive" && outAccessPoint.primitiveDataType=="String")
+//                     {
+//                        route += "<setHeader headerName=\"defaultOutputAp\">\n";
+//                        route += "<simple>$simple{bodyAs(String)}</simple>\n";
+//                        route += "</setHeader>\n";
+//                     }else{
+//                        route += "<setHeader headerName=\"defaultOutputAp\">\n";
+//                        route += "<simple>$simple{body}</simple>\n";
+//                        route += "</setHeader>\n";
+//                     }
+//                  }
+//                  m_utils.debug(route);
+//                  return route;
+//               };
                /**
                 *
                 */
@@ -692,9 +692,9 @@ define(
                                                       .prop("checked") ? this.convertToPdfInput
                                                       .prop("checked")
                                                       : null,
-                                             "carnot:engine:camel::autoStartup" : this.autoStartupInput.prop("checked"),
-                                             "carnot:engine:camel::routeEntries" : this
-                                                      .getRoute()
+                                             "carnot:engine:camel::autoStartup" : this.autoStartupInput.prop("checked")
+//                                             ,"carnot:engine:camel::routeEntries" : this
+//                                                      .getRoute()
                                           }
                                        }, skipValidation);
                   }
