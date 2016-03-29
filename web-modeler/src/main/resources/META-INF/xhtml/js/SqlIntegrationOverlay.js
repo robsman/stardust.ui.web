@@ -99,8 +99,8 @@ define(
                               {
                                  attributes["stardust:sqlScriptingOverlay::outputType"] = "SelectOne";
                               }
-                              attributes["carnot:engine:camel::routeEntries"] = self
-                                       .getRoute(attributes),
+//                              attributes["carnot:engine:camel::routeEntries"] = self
+//                                       .getRoute(attributes),
                                        submitElements.attributes = attributes;
                               self.view.submitChanges(submitElements, true);
                            });
@@ -231,8 +231,8 @@ define(
                                                 .val();
                                        attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] = event.data.panel
                                                 .populateDataSourceBeanDefinition();
-                                       attributes["carnot:engine:camel::routeEntries"] = self
-                                                .getRoute(attributes);
+//                                       attributes["carnot:engine:camel::routeEntries"] = self
+//                                                .getRoute(attributes);
                                        submitElements.attributes = attributes;
                                        event.data.panel.view.submitChanges(
                                                 submitElements, true);
@@ -257,8 +257,8 @@ define(
                                                 .val();
                                        attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] = event.data.panel
                                                 .populateDataSourceBeanDefinition();
-                                       attributes["carnot:engine:camel::routeEntries"] = self
-                                                .getRoute(attributes);
+//                                       attributes["carnot:engine:camel::routeEntries"] = self
+//                                                .getRoute(attributes);
                                        submitElements.attributes = attributes;
                                        event.data.panel.view.submitChanges(
                                                 submitElements, true);
@@ -281,8 +281,8 @@ define(
                                                 .val();
                                        attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] = event.data.panel
                                                 .populateDataSourceBeanDefinition();
-                                       attributes["carnot:engine:camel::routeEntries"] = self
-                                                .getRoute(attributes);
+//                                       attributes["carnot:engine:camel::routeEntries"] = self
+//                                                .getRoute(attributes);
                                        submitElements.attributes = attributes;
                                        event.data.panel.view.submitChanges(
                                                 submitElements, true);
@@ -305,8 +305,8 @@ define(
                                                 .val();
                                        attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] = event.data.panel
                                                 .populateDataSourceBeanDefinition();
-                                       attributes["carnot:engine:camel::routeEntries"] = self
-                                                .getRoute(attributes);
+//                                       attributes["carnot:engine:camel::routeEntries"] = self
+//                                                .getRoute(attributes);
                                        submitElements.attributes = attributes;
                                        event.data.panel.view.submitChanges(
                                                 submitElements, true);
@@ -329,8 +329,8 @@ define(
                                                 .val();
                                        attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] = event.data.panel
                                                 .populateDataSourceBeanDefinition();
-                                       attributes["carnot:engine:camel::routeEntries"] = self
-                                                .getRoute(attributes);
+//                                       attributes["carnot:engine:camel::routeEntries"] = self
+//                                                .getRoute(attributes);
                                        submitElements.attributes = attributes;
                                        event.data.panel.view.submitChanges(
                                                 submitElements, true);
@@ -353,8 +353,8 @@ define(
                                                 .val();
                                        attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] = event.data.panel
                                                 .populateDataSourceBeanDefinition();
-                                       attributes["carnot:engine:camel::routeEntries"] = self
-                                                .getRoute(attributes);
+//                                       attributes["carnot:engine:camel::routeEntries"] = self
+//                                                .getRoute(attributes);
                                        submitElements.attributes = attributes;
                                        event.data.panel.view.submitChanges(
                                                 submitElements, true);
@@ -377,8 +377,8 @@ define(
                                                 .val();
                                        attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] = event.data.panel
                                                 .populateDataSourceBeanDefinition();
-                                       attributes["carnot:engine:camel::routeEntries"] = self
-                                                .getRoute(attributes);
+//                                       attributes["carnot:engine:camel::routeEntries"] = self
+//                                                .getRoute(attributes);
                                        submitElements.attributes = attributes;
                                        event.data.panel.view.submitChanges(
                                                 submitElements, true);
@@ -403,8 +403,8 @@ define(
                                                 : null;
                                        attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] = event.data.panel
                                                 .populateDataSourceBeanDefinition();
-                                       attributes["carnot:engine:camel::routeEntries"] = self
-                                                .getRoute(attributes);
+//                                       attributes["carnot:engine:camel::routeEntries"] = self
+//                                                .getRoute(attributes);
                                        submitElements.attributes = attributes;
                                        event.data.panel.view.submitChanges(
                                                 submitElements, true);
@@ -425,8 +425,8 @@ define(
                                                 .getEditor().getSession().getValue();
                                        attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] = self
                                                 .populateDataSourceBeanDefinition();
-                                       attributes["carnot:engine:camel::routeEntries"] = self
-                                                .getRoute(attributes);
+//                                       attributes["carnot:engine:camel::routeEntries"] = self
+//                                                .getRoute(attributes);
                                        submitElements.attributes = attributes;
                                        self.view.submitChanges(submitElements, false);
                                     });
@@ -1339,56 +1339,56 @@ define(
                /**
                 * 
                 */
-               SqlIntegrationOverlay.prototype.getRoute = function(attributes)
-               {
-                  if (!attributes)
-                     attributes = this.getApplication().attributes;
-                  var route = "";
-                  var sqlQuery = attributes["stardust:sqlScriptingOverlay::sqlQuery"];// this.codeEditor.getEditor().getSession().getValue();
-                  var dataSourceName = "";
-                  if (sqlQuery != null && sqlQuery != "")
-                  {
-
-                     sqlQuery = m_utils.encodeXmlPredfinedCharacters(sqlQuery);
-                  }
-                  var questionMarkExists = false;
-
-                  if (attributes["stardust:sqlScriptingOverlay::outputType"] != null
-                           && attributes["stardust:sqlScriptingOverlay::outputType"] != ""
-                           && attributes["stardust:sqlScriptingOverlay::outputType"] == "SelectOne")
-                  {
-                     sqlQuery += "?outputType=SelectOne";
-                  }
-                  else if (attributes["stardust:sqlScriptingOverlay::outputType"] != null
-                           && attributes["stardust:sqlScriptingOverlay::outputType"] != ""
-                           && attributes["stardust:sqlScriptingOverlay::outputType"] == "SelectList")
-                  {
-                     sqlQuery += "?outputType=SelectList";
-                  }
-
-                  if (sqlQuery != null && sqlQuery != "" && sqlQuery.indexOf('?') != -1)
-                  {
-                     questionMarkExists = true;
-                  }
-                  if (questionMarkExists)
-                     route += "<to uri=\"sql:"
-                              + sqlQuery
-                              + "&dataSource=#"
-                              + this.getDataSourceName()
-                              + "&alwaysPopulateStatement=true&prepareStatementStrategy=#sqlPrepareStatementStrategy\" />"
-                  else
-                     route += "<to uri=\"sql:"
-                              + sqlQuery
-                              + "?dataSource=#"
-                              + this.getDataSourceName()
-                              + "&alwaysPopulateStatement=true&prepareStatementStrategy=#sqlPrepareStatementStrategy\" />";
-
-                  route += "<to uri=\"bean:bpmTypeConverter?method=fromList\"/>"
-
-                  m_utils.debug(route);
-                  route = route.replace(/&/g, "&amp;");
-                  return route;
-               };
+//               SqlIntegrationOverlay.prototype.getRoute = function(attributes)
+//               {
+//                  if (!attributes)
+//                     attributes = this.getApplication().attributes;
+//                  var route = "";
+//                  var sqlQuery = attributes["stardust:sqlScriptingOverlay::sqlQuery"];// this.codeEditor.getEditor().getSession().getValue();
+//                  var dataSourceName = "";
+//                  if (sqlQuery != null && sqlQuery != "")
+//                  {
+//
+//                     sqlQuery = m_utils.encodeXmlPredfinedCharacters(sqlQuery);
+//                  }
+//                  var questionMarkExists = false;
+//
+//                  if (attributes["stardust:sqlScriptingOverlay::outputType"] != null
+//                           && attributes["stardust:sqlScriptingOverlay::outputType"] != ""
+//                           && attributes["stardust:sqlScriptingOverlay::outputType"] == "SelectOne")
+//                  {
+//                     sqlQuery += "?outputType=SelectOne";
+//                  }
+//                  else if (attributes["stardust:sqlScriptingOverlay::outputType"] != null
+//                           && attributes["stardust:sqlScriptingOverlay::outputType"] != ""
+//                           && attributes["stardust:sqlScriptingOverlay::outputType"] == "SelectList")
+//                  {
+//                     sqlQuery += "?outputType=SelectList";
+//                  }
+//
+//                  if (sqlQuery != null && sqlQuery != "" && sqlQuery.indexOf('?') != -1)
+//                  {
+//                     questionMarkExists = true;
+//                  }
+//                  if (questionMarkExists)
+//                     route += "<to uri=\"sql:"
+//                              + sqlQuery
+//                              + "&dataSource=#"
+//                              + this.getDataSourceName()
+//                              + "&alwaysPopulateStatement=true&prepareStatementStrategy=#sqlPrepareStatementStrategy\" />"
+//                  else
+//                     route += "<to uri=\"sql:"
+//                              + sqlQuery
+//                              + "?dataSource=#"
+//                              + this.getDataSourceName()
+//                              + "&alwaysPopulateStatement=true&prepareStatementStrategy=#sqlPrepareStatementStrategy\" />";
+//
+//                  route += "<to uri=\"bean:bpmTypeConverter?method=fromList\"/>"
+//
+//                  m_utils.debug(route);
+//                  route = route.replace(/&/g, "&amp;");
+//                  return route;
+//               };
 
                /**
                 * 
