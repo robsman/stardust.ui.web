@@ -577,13 +577,13 @@ public class WorklistUtils
          WorklistParticipantDTO tempRootNode = null;
          WorklistParticipantDTO assemblyLineNode = null;
          Set<ParticipantInfo> participants = entry.getValue();
+         boolean assemblyNodeCreated = false;
          if (null == assemblyLineNode)
          {
             assemblyLineNode = initAssemblyLineChild();
          }
          for (ParticipantInfo participantInfo : participants)
          {
-            boolean assemblyNodeCreated = false;
             if (participantInfo.getQualifiedId().equals(entry.getKey()) && (participantInfo instanceof UserInfo))
             {
                tempRootNode = addParentNode(participantInfo, showEmptyWorklist);
@@ -593,25 +593,24 @@ public class WorklistUtils
             {
                if (!assemblyNodeCreated)
                {
-                  assemblyLineNode = addAssemblyLineChild(showEmptyWorklist, tempRootNode, assemblyLineNode);
+                  assemblyNodeCreated = true;             
                }
-               assemblyNodeCreated = true;
+              
                continue;
             }
             WorklistParticipantDTO childNode = addChild(participantInfo, true, tempRootNode, showEmptyWorklist);
-            if (null == childNode)
+            if (null != childNode)
             {
-               continue;
+               if (entry.getKey().equals(participantInfo.getQualifiedId()) && (participantInfo instanceof UserInfo))
+               {
+                  childNode.name = restCommonClientMessages.getString("launchPanels.worklists.personalWorklist");
+               }
             }
-            if (entry.getKey().equals(participantInfo.getQualifiedId()) && (participantInfo instanceof UserInfo))
-            {
-               childNode.name = restCommonClientMessages.getString("launchPanels.worklists.personalWorklist");
-            }
-
          }
 
          if (tempRootNode != null)
          {
+            assemblyLineNode = addAssemblyLineChild(showEmptyWorklist, tempRootNode, assemblyLineNode);
             tempRootNode.activityCount = getTotalActivityCountForParentNode(tempRootNode);
             rootUserObjectList.add(tempRootNode);
          }

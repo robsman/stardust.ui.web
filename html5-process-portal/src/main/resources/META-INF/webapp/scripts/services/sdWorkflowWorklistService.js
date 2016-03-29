@@ -37,11 +37,17 @@
 		 */
 		WorkflowWorklistService.prototype.getUserAssignments = function(showEmptyWorklist, reload) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:showEmptyWorklist/:reload";
-
+			var restUrl = REST_BASE_URL + "/:type";
+            if(showEmptyWorklist === true && reload == true){
+            	restUrl = restUrl + "?showEmptyWorklist=" + showEmptyWorklist + "&reload=" + reload;
+            }else if(reload === true){
+            	restUrl = restUrl + "?reload=" + reload;
+            }else if(showEmptyWorklist === true){
+            	restUrl = restUrl + "?showEmptyWorklist=" + showEmptyWorklist;
+            }
+            			
 			var urlTemplateParams = {};
-			urlTemplateParams.showEmptyWorklist = showEmptyWorklist;
-			urlTemplateParams.reload = reload;
+			urlTemplateParams.type = "worklist-assignments";
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
 		

@@ -407,8 +407,9 @@ public class WorklistResource
    
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{showEmptyWorklist}/{reload}")
-   public Response getWorklistAssignemnt(@PathParam("showEmptyWorklist") boolean showEmptyWorklist, @PathParam("reload") boolean reload) throws PortalException
+   @Path("/worklist-assignments")
+   public Response getWorklistAssignemnt(@QueryParam("showEmptyWorklist") @DefaultValue("false") boolean showEmptyWorklist, 
+         @QueryParam("reload") @DefaultValue("false") boolean reload) throws PortalException
    {
    QueryResultDTO result = worklistService.getWorklistAssignemnt(showEmptyWorklist, reload);
    return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();

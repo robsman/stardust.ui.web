@@ -178,18 +178,17 @@
 				return;
 			}
 			_sdActivityInstanceService.activate(ai.activityOID).then(
+					function(data) {
+						_sdCommonViewUtilService.openActivityView(ai.activityOID);
+					},
 					function(result) {
-						if (result.failure.length > 0) {
-							trace.error("Error in activating worklist item : ", ai.activityOID, ".Error : ",
-									result.failure[0].message);
-							var options = {
-								title : sgI18nService.translate('views-common-messages.common-error', 'Error')
-							};
-							var message = result.failure[0].message;
-							_sdDialogService.error(_scope, message, options)
-						} else {
-							_sdCommonViewUtilService.openActivityView(ai.activityOID);
-						}
+						trace.error("Error in activating worklist item : ", ai.activityOID, ".Error : ",
+								result.failure[0].message);
+						var options = {
+							title : sgI18nService.translate('views-common-messages.common-error', 'Error')
+						};
+						var message = result.failure[0].message;
+						_sdDialogService.error(_scope, message, options);
 					});
 		}
 	};

@@ -407,6 +407,10 @@ public class ActivityDetailsBean extends UIComponentBean
          {
             assemblyLineActivity = (Boolean)viewParams.get("assemblyLineActivity");
             worklistsBean = (WorklistsBean) viewParams.get("worklistsBean");
+            
+            if(worklistsBean == null){
+               worklistsBean = WorklistsBean.getInstance();  
+            }
 
             if (null == viewParams.get("pushService"))
             {
