@@ -300,15 +300,6 @@
 	    
 	    <div ng-show="ctrl.selectedTab ==='Categories'">
 	    
-	    	<div ng-show="ctrl.selectedBenchmark">
-	    		<a ng-click="ctrl.showAllTreeNodes = !ctrl.showAllTreeNodes"
-	    		   ng-attr-title = "{{ctrl.showAllTreeNodes ? ctrl.textMap.filterTreeNodes : ctrl.textMap.showAllTreeNodes}}" 
-	    		   class="tbl-toolbar-item tbl-tool-link">
-	    		   <i class="pi " 
-	    		      ng-class="{'pi-eye-open' : ctrl.showAllTreeNodes,'pi-eye-close' : !ctrl.showAllTreeNodes}"></i>
-	    		</a>
-	    	</div>
-	    	
 	    	<!-- Container for treeView and Benchmark table -->
 	    	<div style="position:relative;">
 			    <!-- Model Tree Container -->
@@ -328,7 +319,7 @@
 				          ng-repeat="model in ctrl.models">
 				        <ul>
 				          <li sd-tree-node
-				          	  ng-show="ctrl.showAllTreeNodes===true || process.auxillary===false"
+				          	  ng-show="process.auxillary===false"
 				              sda-is-leaf="process.activities.length==0"
 				              sda-label="process.name"
 				              sda-title="process.name"
@@ -336,7 +327,7 @@
 				              ng-repeat="process in model.processDefinitions">
 				            <ul>
 				              <li sd-tree-node
-				                  ng-show="ctrl.showAllTreeNodes === true || (activity.interactive === true && activity.auxillary === false)"
+				                  ng-show="(activity.interactive === true && activity.auxillary === false)"
 				                  sda-is-leaf="true"
 				                  sda-draggable="true"
 				                  sda-label="activity.name"
