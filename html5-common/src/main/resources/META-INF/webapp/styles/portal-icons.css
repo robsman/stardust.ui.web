@@ -1739,3 +1739,8 @@ a span.pi:hover {
 	font-family:"FontAwesome";
 	content:'\f058'; /*  fa-check-circle */
 }
+
+.pi-actions:before{
+	font-family:"FontAwesome";
+	content:'\f141'; /*  fa-ellipsis-h*/
+}
