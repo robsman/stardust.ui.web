@@ -1032,7 +1032,25 @@ public class ActivityInstanceResource
 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
-   
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/complete/{activityOid}")
+   public Response complete(@PathParam("activityOid") Long activityOid)
+   {
+      try
+      {
+         ActivityInstanceDTO dto = activityInstanceService.complete(activityOid);
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(dto), MediaType.APPLICATION_JSON).build();
+      }
+      catch (NotificationMapException e)
+      {
+         ResponseBuilder rb = Response.ok(GsonUtils.toJsonHTMLSafeString(e.getNotificationMap()), MediaType.APPLICATION_JSON);
+         rb.status(Status.BAD_REQUEST);
+         return rb.build();
+      }
+   }
+
    /**
     * 
     * @param options

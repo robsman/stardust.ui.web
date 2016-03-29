@@ -774,5 +774,19 @@
 	 		return fax_format.test(value); 
 		}
 	 	
+	 	
+		/*
+		 * 
+		 */
+	 	UtilService.prototype.extractParamsFromUri = function(str) {
+			var params = {}, regex = /([^&=]+)=([^&]*)/g, match;
+			if (str != "" && str.length > 0) {
+				while (match = regex.exec(str)) {
+					params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
+				}
+			}
+			return params;
+		}
+
 	};
 })();

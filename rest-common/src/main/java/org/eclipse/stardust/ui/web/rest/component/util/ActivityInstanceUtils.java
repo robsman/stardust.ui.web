@@ -88,6 +88,7 @@ import org.eclipse.stardust.ui.web.rest.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.util.ActivityInteractionUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
@@ -340,6 +341,34 @@ public class ActivityInstanceUtils
    public ActivityInstance complete(long oid, String context, Map<String, Serializable> outData)
    {
       return serviceFactoryUtils.getWorkflowService().activateAndComplete(oid, context, outData);
+   }
+
+   /**
+    * @param oid
+    * @return
+    */
+   @SuppressWarnings({"rawtypes", "unchecked"})
+   public ActivityInstance complete(long oid) throws NotificationMapException
+   {
+      ActivityInstance activityInstance = getActivityInstance(oid);
+
+      IActivityInteractionController interactionController = ActivityInteractionUtils
+            .getInteractionController(activityInstance.getActivity());
+
+      if (null != interactionController)
+      {
+         // TODO: Check? interactionController.closePanel(activityInstance, ClosePanelScenario.COMPLETE, null)
+         String contextId = interactionController.getContextId(activityInstance);
+         Map outData = interactionController.getOutDataValues(activityInstance);
+
+         return serviceFactoryUtils.getWorkflowService().complete(oid, contextId, outData);
+      }
+      else
+      {
+         NotificationMap nMap = new NotificationMap();
+         nMap.addFailure(new NotificationDTO(oid, "interaction controller not found", ""));
+         throw new NotificationMapException(nMap, Status.BAD_REQUEST);
+      }
    }
 
    public List<TransitionTarget> getRelocationTargets(long oid, TransitionOptions options, ScanDirection direction)

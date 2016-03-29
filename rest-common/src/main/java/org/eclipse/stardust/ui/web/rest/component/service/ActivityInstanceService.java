@@ -248,6 +248,19 @@ public class ActivityInstanceService
    }
 
    /**
+    * @param activityOID
+    * @param activateNext
+    * @param context
+    * @return
+    * @throws NotificationMapException
+    */
+   public ActivityInstanceDTO complete(Long activityOID) throws NotificationMapException
+   {
+      ActivityInstance ai = activityInstanceUtils.complete(activityOID);
+      return DTOBuilder.build(ai, ActivityInstanceIntractionDTO.class);
+   }
+
+   /**
     * @param activityInstanceOid
     * @return
     */
