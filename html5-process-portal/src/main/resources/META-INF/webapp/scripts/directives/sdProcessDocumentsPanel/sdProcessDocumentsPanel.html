@@ -35,7 +35,8 @@ tr.documentRow>td {
 					sd-file-dropbox
 					sda-url="{{processDocumentsCtrl.processAttachmentUrl}}"
 					sda-placeholder="{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.processAttachment')}}"
-					sda-handler="processDocumentsCtrl.attachmentDropHandler(event)">
+					sda-handler="processDocumentsCtrl.attachmentDropHandler(event)"
+					sda-params="processDocumentsCtrl.params">
 					<div class="propertiesContent">
 						<table>
 							<tr>
@@ -95,7 +96,8 @@ tr.documentRow>td {
 					sd-file-dropbox
 					sda-url="{{processDocumentsCtrl.activityAttachmentUrl}}"
 					sda-placeholder="{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.activityAttachment')}}"
-					sda-handler="processDocumentsCtrl.attachmentDropHandler(event)">
+					sda-handler="processDocumentsCtrl.attachmentDropHandler(event)"
+					sda-params="processDocumentsCtrl.params">
 					<div class="propertiesContent">
 						<Table>
 							<tr>

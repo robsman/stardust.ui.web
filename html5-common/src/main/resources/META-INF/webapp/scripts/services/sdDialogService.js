@@ -132,12 +132,23 @@
 			    if (!angular.isDefined(options.title)) {
 			    	options.title = 'Error';
 			    }
-			    var html = '<table style="width : 100%">'+
-			    '<tr>'+
-			    '<td style="width : 15% ; align:center"><i  class="pi pi-dialog-error msg-error pi-2x" ></i> </td>'+
-			    '<td style="width : 85%">'+message +'</td>'+
-			    '</tr>'+
-			    '</table>';
+			    var html = '<table style="width : 100%">';
+			    
+			    
+			    if (message instanceof Array) {
+            message.forEach(function(msg) {
+            html = html
+                    + '<tr>'
+                    + '<td style="width : 15% ; align:center"><i  class="pi pi-dialog-error msg-error pi-2x" ></i> </td>'
+                    + '<td style="width : 85%">' + msg + '</td> </tr>';
+            });
+          } else {
+            html = html
+                    + '<tr>'
+                    + '<td style="width : 15% ; align:center"><i  class="pi pi-dialog-error msg-error pi-2x" ></i> </td>'
+                    + '<td style="width : 85%">' + message + '</td> </tr>';
+          }
+          html = html + '</table>';
 
 			    this.alert(scope,html,options);
 			},

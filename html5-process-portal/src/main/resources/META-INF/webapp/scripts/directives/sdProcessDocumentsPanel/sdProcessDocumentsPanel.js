@@ -137,7 +137,7 @@
    * 
    */
   function ProcessDocumentsController(processDocumentsService, sdViewUtilService, sdUtilService, sgI18nService,
-          sdMimeTypeService, $scope, sdPropertiesPageService) {
+          sdMimeTypeService, $scope, sdPropertiesPageService, sdDialogService) {
     this.$scope = $scope;
     this.processDocumentsService = processDocumentsService;
     this.sdViewUtilService = sdViewUtilService;
@@ -146,6 +146,7 @@
     this.sdI18n = $scope.$root.sdI18n;
     this.propertiesPageService = sdPropertiesPageService;
     this.sdUtilService = sdUtilService;
+    this.sdDialogService = sdDialogService;
 
     this.documentMenuPopupUrl = sdUtilService.getBaseUrl()
             + "plugins/html5-views-common/html5/partials/views/documentMenuPopover.html";
@@ -159,6 +160,10 @@
     this.activityAttachmentUrl_ = sdUtilService.getBaseUrl()
             + "services/rest/portal/activity-instances/{{OID}}/documents";
     this.versionUploadUrl = sdUtilService.getBaseUrl() + "services/rest/portal/documents/upload"
+
+    this.params = {
+      createVersion: false
+    }
 
     this.initialize();
   }
@@ -274,7 +279,10 @@
       if (files.length > 0) {
         self.replaceDocumentOnUI(files[0]);
       }
-    });
+    })
+    ["catch"](function(err){
+      self.sdDialogService.error(self.$scope, err, {});
+    })
   };
 
   /**
@@ -372,7 +380,7 @@
       this.processDocumentsService.rename(this.selectedDocument, newName).then(function(result) {
         self.replaceDocumentOnUI(result.data);
       }, function(error) {
-        console.error(error);
+        self.sdDialogService.error(self.$scope, error.data.message, {});
       })
     }
   }
@@ -455,6 +463,16 @@
    */
   ProcessDocumentsController.prototype.attachmentDropHandler = function(event) {
     if (event.type === "success") {
+      if (event.data) {
+        if (event.data.failures && event.data.failures.length > 0) {
+          var messages = [];
+          event.data.failures.forEach(function(failure) {
+            messages.push(failure.message);
+          })
+          // display error
+          this.sdDialogService.error(this.$scope, messages, {});
+        }
+      }
       this.initializeDocuments();
     }
   }
@@ -498,7 +516,7 @@
 
   // inject dependencies
   ProcessDocumentsController.$inject = ["processDocumentsService", "sdViewUtilService", "sdUtilService",
-      "sgI18nService", 'sdMimeTypeService', "$scope", "sdPropertiesPageService"];
+      "sgI18nService", 'sdMimeTypeService', "$scope", "sdPropertiesPageService", "sdDialogService"];
 
   // register controller
   app.controller('processDocumentsPanelCtrl', ProcessDocumentsController);

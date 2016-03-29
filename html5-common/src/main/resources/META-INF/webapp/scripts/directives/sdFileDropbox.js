@@ -136,13 +136,14 @@
               var formData = new FormData();
               angular.forEach(files, function(value) {
                 formData.append("files[]", value);
+                if (scope.params) {
+                  for ( var param in scope.params) {
+                    formData.append(param, scope.params[param]);
+                  }
+                }
               });
 
-              if (scope.params) {
-                for ( var param in scope.params) {
-                  formData.append(param, scope.params[param]);
-                }
-              }
+              
 
               $http({
                 method: 'POST',
