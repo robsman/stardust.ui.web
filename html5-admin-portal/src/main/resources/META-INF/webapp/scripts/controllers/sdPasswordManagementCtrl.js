@@ -118,18 +118,18 @@
 	 * 
 	 */
 	self.updatePasswordRules = function() {
-	    var deferred = $q.defer();
-	    _trace.debug("Updating password rules", self.passwordRules);
-	    _sdPasswordManagementService.savePasswordRules(self.passwordRules).then(function(result) {
-		deferred.resolve("Update successfull");
-		$scope.passwordMgmtForm.$setPristine(true);
-		self.showSuccessNotification()
-		_trace.debug("Password rules updated successfully");
-	    }, function(error) {
-		deferred.resolve("Update successfull");
-		_trace.error("Failed to updated Password rules.Response : ", error);
-	    });
-	    return deferred.$promise;
+		var deferred = $q.defer();
+		_trace.debug("Updating password rules", self.passwordRules);
+		_sdPasswordManagementService.savePasswordRules(self.passwordRules).then(function(result) {
+			deferred.resolve("Update successfull");
+			$scope.passwordMgmtForm.$setPristine(true);
+			self.showSuccessNotification()
+			_trace.debug("Password rules updated successfully");
+		}, function(error) {
+			deferred.reject("Update Failed");
+			_trace.error("Failed to updated Password rules.Response : ", error);
+		});
+		return deferred.$promise;
 	};
     }
 

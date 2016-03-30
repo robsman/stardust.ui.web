@@ -54,9 +54,10 @@
 		 */
 		FavoriteReportsService.prototype.removeFromFavoriteReports = function(documentId) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + '/:documentId';
+			var restUrl = REST_BASE_URL + '/:type/:documentId';
 
 			var reportResource = $resource(restUrl, {
+				type : '@type',
 				documentId : '@documentId'
 			}, {
 				removeFromFavorite : {
@@ -65,6 +66,7 @@
 			});
 
 			var urlTemplateParams = {};
+			urlTemplateParams.type = 'removeFromFavorite';
 			urlTemplateParams.documentId = documentId;
 			return reportResource.removeFromFavorite(urlTemplateParams).$promise;
 

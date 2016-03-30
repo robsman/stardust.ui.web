@@ -35,8 +35,10 @@ import com.google.gson.JsonObject;
 public class PasswordManagementResource
 {
    private static final Logger trace = LogManager.getLogger(PasswordManagementResource.class);
+
    @Autowired
    PasswordManagementService passwordManagementService;
+
    /**
     * 
     */
@@ -77,7 +79,7 @@ public class PasswordManagementResource
       {
          PasswordRulesDTO passwordRulesDTO = DTOBuilder.buildFromJSON(postedData, PasswordRulesDTO.class);
          passwordManagementService.savePasswordRules(passwordRulesDTO);
-         return Response.ok("SUCCESS", MediaType.APPLICATION_JSON).build();
+         return Response.ok().build();
       }
       catch (Exception e)
       {

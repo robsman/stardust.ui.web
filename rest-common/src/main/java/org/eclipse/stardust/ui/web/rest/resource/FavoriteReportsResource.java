@@ -43,11 +43,9 @@ public class FavoriteReportsResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @ResponseDescription("#### Sample Response:\r\n" + 
-         "[{\r\n" + 
-         "   \"documentId\": \"{urn:repositoryId:System}{jcrUuid}12179aae-6212-4a63-a7f9-669fce20bcb1\",\r\n" + 
-         "   \"documentName\": \"Report Definition 1\"\r\n" + 
-         "}]")
+   @ResponseDescription("#### Sample Response:\r\n" + "[{\r\n"
+         + "   \"documentId\": \"{urn:repositoryId:System}{jcrUuid}12179aae-6212-4a63-a7f9-669fce20bcb1\",\r\n"
+         + "   \"documentName\": \"Report Definition 1\"\r\n" + "}]")
    public Response getFavoriteReports()
    {
       try
@@ -65,13 +63,13 @@ public class FavoriteReportsResource
 
    @DELETE
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{documentId}")
+   @Path("/removeFromFavorite/{documentId}")
    public Response removeFromFavorite(@PathParam("documentId") String documentId)
    {
       try
       {
          RepositoryUtility.removeFromFavorite(documentId);
-         return Response.ok("SUCCESS", MediaType.APPLICATION_JSON).build();
+         return Response.ok().build();
       }
       catch (Exception e)
       {

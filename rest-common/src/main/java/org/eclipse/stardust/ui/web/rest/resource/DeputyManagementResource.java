@@ -150,7 +150,7 @@ public class DeputyManagementResource
          List<String> modelParticipantIds = populateModelParticipantIds(postData);
 
          deputyManagementService.addOrModifyDeputy(userOID, deputyOID, validFrom, validTo, modelParticipantIds, mode);
-         return Response.ok("SUCCESS", MediaType.APPLICATION_JSON).build();
+         return Response.ok().build();
       }
       catch (Exception e)
       {
@@ -171,7 +171,7 @@ public class DeputyManagementResource
          long userOID = postJSON.getAsJsonPrimitive("userOID").getAsLong();
          long deputyOID = postJSON.getAsJsonPrimitive("deputyOID").getAsLong();
          deputyManagementService.removeUserDeputy(userOID, deputyOID);
-         return Response.ok("SUCCESS", MediaType.APPLICATION_JSON).build();
+         return Response.ok().build();
       }
       catch (Exception e)
       {

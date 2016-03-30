@@ -11,10 +11,11 @@
 package org.eclipse.stardust.ui.web.rest.resource;
 
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -39,13 +40,13 @@ public class AuditTrailResource
    public Response recoverWorkflowEngine()
    {
       auditTrailService.recoverWorkflowEngine();
-      return Response.ok("SUCCESS", MediaType.APPLICATION_JSON).build();
+      return Response.ok().build();
    }
 
    @DELETE
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/database/{retainUsersAndDepts}")
-   public Response cleanupATD(@PathParam("retainUsersAndDepts") boolean retainUsersAndDepts)
+   @Path("/database")
+   public Response cleanupATD(@QueryParam("retainUsersAndDepts") @DefaultValue("false") boolean retainUsersAndDepts)
    {
       Boolean status = auditTrailService.cleanupATD(retainUsersAndDepts);
       JsonObject json = new JsonObject();

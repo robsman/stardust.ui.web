@@ -2,9 +2,9 @@
 	sda-title="{{i18n('business-control-center-messages.launchPanels-myFavorites-title')}}">
 	<div ng-controller="sdBCCPanelCtrl as ctrl"
 		ng-init="ctrl.getAllFavorites()">
-		<i ng-click="ctrl.refreshMyFavoritesPanel()"
-			class="pi pi-refresh pi-lg" style="float: right;"
-			aid="auto-BCC-TLV-MyFavorites-Refresh"></i>
+		<a href="#" ng-click="ctrl.refreshMyFavoritesPanel()" style="float: right;" aid="auto-BCC-TLV-MyFavorites-Refresh">
+		      <i class="pi pi-refresh pi-lg"></i>
+		</a>
 		<div ng-if="ctrl.favorites.length == 0">
 			<span>{{i18n('views-common-messages.common-notification-message-title')}}</span>
 		</div>

@@ -2,8 +2,9 @@
 	sda-title="{{i18n('business-control-center-messages.launchPanels-myReportsViewPanel-title')}}">
 	<div ng-controller="sdBCCPanelCtrl as ctrl"
 		ng-init="ctrl.getAllFavoriteReports()">
-		<i ng-click="ctrl.refreshMyReportsPanel()" class="pi pi-refresh pi-lg"
-			style="float: right;" aid="auto-BCC-LP-MyFavReportsPnl-refresh"></i>
+		<a href="#" ng-click="ctrl.refreshMyReportsPanel()" style="float: right;" aid="auto-BCC-LP-MyFavReportsPnl-refresh">
+		      <i class="pi pi-refresh pi-lg"></i>
+		</a>
 		<div ng-if="ctrl.favoriteReports.length == 0">
 			<span>{{i18n('views-common-messages.common-notification-message-title')}}</span>
 		</div>

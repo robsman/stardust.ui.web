@@ -59,11 +59,13 @@
 		 */
 		AuditTrailService.prototype.cleanupAuditTrailDatabase = function(retainUsersAndDepts) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:type/:retainUsersAndDepts";
+			var restUrl = REST_BASE_URL + "/:type";
 
+			if(retainUsersAndDepts === true){
+				restUrl = restUrl + "?retainUsersAndDepts=" + retainUsersAndDepts;
+			}
 			var cleanupAuditTrailDatabase = $resource(restUrl, {
-				type : '@type',
-				retainUsersAndDepts : '@retainUsersAndDepts'
+				type : '@type'
 			}, {
 				clean : {
 					method : 'DELETE'
@@ -72,7 +74,6 @@
 
 			var urlTemplateParams = {};
 			urlTemplateParams.type = "database";
-			urlTemplateParams.retainUsersAndDepts = retainUsersAndDepts;
 
 			return cleanupAuditTrailDatabase.clean(urlTemplateParams).$promise;
 
