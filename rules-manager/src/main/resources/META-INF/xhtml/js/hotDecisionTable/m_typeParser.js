@@ -44,7 +44,7 @@ define(["require",
   	  conditionTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.conditions","Conditions"),
   	  attributeTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.attributes","Attributes");
  
-  /*@Param:obj=typeDecl object
+  /** Param:obj=typeDecl object
    * Converts a typeDecl for an enumeration into a typeBody object which can be parsed
    * by our recursive function->fx. 
    * */
@@ -346,7 +346,7 @@ define(["require",
 		    elementCount=elements.length,
 		    temp,        /*temp obj for our element loop*/
 		    tempType,    /*type of our nested typeDecl to search for*/
-		    directionKey,/*@key to indicate direction of our paramDef*/
+		    directionKey,/*key to indicate direction of our paramDef*/
 		    formattedID, /*FQID standard notation for IDs*/
 		    fIDpieces,    /*array for holding our formattedID pieces*/
 		    paramDirection,/* In,Out,InOut - Parameter Definition Direction*/
