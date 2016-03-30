@@ -30,14 +30,14 @@
 								<tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
 									<td ng-show="propertiesPageController.totalNotes > 0"
-										style="text-align: center; padding-top: 1em"><a href='#'
+										style="padding-top: 1em"><a href='#'
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesPanel')}}"
 										class='heading'
 										style='cursor: pointer; text-decoration: none;'> <i
 											class='pi pi-notes pi-lg'></i>
 									</a></td>
-									<td ng-show="propertiesPageController.totalNotes == 0"
-										style="text-align: center"><a href='#'
+									<td ng-show="propertiesPageController.totalNotes == 0"><a
+										href='#'
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesView')}}"
 										class='heading'
 										style='cursor: pointer; text-decoration: none;'> <i
@@ -46,7 +46,7 @@
 								</tr>
 								<tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
-									<td style="text-align: center"><a
+									<td><a
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesView')}}"
 										href='#'> <span>
 												{{propertiesPageController.totalNotes}} </span></a></td>
@@ -54,14 +54,14 @@
 								<tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
 									<td ng-show="propertiesPageController.totalAttachments > 0"
-										style="text-align: center; padding-top: 1em"><a href='#'
+										style="padding-top: 1em"><a href='#'
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
 										class='heading'
 										style='cursor: pointer; text-decoration: none;'> <i
 											class='pi pi-invert pi-lg'></i>
 									</a></td>
-									<td ng-show="propertiesPageController.totalAttachments == 0"
-										style="text-align: center"><a href='#'
+									<td ng-show="propertiesPageController.totalAttachments == 0"><a
+										href='#'
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
 										class='heading'
 										style='cursor: pointer; text-decoration: none;'> <i
@@ -70,7 +70,7 @@
 								</tr>
 								<tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
-									<td style="text-align: center"><a
+									<td><a
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
 										href='#'> <span>
 												{{propertiesPageController.totalAttachments}} </span></a></td>
