@@ -75,7 +75,9 @@ var html5Deps = function() {
         'sdProcessDocumentsPanel': ['html5-process-portal/scripts/directives/sdProcessDocumentsPanel/sdProcessDocumentsPanel'],
         'sdFileDropbox' : [ 'html5-common/scripts/directives/sdFileDropbox'],
         'sdUtilDirectives' : [ 'html5-common/scripts/directives/sdUtilDirectives'],
-        'sdRepositoryUploadDialog': [ 'html5-common/scripts/directives/dialogs/sdRepositoryUploadDialog']
+        'sdRepositoryUploadDialog': [ 'html5-common/scripts/directives/dialogs/sdRepositoryUploadDialog'],
+        'sdVersionHistoryDialog': [ 'html5-views-common/html5/scripts/directives/sdVersionHistoryDialog'],
+        'documentRepositoryService': ['html5-common/scripts/directives/sdDocumentRepository/documentRepositoryService']
       },
       shim : {
         'jquery.dataTables' : [ 'jquery' ],
@@ -114,15 +116,18 @@ var html5Deps = function() {
         'sdActivityPanelPropertiesPage': ['sdNotesPanel', 'sdProcessDocumentsPanel'],
         'sdFileDropbox':  ['html5CommonMain'],
         'sdRepositoryUploadDialog' : ['html5CommonMain'],
-        'sdUtilDirectives': ['html5CommonMain']
+        'sdUtilDirectives': ['html5CommonMain'],
+        'sdVersionHistoryDialog': ['documentRepositoryService'],
+        'documentRepositoryService': ['sdMimeTypeService', 'sdUtilService']
+        
       },
       deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap","ckeditor","portalApplication",
           "html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
           "sdLoggerService", "sdData", "sdDataTable", "sdEnvConfigService",
           'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover', 
           'sdAutoComplete','sdRichTextEditor','sdTree','sdFolderTree','sdProcessDocumentTree', 'sdDateTimeFilter', 'sdNotesPanel', 
-          'sdActivityPanelPropertiesPage', 'sdProcessDocumentsPanel', 'uiBootstrap', 'sdFileDropbox', 'sdUtilDirectives']
-
+          'sdActivityPanelPropertiesPage', 'sdProcessDocumentsPanel', 'uiBootstrap', 'sdFileDropbox', 'sdUtilDirectives',
+          'sdVersionHistoryDialog', 'documentRepositoryService']
     };
 
     copyValues(config.paths, reqMod.paths);

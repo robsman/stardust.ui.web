@@ -43,11 +43,11 @@
     absUrl=$location.absUrl();;
     
     //And calculate our url fragments
-    this.absUrl = sdUtilService.getRootUrl();
-    this.folderRoot = this.absUrl + "/services/rest/portal/folders";
-    this.documentRoot = this.absUrl + "/services/rest/portal/documents";
-    this.documentTypesRoot = this.absUrl + "/services/rest/portal/document-types";
-    this.rootUrl = this.absUrl + "/services/rest/portal/repository";
+    this.absUrl = sdUtilService.getBaseUrl();
+    this.folderRoot = this.absUrl + "services/rest/portal/folders";
+    this.documentRoot = this.absUrl + "services/rest/portal/documents";
+    this.documentTypesRoot = this.absUrl + "services/rest/portal/document-types";
+    this.rootUrl = this.absUrl + "services/rest/portal/repository";
 
     //compute the default name for our virtual root node
     this.vrRootName = this.i18n.translate("views.genericRepositoryView.treeMenuItem.repo.root");

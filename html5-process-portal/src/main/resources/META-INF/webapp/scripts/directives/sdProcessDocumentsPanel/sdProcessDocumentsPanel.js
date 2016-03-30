@@ -67,58 +67,13 @@
   }
 
   /**
-   * @param activityInstanceOid
-   * @returns
+   *  TODO: not required at the moment
    */
-  ProcessDocumentsService.prototype.rename = function(document, newName) {
-    var url = this.rootUrl + "services/rest/portal/documents/" + document.uuid;
-    var deferred = this.$q.defer();
-
-    this.$http.put(url, {
-      name: newName
-    }).then(function(data) {
-      deferred.resolve(data);
-    }, function(error) {
-      deferred.reject(error);
-    })
-    return deferred.promise;
-  }
-
-  /**
-   * 
-   */
-  ProcessDocumentsService.prototype.deleteDocument = function(document) {
-    var url = this.rootUrl + "services/rest/portal/documents/" + document.uuid;
+  ProcessDocumentsService.prototype.detach = function(uuid) {
+    var url = this.rootUrl + "services/rest/portal/documents/" + uuid;
     var deferred = this.$q.defer();
 
     this.$http['delete'](url).then(function(data) {
-      deferred.resolve(data);
-    }, function(error) {
-      deferred.reject(error);
-    })
-    return deferred.promise;
-  }
-
-  /**
-   * 
-   */
-  ProcessDocumentsService.prototype.detach = function(document) {
-    var url = this.rootUrl + "services/rest/portal/documents/" + document.uuid;
-    var deferred = this.$q.defer();
-
-    this.$http['delete'](url).then(function(data) {
-      deferred.resolve(data);
-    }, function(error) {
-      deferred.reject(error);
-    })
-    return deferred.promise;
-  }
-
-  ProcessDocumentsService.prototype.getHistory = function(document) {
-    var url = this.rootUrl + "services/rest/portal/documents/history/" + document.uuid;
-    var deferred = this.$q.defer();
-
-    this.$http.get(url).then(function(data) {
       deferred.resolve(data);
     }, function(error) {
       deferred.reject(error);
@@ -137,7 +92,7 @@
    * 
    */
   function ProcessDocumentsController(processDocumentsService, sdViewUtilService, sdUtilService, sgI18nService,
-          sdMimeTypeService, $scope, sdDialogService) {
+          sdMimeTypeService, $scope, sdDialogService, documentRepositoryService) {
     this.$scope = $scope;
     this.processDocumentsService = processDocumentsService;
     this.sdViewUtilService = sdViewUtilService;
@@ -146,12 +101,10 @@
     this.sdI18n = $scope.$root.sdI18n;
     this.sdUtilService = sdUtilService;
     this.sdDialogService = sdDialogService;
+    this.documentRepositoryService = documentRepositoryService;
 
     this.documentMenuPopupUrl = sdUtilService.getBaseUrl()
             + "plugins/html5-process-portal/scripts/directives/sdProcessDocumentsPanel/documentMenuPopover.html";
-
-    this.documentHistoryPopupUrl = sdUtilService.getBaseUrl()
-            + "plugins/html5-views-common/html5/partials/views/documentHistory.html";
 
     this.processAttachmentUrl_ = sdUtilService.getBaseUrl()
             + "services/rest/portal/process-instances/{{OID}}/documents";
@@ -171,7 +124,6 @@
    * 
    */
   ProcessDocumentsController.prototype.initialize = function() {
-    this.documentHistoryDialog = {};
     this.initializeDocuments();
 
     console.log("ProcessDocuments controller initialized...");
@@ -375,8 +327,8 @@
     var newName = this.documentActionControl[this.selectedDocument.uuid].name;
 
     if (newName && (newName != this.selectedDocument.name)) {
-      this.processDocumentsService.rename(this.selectedDocument, newName).then(function(result) {
-        self.replaceDocumentOnUI(result.data);
+      this.documentRepositoryService.renameDocument(this.selectedDocument.uuid, newName).then(function(data) {
+        self.replaceDocumentOnUI(data);
       }, function(error) {
         self.sdDialogService.error(self.$scope, error.data.message, {});
       })
@@ -408,12 +360,11 @@
    */
   ProcessDocumentsController.prototype.deleteDocument = function() {
     var self = this;
-    this.processDocumentsService.deleteDocument(this.selectedDocument).then(function() {
+    this.documentRepositoryService.deleteDocument(this.selectedDocument.uuid).then(function() {
       self.initializeDocuments();
     }, function(result) {
       self.sdDialogService.error(self.$scope, result.data.messages, {});
     })
-
     self.selectedDocument = null;
   }
 
@@ -422,7 +373,7 @@
    */
   ProcessDocumentsController.prototype.detach = function() {
     var self = this;
-    this.processDocumentsService.deleteDocument(this.selectedDocument).then(function() {
+    this.processDocumentsService.detach(this.selectedDocument.uuid).then(function() {
       self.initializeDocuments();
     }, function(error) {
       console.error(error);
@@ -435,25 +386,8 @@
    * 
    */
   ProcessDocumentsController.prototype.viewHistory = function() {
-    var self = this;
-    this.processDocumentsService.getHistory(this.selectedDocument).then(function(result) {
-      self.currentDocumentHistory = result.data;
-      self.documentHistoryDialog.open();
-      self.isReady = true;
-    }, function(error) {
-      console.error(error);
-    })
-  }
-
-  ProcessDocumentsController.prototype.getCurrentDocumentHistory = function(params) {
-    return this.currentDocumentHistory;
-  }
-
-  /**
-   * 
-   */
-  ProcessDocumentsController.prototype.closeHistory = function() {
-    this.documentHistoryDialog.close();
+    this.versionHistoryDocId = this.selectedDocument.uuid;
+    this.showVersionHistoryDialog = true;
   }
 
   /**
@@ -514,7 +448,7 @@
 
   // inject dependencies
   ProcessDocumentsController.$inject = ["processDocumentsService", "sdViewUtilService", "sdUtilService",
-      "sgI18nService", 'sdMimeTypeService', "$scope", "sdDialogService"];
+      "sgI18nService", 'sdMimeTypeService', "$scope", "sdDialogService", "documentRepositoryService"];
 
   // register a controller
   app.controller('processDocumentsPanelCtrl', ProcessDocumentsController);
