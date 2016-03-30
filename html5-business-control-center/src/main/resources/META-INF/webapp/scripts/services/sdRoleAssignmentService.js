@@ -27,7 +27,7 @@
 	 * 
 	 */
 	function RoleAssignmentService($rootScope, $resource, sdLoggerService, sdUtilService) {
-		var REST_BASE_URL = sdUtilService.getBaseUrl() +"services/rest/portal/roleAssignment";
+		var REST_BASE_URL = sdUtilService.getBaseUrl() +"services/rest/portal/roleAssignments";
 		var trace = sdLoggerService.getLogger('bcc-ui.services.sdRoleAssignmentService');
 
 		/**

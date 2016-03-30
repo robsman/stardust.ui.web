@@ -65,7 +65,7 @@ public class TrafficLightViewResource
 
    @POST
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/stats")
+   @Path("/statastics")
    public Response getTrafficLightViewStatastic(String postData)
    {
       JsonMarshaller jsonIo = new JsonMarshaller();
@@ -138,7 +138,7 @@ public class TrafficLightViewResource
 
    @POST
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/statsByBO")
+   @Path("/statasticsByBO")
    public Response getTrafficLightViewStatasticByBO(String postData)
    {
       JsonMarshaller jsonIo = new JsonMarshaller();

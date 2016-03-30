@@ -24,7 +24,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.RoleAssignmentService;
 import org.eclipse.stardust.ui.web.rest.dto.GenericQueryResultDTO;
 
-@Path("/roleAssignment")
+@Path("/roleAssignments")
 public class RoleAssignmentResource
 {
    private static final Logger trace = LogManager.getLogger(RoleAssignmentResource.class);

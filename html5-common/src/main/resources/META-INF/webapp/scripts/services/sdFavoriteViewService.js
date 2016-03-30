@@ -44,11 +44,12 @@
 		 */
 		FavoriteViewService.prototype.addFavorite = function(preferenceId,preferenceName,value) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:preferenceId/:preferenceName";
+			var restUrl = REST_BASE_URL + "/:type/:preferenceId/:preferenceName";
 			
 			var postData = value;
 
 			var tlvStats = $resource(restUrl, {
+				type : '@type',
 				preferenceId : '@preferenceId',
 				preferenceName : '@preferenceName'
 			}, {
@@ -58,6 +59,7 @@
 			});
 
 			var urlTemplateParams = {};
+			urlTemplateParams.type = 'addFavorite';
 			urlTemplateParams.preferenceId = preferenceId;
 			urlTemplateParams.preferenceName = preferenceName;
 			return tlvStats.addFavorite(urlTemplateParams, postData).$promise;
@@ -69,11 +71,12 @@
 		 */
 		FavoriteViewService.prototype.updateFavorite = function(preferenceId,preferenceName,value) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:preferenceId/:preferenceName";
+			var restUrl = REST_BASE_URL + "/:type/:preferenceId/:preferenceName";
 			
 			var postData = value;
 
 			var tlvStats = $resource(restUrl, {
+				type : '@type',
 				preferenceId : '@preferenceId',
 				preferenceName : '@preferenceName'
 			}, {
@@ -83,6 +86,7 @@
 			});
 
 			var urlTemplateParams = {};
+			urlTemplateParams.type = 'updateFavorite';
 			urlTemplateParams.preferenceId = preferenceId;
 			urlTemplateParams.preferenceName = preferenceName;
 			return tlvStats.updateFavorite(urlTemplateParams, postData).$promise;
@@ -112,9 +116,10 @@
 		 */
 		FavoriteViewService.prototype.getFavoriteByType = function(preferenceId) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + '/:preferenceId';
+			var restUrl = REST_BASE_URL + '/:type/:preferenceId';
 
 			var tlvStats = $resource(restUrl, {
+				type : '@type',
 				preferenceId : '@preferenceId'
 			}, {
 				getFavoriteByType : {
@@ -123,6 +128,7 @@
 			});
 			
 			var urlTemplateParams = {};
+			urlTemplateParams.type = 'favoriteByType';
 			urlTemplateParams.preferenceId = preferenceId;
 			return tlvStats.getFavoriteByType(urlTemplateParams).$promise;
 
@@ -134,9 +140,10 @@
 		 */
 		FavoriteViewService.prototype.getFavoriteByName = function(preferenceId, preferenceName) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + '/:preferenceId/:preferenceName';
+			var restUrl = REST_BASE_URL + '/:type/:preferenceId/:preferenceName';
 
 			var tlvStats = $resource(restUrl, {
+				type : '@type',
 				preferenceId : '@preferenceId',
 				preferenceName : '@preferenceName'
 			}, {
@@ -146,6 +153,7 @@
 			});
 			
 			var urlTemplateParams = {};
+			urlTemplateParams.type = 'favoriteByName';
 			urlTemplateParams.preferenceId = preferenceId;
 			urlTemplateParams.preferenceName = preferenceName;
 			return tlvStats.getFavoriteByType(urlTemplateParams).$promise;
@@ -158,9 +166,10 @@
 		 */
 		FavoriteViewService.prototype.deleteFavorite = function(preferenceId, preferenceName) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + '/:preferenceId/:preferenceName';
+			var restUrl = REST_BASE_URL + '/:type/:preferenceId/:preferenceName';
 
 			var tlvStats = $resource(restUrl, {
+				type : '@type',
 				preferenceId : '@preferenceId',
 				preferenceName : '@preferenceName'
 			}, {
@@ -170,6 +179,7 @@
 			});
 			
 			var urlTemplateParams = {};
+			urlTemplateParams.type = 'removeFavorite';
 			urlTemplateParams.preferenceId = preferenceId;
 			urlTemplateParams.preferenceName = preferenceName;
 			return tlvStats.deleteFavorite(urlTemplateParams).$promise;

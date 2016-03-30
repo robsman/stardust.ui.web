@@ -60,7 +60,7 @@
 			});
 
 			var urlTemplateParams = {};
-			urlTemplateParams.type = "stats";
+			urlTemplateParams.type = "statastics";
 
 			return tlvStats.fetch(urlTemplateParams, postData).$promise;
 
@@ -85,7 +85,7 @@
 			});
 
 			var urlTemplateParams = {};
-			urlTemplateParams.type = "statsByBO";
+			urlTemplateParams.type = "statasticsByBO";
 
 			return tlvStats.fetch(urlTemplateParams, postData).$promise;
 

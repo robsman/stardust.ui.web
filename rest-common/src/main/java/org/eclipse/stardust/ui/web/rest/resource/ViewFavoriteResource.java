@@ -51,7 +51,7 @@ public class ViewFavoriteResource
    @SuppressWarnings({"rawtypes", "unchecked"})
    @POST
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{preferenceId}/{preferenceName}")
+   @Path("/addFavorite/{preferenceId}/{preferenceName}")
    public Response addFavorite(@PathParam("preferenceId") String preferenceId,
          @PathParam("preferenceName") String preferenceName, String postedData)
    {
@@ -108,7 +108,7 @@ public class ViewFavoriteResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{preferenceId}")
+   @Path("/favoriteByType/{preferenceId}")
    @ResponseDescription("#### Sample Response:\r\n" + 
          "\r\n" + 
          "    [  \r\n" + 
@@ -171,7 +171,7 @@ public class ViewFavoriteResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{preferenceId}/{preferenceName}")
+   @Path("/favoriteByName/{preferenceId}/{preferenceName}")
    @ResponseDescription("#### Sample Response:\r\n" + 
          "    { \r\n" + 
          "     \"scope\":\"USER\",    \r\n" + 
@@ -215,7 +215,7 @@ public class ViewFavoriteResource
    @SuppressWarnings({"rawtypes", "unchecked"})
    @PUT
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{preferenceId}/{preferenceName}")
+   @Path("/updateFavorite/{preferenceId}/{preferenceName}")
    @RequestDescription("#### Sample Request:\r\n" + 
          "    { \r\n" + 
          "       \"dayOffset\": -7,\r\n" + 
@@ -251,7 +251,7 @@ public class ViewFavoriteResource
 
    @DELETE
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{preferenceId}/{preferenceName}")
+   @Path("/removeFavorite/{preferenceId}/{preferenceName}")
    public Response deleteFavorite(@PathParam("preferenceId") String preferenceId,
          @PathParam("preferenceName") String preferenceName)
    {
