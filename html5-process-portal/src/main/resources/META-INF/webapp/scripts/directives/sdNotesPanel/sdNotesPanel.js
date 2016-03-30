@@ -93,16 +93,13 @@
   /**
    * 
    */
-  function NotesController(notesService, sdViewUtilService, sdUtilService, sdI18nService, $scope,
-          sdPropertiesPageService) {
+  function NotesController(notesService, sdViewUtilService, sdUtilService, sdI18nService, $scope) {
     this.$scope = $scope;
     this.notesService = notesService;
     this.sdViewUtilService = sdViewUtilService;
     this.rootUrl = sdUtilService.getBaseUrl();
     this.sdI18n = $scope.$root.sdI18n;
-    this.propertiesPageService = sdPropertiesPageService;
     this.initialize();
-
   }
 
   /**
@@ -225,13 +222,14 @@
     if (this.showProcessNotes && this.processNotes) {
       total = total + this.processNotes.totalCount;
     }
-
-    this.propertiesPageService.setTotalNotes(total);
+    
+    this.$scope.$emit('TotalNotesNumberChanged', {
+      totalNotes: total
+    });
   };
 
   // inject dependencies
-  NotesController.$inject = ["notesService", "sdViewUtilService", "sdUtilService", "sdI18nService", "$scope",
-      "sdPropertiesPageService"];
+  NotesController.$inject = ["notesService", "sdViewUtilService", "sdUtilService", "sdI18nService", "$scope"];
 
   // register controller
   app.controller('notesPanelCtrl', NotesController);

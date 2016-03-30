@@ -11,12 +11,12 @@
  * Process level documents ATTRIBUTES:
  * -----------------------------------------------------------------------------------
  * 
- * @sdaProcessInstanceOid - Process Oid to request process documents for. If it
- *                        is not provided then Process Documents section will
- *                        not appear
- * @sdaActivityInstanceOid - Activity Oid to request activity documents for. If
- *                         it is not provided then Activity Documents section
- *                         will not appear
+ * @sdaProcessInstanceOid - Process Oid to request process attachments for. If
+ *                        it is not provided then Process Attachments section
+ *                        will not appear
+ * @sdaActivityInstanceOid - Activity Oid to request activity attachments for.
+ *                         If it is not provided then Activity Attachments
+ *                         section will not appear
  */
 
 /**
@@ -137,19 +137,18 @@
    * 
    */
   function ProcessDocumentsController(processDocumentsService, sdViewUtilService, sdUtilService, sgI18nService,
-          sdMimeTypeService, $scope, sdPropertiesPageService, sdDialogService) {
+          sdMimeTypeService, $scope, sdDialogService) {
     this.$scope = $scope;
     this.processDocumentsService = processDocumentsService;
     this.sdViewUtilService = sdViewUtilService;
     this.rootUrl = sdUtilService.getBaseUrl();
     this.sdMimeTypeService = sdMimeTypeService;
     this.sdI18n = $scope.$root.sdI18n;
-    this.propertiesPageService = sdPropertiesPageService;
     this.sdUtilService = sdUtilService;
     this.sdDialogService = sdDialogService;
 
     this.documentMenuPopupUrl = sdUtilService.getBaseUrl()
-            + "plugins/html5-views-common/html5/partials/views/documentMenuPopover.html";
+            + "plugins/html5-process-portal/scripts/directives/sdProcessDocumentsPanel/documentMenuPopover.html";
 
     this.documentHistoryPopupUrl = sdUtilService.getBaseUrl()
             + "plugins/html5-views-common/html5/partials/views/documentHistory.html";
@@ -279,8 +278,7 @@
       if (files.length > 0) {
         self.replaceDocumentOnUI(files[0]);
       }
-    })
-    ["catch"](function(err){
+    })["catch"](function(err) {
       self.sdDialogService.error(self.$scope, err, {});
     })
   };
@@ -318,12 +316,12 @@
       total = total + this.processAttachments.length;
     }
 
-    this.propertiesPageService.setTotalDocuments(total);
+    this.$scope.$emit('TotalAttachmentsNumberChanged', {
+      totalAttachments: total
+    });
   };
 
   /**
-   * TODO: move sdMimeTypeService to html5common and then used it here
-   * 
    * @param mimeType
    */
   ProcessDocumentsController.prototype.getGlyphiconClass = function(mimeType) {
@@ -412,8 +410,8 @@
     var self = this;
     this.processDocumentsService.deleteDocument(this.selectedDocument).then(function() {
       self.initializeDocuments();
-    }, function(error) {
-      console.error(error);
+    }, function(result) {
+      self.sdDialogService.error(self.$scope, result.data.messages, {});
     })
 
     self.selectedDocument = null;
@@ -486,7 +484,7 @@
       processAttachments: [],
       activityAttachments: [],
       specificDocuments: []
-    }, tempDataPath, tempDoc, i, j; // iterators
+    }, tempDataPath, tempDoc, i, j;
 
     for (i = 0; i < data.length; i++) {
       tempDataPath = data[i];
@@ -496,8 +494,8 @@
       if (tempDataPath.dataPath.id === "PROCESS_ATTACHMENTS") {
         targetDocumentList = res.processAttachments;
       }
-      // PROCESS ATTACHMENT PROCESSING
       for (j = 0; j < tempDataPath.documents.length; j++) {
+
         // activity attachment or process attachments
         if (tempDataPath.documents[j].attachmentType == "activity") {
           targetDocumentList = res.activityAttachments;
@@ -516,12 +514,12 @@
 
   // inject dependencies
   ProcessDocumentsController.$inject = ["processDocumentsService", "sdViewUtilService", "sdUtilService",
-      "sgI18nService", 'sdMimeTypeService', "$scope", "sdPropertiesPageService", "sdDialogService"];
+      "sgI18nService", 'sdMimeTypeService', "$scope", "sdDialogService"];
 
-  // register controller
+  // register a controller
   app.controller('processDocumentsPanelCtrl', ProcessDocumentsController);
 
-  // register directive
+  // register a directive
   app
           .directive(
                   "sdProcessDocumentsPanel",

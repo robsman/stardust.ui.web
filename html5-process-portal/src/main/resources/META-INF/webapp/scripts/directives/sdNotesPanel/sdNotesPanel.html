@@ -1,23 +1,4 @@
-<style type="text/css" media="all">
-.properties-panel .noteUser {
-	font-weight: bolder;
-}
-
-.properties-panel .noteDate {
-	opacity: 0.7;
-	font-weight: bolder;
-}
-
-tr.notesRow>td {
-	padding-bottom: 0.5em;
-}
-
-.addNotesLink:focus {
-	border: solid 2px skyblue;
-}
-</style>
 <div>
-
 	<div class="propertiesContent">
 		<table>
 			<tr ng-show="notesCtrl.showProcessNotes">
@@ -27,7 +8,8 @@ tr.notesRow>td {
 				<td class="properties-panel-content">
 					{{notesCtrl.sdI18n('views-common-messages.propertiesPage.noNotes')}}</td>
 			</tr>
-			<tr class="notesRow" ng-show="notesCtrl.showProcessNotes"
+			<tr class="properties-panel-notesRow"
+				ng-show="notesCtrl.showProcessNotes"
 				ng-repeat="note in notesCtrl.processNotes.list">
 				<td class="properties-panel-content"><img
 					ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
@@ -39,11 +21,11 @@ tr.notesRow>td {
 				<td>
 					<table>
 						<tr>
-							<td><span class="noteUser">{{note.creatorName}}</span></td>
+							<td><span class="properties-panel-noteUser">{{note.creatorName}}</span></td>
 						</tr>
 						<tr>
-							<td><span class="noteDate">{{note.created |
-									sdDateTimeFilter}}</span></td>
+							<td><span class="properties-panel-noteDate">{{note.created
+									| sdDateTimeFilter}}</span></td>
 						</tr>
 						<tr>
 							<td><span class="noteText">{{note.note}}</span></td>
@@ -53,13 +35,13 @@ tr.notesRow>td {
 			</tr>
 		</table>
 	</div>
-	<div class="border" style="overflow: auto">
+	<div class="properties-panel-border" style="overflow: auto">
 		<textarea type="text" ng-model="notesCtrl.processNote" rows="3"
 			sd-auto-tab-to="addProcessNoteId"
 			placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addProcessNote')}}">
                        							</textarea>
-		<a href='#' class='addNotesLink' id="addProcessNoteId"
-			style='cursor: pointer; text-decoration: none;'
+		<a href='#' class='properties-panel-addNotesLink'
+			id="addProcessNoteId" style='cursor: pointer; text-decoration: none;'
 			aid="PP-NotesPanelP-addnote" ng-click="notesCtrl.addProcessNotes()">
 			<i id="addProcessNoteId" style="margin-top: 3px"
 			title="{{notesCtrl.sdI18n('processportal.views.notesPanel.header.addNote')}}"
@@ -87,11 +69,11 @@ tr.notesRow>td {
 				<td>
 					<table>
 						<tr>
-							<td><span class="noteUser">{{note.creatorName}}</span></td>
+							<td><span class="properties-panel-noteUser">{{note.creatorName}}</span></td>
 						</tr>
 						<tr>
-							<td><span class="noteDate">{{note.created |
-									sdDateTimeFilter}}</span></td>
+							<td><span class="properties-panel-noteDate">{{note.created
+									| sdDateTimeFilter}}</span></td>
 						</tr>
 						<tr>
 							<td><span class="noteText">{{note.note}}</span></td>
@@ -101,12 +83,13 @@ tr.notesRow>td {
 			</tr>
 		</table>
 	</div>
-	<div class="border" style="overflow: auto">
+	<div class="properties-panel-border" style="overflow: auto">
 		<textarea type="text" ng-model="notesCtrl.activityNote" rows="3"
 			sd-auto-tab-to="addActivityNoteId"
 			placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addActivityNote')}}">
                         						</textarea>
-		<a href='#' class='addNotesLink' id="addActivityNoteId"
+		<a href='#' class='properties-panel-addNotesLink'
+			id="addActivityNoteId"
 			style='cursor: pointer; text-decoration: none;'
 			aid="PP-NotesPanelA-addnote" ng-click="notesCtrl.addActivityNotes()">
 			<i style="margin-top: 3px"

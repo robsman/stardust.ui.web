@@ -7,16 +7,15 @@
  ******************************************************************************/
 
 /**
- * Provides implementation of Documents Panel which includes both Activity and
- * Process level documents ATTRIBUTES:
+ * Provides an implementation for properties page containing Notes and
+ * Attachment for both Activity and Process, it can be configured anywhere and
+ * not just Activity Panel.
  * -----------------------------------------------------------------------------------
  * 
- * @sdaProcessInstanceOid - Process Oid to request process documents for. If it
- *                        is not provided then Process Documents section will
- *                        not appear
- * @sdaActivityInstanceOid - Activity Oid to request activity documents for. If
- *                         it is not provided then Activity Documents section
- *                         will not appear
+ * @sdaProcessInstanceOid - If it is not provided then Process level Notes and
+ *                        Attachments section will not appear
+ * @sdaActivityInstanceOid - If it is not provided then Activity level Notes and
+ *                         Attachments section will not appear
  */
 
 /**
@@ -25,68 +24,34 @@
 
 (function() {
 
-  console.log("Initializing Activities Properties pages...")
-
   var app = angular.module('bpm-common.directives');
-  // define service
-
-  function PropertiesPageService() {
-    var totalNotes = 0;
-    var totalDocuments = 0;
-  }
-
-  angular.extend(PropertiesPageService.prototype, {
-    getTotalNotes: function() {
-      return this.totalNotes;
-    },
-    setTotalNotes: function(notesCount) {
-      this.totalNotes = notesCount;
-    }
-  });
-
-  angular.extend(PropertiesPageService.prototype, {
-    getTotalDocuments: function() {
-      return this.totalDocuments;
-    },
-    setTotalDocuments: function(documentsCount) {
-      this.totalDocuments = documentsCount;
-    }
-  });
-
-  // register service
-  app.service('sdPropertiesPageService', PropertiesPageService);
 
   // define controller
-  function PropertiesPageController($scope, sgI18nService, sdPropertiesPageService) {
+  function PropertiesPageController($scope, sgI18nService) {
     var self = this;
     this.activityInstanceOid = $scope.activityInstanceOid;
     this.processInstanceOid = $scope.processInstanceOid;
     self.$scope = $scope;
     this.sdI18n = $scope.$root.sdI18n;
     this.selectedPropertiesPage = "notes";
-    this.propertiesPageService = sdPropertiesPageService;
+    this.totalNotes = 0;
     self.initialize();
   }
 
-  Object.defineProperty(PropertiesPageController.prototype, 'totalNotes', {
-    enumerable: true, // indicate that it supports enumerations
-    configurable: false, // disable delete operation
-    get: function() {
-      return this.propertiesPageService.getTotalNotes();
-    }
-  });
-
-  Object.defineProperty(PropertiesPageController.prototype, 'totalDocuments', {
-    enumerable: true, // indicate that it supports enumerations
-    configurable: false, // disable delete operation
-    get: function() {
-      return this.propertiesPageService.getTotalDocuments();
-    }
-  });
-
   PropertiesPageController.prototype.initialize = function() {
+    var self = this;
+
+    self.$scope.$on('TotalNotesNumberChanged', function(event, data) {
+      self.totalNotes = data.totalNotes;
+    })
+
+    this.$scope.$on('TotalAttachmentsNumberChanged', function(event, data) {
+      self.totalAttachments = data.totalAttachments;
+    })
+
     this.propertiesPageVisible = true;
-    console.log("sdActivityPanelPropertiesPageController initialized...");
+    
+    console.log("sdActivityPanelPropertiesPage initialized...");
   }
 
   PropertiesPageController.prototype.expand = function() {
@@ -106,9 +71,9 @@
       }
     });
   }
-  
+
   // inject dependencies
-  PropertiesPageController.$inject = ["$scope", "sgI18nService", "sdPropertiesPageService"];
+  PropertiesPageController.$inject = ["$scope", "sgI18nService"];
 
   // register controller
   app.controller('sdActivityPanelPropertiesPageController', PropertiesPageController);
@@ -130,7 +95,7 @@
                           controller: "sdActivityPanelPropertiesPageController",
                           controllerAs: "propertiesPageController",
                           templateUrl: sdUtilService.getBaseUrl()
-                                  + "plugins/html5-process-portal/scripts/directives/ActivityPropertiesPage/activityPanelPropertiesPage.html"
+                                  + "plugins/html5-process-portal/scripts/directives/sdActivityPanelPropertiesPage/sdActivityPanelPropertiesPage.html"
                         };
                       }])
 })();

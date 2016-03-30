@@ -71,7 +71,7 @@ var html5Deps = function() {
         'sdDateTimeFilter' : [ 'html5-common/scripts/filters/sdDateTimeFilter'],
         'sdNotesPanel': ['html5-process-portal/scripts/directives/sdNotesPanel/sdNotesPanel'],
         'sdMimeTypeService': ['html5-process-portal/scripts/services/sdMimeTypeService'],
-        'sdActivityPanelPropertiesPage': ['html5-process-portal/scripts/directives/ActivityPropertiesPage/sdActivityPanelPropertiesPage'],
+        'sdActivityPanelPropertiesPage': ['html5-process-portal/scripts/directives/sdActivityPanelPropertiesPage/sdActivityPanelPropertiesPage'],
         'sdProcessDocumentsPanel': ['html5-process-portal/scripts/directives/sdProcessDocumentsPanel/sdProcessDocumentsPanel'],
         'sdFileDropbox' : [ 'html5-common/scripts/directives/sdFileDropbox'],
         'sdUtilDirectives' : [ 'html5-common/scripts/directives/sdUtilDirectives'],

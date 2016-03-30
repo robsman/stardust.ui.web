@@ -664,3 +664,113 @@ button.close {
 .sda-date-time-condensed .ui-datepicker-trigger{
 	display:none;
 }
+
+/*Section for Properties page*/
+/******************************************************/
+.properties-panel table {
+	width: 100%
+}
+
+.properties-panel h2 {
+	margin: 0px;
+	margin-bottom: 5px;
+}
+
+.properties-panel {
+	padding: 1px 1px 8px 5px;
+	width: 100%;
+}
+
+.properties-panel-table {
+	background-color: white;
+	width: 100%;
+}
+
+.properties-panel td {
+	vertical-align: top;
+}
+
+.properties-panel-content {
+	padding-left: 5px;
+	padding-right: 5px
+}
+
+.properties-panel-toolbar {
+	width: 2%;
+	background-image: none !important;
+}
+
+.propertiesContent {
+	min-height: 200px;
+	max-height: 330px;
+	overflow: overlay;
+}
+
+.properties-panel textarea {
+	float: left;
+	border-style: none !important;
+	width: 88%;
+	resize: vertical;
+}
+
+.properties-panel img {
+	margin-top: 3px;
+}
+
+.properties-panel table {
+	border-collapse: collapse;
+}
+
+.properties-panel-border {
+	border-top: 2px solid #C1C1C1;
+	border-bottom: 2px solid #C1C1C1;
+}
+
+.properties-panel-borderBottom {
+	border-bottom: 2px solid #C1C1C1;
+	margin-top: 5px;
+}
+
+.properties-panel-menu-popover div {
+	margin-bottom: 5px;
+}
+
+.properties-panel-noteUser {
+	font-weight: bolder;
+}
+
+.properties-panel-noteDate {
+	opacity: 0.7;
+	font-weight: bolder;
+}
+
+tr.properties-panel-notesRow>td {
+	padding-bottom: 0.5em;
+}
+
+.properties-panel-addNotesLink:focus {
+	border: solid 2px skyblue;
+}
+
+.properties-panel h4 {
+	color: #A69A88
+}
+
+tr.documentRow>td {
+	padding-bottom: 0.5em;
+}
+
+.properties-panel-renameComplete {
+	padding: 0px;
+}
+
+.properties-panel-renameComplete:focus {
+	padding: 0px;
+	border: solid 2px skyblue;
+}
+
+.properties-panel-upload {
+	float: right;
+	padding-right: 10px;
+	padding-bottom: 20px;
+}

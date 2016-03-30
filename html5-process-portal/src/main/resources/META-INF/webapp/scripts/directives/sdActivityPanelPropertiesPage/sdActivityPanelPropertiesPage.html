@@ -1,82 +1,3 @@
-<style type="text/css" media="all">
-.properties-panel table {
-	width: 100%
-}
-
-.properties-panel h2 {
-	margin: 0px;
-	margin-bottom: 5px;
-}
-
-.properties-panel {
-	padding: 1px 1px 8px 5px;
-	width: 100%;
-}
-
-.properties-panel .properties-table {
-	background-color: white;
-	width: 100%;
-}
-
-.properties-panel .properties-list-table {
-	border-collapse: separate
-}
-
-.properties-panel td {
-	vertical-align: top;
-}
-
-.properties-panel-content {
-	padding-left: 5px;
-	padding-right: 5px
-}
-
-.properties-panel .toolbar {
-	width: 2%;
-	background-image: none !important;
-}
-
-.propertiesContent {
-	min-height: 200px;
-	max-height: 330px;
-	overflow: overlay;
-}
-
-.properties-panel textarea {
-	float: left;
-	border-style: none !important;
-	width: 88%;
-	resize: vertical;
-}
-
-.properties-panel img {
-	margin-top: 3px;
-}
-
-.properties-panel table {
-	border-collapse: collapse;
-}
-
-.properties-panel .border {
-	border-top: 2px solid #C1C1C1;
-	border-bottom: 2px solid #C1C1C1;
-}
-
-.properties-panel .borderTop {
-	border-top: 2px solid #C1C1C1;
-	margin-bottom: 5px;
-}
-
-.properties-panel .borderBottom {
-	border-bottom: 2px solid #C1C1C1;
-	margin-top: 5px;
-}
-
-.properties-panel .menu-popover div {
-	margin-bottom: 5px;
-}
-</style>
-
 <div
 	ng-controller="sdActivityPanelPropertiesPageController as propertiesPageController">
 
@@ -91,10 +12,10 @@
 
 	<div ng-show="propertiesPageController.propertiesPageVisible"
 		class="properties-panel">
-		<table class="properties-table">
+		<table class="properties-panel-table">
 			<tbody>
 				<tr>
-					<td class="toolbar">
+					<td class="properties-panel-toolbar">
 						<table>
 							<tbody>
 								<tr>
@@ -109,7 +30,7 @@
 								<tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
 									<td ng-show="propertiesPageController.totalNotes > 0"
-										style="text-align: center"><a href='#'
+										style="text-align: center; padding-top: 1em"><a href='#'
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesPanel')}}"
 										class='heading'
 										style='cursor: pointer; text-decoration: none;'> <i
@@ -132,14 +53,14 @@
 								</tr>
 								<tr
 									ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
-									<td ng-show="propertiesPageController.totalDocuments > 0"
-										style="text-align: center"><a href='#'
+									<td ng-show="propertiesPageController.totalAttachments > 0"
+										style="text-align: center; padding-top: 1em"><a href='#'
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
 										class='heading'
 										style='cursor: pointer; text-decoration: none;'> <i
 											class='pi pi-invert pi-lg'></i>
 									</a></td>
-									<td ng-show="propertiesPageController.totalDocuments == 0"
+									<td ng-show="propertiesPageController.totalAttachments == 0"
 										style="text-align: center"><a href='#'
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
 										class='heading'
@@ -152,7 +73,7 @@
 									<td style="text-align: center"><a
 										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
 										href='#'> <span>
-												{{propertiesPageController.totalDocuments}} </span></a></td>
+												{{propertiesPageController.totalAttachments}} </span></a></td>
 								</tr>
 							</tbody>
 						</table>
