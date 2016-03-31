@@ -113,13 +113,16 @@
 		this.getFileVersionHistory(docId)
 		.then(function(res){
 
+			//guard against refreshing when initializing the first time
+			var doRefresh = that.currentFileVersionHistory !== undefined;
+
 			if(res.data.length >0){
 				//Assign data to our controller, this exposes to our dataTable
 				that.currentFileVersionHistory = res.data;
 				//Refresh the data table otherwise we will be stuck viewing the old data. Guard
 				//against refreshing before the API is ready, this can occur on the initial change
 				//of the table from empty to having data.
-				if(that.fvhTableApi && that.fvhTableApi.refresh){
+				if(doRefresh && that.fvhTableApi && that.fvhTableApi.refresh){
 					that.fvhTableApi.refresh(false);
 				}
 				//sort of hacky but we need to display the document name on the dialog so we 
