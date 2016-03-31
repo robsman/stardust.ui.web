@@ -96,12 +96,12 @@
 							        class="pi pi-lg">
 							</button>
 							<i ng-show="file.fileState==2" class="pi pi-spin pi-loading"></i>
-							<i ng-show="file.fileState==3" class="pi pi-upload-failure"></i>
-							<i ng-show="file.fileState==4" class="pi pi-upload-success"></i>
-							<span ng-show="file.fileState==2">
+							<i ng-attr-title="{{file.message}}" style="color:red;cursor:pointer;" ng-show="file.fileState==3" class="pi pi-upload-failure"></i>
+							<i ng-show="file.fileState==4" style="color:green;" class="pi pi-upload-success"></i>
+							<span ng-show="file.fileState==2"> 
 							{{ (file.percentUploaded * 100) | number:0}}
 							</span>
-							{{file.name}} 
+							{{file.name}}
 						</td>
 						<td ng-if="(file.size/1024) < 1024" style="width:100px;">{{(file.size/1024)| number:1}} KB</td>
 						<td ng-if="(file.size/1024) >= 1024" style="width:100px">{{(file.size/1048576)| number:1}} MB</td>
@@ -159,6 +159,13 @@
 			    	{{repoUploadCtrl.textMap.openDocument}}
 			    	</label>
 			    </div>
+
+			    <div>
+			    <label>{{repoUploadCtrl.textMap.collision.label}}</label>
+			    <select ng-options="opt as opt.value for opt in repoUploadCtrl.collisionOptions" 
+			            ng-model="repoUploadCtrl.collisionOption">
+			     </select>
+			    </div>
 		    </div>
     	</div>
 
@@ -170,7 +177,7 @@
 				  			    class="button">
 				  			    {{repoUploadCtrl.textMap.close}}
 				  		</button>
-				  		<button ng-show="repoUploadCtrl.files.length > 0 && (epoUploadCtrl.state==='initial'||repoUploadCtrl.state==='fileSelected')" 
+				  		<button ng-show="repoUploadCtrl.files.length > 0 && (repoUploadCtrl.state==='initial'||repoUploadCtrl.state==='fileSelected')" 
 				  			    ng-click="repoUploadCtrl.uploadFile(repoUploadCtrl.files)"
 				  			    class="button">
 				  			    {{repoUploadCtrl.textMap.upload}}

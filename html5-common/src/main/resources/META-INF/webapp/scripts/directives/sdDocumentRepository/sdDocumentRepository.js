@@ -736,10 +736,26 @@
     .then(function(files){
       
       files.forEach(function(file){
+
+        var hasDuplicate;
+
         file.nodeType = "document";
         file.id = file.uuid;
-        targetFolder.children.push(file);
-        treeFolder.isVisible = true;
+
+        //Dont push if we have a duplicate already present e.g. an upload where 
+        //the user handled file collisions by creating a new version
+        hasDuplicate = targetFolder.children.some(function(child){
+          return child.id=== file.id;
+        });
+
+        if(!hasDuplicate){
+          targetFolder.children.push(file);
+        }
+
+        //always make sure node is expanded
+        //treeFolder.isVisible = true;
+        that.treeApi.expandNode(targetFolder.id);
+
       });
     });
 

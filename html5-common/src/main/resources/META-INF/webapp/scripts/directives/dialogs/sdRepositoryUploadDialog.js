@@ -54,7 +54,15 @@
 		this.descrCollapse = true;
 		this.i18n = sdI18nService.getInstance('views-common-messages');
 
+		//build our i18n textMap
 		this.textMap = this.getTextMap(this.i18n);
+
+		//build our collision options collection
+		this.collisionOptions = [];
+		this.collisionOptions.push({"id" : "keep", "value" : this.textMap.collision.keep});
+		this.collisionOptions.push({"id" : "rename", "value" : this.textMap.collision.copy});
+		this.collisionOptions.push({"id" : "version", "value" : this.textMap.collision.version});
+		this.collisionOption = 	this.collisionOptions[2]; //set our selected option to VERSION
 
 		if(this.mode === "UPDATE"){
 			this.title = this.textMap.uploadNewVersion;
@@ -161,6 +169,11 @@
 		textMap.uploadZipArchive = i18n.translate("views.myDocumentsTreeView.fileUploadDialog.uploadZipArchive");
 		textMap.overwrite = i18n.translate("fileUpload.zip.overwrite");
 		textMap.documentType = i18n.translate("fileUpload.documentTypes.label");
+		textMap.collision={};
+		textMap.collision.label = i18n.translate("views.genericRepositoryView.uploadDialog.collision.label");
+		textMap.collision.keep = i18n.translate("views.genericRepositoryView.uploadDialog.collision.option.keep");
+		textMap.collision.copy = i18n.translate("views.genericRepositoryView.uploadDialog.collision.option.copy");
+		textMap.collision.version = i18n.translate("views.genericRepositoryView.uploadDialog.collision.option.version");
 
 		return textMap;
 
@@ -307,6 +320,9 @@
 				delete nonFileData.size;
 				delete nonFileData.percentUploaded;
 
+				//add file collision option
+				nonFileData.nameCollisionOption = that.collisionOption.id;
+
 				//add parent path from our inherited scoped context, be sure to
 				//remove double slashes as engine does not like that CRNT-39783
 				if(that.parentPath){
@@ -422,11 +438,17 @@
 			//integer division -> any 2XX status = success
 			if((status/100 | 0)===2){ 
 				if(result.failures && result.failures.length > 0){
-					that.$timeout(function(res){file.fileState = FileState.ERROR;},0);
+					that.$timeout(function(res){
+						file.fileState = FileState.ERROR;
+						file.message=result.failures[0].message;
+					},0);
 					deferred.resolve(result);
 				}
 				else{
-					that.$timeout(function(res){file.fileState = FileState.COMPLETE;},0);
+					that.$timeout(function(res){
+						file.fileState = FileState.COMPLETE;
+						file.message="";
+					},0);
 					deferred.resolve(result);
 				}
 			}
