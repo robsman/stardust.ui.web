@@ -26,7 +26,7 @@
 (function(){
 
 	/*CONTROLLER IMPLEMENTATION*/
-	sdVersionHistoryDialogCtrl.$inject = ["$timeout", "documentRepositoryService", "$scope", "sdI18nService","$parse"];
+	sdVersionHistoryDialogCtrl.$inject = ["$timeout", "documentRepositoryService", "$scope", "sdI18nService","$parse", "$q"];
 
 	/**
 	 * Controller for the version histroy directive.
@@ -38,7 +38,7 @@
 	 * @param  {[type]} $parse                    [description]
 	 * @return {[type]}                           [description]
 	 */
-	function sdVersionHistoryDialogCtrl($timeout, documentRepositoryService, $scope, sdI18nService, $parse){
+	function sdVersionHistoryDialogCtrl($timeout, documentRepositoryService, $scope, sdI18nService, $parse, $q){
 
 		var that = this;
 
@@ -46,10 +46,11 @@
 		this.$parse = $parse;
 		this.$scope = $scope;
 		this.$timeout = $timeout;
-		this.i18n = sdI18nService.getInstance('views-common-messages');
+		this.$q = $q;
 		this.documentRepositoryService = documentRepositoryService;
 
 		//create i18n based text map
+		this.i18n = sdI18nService.getInstance('views-common-messages');
 		this.textMap = this.getTextMap(this.i18n);
 
 		//Assign our api to the attribute provided by the directive user. This will
@@ -91,6 +92,45 @@
 	}
 
 	/**
+	 * given the documentID of interest this function will retrieve that documents
+	 * version history from the server, assign it to our data table, and invoke a refresh
+	 * on that table. Returns a promise, if opening in concert with this invocation then open
+	 * when the promise resolves.
+	 * @param  {string} docId [description]
+	 * @return {promise}       [description]
+	 */
+	sdVersionHistoryDialogCtrl.prototype.init = function(docId){
+
+		var that = this;
+		var deferred = this.$q.defer();
+
+		this.getFileVersionHistory(docId)
+		.then(function(res){
+
+			if(res.data.length >0){
+				//Assign data to our controller, this exposes to our dataTable
+				that.currentFileVersionHistory = res.data;
+				//Refresh the data table otherwise we will be stuck viewing the old data. Guard
+				//against refreshing before the API is ready, this can occur on the initial change
+				//of the table from empty to having data.
+				if(that.fvhTableApi && that.fvhTableApi.refresh){
+					that.fvhTableApi.refresh(false);
+				}
+				//sort of hacky but we need to display the document name on the dialog so we 
+				//assume the correct name to display is the name of the document in its current revision.
+				that.title = that.textMap.header.replace("{0}",res.data[0].name);
+			}
+			//always resolve, even if no version history length = 0
+			deferred.resolve(res);
+		})
+		["catch"](function(err){
+			deferred.reject(err);
+		});
+
+		return deferred.promise;
+	}
+
+	/**
 	 * Handle the assignment of the base sdDialog api to the attribute specified by the 
 	 * directive user. This is how we expose our open and close functions to the user.
 	 * @param  {[type]} attr  [description]
@@ -101,13 +141,20 @@
 
 		var targetName = attr;
 		var dialogAttrAssignable;
+		var api ={};
+		var that = this;
+
+		api.close = this.fileVersionHistoryDialog.close;
+		api.open = function(){
+			that.init(that.targetDocument);
+		}
 
 		if (angular.isDefined(targetName) && targetName != '') {
 
           dialogAttrAssignable = this.$parse(targetName).assign;
 
           if (dialogAttrAssignable) {
-            dialogAttrAssignable(scope, this.fileVersionHistoryDialog);
+            dialogAttrAssignable(scope, api);
           }
 
         }
@@ -136,7 +183,7 @@
 			that = this;
 
 		/**
-		 * Linking function where we will set up our watch on the targetDocument and assign
+		 * Linking function where we will set up our watch on the targetDocument and 
 		 * attempt to assign our api.
 		 * @param  {[type]} scope   [description]
 		 * @param  {[type]} element [description]
@@ -145,41 +192,24 @@
 		 */
 		linkfx = function(scope, element, attrs){
 
-			//Watch our targetDocument ID and anytime it changes then retrieve the file history
-			//for that document and calculate the appropriate title for our dialog.
+			//Watch our targetDocument ID and anytime it changes initialize/reinitalize our 
+			//controller with the appropriate data
 			scope.$watch('targetDocument',function(newValue, oldValue, scope){
-
 				if(!newValue){return;}
-
-				scope.verHistoryCtrl.getFileVersionHistory(newValue)
-				.then(function(res){
-					if(res.data.length >0){
-
-						//Assign data to our controller, this exposes to our dataTable
-						scope.verHistoryCtrl.currentFileVersionHistory = res.data;
-
-						//Refresh the data table otherwise we will be stuck viewing the old data. Guard
-						//against refreshing before the API is ready, this can occur on the initial change
-						//of the table from empty to having data.
-						if(scope.verHistoryCtrl.fvhTableApi && scope.verHistoryCtrl.fvhTableApi.refresh){
-							scope.verHistoryCtrl.fvhTableApi.refresh(false);
-						}
-
-						//sort of hacky but we need to display the document name on the dialog so we 
-						//assume the correct name to display is the name of the document in its current revision.
-						scope.verHistoryCtrl.title = scope.verHistoryCtrl.textMap.header.replace("{0}",res.data[0].name);
-					}
-				})
-				["catch"](function(err){
-
-				});
-
 				scope.verHistoryCtrl.targetDocument=newValue;
+				scope.verHistoryCtrl.init(newValue);
 			});
 
+			//Watch our show value and anytime it changes to true then reinitalize our data
+			//and then show the dialog. Note that everytime the dialog closes we set this
+			//value back to false as part of the show invocation.
 			scope.$watch('show', function(newValue, oldValue, scope){
 				if(newValue===true){
-					scope.verHistoryCtrl.fileVersionHistoryDialog.open();
+					//always refresh on show
+					scope.verHistoryCtrl.init(scope.verHistoryCtrl.targetDocument)
+					.then(function(){
+						scope.verHistoryCtrl.fileVersionHistoryDialog.open();
+					});
 				}
 				else{
 					scope.verHistoryCtrl.fileVersionHistoryDialog.close();
