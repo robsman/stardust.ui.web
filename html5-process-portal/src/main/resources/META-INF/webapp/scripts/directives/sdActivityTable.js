@@ -325,6 +325,9 @@
 
 			this.registerMethods(attr, scope, $filter, element);
 
+			this.actionsPopoverTemplateUrl = 
+				this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/activityActionsPopover.html');
+
 			this.openDocumentTemplateUrl =
 				this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/documentPopoverActivityTable.html');
 
