@@ -180,5 +180,9 @@
 		}
 
 	};
+	
+	NotesCtrl.prototype.truncateNote = function(note){
+		return _sdUtilService.truncate(note, 53);
+	};
 
 })();

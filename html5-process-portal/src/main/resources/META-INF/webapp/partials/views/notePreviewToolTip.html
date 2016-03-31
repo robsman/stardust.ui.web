@@ -19,6 +19,6 @@
 		<td><span style="color: black; font-size: x-small">{{rowData.scopeType}}</span></td>
 	</tr>
 </table>
-<div style="border-top: 1px solid #CCCCCC;" ng-bind="rowData.note">
+<div style="border-top: 1px solid #CCCCCC;">{{ctrl.truncateNote(rowData.note)}}
 </div>
 
