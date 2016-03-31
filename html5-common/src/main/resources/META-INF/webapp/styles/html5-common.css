@@ -774,3 +774,18 @@ tr.properties-panel-documentRow>td {
 	padding-right: 10px;
 	padding-bottom: 20px;
 }
+
+/*Popover content classes*/
+.popover-content .button-list button{
+	display: block;
+	border-bottom: solid 1px #ddd;
+	min-width:200px;
+	min-width: 100px;
+	text-align: left;
+}
+.popover-content .button-list span{
+	margin:5px;
+	position: absolute;
+	left: 40px;
+	color: #333;
+}
