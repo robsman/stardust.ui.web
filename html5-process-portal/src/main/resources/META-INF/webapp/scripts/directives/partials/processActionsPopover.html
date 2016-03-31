@@ -1,0 +1,50 @@
+
+<div style="min-width:120px;" class="button-list">
+	<button ng-click="processTableCtrl.openProcessHistory(rowData);" aid="PP-ProcessTable-OpenProcessHistoryAction"
+		title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
+		<i class="pi pi-process pi-lg"></i>
+		<span>{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}</span>
+	</button>
+
+	<button ng-click="processTableCtrl.openAbortDialog(rowData);"
+	    ng-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortAction"
+		title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-tool-link tbl-tool-joined-link">
+		<i class="pi pi-process-abort pi-lg" ></i>
+		<span>{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}</span>
+	</button>
+
+	<!-- abort menu -->
+	<button class="button-link tbl-tool-link" ng-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortPopoverAction"
+	    title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
+	    sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
+	    sda-placement="auto bottom-right"
+		ng-click="processTableCtrl.openAbortPopover(rowData); ">
+		<i class="pi pi-menu-dropdown"></i>
+		<span>{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}</span>
+	</button>
+
+	<button ng-click="processTableCtrl.recoverProcess(this, rowData)" aid="PP-ProcessTable-RecoverAction"
+	    title="{{i18n('views-common-messages.common-tooltip-recover')}}"
+		ng-disabled="!rowData.enableRecover" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
+	    <div class="pi-badge">
+	        <i class="pi pi-recover pi-lg"></i>
+	    </div>
+	    <span>{{i18n('views-common-messages.common-tooltip-recover')}}</span>
+	</button>
+
+	<!-- View chart -->
+	<button class="button-link tbl-tool-link"   aid="PP-ProcessTable-OpenGrantChart"
+		title="{{i18n('business-control-center-messages.views-processSearchView-tooltip-viewGanttChart')}}"
+		ng-click="processTableCtrl.openChart(rowData); ">
+		<i class="pi pi-gantt-chart pi-lg" ></i>
+		<span>{{i18n('business-control-center-messages.views-processSearchView-tooltip-viewGanttChart')}}</span>
+	</button>
+
+	<button ng-click=" processTableCtrl.openNotes(rowData);"
+	    aid="PP-ProcessTable-OpenNotes"
+		title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
+		<i class="pi pi-notes-empty pi-lg" ng-if ="rowData.notesCount === 0" ></i>
+		<i class="pi pi-notes pi-lg" ng-if ="rowData.notesCount > 0" ></i>
+		<span>{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}</span>
+	</button>
+</div>

@@ -59,6 +59,9 @@
 		function ProcessTableCompiler(scope, element, attr, ctrl) {
 			var self = this;
 
+
+
+
 			/*
 			 *
 			 */
@@ -106,6 +109,10 @@
 				this.updatePriorityNotification = {
 					error : false,
 					result : {}
+				};
+
+				this.actionsPopover = {
+							url : sdUtilService.getBaseUrl()  +'plugins/html5-process-portal/scripts/directives/partials/processActionsPopover.html'
 				};
 
 				this.caseMenuPopover = {
@@ -731,6 +738,13 @@
 				return true;
 			}
 
+			// Also added to force a digest so that our popover opens correctly
+			// otherwise we can get caught with an empty popover that is waiting
+			// for a digest to display its template.
+			ProcessTableCompiler.prototype.openActionsPopover = function(){
+				return true;
+			}
+			
 			/*
 			 *
 			 */
