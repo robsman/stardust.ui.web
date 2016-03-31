@@ -14,8 +14,14 @@
  *
  * @ATTRIBUTES
  * ---------------------------------------
+ * SYNCHRONICITY WARNING: Always set sda-document-id before you change the sda-show value. Same rule if you call api.open without passing
+ * 						  in the optional documentID variable. If passing in the documentID then the dialog will update correctly otherwise
+ * 						  it relies on the value of the sda-document-id attribute at the time it detects that the sda-show value has changed
+ * 						  or at the time of the api.open invocation.
+ * 						  Doing so after the dialog is open will not result in a data call to the server.
+ * 
  * sd-version-history-dialog : [@] Name of property on parent controller we will assign the dialog api to. This will be the api
- * 								   leveraged to open or close the dialog programatically (attr.open() | attr.close()).
+ * 								   leveraged to open or close the dialog programatically (attr.open(docid) | attr.close()).
  * 								   
  * sda-document-id: [=] The doucment ID we will retrieve file history for, and display in our dialog.
  * 
@@ -145,8 +151,12 @@
 		var that = this;
 
 		api.close = this.fileVersionHistoryDialog.close;
-		api.open = function(){
-			that.init(that.targetDocument);
+		api.open = function(newId){
+			//api call allows ptional documentID variable
+			that.targetDocument = (newId)?newId:that.targetDocument;
+			that.init(that.targetDocument).then(function(){
+				that.fileVersionHistoryDialog.open();
+			});
 		}
 
 		if (angular.isDefined(targetName) && targetName != '') {
