@@ -114,7 +114,7 @@
     this.versionUploadUrl = sdUtilService.getBaseUrl() + "services/rest/portal/documents/upload"
 
     this.params = {
-      createVersion: false
+      nameCollisionOption: "none"
     }
 
     this.initialize();

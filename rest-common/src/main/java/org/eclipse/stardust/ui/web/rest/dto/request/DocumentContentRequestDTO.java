@@ -22,19 +22,46 @@ public class DocumentContentRequestDTO extends DocumentDTO
    public String dataPathId;
    public String parentFolderPath;
    public DocumentType documentType;
-   
+
    public byte[] contentBytes;
-   
+
    public String content;
    public String contentBase64; // kept as alternate to send data
-   
-   public boolean createVersion = true; // to indicate user wants to create a version if
-                                        // the document already exist with the same name
-                                        // and when he/she actually intends to create a
-                                        // document
+
+   /*
+    * This attribute can have following three options to handle the case of document with
+    * same name already exist
+    * 
+    * @version - create a new version
+    * 
+    * @rename - rename new document similar to windows
+    * 
+    * @none - error would be thrown 
+    * if the option is absent then it would be considered as
+    * none
+    */
+   public String nameCollisionOption = "none";
+   //
    public boolean createNewRevision = true; // to indicate user want create revision on
                                             // document update, in case of just rename
                                             // user may not want to create revision so it
                                             // is recommended to make it false
-   
+
+   public boolean isCreateVersion()
+   {
+      if ("version".equals(this.nameCollisionOption))
+      {
+         return true;
+      }
+      return false;
+   }
+
+   public boolean isRename()
+   {
+      if ("rename".equals(this.nameCollisionOption))
+      {
+         return true;
+      }
+      return false;
+   }
 }

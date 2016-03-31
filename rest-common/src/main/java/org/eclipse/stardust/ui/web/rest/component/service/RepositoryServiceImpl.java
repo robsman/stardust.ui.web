@@ -37,7 +37,6 @@ import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryProviderInfo;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
-import org.eclipse.stardust.ui.web.rest.util.DocumentSearchUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
@@ -50,6 +49,7 @@ import org.eclipse.stardust.ui.web.rest.dto.request.RepositorySearchRequestDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryProviderDTO;
+import org.eclipse.stardust.ui.web.rest.util.DocumentSearchUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
@@ -100,7 +100,7 @@ public class RepositoryServiceImpl implements RepositoryService
       {
          folderId = "/";
       }
-      
+
       // remove the trailing slash if it exist
       if (folderId.length() != 1 && folderId.charAt(folderId.length() - 1) == '/')
       {
@@ -138,7 +138,7 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     *
     */
    @Override
@@ -264,7 +264,7 @@ public class RepositoryServiceImpl implements RepositoryService
    // Document specific
    // *******************************
    /**
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     *
     */
    @Override
@@ -282,10 +282,11 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     *
     */
-   public DocumentDTO copyDocument(String documentId, String targetFolderPath, boolean createVersion) throws ResourceNotFoundException
+   public DocumentDTO copyDocument(String documentId, String targetFolderPath, boolean createVersion)
+         throws ResourceNotFoundException
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       return DocumentDTOBuilder.build(
@@ -311,7 +312,7 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     *
     */
    @Override
@@ -326,7 +327,7 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     *
     */
    @Override
@@ -387,10 +388,11 @@ public class RepositoryServiceImpl implements RepositoryService
       documentInfoDTOs.add(documentInfoDTO);
       return createDocuments(documentInfoDTOs, null, processInstance, processAttachments);
    }
-   
+
    /**
     * @param documentInfoDTOs
-    * @param activityInstance - pass this only if it is activity attachment
+    * @param activityInstance
+    *           - pass this only if it is activity attachment
     * @param processInstance
     * @param processAttachments
     * @return
@@ -451,13 +453,21 @@ public class RepositoryServiceImpl implements RepositoryService
 
          Document document = DocumentMgmtUtility.getDocument(parentFolder, documentInfoDTO.name);
 
-         if (!documentInfoDTO.createVersion && document != null)
+         if (!documentInfoDTO.isCreateVersion() && !documentInfoDTO.isRename() && document != null)
          {
             failures.add(new NotificationDTO(null, documentInfoDTO.name, restCommonClientMessages.getParamString(
                   "document.existError", documentInfoDTO.name)));
             continue;
          }
 
+         if (document != null && documentInfoDTO.isRename())
+         {
+            String newFileName = getNewFileName(getDMS().getFolder(parentFolder.getId(), Folder.LOD_LIST_MEMBERS)
+                  .getDocuments(), document.getName());
+            documentInfoDTO.name = newFileName;
+            document = null;
+         }
+         
          if (document == null)
          {
             // create document
@@ -488,7 +498,7 @@ public class RepositoryServiceImpl implements RepositoryService
       }
       return result;
    }
- 
+
    /**
     * @param documentInfoDTO
     * @return
@@ -507,11 +517,12 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     *
     */
    @Override
-   public void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance) throws ResourceNotFoundException
+   public void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance)
+         throws ResourceNotFoundException
    {
       List<Document> documentsToBeDetached = new ArrayList<Document>();
 
@@ -545,11 +556,12 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     *
     */
    @Override
-   public DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO) throws ResourceNotFoundException
+   public DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO)
+         throws ResourceNotFoundException
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       Document document = getDMS().getDocument(documentId);
@@ -619,7 +631,7 @@ public class RepositoryServiceImpl implements RepositoryService
     * 
     * @param documentId
     * @return
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     */
    private Document getJCRDocument(String documentId) throws ResourceNotFoundException
    {
@@ -812,6 +824,42 @@ public class RepositoryServiceImpl implements RepositoryService
    // *******************************
    // General/common methods
    // *******************************
+
+   /**
+    * @param documents
+    * @param fileName
+    * @return
+    */
+   private String getNewFileName(List<Document> documents, String fileName)
+   {
+      String justName = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringBeforeLast(fileName, ".");
+      String ext = fileName.substring(justName.length());
+
+      String copy = MessagesViewsCommonBean.getInstance().get("views.genericRepositoryView.copy");
+      String newName = justName + " - " + copy + ext;
+
+      int count = 2;
+
+      while (true)
+      {
+         boolean found = false;
+
+         for (Document document : documents)
+         {
+            if (newName.equals(document.getName()))
+            {
+               found = true;
+            }
+         }
+
+         if (!found)
+         {
+            break;
+         }
+         newName = justName + " - " + copy + " (" + count++ + ")" + ext;
+      }
+      return newName;
+   }
 
    /**
     * @param repositoryId

@@ -86,9 +86,9 @@ public class FileUploadUtils
             {
                documentInfoDTO.parentFolderPath = inputStream.toString();
             }
-            else if (CommonProperties.CREATE_VERSION.equals(dataHandler.getName()))
+            else if (CommonProperties.NAME_COLLISION_OPTION.equals(dataHandler.getName()))
             {
-               documentInfoDTO.createVersion = Boolean.valueOf(inputStream.toString());
+               documentInfoDTO.nameCollisionOption = String.valueOf(inputStream.toString());
             }
             else if (CommonProperties.CREATE_NEW_REVISION.equals(dataHandler.getName()))
             {
