@@ -20,6 +20,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
 import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
@@ -145,6 +146,10 @@ public class WorklistsTreeUserObject extends IceUserObject
             {
                OrganizationInfo organization = (OrganizationInfo) participantInfo;
                params.put("participantQId", participantInfo.getQualifiedId() + organization.getDepartment().getId());
+            }
+            else if (participantInfo instanceof RoleInfo && null != ((RoleInfo) participantInfo).getDepartment()) {
+          	  RoleInfo role = (RoleInfo) participantInfo;
+          	  params.put("participantQId", participantInfo.getQualifiedId() + role.getDepartment().getId());
             }
             else
             {

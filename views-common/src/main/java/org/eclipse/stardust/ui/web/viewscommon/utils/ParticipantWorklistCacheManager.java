@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
@@ -102,15 +103,18 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
                               .createWorklistQuery(worklistOwner), worklist.getTotalCountThreshold(), entry.getKey()));
 
                   if (worklistOwner instanceof OrganizationInfo
-                        && null != ((OrganizationInfo) worklistOwner).getDepartment())
-                  {
-                     OrganizationInfo organization = (OrganizationInfo) worklistOwner;
-                     addParticipantInfoToCache(worklistOwner.getQualifiedId() + organization.getDepartment().getId(),
-                           worklistOwner);
-                  }
-                  else
-                  {
-                     addParticipantInfoToCache(worklistOwner.getQualifiedId(), worklistOwner);
+                		  && null != ((OrganizationInfo) worklistOwner).getDepartment()) {
+                	  OrganizationInfo organization = (OrganizationInfo) worklistOwner;
+                	  addParticipantInfoToCache(
+                			  worklistOwner.getQualifiedId() + organization.getDepartment().getId(),
+                			  worklistOwner);
+                  } else if (worklistOwner instanceof RoleInfo
+                		  && null != ((RoleInfo) worklistOwner).getDepartment()) {
+                	  RoleInfo role = (RoleInfo) worklistOwner;
+                	  addParticipantInfoToCache(worklistOwner.getQualifiedId() + role.getDepartment().getId(),
+                			  worklistOwner);
+                  } else {
+                	  addParticipantInfoToCache(worklistOwner.getQualifiedId(), worklistOwner);
                   }
 
                }
