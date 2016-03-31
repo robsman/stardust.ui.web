@@ -192,12 +192,11 @@
 		 */
 		linkfx = function(scope, element, attrs){
 
-			//Watch our targetDocument ID and anytime it changes initialize/reinitalize our 
-			//controller with the appropriate data
+			//Watch our targetDocument ID and anytime it changes update property
+			
 			scope.$watch('targetDocument',function(newValue, oldValue, scope){
 				if(!newValue){return;}
 				scope.verHistoryCtrl.targetDocument=newValue;
-				scope.verHistoryCtrl.init(newValue);
 			});
 
 			//Watch our show value and anytime it changes to true then reinitalize our data
