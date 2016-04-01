@@ -668,6 +668,21 @@ public class RepositoryServiceImpl implements RepositoryService
       return resultDTO;
    }
 
+   /**
+    *
+    */
+   @Override
+   public List<DocumentDTO> moveDocument(List<String> documentIds, String targetPath)
+   {
+      List<DocumentDTO> docDTOs = new ArrayList<DocumentDTO>();
+      for (String id : documentIds)
+      {
+         Document document = getDMS().moveDocument(id, targetPath);
+         docDTOs.add(DocumentDTOBuilder.build(document, getDMS()));
+      }
+      return docDTOs;
+   }
+   
    // *******************************
    // Repository level operations
    // *******************************

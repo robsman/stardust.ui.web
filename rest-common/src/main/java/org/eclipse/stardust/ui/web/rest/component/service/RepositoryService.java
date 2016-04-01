@@ -192,6 +192,13 @@ public interface RepositoryService
    DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO)
          throws ResourceNotFoundException;
 
+   /**
+    * @param documentIds
+    * @param targetPath
+    * @return
+    */
+   List<DocumentDTO> moveDocument(List<String> documentIds, String targetPath);
+   
    // *******************************
    // Repository level operations
    // *******************************

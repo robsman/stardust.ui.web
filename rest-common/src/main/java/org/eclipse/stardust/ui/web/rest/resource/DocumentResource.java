@@ -57,12 +57,14 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 /**
  * @author Anoop.Nair
- * @author Abhay.Thappan    
+ * @author Abhay.Thappan
+ * @author Yogesh.Manware    
  * @version $Revision: $
  */
 @Path("/documents")
@@ -466,6 +468,38 @@ public class DocumentResource
    public Response getDocumentVersions(@PathParam("documentId") String documentId) throws Exception
    {
       return Response.ok(GsonUtils.toJsonHTMLSafeString(repositoryService.getDocumentHistory(documentId))).build();
+   }
+
+   /**
+    * @author Yogesh.Manware
+    * @param postedData
+    * @return
+    */
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/move")
+   @RequestDescription("It accepts list of documents to be move to target folder\r\n" + "\r\n" + "Samples\r\n"
+         + "```javascript \r\n" + "{\r\n"
+         + "  documentIds:[\"{urn:repositoryId:System}{jcrUuid}beb84249-06be-41b2-8402-f1f531196d2c\"],\r\n"
+         + "  targetFolderPath: \"/Y\"\r\n" + "}\r\n" + "OR\r\n" + "{\r\n"
+         + "  documentIds:[\"/Y/NewL1.jpg\", \"/Y/NewL2.jpg\"],\r\n" + "  targetFolderPath: \"/documents\"\r\n"
+         + "}\r\n" + "```")
+   @ResponseDescription("Returns list of moved documentDTOs")
+   public Response moveDocuments(String postedData)
+   {
+      JsonObject postedJson = GsonUtils.readJsonObject(postedData);
+      JsonArray documentIdsJson = GsonUtils.extractJsonArray(postedJson, "documentIds");
+      
+      Type listType = new TypeToken<List<String>>()
+      {
+      }.getType();
+      
+      List<String> documentIds = (List<String>) GsonUtils.extractList(documentIdsJson, listType);
+      String targetFolderPath = GsonUtils.extractString(postedJson, "targetFolderPath");
+      List<DocumentDTO> documentDTOs = repositoryService.moveDocument(documentIds, targetFolderPath);
+      
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTOs)).build();
    }
    
    /**
