@@ -342,17 +342,16 @@
 				<td sda-column-type="ACTIONS">
 					<div style="text-align: right; white-space: nowrap;">
 						
-						
 						<button sd-popover  
 								sda-placement="auto left-top"
 								title="{{i18n('processportal.toolbars-workflowActions-tooltip-actions')}}"
-						        sda-template="activityTableCtrl.actionsPopoverTemplateUrl"
+						        sda-template="activityTableCtrl.activityActionsPopoverUrl"
 						        class="button-link tbl-tool-link">
 						        <i class="pi pi-actions pi-lg"></i>
 						</button>
 
-						<button ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance" 
-						        title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}"activityOid
+						<button ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"  ng-if="::activityTableCtrl.isActionButtonVisible('processDocuments')"
+						        title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}"
 						        sd-popover  
 						        sda-trigger="none" 
 						        sda-is-open="activityTableCtrl.processPopover.showDocumentPopover && rowData.activityOID == activityTableCtrl.processPopover.data.activityOID" 

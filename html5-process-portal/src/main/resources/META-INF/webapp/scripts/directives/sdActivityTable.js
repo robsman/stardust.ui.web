@@ -89,7 +89,6 @@
 				processCustomTemplate(elem, attr, transclude);
 				processTrivialDataColumn(elem, attr);
 				processDescriptorColumns(elem, attr);
-				processActions(elem, attr);
 				processToolbar(elem, attr);
 			}catch(e) {
 				showError(e, elem);
@@ -169,50 +168,6 @@
 			}
 		}
 
-		/*
-		 *
-		 */
-		function processActions (elem, attr) {
-
-			var actionsAttr = attr.sdaActions;
-
-			if( angular.isUndefined(actionsAttr) ) {
-				return;
-			}
-
-			var actions = $parse(actionsAttr)();
-
-			if ( actions === false ) {
-				elem.find('[sda-column-type="ACTIONS"] > div').remove();
-			} else if( actions === true ) {
-				return true;
-			} else if ( actions ) {
-				var allAvailableButtons = [];
-				var actionButtons = elem.find('[sda-column-type="ACTIONS"] > div > button');
-
-				angular.forEach(actionButtons, function(button){
-					var buttonType = button.attributes['sda-action-type'].value;
-					allAvailableButtons.push(buttonType);
-
-					if(actions.indexOf(buttonType) === -1) {
-						button.remove();
-					}
-				});
-
-				//Check if passed action names are correct.
-				var invalidValues = [];
-				angular.forEach( actions, function(button) {
-					if(allAvailableButtons.indexOf(button) === -1) {
-						invalidValues.push(button);
-					}
-				});
-
-				if(invalidValues.length >  0) {
-					throw 'Invalid value in sda-actions : ' + invalidValues;
-				}
-
-			}
-		}
 
 		/*
 		 *
@@ -333,6 +288,9 @@
 
 			this.abortMenuTemplateUrl =
 				this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/abortActivityMenuPopover.html');
+			
+			this.activityActionsPopoverUrl =
+				this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/activityActionsPopover.html');
 
 			this.abortMenuPopover = {
 					toolbar : false
@@ -770,7 +728,6 @@
 		 */
 		ActivityTableCompiler.prototype.customizeWithAttributeValues = function(attr, scope, scopeToUse) {
 			var self = this;
-
 			var titleExpr = "";
 			if (attr.sdaTitle) {
 				titleExpr = attr.sdaTitle;
@@ -830,8 +787,14 @@
 			if (attr.sdaToolbar) {
 				this.toolBarConfig =  $parse(attr.sdaToolbar)();
 			}
+			
+			if (angular.isDefined(attr.sdaActions)) {
+				this.actionsConfig =  $parse(attr.sdaActions)();
+			}
 		};
 
+		
+		
 		/*
 		 *
 		 */
@@ -1651,7 +1614,23 @@
 				trace.error("Error in performing default delegate :",error);
 			});
 		};
-
+		
+		
+		/*
+		 *
+		 */
+		ActivityTableCompiler.prototype.isActionButtonVisible = function(columnName) {
+			var actions = this.actionsConfig;
+			
+			if ( actions === false ) {
+				return false;
+			} else if( actions === true ) {
+				return true;
+			} else if ( actions ) {
+				return contains( actions, columnName);
+			}
+			return true;
+		}
 
 		/**
 		 *
