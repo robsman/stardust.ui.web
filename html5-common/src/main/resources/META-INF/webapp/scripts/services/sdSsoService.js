@@ -43,8 +43,8 @@
 				beginInitilization().
 				done(function (data) {
 					
-					trace.debug("Success response", data);
-					var msg = "IPP Intialization successfull."
+					trace.debug("Success response: ", data);
+					var msg = "IPP Initialization successfull."
 					var success = {
 							message : msg
 						};
@@ -52,8 +52,8 @@
 					
 				}).fail(function (data) {
 					
-					trace.debug("Failure response", data);
-					var msg = "IPP Intialization failed."
+					trace.debug("Failure response : ", data);
+					var msg = "IPP Initialization failed."
 						var failure = {
 							message : msg
 					};
