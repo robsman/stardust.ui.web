@@ -69,7 +69,7 @@
 				});
 			} else {
 				var noURlfailure = {
-						Message : "Couldn't find ssoServiceURL in Env config."
+						message : "Couldn't find ssoServiceURL in Env config."
 					};
 					
 				deferred.reject(noURlfailure);
