@@ -18,13 +18,14 @@
 		 <table>
 			<tr>
 				<td style="vertical-align: top;width: 84px;"><label class="label-item">{{i18n('benchmark-messages.views-trafficLightView-processes-label')}}</label></td>
-				<td><select size="5"
-					style="padding: 0;"
-					multiple="multiple" ng-model="ctrl.selectedProcesses"
-					ng-options="opt as opt.name for opt in ctrl.processes | orderBy: ['order', 'name']"
-					aid="COM-benchmark-tlv-selectProcesses">
-				</select></td>
-				<td><label style="margin-left: 10px; display: inline; vertical-align: top;" class="label-item">{{i18n('benchmark-messages.views-trafficLightView-benchmarks-label')}}</label>
+					<td><select size="5" style="padding: 0;" multiple="multiple"
+						ng-model="ctrl.selProcesses" ng-change="ctrl.processChange()"
+						aid="COM-benchmark-tlv-selectProcesses">
+							<option
+								ng-repeat="opt in ctrl.processes | orderBy: ['order', 'name']"
+								title="{{opt.name}}" value="{{opt}}">{{opt.name}}</option>
+					</select></td>
+					<td><label style="margin-left: 10px; display: inline; vertical-align: top;" class="label-item">{{i18n('benchmark-messages.views-trafficLightView-benchmarks-label')}}</label>
                     <select size="5"
 					style="padding: 0;"
 					multiple="multiple" ng-model="ctrl.selectedBenchmarks"

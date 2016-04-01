@@ -68,6 +68,7 @@
 		} ];
 
 		this.selectedProcesses = [ this.processes[0] ];
+		this.selProcesses = [JSON.stringify(this.processes[0])];
 		this.benchmarkDefinitions = [ {
 			'oid' : 'ALL_BENCHMARKS',
 			'name' : 'All Benchmarks',
@@ -887,11 +888,13 @@
 					var favoriteData = values($scope);
                     trace.log("FavoriteData:-", favoriteData);
 					self.selectedProcesses = [];
+					self.selProcesses = [];
 					// Setting selected processes from favorite
 					angular.forEach(favoriteData.selectedProcesses, function(favProcess) {
 						angular.forEach(self.processes, function(process) {
 							if (favProcess.id == process.id) {
-								self.selectedProcesses.push(process);
+								self.selectedProcesses.push(favProcess);
+								self.selProcesses.push(JSON.stringify(favProcess));
 							}
 
 						});
@@ -940,5 +943,17 @@
 		var self = this;
 		self.tlvReportName = self.favoriteName;
 		self.saveFavoritePopup.close();
+	};
+	/**
+	 * 
+	 */
+	TrafficLightViewController.prototype.processChange = function(){
+		var self = this;
+		var selectedProcesses = [];
+		angular.forEach(self.selProcesses, function(process){	
+			selectedProcesses.push(JSON.parse(process));
+		});
+		
+		self.selectedProcesses = selectedProcesses;
 	};
 })();
