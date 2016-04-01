@@ -386,8 +386,8 @@
    * 
    */
   ProcessDocumentsController.prototype.viewHistory = function() {
-    this.versionHistoryDocId = this.selectedDocument.uuid;
     this.showVersionHistoryDialog = true;
+    this.versionHistoryDocId = this.selectedDocument.uuid;
   }
 
   /**
