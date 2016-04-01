@@ -288,9 +288,6 @@
 
 			this.abortMenuTemplateUrl =
 				this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/abortActivityMenuPopover.html');
-			
-			this.activityActionsPopoverUrl =
-				this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/activityActionsPopover.html');
 
 			this.abortMenuPopover = {
 					toolbar : false
