@@ -578,11 +578,18 @@
 
     })
     .then(function(res){
+
       var destNode = that.treeApi.childNodes[dropEvt.nodeId];
-      that.refreshFolder(srcNode.nodeItem);
-      srcNode.isVisible = true;
-      that.refreshFolder(destNode.nodeItem);
-      destNode.isVisible = true;//expand dest node
+      var srcParentFolder = that.treeApi.getParentItem(srcNode.nodeId);
+
+      srcParentFolder.children.splice(srcParentFolder.children.indexOf(srcParentFolder),1);
+
+      that.refreshFolder(destNode.nodeItem)
+      .then(function(){
+        that.treeApi.childNodes[destNode.nodeId].isVisible = true;
+        that.treeApi.childNodes[srcParentFolder.nodeId].isVisible = true;
+      });
+      
     })
     ["catch"](function(err){
       that.errorMessage=that.textMap.error;

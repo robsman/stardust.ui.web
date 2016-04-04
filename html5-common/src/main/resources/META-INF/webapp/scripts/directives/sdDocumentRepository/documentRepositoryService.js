@@ -313,19 +313,26 @@
 
   };
   
-  documentRepoService.prototype.moveDocument = function(docId,targetFolderPath,withRevision){
+  documentRepoService.prototype.moveDocument = function(docIds,targetFolderPath){
 
     var deferred = this.$q.defer();
-    var url= this.documentRoot + "/" + docId + "/copy";
+    var url= this.documentRoot + "/move";
     var data = {};
-    var verb;
 
-    verb = (withRevision===true)?"PUT":"POST";
-    data.targetFolderPath = targetFolderPath;
+    //accept single strings, comma delimited strings, or arrays,
+    //in the end they all must be an array
+    if(!angular.isArray(docIds)){
+      docIds = docIds.split(",");
+    };
+
+    data={
+      "documentIds" : docIds,
+      "targetFolderPath" : targetFolderPath
+    };
 
 
     this.$http({
-      "method" : verb,
+      "method" : "PUT",
       "url" : url,
       "data" : data
     })
