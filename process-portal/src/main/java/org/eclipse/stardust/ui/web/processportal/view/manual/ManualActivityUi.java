@@ -110,6 +110,8 @@ public class ManualActivityUi
          }
 
          // Handle Data Mapping as per Type
+         // ***** Do not change below sequence of evaluating data mappings *****
+
          if (ModelUtils.isSystemDefinedData(dataMapping))
          {
             path = createSystemDataMapping(dataMapping, manualActivityPath);
@@ -118,15 +120,15 @@ public class ManualActivityUi
          {
             path = createDMSDataMapping(dataMapping, allInMappings, manualActivityPath);
          }
+         else if (ModelUtils.isEnumerationType(getModel(), dataMapping))
+         {
+            path = createStructureDataMapping(dataMapping, manualActivityPath);
+         }
          else if (ModelUtils.isPrimitiveType(getModel(), dataMapping))
          {
             path = createPrimitiveDataMapping(dataMapping, manualActivityPath);
          }
          else if (ModelUtils.isStructuredType(getModel(), dataMapping))
-         {
-            path = createStructureDataMapping(dataMapping, manualActivityPath);
-         }
-         else if (ModelUtils.isEnumerationType(getModel(), dataMapping))
          {
             path = createStructureDataMapping(dataMapping, manualActivityPath);
          }
