@@ -1828,8 +1828,7 @@ public class ProcessInstanceUtils
       // Update Document Descriptors for process
       dto.descriptorValues = getDescriptorValues(pi, processDefinition);
       //For descriptor column display values
-      dto.processDescriptorsValues = getProcessDescriptorValues(processDefinition, ((ProcessInstanceDetails) pi).getDescriptors());
-     
+      dto.processDescriptorsValues = getProcessDescriptorValues(processDefinition, ((ProcessInstanceDetails) pi).getDescriptors(), pi);
       dto.supportsProcessAttachments = processDefinitionUtils.supportsProcessAttachments(processDefinition);
 
       CommonDescriptorUtils.updateProcessDocumentDescriptors(
@@ -1869,16 +1868,55 @@ public class ProcessInstanceUtils
    }
 
    private Map<String, DescriptorDTO> getProcessDescriptorValues(ProcessDefinition processDefinition,
-         Map<String, Object> descriptors)
+         Map<String, Object> descriptors, ProcessInstance pi)
    {
-      Map<String, String> descriptorValues = CommonDescriptorUtils.getProcessDescriptorValues(processDefinition,
-            descriptors);
-      Map<String, DescriptorDTO> processDescriptorValues = new HashMap<String, DescriptorDTO>();
-      for (String key : descriptorValues.keySet())
+      List<ProcessDescriptor> processDescriptorsList = CommonDescriptorUtils.getProcessDescriptorValues(
+            processDefinition, descriptors);
+      Map<String, DescriptorDTO> processDescriptorValues = new LinkedHashMap<String, DescriptorDTO>();
+
+      for (Object descriptor : processDescriptorsList)
       {
-         DescriptorDTO descriptorDTO = new DescriptorDTO();
-         descriptorDTO.value = descriptorValues.get(key);
-         processDescriptorValues.put(key, descriptorDTO);
+         if (descriptor instanceof ProcessDocumentDescriptor)
+         {
+            ProcessDocumentDescriptor desc = (ProcessDocumentDescriptor) descriptor;
+
+            List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
+
+            for (DocumentInfo documentInfo : desc.getDocuments())
+            {
+               DocumentDTO documentDTO = new DocumentDTO();
+               documentDTO.name = documentInfo.getName();
+               documentDTO.uuid = documentInfo.getId();
+               documentDTO.contentType = (MimeTypesHelper.detectMimeType(documentInfo.getName(), null).getType());
+               documents.add(documentDTO);
+            }
+            boolean isDocument = true;
+            if (documents.isEmpty())
+            {
+               isDocument = false;
+            }
+
+            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), isDocument, documents);
+            processDescriptorValues.put(desc.getId(), descriptorDto);
+         }
+         else
+         {
+            ProcessDescriptor desc = (ProcessDescriptor) descriptor;
+            DescriptorDTO descriptorDto = null;
+            if (desc.isLink())
+            {
+               // Fetch the dataPath from Process Instance to read instance 'Link Text' attribute value
+               List<DataPath> dataPaths = pi.getDescriptorDefinitions();
+               String linkText = DescriptorColumnUtils.getLinkDescriptorText(desc.getId(), dataPaths);
+               descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null, desc.isLink(), linkText);
+            }
+            else
+            {
+               descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null);
+            }
+
+            processDescriptorValues.put(desc.getId(), descriptorDto);
+         }
       }
       return processDescriptorValues;
    }

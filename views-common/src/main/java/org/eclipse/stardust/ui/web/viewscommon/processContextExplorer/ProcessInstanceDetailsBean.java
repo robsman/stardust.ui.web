@@ -621,7 +621,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
 
          validationMessageBean.reset();
          updateDescriptorHistory();
-         List<DescriptorItemTableEntry> descriptorList = convertToTableEntries(CommonDescriptorUtils.createProcessDescriptors(processInstance, false));
+         List<DescriptorItemTableEntry> descriptorList = convertToTableEntries(CommonDescriptorUtils.createProcessDescriptors(processInstance, false), processInstance);
          
          descriptorTable.setList(descriptorList);
          descriptorTable.initialize();
@@ -635,9 +635,10 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
 
    /**
     * @param processDescriptors
+    * @param processInstance TODO
     * @return
     */
-   private List<DescriptorItemTableEntry> convertToTableEntries(List<ProcessDescriptor> processDescriptors)
+   private List<DescriptorItemTableEntry> convertToTableEntries(List<ProcessDescriptor> processDescriptors, ProcessInstance processInstance)
    {
       List<DescriptorItemTableEntry> descriptorsEntries = CollectionUtils.newList();
       try
@@ -691,8 +692,18 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                      || (suppressBlankDescriptors && (null != processDescriptor.getValue() && StringUtils
                            .isNotEmpty(processDescriptor.getValue()))))
                {
-                  descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
+                  if (processDescriptor.isLink())
+                  {
+                     // Fetch the dataPath from Process Instance to read instance 'Link Text' attribute value
+                     List<DataPath> dataPaths = processInstance.getDescriptorDefinitions();
+                     String linkText = DescriptorColumnUtils.getLinkDescriptorText(processDescriptor.getId(), dataPaths);
+                     
+                     descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor.getValue(),  
+                           processDescriptor.getId(), "Link", String.class, false, linkText));
+                  } else {
+                     descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
                         .getValue()));
+                  }
                }
             }
             

@@ -31,6 +31,7 @@ public class DescriptorItemTableEntry extends DefaultRowModel
    boolean hasError;
    Date lastModified;
    String modifiedBy;
+   String linkText;
    
 
    /**
@@ -51,6 +52,12 @@ public class DescriptorItemTableEntry extends DefaultRowModel
       this.type = type;
       this.mappedType = mappedType;
       this.editable = editable;
+   }
+   
+   public DescriptorItemTableEntry(String name, Object value, String id, String type, Class mappedType, boolean editable, String linkText)
+   {
+      this(name, value, id, type, mappedType, editable);
+      this.linkText = linkText;
    }
    
    public String getId()
@@ -116,6 +123,16 @@ public class DescriptorItemTableEntry extends DefaultRowModel
    public void setModifiedBy(String modifiedBy)
    {
       this.modifiedBy = modifiedBy;
+   }
+
+   public String getLinkText()
+   {
+      return linkText;
+   }
+
+   public void setLinkText(String linkText)
+   {
+      this.linkText = linkText;
    }
 
 }
