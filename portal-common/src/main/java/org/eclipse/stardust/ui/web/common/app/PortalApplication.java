@@ -1164,7 +1164,7 @@ public class PortalApplication
             + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', icon: '_ICON_', url: '_URL_', custom: {_CUSTOM_}});";
       script = StringUtils.replace(script, "_TYPE_", frameworkViewInfo.getTypeId());
       script = StringUtils.replace(script, "_ID_", frameworkViewInfo.getId());
-      script = StringUtils.replace(script, "_LABEL_", view.getFullLabel());
+      script = StringUtils.replace(script, "_LABEL_", StringUtils.replace(view.getFullLabel(), "'", "\\'"));
       script = StringUtils.replace(script, "_ICON_", deriveIconClass(view.getIcon()));
       script = StringUtils.replace(script, "_URL_", url);
       script = StringUtils.replace(script, "_CUSTOM_", view.getParamsAsJson());
@@ -1227,11 +1227,11 @@ public class PortalApplication
       
       if (StringUtils.isNotEmpty(html5FWViewId))
       {
-         popupScript = "parent.BridgeUtils.View.setTitle('" + title + "', '" + html5FWViewId + "');";
+    	  popupScript = "parent.BridgeUtils.View.setTitle('" + StringUtils.replace(title, "'", "\\'") + "', '" + html5FWViewId + "');";
       }
       else
       {
-         popupScript = "parent.BridgeUtils.View.setTitle('" + title + "');";   
+    	  popupScript = "parent.BridgeUtils.View.setTitle('" + StringUtils.replace(title, "'", "\\'") + "');";   
       }
       
       addEventScript(popupScript);

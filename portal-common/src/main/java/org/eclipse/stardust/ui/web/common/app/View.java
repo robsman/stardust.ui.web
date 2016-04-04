@@ -289,7 +289,7 @@ public class View extends AbstractUiElement implements TabScopeManager
          {
             if (element.getValue() instanceof String)
             {
-               ret += element.getKey() + ": '" + element.getValue() + "', ";
+            	ret += element.getKey() + ": '" + StringUtils.replace((String) element.getValue(), "'", "\\'") + "', ";
             }
          }
       }
