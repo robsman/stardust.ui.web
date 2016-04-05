@@ -444,6 +444,7 @@ define(
                                           },
                                           attributes : {
                                              "carnot:engine:camel::camelContextId" : "defaultCamelContext",
+                                             "synchronous:retry:responsibility": "application",
                                              "carnot:engine:camel::invocationPattern" : "sendReceive",
                                              "carnot:engine:camel::invocationType" : "synchronous",
                                              "carnot:engine:camel::applicationIntegrationOverlay" : "templatingIntegrationOverlay"
@@ -668,6 +669,7 @@ define(
                                        {
                                           attributes : {
                                              "carnot:engine:camel::applicationIntegrationOverlay" : "templatingIntegrationOverlay",
+                                             "synchronous:retry:responsibility": "application",
                                              "carnot:engine:camel::camelContextId" : "defaultCamelContext",
                                              "carnot:engine:camel::invocationPattern" : "sendReceive",
                                              "carnot:engine:camel::invocationType" : "synchronous",
@@ -768,8 +770,8 @@ define(
                         valid = true;
                      }
                   }
-                  if(this.formatInput.val()=="docx" && this.templateInput.val().search(/.docx$/) == -1 && this.locationInput.val() != "data"){
-                     this.view.errorMessages.push("Template Name should end with .docx");
+                  if(this.formatInput.val()=="docx" && m_utils.isEmptyString(this.templateInput.val())){
+                     this.view.errorMessages.push("Template Name cannot be empty.");
                      valid = false;
                   }
                   if(this.locationInput.val() == "data" && this.sourceTypeInput.val()=="text" &&this.formatInput.val()=="docx"){

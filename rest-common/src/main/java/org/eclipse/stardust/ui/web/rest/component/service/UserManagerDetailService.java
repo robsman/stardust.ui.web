@@ -28,6 +28,7 @@ import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserAuthorizationStatusDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailRoleDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailsDTO;
+import org.eclipse.stardust.ui.web.rest.service.utils.UserManagerDetailUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -83,10 +84,10 @@ public class UserManagerDetailService
    public QueryResultDTO getAllActivitiesForUser(String userOid, DataTableOptionsDTO options)
    {
       QueryResult<ActivityInstance> queryResult = userManagerDetailUtils.getAllActivitiesForUser(userOid, options);
-      if(CollectionUtils.isNotEmpty(options.extraColumns))
+      if (CollectionUtils.isNotEmpty(options.extraColumns))
       {
          return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE, null, options.extraColumns);
       }
-      return ActivityTableUtils.buildTableResult(queryResult,MODE.ACTIVITY_TABLE);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
    }
 }

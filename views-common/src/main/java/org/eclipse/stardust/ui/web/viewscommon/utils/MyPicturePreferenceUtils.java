@@ -25,7 +25,6 @@ import org.eclipse.stardust.engine.core.repository.DocumentRepositoryFolderNames
 import org.eclipse.stardust.engine.core.repository.DocumentRepositoryUtils;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
-import org.eclipse.stardust.ui.web.common.util.MD5Utils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 
@@ -37,9 +36,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferen
  */
 public class MyPicturePreferenceUtils
 {
-   private static final String AVATAR_BASE_URL = "http://www.gravatar.com/avatar/";
-   private static final String AVATAR_PREFERENCE = "monsterid";
-   private static final int AVATAR_IMAGE_SIZE = 128;
    private static final String DEFAULT_USER_IMAGE = "pi pi-user-avatar";
    private static final String DMS_CONTENT_SERVLET_NAME = "/dms-content/";
    private static final String GENERIC_COMPONENT_SELECTION_KEY = "?.#."; // moduleId.viewId.<featureId>
@@ -47,7 +43,6 @@ public class MyPicturePreferenceUtils
    private static final String VALID_PROTOCOL_REGEX=  "^http(s{0,1})";
 
    public static final String F_MY_PICTURE_TYPE_NO_PICTURE = "NoPicture";
-   public static final String F_MY_PICTURE_TYPE_MONSTER_ID = "MonsterID";
    public static final String F_MY_PICTURE_TYPE_HTTP_URL = "ImageURL";
    public static final String F_MY_PICTURE_TYPE_MY_COMPUTER = "MyComputer";
    public static final String PROFILE_IMAGE_FILE_NAME = "userImage.jpg";
@@ -63,6 +58,11 @@ public class MyPicturePreferenceUtils
     */
    public static String getLoggedInUsersImagePreference()
    {
+      if (!isUserAvatarEnabled())
+      {
+         return F_MY_PICTURE_TYPE_NO_PICTURE;
+      }
+
       UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_VIEWS_COMMON,
             PreferenceScope.USER);
       String picturePreference = userPrefsHelper.getSingleString(UserPreferencesEntries.V_MY_PICTURE,
@@ -75,7 +75,7 @@ public class MyPicturePreferenceUtils
 
    /**
     * Utility method to return the logged in User's profile Image URI.
-    * Returns the HTTP URL if saved picture preference is 'Image URL' or 'Monster ID'
+    * Returns the HTTP URL if saved picture preference is 'Image URL'
     * If the saved preference is 'My computer' then returns a URL to retrieve data from DMS.
     * If none of the above then returns the default URL.
     * If the user is null returns the default image.
@@ -85,6 +85,11 @@ public class MyPicturePreferenceUtils
     */
    public static String getLoggedInUsersImageURI()
    {
+      if (!isUserAvatarEnabled())
+      {
+         return DEFAULT_USER_IMAGE;
+      }
+
       String imageURI = DEFAULT_USER_IMAGE;
       SessionContext context = SessionContext.findSessionContext();
       User user = (context != null) ? context.getUser() : null;
@@ -93,8 +98,7 @@ public class MyPicturePreferenceUtils
       {
          String picturePreference = getLoggedInUsersImagePreference();
 
-         if (F_MY_PICTURE_TYPE_HTTP_URL.equals(picturePreference)
-               || F_MY_PICTURE_TYPE_MONSTER_ID.equals(picturePreference))
+         if (F_MY_PICTURE_TYPE_HTTP_URL.equals(picturePreference))
          {
             UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(
                   UserPreferencesEntries.M_VIEWS_COMMON, PreferenceScope.USER);
@@ -118,7 +122,7 @@ public class MyPicturePreferenceUtils
    /**
     * Utility method to return the given User's profile Image URI.
     * (currently retrieves default image - dependency on CRNT-17864)
-    * Returns the HTTP URL if saved picture preference is 'Image URL' or 'Monster ID'
+    * Returns the HTTP URL if saved picture preference is 'Image URL'
     * If the saved preference is 'My computer' then returns a URL to retrieve data from DMS.
     * If none of the above then returns the default URL.
     * If the user is null returns the default image.
@@ -128,6 +132,11 @@ public class MyPicturePreferenceUtils
     */
    public static String getUsersImageURI(final User user)
    {
+      if (!isUserAvatarEnabled())
+      {
+         return DEFAULT_USER_IMAGE;
+      }
+      
       String imageURI = DEFAULT_USER_IMAGE;
 
       if (user != null)
@@ -145,10 +154,8 @@ public class MyPicturePreferenceUtils
                picturePreference = getPicturePreferenceForUser(user);
             }
          }
-         if (F_MY_PICTURE_TYPE_HTTP_URL.equals(picturePreference)
-               || F_MY_PICTURE_TYPE_MONSTER_ID.equals(picturePreference))
+         if (F_MY_PICTURE_TYPE_HTTP_URL.equals(picturePreference))
          {
-
             String prefURLStr = (String) user
                   .getAttribute(getPreferencesId(UserPreferencesEntries.F_MY_PICTURE_HTTP_URL));
             if (StringUtils.isNotEmpty(prefURLStr))
@@ -210,7 +217,7 @@ public class MyPicturePreferenceUtils
 
    /**
     * Utility method to retrieve the HTTP Image URL. This method returns the URL stored in JCR in case the
-    * preference if 'Image URL' or 'Monster ID'. Else returns a default string 'http://'.
+    * preference if 'Image URL'. Else returns a default string 'http://'.
     * 
     * @param userPicturePreference
     * @return
@@ -218,8 +225,7 @@ public class MyPicturePreferenceUtils
    public static String getHTTPImageURL(final String userPicturePreference)
    {
       String imageURL = DEFAULT_HTTP_IMAGE_URL;
-      if (F_MY_PICTURE_TYPE_HTTP_URL.equals(userPicturePreference)
-            || F_MY_PICTURE_TYPE_MONSTER_ID.equals(userPicturePreference))
+      if (F_MY_PICTURE_TYPE_HTTP_URL.equals(userPicturePreference))
       {
          UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_VIEWS_COMMON,
                PreferenceScope.USER);
@@ -230,19 +236,6 @@ public class MyPicturePreferenceUtils
       return imageURL;
    }
 
-   /**
-    * Utility method to generate and returns the Gravtar URL for the given user.
-    * 
-    * @return
-    */
-   public static String getMonsterIdURL(final User user)
-   {
-      String url = AVATAR_BASE_URL + MD5Utils.computeMD5Hex(user.getAccount()) + "?s=" + AVATAR_IMAGE_SIZE + "&d="
-      + AVATAR_PREFERENCE;
-
-      return url;
-   }
-   
    /**
     * Saves the user's picture preference into JCR.
     */
@@ -339,6 +332,20 @@ public class MyPicturePreferenceUtils
       return true;
    }
 
+   /**
+    * @return
+    */
+   public static boolean isUserAvatarEnabled()
+   {
+      UserPreferencesHelper userPrefsHelper = UserPreferencesHelper
+            .getInstance(org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries.M_PORTAL,
+                  PreferenceScope.PARTITION);
+      boolean enableUserAvatars = userPrefsHelper.getBoolean(
+            org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries.V_PORTAL_CONFIG,
+            org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries.F_ENABLE_USER_AVATARS, false);
+      return enableUserAvatars;
+   }
+   
    /**
     * @return an implementation of DocumentManagementService
     */

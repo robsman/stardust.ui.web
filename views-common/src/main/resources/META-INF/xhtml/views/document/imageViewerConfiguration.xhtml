@@ -68,7 +68,17 @@
 		<ice:outputLabel value="#{views_common_msgPropsBean['views.imageViewerConfig.headline']}" styleClass="label-form" />
 		<ice:panelGroup style="clearing" />
 		<ice:panelGroup styleClass="heading" style="width: 100%">
-			<ice:outputText value="#{views_common_msgPropsBean['views.imageViewerConfig.displayOptions.title']}" />
+			<ice:outputText value="#{views_common_msgPropsBean['views.imageViewerConfig.pdfDisplayOptions.title']}" />
+		</ice:panelGroup>
+		<ice:panelGroup>
+			<ice:outputLabel value="#{views_common_msgPropsBean['views.imageViewerConfig.pdfDisplayOptions.imageZoom']}" styleClass="label-form" />
+			<ice:selectOneMenu partialSubmit="true" value="#{imageViewerConfigurationBean.selectedPDFZoomLevel}">
+				<pc:automationTag value="auto-COM-ImgViewConf-PDFZoom" standAlone="false" />
+				<f:selectItems value="#{imageViewerConfigurationBean.pdfZoomLevelOptions}" />
+			</ice:selectOneMenu>
+		</ice:panelGroup>
+		<ice:panelGroup styleClass="heading" style="width: 100%">
+			<ice:outputText value="#{views_common_msgPropsBean['views.imageViewerConfig.tiffDisplayOptions.title']}" />
 		</ice:panelGroup>
 		<ice:panelGroup>
 			<ice:outputLabel value="#{views_common_msgPropsBean['views.imageViewerConfig.displayOptions.imageDisplay']}" styleClass="label-form" />

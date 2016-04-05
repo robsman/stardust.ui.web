@@ -673,8 +673,7 @@ public class ActivityInstanceUtils
                .getInstance().getString("views.common.notActivatable")));
          throw new NotificationMapException(notification, Status.NOT_ACCEPTABLE);
       }
-
-      ai = serviceFactoryUtils.getWorkflowService().activate(ai.getOID());
+      ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.activateActivity(ai);
       return ai;
    }
 

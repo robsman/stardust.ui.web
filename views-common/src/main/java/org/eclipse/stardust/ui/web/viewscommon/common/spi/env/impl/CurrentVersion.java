@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 SunGard CSA LLC and others.
+ * Copyright (c) 2011, 2016 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,9 +32,7 @@ public class CurrentVersion
 {
    private static final Logger trace = LogManager.getLogger(CurrentVersion.class);
    
-   private static final String BUILD_VERSION_NAME = "-buildVersionName";
-   private static final String VERSION_NAME = "-versionName";
-   public static final String COPYRIGHT_YEARS = "2000-2015";
+   public static final String COPYRIGHT_YEARS = "2000-2016";
    public static final String VERSION;
    public static final String BUILD;
    public static final String COPYRIGHT_MESSAGE;
@@ -108,39 +106,5 @@ public class CurrentVersion
 
       return name.toString();
    }
-   
-   public static void main(String[] args)
-   {
-      String message = null;
-      if (args.length == 0)
-      {
-         message = getVerboseVersion();
-      }
-      else if (args.length == 1)
-      {
-         if (VERSION_NAME.equals(args[0]))
-         {
-            message = getVersionName();
-         }
-         else if (BUILD_VERSION_NAME.equals(args[0]))
-         {
-            message = getBuildVersionName();
-         }
-      }
 
-      if (null == message)
-      {
-         message = MessageFormat.format(
-               "Invalid arguments.\nUsage: CurrentVersion [{0}]|[{1}]", new Object[] {
-                     VERSION_NAME, BUILD_VERSION_NAME });
-      }
-
-      System.out.println(message);
-   }
-
-   private static String getVerboseVersion()
-   {
-      return MessageFormat.format(COPYRIGHT_MESSAGE + "\n", new Object[] {
-            getVersionName(), CurrentVersion.COPYRIGHT_YEARS });
-   }
 }

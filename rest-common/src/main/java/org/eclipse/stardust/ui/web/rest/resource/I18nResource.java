@@ -43,7 +43,7 @@ public class I18nResource
    @Path("/language")
    public Response getLanguage()
    {
-      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"),
+      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-Language"),
             ",");
       if (tok.hasMoreTokens())
       {

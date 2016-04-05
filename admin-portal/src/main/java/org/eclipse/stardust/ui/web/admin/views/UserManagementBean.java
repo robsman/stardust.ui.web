@@ -306,9 +306,8 @@ public class UserManagementBean extends PopupUIComponentBean
             if (userDetailsTableEntry.isSelectedRow())
             {
                User user = userDetailsTableEntry.getUser();
-               if (user != null && !user.getAccount().equals("motu")
-                     && userDetailsTableEntry.getValidTo() == null)
-               {                 
+               if (user != null
+            		   && userDetailsTableEntry.getValidTo() == null) {               
                   User u= service.invalidateUser(user.getRealm().getId(),user.getAccount());
                   invalidatedUsers.add(u);
                }
@@ -560,13 +559,9 @@ public class UserManagementBean extends PopupUIComponentBean
       {
          for (Iterator<User> iterator = skippedUsers.iterator(); iterator.hasNext();)
          {
-            User user = (User) iterator.next();
-            if (user.getAccount().equals("motu"))
-               failureItemsList.add(new NotificationItem(user.getAccount(), this.getMessages().getString(
-                     "notifyMotuNotValidateMsg")));
-            else
-               failureItemsList.add(new NotificationItem(user.getAccount(), this.getMessages().getString(
-                     "notifyUserCannotBeInvalidatedMsg")));
+        	 User user = (User) iterator.next();
+        	 failureItemsList.add(new NotificationItem(user.getAccount(), this.getMessages().getString(
+        			 "notifyUserCannotBeInvalidatedMsg")));
          }
       }
       NotificationMessageBean.showNotifications(successItemsList, this.getMessages().getString("notifySuccessMsg"),

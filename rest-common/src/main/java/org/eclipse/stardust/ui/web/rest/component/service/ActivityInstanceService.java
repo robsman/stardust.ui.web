@@ -188,7 +188,7 @@ public class ActivityInstanceService
                         && activityInstance.getState().equals(
                               ActivityInstanceState.Suspended))
                   {
-                     org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.activate(activityInstance);
+                     org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.activateActivity(activityInstance);
                   }
                }
                TransitionReport report = serviceFactoryUtils.getWorkflowService().performAdHocTransition(target, false);
@@ -459,7 +459,7 @@ public class ActivityInstanceService
       try
       {
          ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getActivityInstance(activityOID);
-         ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.activate(ai);
+         ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.activateActivity(ai);
          
          serviceFactoryUtils.getWorkflowService().unbindActivityEventHandler(activityOID, "Resubmission");
          notification.addSuccess(new NotificationDTO(activityOID, ai.getActivity().getName(), null));

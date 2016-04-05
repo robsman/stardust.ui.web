@@ -125,8 +125,9 @@ public class UserManagerDetailUtils
          for (RoleItem roleItem : roles)
          {
             long departmentOid = -1;
-            if(roleItem.getRole().getDepartment() != null){
-               departmentOid = roleItem.getRole().getDepartment().getOID(); 
+            if (roleItem.getRole().getDepartment() != null)
+            {
+               departmentOid = roleItem.getRole().getDepartment().getOID();
             }
             roleList.add(new UserManagerDetailRoleDTO(roleItem.getRoleName(), roleItem.getRole().getId(), roleItem
                   .getWorklistCount(), roleItem.getUserCount(), roleItem.getEntriesPerUser(), departmentOid));
@@ -244,10 +245,13 @@ public class UserManagerDetailUtils
    {
       ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(role.roleId, null);
       Department department = null;
-      if(role.departmentOid != -1){
-         department = facade.getAdministrationService().getDepartment(role.departmentOid);  
-      }   
-      QualifiedModelParticipantInfo modelParticipantInfo =(QualifiedModelParticipantInfo)( (department == null) ? participant : department.getScopedParticipant(participant)); 
+      if (role.departmentOid != -1)
+      {
+         department = facade.getAdministrationService().getDepartment(role.departmentOid);
+      }
+      QualifiedModelParticipantInfo modelParticipantInfo = (QualifiedModelParticipantInfo) ((department == null)
+            ? participant
+            : department.getScopedParticipant(participant));
       RoleItem roleItem = facade.getRoleItem(modelParticipantInfo);
       return roleItem;
    }

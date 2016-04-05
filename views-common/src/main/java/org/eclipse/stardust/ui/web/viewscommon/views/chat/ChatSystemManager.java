@@ -12,7 +12,7 @@ package org.eclipse.stardust.ui.web.viewscommon.views.chat;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+import java.util.UUID;
 
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
@@ -81,7 +81,6 @@ public class ChatSystemManager
     */
    private String generateId()
    {
-      Random o = new Random();
-      return "CH" + o.nextInt(10000);
+      return "CH" + UUID.randomUUID().toString();
    }
 }

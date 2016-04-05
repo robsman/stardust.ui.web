@@ -8,16 +8,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
-import org.eclipse.stardust.ui.web.modeler.authorization.AuthorizationExtensionRegistry;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public final class ClassesHelper
 {
@@ -158,12 +157,12 @@ public final class ClassesHelper
       accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY, "returnValue");
       accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
             DirectionType.OUT_LITERAL.toString());
-      
+
       if(method == null)
       {
          return;
       }
-            
+
       accessPointJson.addProperty(ModelerConstants.DATA_TYPE_SIMPLENAME,
             method.getReturnType().getSimpleName());
 
@@ -191,7 +190,7 @@ public final class ClassesHelper
       {
          return;
       }
-      
+
       Annotation[] values = getParameterLabels(method);
       JsonObject accessPointJson;
       for (int n = 0; n < method.getParameterTypes().length; ++n)
@@ -311,7 +310,7 @@ public final class ClassesHelper
          {
             signature = removeErasures(signature);
             signature = signature.replaceAll("\\s","");
-            
+
             parameterClassNames = signature.split(",");
 
             parameterClasses = new Class[parameterClassNames.length];
@@ -332,7 +331,7 @@ public final class ClassesHelper
       }
       catch (Throwable t)
       {
-         trace.info("Class '" + className + "' or method '" + methodSignature + "' could not be found.");         
+         trace.info("Class '" + className + "' or method '" + methodSignature + "' could not be found.");
          throw t;
       }
 
@@ -354,30 +353,30 @@ public final class ClassesHelper
       int cnt = 0;
       int pos = -1;
       String newSignature = null;
-      
-      for (int i = 0, n = signature.length(); i < n; i++) 
+
+      for (int i = 0, n = signature.length(); i < n; i++)
       {
          char c = signature.charAt(i);
-         if(c == '<') 
+         if(c == '<')
          {
             if(pos == -1)
                pos = i;
             cnt++;
          }
-         if(c == '>') 
+         if(c == '>')
          {
             cnt--;
             if(cnt == 0)
             {
                newSignature = signature.substring(0, pos) + signature.substring(i + 1, signature.length());
                return removeGenerics(newSignature);
-            }            
-         }         
-      }      
-            
-      return signature;      
+            }
+         }
+      }
+
+      return signature;
    }
-   
+
    public static String getArrayName(String className) throws ClassNotFoundException
    {
       Pattern arrayPattern = Pattern.compile("([\\w\\.]*)\\[\\]");

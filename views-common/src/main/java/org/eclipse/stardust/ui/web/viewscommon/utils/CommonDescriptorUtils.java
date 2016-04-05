@@ -365,6 +365,13 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                               }
                               else
                               {
+                                 if(data.getModelOID() != model.getModelOID())
+                                 {
+                                    refModel = ModelCache.findModelCache().getModel(ref.getModelOid());
+                                 }
+                              }
+                              else
+                              {
                                  if (data.getModelOID() != model.getModelOID())
                                  {
                                     refModel = ModelCache.findModelCache().getModel(data.getModelOID());
@@ -388,8 +395,8 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                                     if (annotation != null)
                                     {
                                        String descriptorLabelValue = annotation.getElementValue(
-                                             XPathAnnotations.IPP_ANNOTATIONS_NAMESPACE,
-                                             new String[] {"ui", Constants.INPUT_PREFERENCES_NUMBER_GROUP_KEY_LABEL});
+                                             XPathAnnotations.IPP_ANNOTATIONS_NAMESPACE, new String[] {
+                                                   "ui", Constants.INPUT_PREFERENCES_NUMBER_GROUP_KEY_LABEL});
                                        if (null != descriptorLabelValue && Boolean.valueOf(descriptorLabelValue))
                                        {
                                           String numberValue = formatNumberInLocale(value);
@@ -514,7 +521,7 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
       {
          if (dataPath.isDescriptor())
          {
-            if (allDescriptors.containsKey(dataPath.getId()))
+            if (!allDescriptors.containsKey(dataPath.getId()))
             {
                DataPath existing = allDescriptors.get(dataPath.getId());
                if (!DescriptorColumnUtils.isCompositeOrLinkDescriptor(existing) && !existing.getData().equals(dataPath.getData()))
@@ -797,7 +804,6 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
    {
       NumberFormat numberFormatter;
       numberFormatter = NumberFormat.getNumberInstance(FacesUtils.getLocaleFromRequest());
-      numberFormatter.setMinimumFractionDigits(2);
       return numberFormatter.format(number);
    }
    

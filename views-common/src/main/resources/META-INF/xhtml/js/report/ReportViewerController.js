@@ -106,9 +106,13 @@ define(
 										//Do not show Retrieve All link.
 										self.renderingController.isPreviewMode = false;
 										// fetch and render report-data
-										self.renderingController.refreshPreview(self, self.report, self.parameters).done(function(){
-											self.updateView();
-										});
+                    if (self.hasParameters() && !self.instance) {
+                      self.updateView();
+                    } else {
+                      self.renderingController.refreshPreview(self, self.report, self.parameters).done(function() {
+                        self.updateView();
+                      });
+                    }
 									});
 
 					jQuery("#reportDefinitionView")
@@ -242,6 +246,9 @@ define(
 				 */
 				ReportViewerController.prototype.reloadTable = function() {
 					var self = this;
+					// For ReportViewer always retrieve all records, setting previewRetrieveAll to true as its value 
+					// is reset to false in getReportData of ReportRenderingController
+					this.renderingController.previewRetrieveAll = true;
 					this.renderingController.refreshPreview(this, this.report, this.parameters).done(function(){
 						self.updateView();
 					});

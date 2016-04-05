@@ -90,6 +90,13 @@ if (!window.bpm.portal.GenericController) {
 		}
 
 
+				this.log("Failed loading server time zone.");
+			});
+			this.log("Server Time Zone Offset : "+serverTimeZoneOffset);
+			return serverTimeZoneOffset;
+		}
+
+
 		/*
 		 * 
 		 */
@@ -305,6 +312,10 @@ if (!window.bpm.portal.GenericController) {
 			var dateTime = {
 				date : jQuery.datepicker.formatDate(format, date),
 				time : hours + ":" + minutes
+			}
+			return dateTime;
+		}
+
 			}
 			return dateTime;
 		}

@@ -12,7 +12,6 @@ package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.faces.component.UIComponent;
 import javax.faces.event.ActionEvent;
@@ -198,7 +197,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          // UnsupportedFileType when OpenDocument check is true
          if (null == contentHandler && !embededView && !disableAutoDownload)
          {
-            autoDownloadLinkId = "autoClickToDownload" + new Random().nextInt(10000);
+            autoDownloadLinkId = "autoClickToDownload" +  this.hashCode();
             PortalApplication.getInstance().addEventScript(
                   "softClickHtmlLink('" + autoDownloadLinkId + "')");
          }

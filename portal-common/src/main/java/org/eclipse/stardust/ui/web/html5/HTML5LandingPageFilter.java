@@ -27,6 +27,7 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.SecurityUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.html5.rest.HTML5FrameworkServices;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
@@ -309,6 +310,7 @@ public class HTML5LandingPageFilter implements Filter
                redirectUri += "?uicommand=" + uiCmd;
             }
 
+            redirectUri = SecurityUtils.sanitizeValue(redirectUri);
             response.sendRedirect(response.encodeRedirectURL(redirectUri));
          }
          catch(Throwable tt)

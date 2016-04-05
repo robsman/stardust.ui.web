@@ -2315,7 +2315,11 @@ public class ModelElementMarshaller implements ModelMarshaller
                if (typeDeclaration == null && data.getExternalReference() != null)
                {
                   ModelType refModel = getModelBuilderFacade().getModelManagementStrategy().getModels().get(data.getExternalReference().getLocation());
-                  typeDeclaration = refModel.getTypeDeclarations().getTypeDeclaration(data.getExternalReference().getXref());
+                  if (refModel != null)
+                  {
+                     typeDeclaration = refModel.getTypeDeclarations()
+                           .getTypeDeclaration(data.getExternalReference().getXref());
+                  }                 
                }
 
                if (typeDeclaration == null && data.eIsProxy())
@@ -2367,8 +2371,12 @@ public class ModelElementMarshaller implements ModelMarshaller
                         ModelType refModel = getModelBuilderFacade()
                               .getModelManagementStrategy().getModels()
                               .get(data.getExternalReference().getLocation());
-                        eObject = refModel.getTypeDeclarations().getTypeDeclaration(
-                              data.getExternalReference().getXref());
+                        if (refModel != null)
+                        {
+                           eObject = refModel.getTypeDeclarations().getTypeDeclaration(
+                                 data.getExternalReference().getXref());
+
+                        }
                      }
 
                      ModelType containingModel = ModelUtils.findContainingModel(eObject);
@@ -3106,7 +3114,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       {
          return null;
       }
-            
+
       if (transitionConnection.getTransition() != null)
       {
          TransitionType transition = transitionConnection.getTransition();

@@ -26,9 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -120,7 +120,7 @@ public class DocumentMgmtUtility
    private static final String SPECIAL_CHARACTER_SET = "[\\\\/:*?\"<>|\\[\\]]";
    private static final String VALID_FILENAME_PATTERN = "[^\\\\/:*?\"<>|\\[\\]]*";
    private static final String ROOT_FOLDER_PATH = "/";
-
+   
    /**
     * creates blank document with default file name
     * 
@@ -539,6 +539,30 @@ public class DocumentMgmtUtility
    }
 
    /**
+    * @param parentFolder
+    * @param folderName
+    * @return
+    */
+   public static Folder getFolder(Folder parentFolder, String folderName)
+   {
+      if (null != parentFolder)
+      {
+         folderName = stripOffSpecialCharacters(folderName);
+         Folder finalFolder = getDocumentManagementService().getFolder(parentFolder.getId());
+         List<Folder> folders = finalFolder.getFolders();
+
+         for (Folder folder : folders)
+         {
+            if (folder.getName().equalsIgnoreCase(folderName))
+            {
+               return folder;
+            }
+         }
+      }
+      return null;
+   }
+   
+   /**
     * Returns the folder if exist otherwise create new folder
     * 
     * @param folderPath
@@ -918,9 +942,11 @@ public class DocumentMgmtUtility
     * @param partitionFolderPath
     * @param bytes
     * @param merge
+    * @return
     * @throws Exception
     */
-   public static Map<String, Set<String>> importFolderFromZip(String partitionFolderPath, byte[] bytes, boolean merge) throws Exception
+   public static Map<String, Set<String>> importFolderFromZip(String partitionFolderPath, byte[] bytes, boolean merge)
+         throws Exception
    {
       // safeguard the root folder
       if (ROOT_FOLDER_PATH.equals(partitionFolderPath))
@@ -934,19 +960,20 @@ public class DocumentMgmtUtility
       Set<String> updated = new TreeSet<String>();
       result.put("added", added);
       result.put("updated", updated);
-      
+
       // open the zip file stream
       ZipInputStream stream = new ZipInputStream(new ByteArrayInputStream(bytes));
-      Folder parentFolder = DocumentMgmtUtility.createFolderIfNotExists(partitionFolderPath);
-      partitionFolderPath = parentFolder.getPath() + "/";
-      
+      DocumentMgmtUtility.createFolderIfNotExists(partitionFolderPath);
+
+      partitionFolderPath = partitionFolderPath + "/";
+
       try
       {
          // now iterate through each item in the stream. The get next
          // entry call will return a ZipEntry for each file in the
          // stream
          ZipEntry entry;
-         boolean cleanedFolder = true; // clean only root folder 
+         boolean cleanedFolder = true; // clean only root folder
          while ((entry = stream.getNextEntry()) != null)
          {
             // take care of Windows paths
@@ -1011,7 +1038,7 @@ public class DocumentMgmtUtility
          // we must always close the zip file.
          stream.close();
       }
-      
+
       return result;
    }
    
@@ -1085,8 +1112,7 @@ public class DocumentMgmtUtility
     */
    public static String generateUniqueId(String anyString)
    {
-      Random o = new Random();
-      return anyString + o.nextInt(10000);
+	   return anyString+ UUID.randomUUID().toString();
    }
 
    /**

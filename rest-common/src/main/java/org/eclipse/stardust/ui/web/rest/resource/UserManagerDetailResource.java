@@ -44,6 +44,7 @@ import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailRoleDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailsDTO;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

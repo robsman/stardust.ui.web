@@ -27,6 +27,8 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.eclipse.stardust.ui.web.common.util.SecurityUtils;
+
 public final class URLUtils
 {
   private URLUtils()
@@ -38,6 +40,11 @@ public final class URLUtils
     if ("file".equals(url.getProtocol()))
     {
       String externalForm = url.toExternalForm();
+      
+      if(SecurityUtils.containsRestrictedSymbols(externalForm))
+      {
+         throw new IOException(SecurityUtils.BAD_REQUEST_MESSAGE);
+      }
       // Remove the "file:"
       File file = new File(externalForm.substring(5));
 

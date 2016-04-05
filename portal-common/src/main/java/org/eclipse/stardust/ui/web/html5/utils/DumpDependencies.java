@@ -38,6 +38,7 @@ public class DumpDependencies
    private StringBuilder dependencies = new StringBuilder();
 
    /**
+    *  Its is being used by build process to produce a report of all the HTML5 dependencies.Hence the main method is valid.
     * @param args
     *           csv filename(optional)
     */

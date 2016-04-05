@@ -46,6 +46,7 @@ import org.eclipse.stardust.ui.web.rest.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserPermissionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;

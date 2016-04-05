@@ -26,10 +26,11 @@ import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.util.SecurityUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.ExceptionFilter;
-import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.FacesUtils;
 
 
@@ -38,8 +39,6 @@ public class InfinityStartup
    private static final Logger trace = LogManager.getLogger(InfinityStartup.class);
    
    public final static String LOGIN_PAGE = "carnot.LOGIN_PAGE";
-   
-   public final static String RETURN_URL_PARAM = "returnUrl";
    
    private final static String TIMEOUT = "Carnot.Portal.SessionInvalidate.Timeout";
    
@@ -104,7 +103,6 @@ public class InfinityStartup
       StringBuffer params = new StringBuffer();
       Map<String, String[]> reqParamMap = request.getParameterMap();
       copyParam(params, reqParamMap, ExceptionFilter.ERROR_PARAM);
-      copyParam(params, reqParamMap, RETURN_URL_PARAM);
       copyParam(params, reqParamMap, "tenant");
       if(!reqParamMap.containsKey("tenant"))
       {
@@ -218,7 +216,8 @@ public class InfinityStartup
    {
       String page = getLoginPage();
 
-      response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + page
-            + params));
+      String redirectURL = request.getContextPath() + page+ params;
+      redirectURL = SecurityUtils.sanitizeValue(redirectURL);
+      response.sendRedirect(response.encodeRedirectURL(redirectURL));
    }
 }

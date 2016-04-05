@@ -42,6 +42,9 @@ import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
+import org.eclipse.stardust.ui.web.common.views.PortalConfiguration;
+import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler.MessageDisplayMode;
@@ -85,7 +88,7 @@ public class PdfDocumentState
 
    // Document state parameters.
 
-   private float zoom = 1.0f;
+   private float zoom;
 
    private float rotation = 0f;
 
@@ -111,6 +114,8 @@ public class PdfDocumentState
    {
       this.documentContentInfo = documentContentInfo;
       initZoomLevels();
+      zoom = Float.valueOf(getUserPrefenceHelper().getSingleString(UserPreferencesEntries.V_IMAGE_VIEWER_CONFIG,
+            UserPreferencesEntries.F_IMAGE_VIEWER_SELECTED_PDF_ZOOM_LEVEL, "1.0f"));
    }
 
    public static float getRotationFactor()
@@ -346,6 +351,14 @@ public class PdfDocumentState
       return false;
    }
    
+   /**
+    * @return
+    */
+   private static UserPreferencesHelper getUserPrefenceHelper()
+   {
+      return UserPreferencesHelper.getInstance(UserPreferencesEntries.M_VIEWS_COMMON, PortalConfiguration.getInstance()
+            .getPrefScopesHelper().getSelectedPreferenceScope());
+   }
    public float getRotation()
    {
       return rotation;

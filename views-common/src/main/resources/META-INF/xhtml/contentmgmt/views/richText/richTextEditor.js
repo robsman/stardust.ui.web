@@ -28,3 +28,4 @@ CKEDITOR.editorConfig = function(config)
 				['FitWindow','ShowBlocks','-'] // No comma for the last row.
     ];
 };
+CKEDITOR.config.entities = false;

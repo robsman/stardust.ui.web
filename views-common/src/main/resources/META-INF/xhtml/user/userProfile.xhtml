@@ -243,7 +243,7 @@
 							
 							<!-- My picture tab. -->
 							<ice:panelTab
-								rendered="#{userProfileBean.modifyProfileConfiguration}"
+								rendered="#{userProfileBean.modifyProfileConfiguration and userProfileBean.userAvatarEnabled}"
 								label="#{messages_admin['views.createUser.myPicturePanel.title']}"
 								title="#{messages_admin['views.createUser.myPicturePanel.title']}">
 								<ice:panelGroup styleClass="clearing" />
@@ -256,8 +256,6 @@
 										valueChangeListener="#{userProfileBean.myPicturePreference.selectionChangeListener}">
 										<f:selectItem itemValue="NoPicture"
 											itemLabel="#{messages_admin['views.createUser.myPicturePanel.option.noPicture.label']}" />
-										<f:selectItem itemValue="MonsterID"
-											itemLabel="#{messages_admin['views.createUser.myPicturePanel.option.monsterId.label']}" />
 										<f:selectItem itemValue="ImageURL"
 											itemLabel="#{messages_admin['views.createUser.myPicturePanel.option.imageURL.label']}" />
 										<f:selectItem itemValue="MyComputer"
@@ -270,8 +268,7 @@
 											value="#{messages_admin['views.createUser.myPicturePanel.picturePreview']}"
 											styleClass="label-form" />
 										<ice:panelGroup styleClass="clearing" />
-										<ice:outputText
-											styleClass="pi pi-user-avatar pi-10x"
+										<ice:outputText styleClass="pi pi-user-avatar pi-10x"
 											height="128px" width="128px" />
 									</ice:panelGroup>
 									<ice:panelGroup
@@ -321,17 +318,6 @@
 												alt="#{messages_admin['views.createUser.myPicturePanel.picturePreview.noImage']}"
 												height="128px" width="128px" />
 										</ice:panelGroup>
-									</ice:panelGroup>
-									<ice:panelGroup
-										rendered="#{userProfileBean.myPicturePreference.monsterIdSelected}">
-										<ice:panelGroup>
-											<ice:outputText styleClass="label-form"
-												value="#{messages_admin['views.createUser.myPicturePanel.picturePreview']}" />
-										</ice:panelGroup>
-										<ice:panelGroup styleClass="clearing" />
-										<ice:graphicImage
-											value="#{userProfileBean.myPicturePreference.currentMonsterImageURL}"
-											height="128px" width="128px" />
 									</ice:panelGroup>
 									<ice:panelGroup styleClass="clearing" />
 									<ice:outputLabel styleClass="label-form"

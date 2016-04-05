@@ -1,17 +1,24 @@
 package org.eclipse.stardust.ui.web.modeler.xpdl.edit;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 import org.junit.Test;
 
-import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
+
+
 
 public class TestCrossModelReferenceTracking extends RecordingTestcase
 {
@@ -53,7 +60,7 @@ public class TestCrossModelReferenceTracking extends RecordingTestcase
          }
       }
 
-      assertThat(role2, is(nullValue()));
+      assertThat(role2, is(not(nullValue())));
       assertThat(role1, is(not(nullValue())));
       assertThat(role1.eIsProxy(), is(false));
 
@@ -69,18 +76,8 @@ public class TestCrossModelReferenceTracking extends RecordingTestcase
 
 
       EList<ExternalPackage> externalPackage = consumerModel.getExternalPackages().getExternalPackage();
-      assertThat(externalPackage.size(), is(0));
+      assertThat(externalPackage.size(), is(1));
 
-      saveModel();
-
-      List<AttributeType> attributes = consumerModel.getAttribute();
-      for(AttributeType attribute : attributes)
-      {
-         String attributeName = attribute.getName();
-         assertThat(attributeName, not(containsString("carnot:connection:")));
-      }
-
-      // saveReplayModel("C:/tmp");
    }
 
    protected boolean includeProviderModel2()

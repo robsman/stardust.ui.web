@@ -104,7 +104,7 @@ public class UserUtils
       UserQuery userQuery = onlyActive ? UserQuery.findActive() : UserQuery.findAll();
       
       String[] prefModules = {UserPreferencesEntries.M_ADMIN_PORTAL,UserPreferencesEntries.M_VIEWS_COMMON};
-      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Minimal);
       userPolicy.setPreferenceModules(prefModules);
       userQuery.setPolicy(userPolicy);
 

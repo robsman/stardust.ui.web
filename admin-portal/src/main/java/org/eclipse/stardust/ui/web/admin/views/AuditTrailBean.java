@@ -37,8 +37,6 @@ import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -265,7 +263,7 @@ public class AuditTrailBean extends PopupUIComponentBean
     * 
     * @param event
     */
-   public boolean cleanupATD(boolean retainUsersAndDepts)
+   public boolean cleanupATD(boolean retainUsersAndDepts, boolean retainBOInstances)
    {
       AdministrationService service = null;
       try
@@ -273,7 +271,7 @@ public class AuditTrailBean extends PopupUIComponentBean
          service = workflowFacade.getServiceFactory().getAdministrationService();
          if (service != null)
          {
-            service.cleanupRuntime(retainUsersAndDepts);
+            service.cleanupRuntime(retainUsersAndDepts, retainBOInstances);
             SessionContext.findSessionContext().resetSession();
             return true;
          }
@@ -345,6 +343,7 @@ public class AuditTrailBean extends PopupUIComponentBean
        */
       private static final long serialVersionUID = 1L;
       private boolean retainUsersAndDepts = true;
+      private boolean retainBOInstances = true;
 
       public AuditTrailConfirmationDialog(DialogContentType contentType, DialogActionType actionType, String includePath)
       {
@@ -363,11 +362,21 @@ public class AuditTrailBean extends PopupUIComponentBean
       {
          this.retainUsersAndDepts = retainUsersAndDepts;
       }
+      
+      public boolean isRetainBOInstances()
+      {
+         return retainBOInstances;
+      }
+
+      public void setRetainBOInstances(boolean retainBOInstances)
+      {
+         this.retainBOInstances = retainBOInstances;
+      }
 
       public boolean accept()
       {
          mappedConfirmationDialog = null;
-         boolean navigationStatus = cleanupATD(retainUsersAndDepts);
+         boolean navigationStatus = cleanupATD(retainUsersAndDepts, retainBOInstances);
          if (navigationStatus)
          {
             PortalApplication.getInstance().logout();

@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.filter;
 
-import java.util.Random;
-
 import org.eclipse.stardust.ui.web.common.column.ColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
@@ -114,8 +112,7 @@ public abstract class TableDataFilter implements ITableDataFilter
    {
       if(StringUtils.isEmpty(id))
       {
-         Random o = new Random();
-         id = "DF" + o.nextInt(10000);
+         id = "DF" + this.hashCode();
       }
 
       return id;

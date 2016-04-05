@@ -14,6 +14,7 @@ import static java.util.Arrays.asList;
 import static org.eclipse.stardust.ui.web.common.util.CollectionUtils.newArrayList;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -41,10 +42,11 @@ import org.eclipse.stardust.common.error.LoginFailedException;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.SecurityUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.PluginResourceUtils;
 
@@ -77,10 +79,13 @@ public class LoginFilter implements Filter
          + "/public/*";
    
    private static final String PRINCIPAL_LOGIN_INIT_PAGE = "/plugins/common/initializeSession.iface";
+
+   private final static String SKIP_URIS = "skipURIs";
    
    private String loginPage;
    private String logoutPage;
    private String mainPage;
+   private List<String > skipUris;
    
    private List<String> principalUserRoles;
    
@@ -224,6 +229,25 @@ public class LoginFilter implements Filter
          chain.doFilter(request, response);
          return;
       }
+
+      
+      if (null != skipUris && !skipUris.isEmpty())
+      {
+         for (String skipUri : skipUris)
+         {
+            if (requestUri.startsWith(contextPath + skipUri))
+            {
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("Bypassing login check for predefined URI: " + requestUri);
+               }
+
+               chain.doFilter(request, response);
+               return;
+            }
+         }
+      }
+      
       FacesContext facesContext = FacesUtils.getFacesContext(servletContext, request, response);
      
       SessionContext sessionContext = SessionContext.findSessionContext(facesContext);
@@ -299,7 +323,8 @@ public class LoginFilter implements Filter
                      }
                      url.deleteCharAt(url.length() - 1);
                   }
-                  response.sendRedirect(response.encodeRedirectURL(url.toString()));
+                  
+                  response.sendRedirect(response.encodeRedirectURL(SecurityUtils.sanitizeValue(url.toString())));
                   return;
                }
                else
@@ -452,6 +477,17 @@ public class LoginFilter implements Filter
       if (publicAnyPluginUris.isEmpty() && publicUris.isEmpty())
       {
          trace.info("Publicly accessible URIs are disabled.");
+      }
+
+      skipUris = new ArrayList<String>();
+      String skip = filterCfg.getInitParameter(SKIP_URIS);
+      if (!StringUtils.isEmpty(skip))
+      {
+         String[] skipParts = skip.split(",");
+         for (String part : skipParts)
+         {
+            skipUris.add(part.trim());
+         }
       }
    }
 
