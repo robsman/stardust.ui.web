@@ -1424,15 +1424,11 @@ if (!window["BridgeUtils"].FrameManager) {
 		    if (0 < openContentFrames.length) {
 				if ('before' == phaseId) {
 					
-					messages.push(1 == openContentFrames.length //
-							? i18n.translate('portal-common-messages.portal-common-js-oneIframeOpen-warning', 
-				    				'Currently there is 1 open content frame. If you proceed to load another page any unsaved content will be lost.')
-			                : i18n.translate('portal-common-messages.portal-common-js-multipleIframesOpen-warning-prefix', 
-			                	'Currently there are') + " "  
-					    		+ openContentFrames.length 
-					    		+ " "
+					messages.push(i18n.translate('portal-common-messages.portal-common-js-multipleIframesOpen-warning-prefix', 
+			                	'Content tabs are currently open.')   
+					    		+ "\n\n"
 					    		+ i18n.translate('portal-common-messages.portal-common-js-multipleIframesOpen-warning-postfix', 
-					    				'open content frames. If you proceed to load another page any unsaved content will be lost.'));
+					    				'If you leave this page any unsaved content will be lost and any open Activities will be returned to your personal worklist.'));
 			        } else if ('after' == phaseId) {
 						alert(i18n.translate(
 										'portal-common-messages.portal-common-js-unsavedContent-lost-prefix',
