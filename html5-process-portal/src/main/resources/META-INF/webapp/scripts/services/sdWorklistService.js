@@ -39,6 +39,9 @@
 			   restUrl = restUrl + REST_BASE_URL;
 		   }
 
+		   var postData = sdDataTableHelperService.convertToPostParams(query.options);
+		   postData['worklistId'] = query.id;
+		   
 		   // Prepare path Params
 		   var urlTemplateParams = {};
 		   if (query.criticality) {
@@ -57,6 +60,9 @@
 			   restUrl = restUrl  + ":type/:id";
 			   urlTemplateParams.type = "participant";
 			   urlTemplateParams.id = query.participantQId;
+			   if(query.departmentQId) {
+				   postData['departmentQId'] = query.departmentQId;
+			   }
 		   }else if (query.userId) {
 			   restUrl = restUrl  + ":type/:id";
 			   urlTemplateParams.type = "user";
@@ -91,8 +97,6 @@
 			   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams.substr(1));
 		   }
 
-		   var postData = sdDataTableHelperService.convertToPostParams(query.options);
-		   postData['worklistId'] = query.id;
 
 		   var worklist = $resource(restUrl, {
 			   type : '@type',

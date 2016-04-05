@@ -142,21 +142,23 @@ public class WorklistsTreeUserObject extends IceUserObject
          }
          else
          {
-            if (participantInfo instanceof OrganizationInfo  && null != ((OrganizationInfo) participantInfo).getDepartment())
-            {
-               OrganizationInfo organization = (OrganizationInfo) participantInfo;
-               params.put("participantQId", participantInfo.getQualifiedId() + organization.getDepartment().getId());
-            }
-            else if (participantInfo instanceof RoleInfo && null != ((RoleInfo) participantInfo).getDepartment()) {
-          	  RoleInfo role = (RoleInfo) participantInfo;
-          	  params.put("participantQId", participantInfo.getQualifiedId() + role.getDepartment().getId());
-            }
-            else
-            {
-               params.put("participantQId", participantInfo.getQualifiedId());
-            }
-            params.put("userId", userParticipantId);
-            labelName = label.getLabel();
+        	 if (participantInfo instanceof OrganizationInfo  && null != ((OrganizationInfo) participantInfo).getDepartment())
+        	 {
+        		 OrganizationInfo organization = (OrganizationInfo) participantInfo;
+        		 params.put("participantQId", participantInfo.getQualifiedId());
+        		 params.put("departmentQId",  organization.getDepartment().toString());
+        	 }
+        	 else if (participantInfo instanceof RoleInfo && null != ((RoleInfo) participantInfo).getDepartment()) {
+        		 RoleInfo role = (RoleInfo) participantInfo;
+        		 params.put("participantQId", participantInfo.getQualifiedId());
+        		 params.put("departmentQId",  role.getDepartment().toString());
+        	 }
+        	 else
+        	 {
+        		 params.put("participantQId", participantInfo.getQualifiedId());
+        	 }
+        	 params.put("userId", userParticipantId);
+        	 labelName = label.getLabel();
          }
       }
       params.put("id", participantInfo.getQualifiedId());

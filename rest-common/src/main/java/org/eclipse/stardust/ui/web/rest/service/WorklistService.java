@@ -45,9 +45,9 @@ public class WorklistService
     * @param string
     * @return
     */
-   public QueryResultDTO getWorklistForParticipant(String participantQId, String userId, Options options)
+   public QueryResultDTO getWorklistForParticipant(String participantQId, String userId, String departmentQId, Options options)
    {
-      QueryResult< ? > queryResult = worklistUtils.getWorklistForParticipant(participantQId, userId, options);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForParticipant(participantQId, userId, departmentQId, options);
       return getTableResult(queryResult, options.fetchTrivialManualActivities);
    }
 

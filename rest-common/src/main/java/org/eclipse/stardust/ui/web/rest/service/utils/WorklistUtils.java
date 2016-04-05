@@ -72,7 +72,7 @@ public class WorklistUtils
     * @param participantQId
     * @return
     */
-   public QueryResult< ? > getWorklistForParticipant(String participantQId, String userId, Options options)
+   public QueryResult< ? > getWorklistForParticipant(String participantQId, String userId,String departmentQId, Options options)
    {
       //If the userId is not passed consider the user to be the logged in user.
       //User id is required to differentiate between the particpants when the deputy logs in 
@@ -81,8 +81,15 @@ public class WorklistUtils
       {
          userId = userService.getLoggedInUser().id;
       }
+      
+      String cachekey = participantQId;
+      
+      if(StringUtils.isNotEmpty(departmentQId)) {
+    	  cachekey = cachekey + ParticipantWorklistCacheManager.PARTICIPANT_KEY_SEPRATOR + departmentQId;
+      }
+      
       ParticipantInfo participantInfo = ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(
-            participantQId);
+    		  cachekey);
       WorklistQuery query = (WorklistQuery) ParticipantWorklistCacheManager.getInstance().getWorklistQuery(
             participantInfo, userId);
 

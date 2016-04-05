@@ -44,6 +44,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
 {
    private static final long serialVersionUID = -4467279164688998487L;
    public static final String BEAN_ID = "ippParticipantWorklistCacheManager";
+   public static final String PARTICIPANT_KEY_SEPRATOR = "_";
    public static final Logger trace = LogManager.getLogger(ParticipantWorklistCacheManager.class);
 
    private Map<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> participantWorklists;
@@ -104,16 +105,19 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
 
                   if (worklistOwner instanceof OrganizationInfo
                 		  && null != ((OrganizationInfo) worklistOwner).getDepartment()) {
+                	  
                 	  OrganizationInfo organization = (OrganizationInfo) worklistOwner;
                 	  addParticipantInfoToCache(
-                			  worklistOwner.getQualifiedId() + organization.getDepartment().getId(),
+                			  worklistOwner.getQualifiedId()  + PARTICIPANT_KEY_SEPRATOR + organization.getDepartment().toString(),
                 			  worklistOwner);
                   } else if (worklistOwner instanceof RoleInfo
                 		  && null != ((RoleInfo) worklistOwner).getDepartment()) {
+                	  
                 	  RoleInfo role = (RoleInfo) worklistOwner;
-                	  addParticipantInfoToCache(worklistOwner.getQualifiedId() + role.getDepartment().getId(),
+                	  addParticipantInfoToCache(worklistOwner.getQualifiedId() + PARTICIPANT_KEY_SEPRATOR + role.getDepartment().toString(),
                 			  worklistOwner);
                   } else {
+                	  
                 	  addParticipantInfoToCache(worklistOwner.getQualifiedId(), worklistOwner);
                   }
 
@@ -325,16 +329,20 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
     * @param participantQID
     * @param participantInfo
     */
-   private void addParticipantInfoToCache(String participantQID, ParticipantInfo participantInfo)
+   private void addParticipantInfoToCache(String cacheKey, ParticipantInfo participantInfo)
    {
       if (null == participantInfoMap)
       {
          participantInfoMap = new LinkedHashMap<String, ParticipantInfo>();
       }
-      
-      if (!participantInfoMap.containsKey(participantQID))
+
+      if (!participantInfoMap.containsKey(cacheKey))
       {
-         participantInfoMap.put(participantQID, participantInfo);
+         participantInfoMap.put(cacheKey, participantInfo);
+      }
+      else 
+      {
+    	 trace.debug("Duplicate cache key encountered for participant cache :-" + cacheKey);
       }
    }
    

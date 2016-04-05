@@ -36,6 +36,8 @@ import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.JsonObject;
+
 /**
  * @author Subodh.Godbole
  * @author Johnson.Quadras
@@ -69,14 +71,18 @@ public class WorklistResource
          @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
          @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
          @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
-         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, @QueryParam("userId") String userId,String postData)
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, @QueryParam("userId") String userId, String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
-
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant( participantQId, userId, options);
+        
+         String departmentQId = null;
+         JsonObject postJSON =  new JsonMarshaller().readJsonObject(postData);
+         departmentQId = postJSON.has("departmentQId") ? postJSON.get("departmentQId").getAsString() : null;
+         
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant( participantQId, userId, departmentQId, options);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
