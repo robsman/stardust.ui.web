@@ -14,7 +14,7 @@
 		ng-repeat="process in ctrl.workflowMyProcesses">
 		<span>{{process.name}}:</span>
 		<a href="#" ng-click="ctrl.openWorklistView(process)"
-			data-placement="right" ng-if="process.totalCount > 0">
+			data-placement="right" ng-if="process.totalCount != 0">
 			<span ng-bind="sdI18n('processportal.launchPanels-myProcesses-items','',[process.totalCount])"></span>
 		 </a>
 		 <span ng-if="process.totalCount == 0" ng-bind="sdI18n('processportal.launchPanels-myProcesses-items','',[process.totalCount])" class="disabled"></span>

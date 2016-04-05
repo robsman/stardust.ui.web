@@ -87,7 +87,10 @@
 		}		
 	};
 	
-
+   /**
+    * 
+    * @param process
+    */
 	WorkflowMyProcessPanelCtrl.prototype.openWorklistView = function(process){
 		  var params = {
 					  	"id": process.id,
@@ -96,5 +99,4 @@
 				       };
 		_sdViewUtilService.openView("worklistPanel","id=" +process.id, params);
 	};
-
 })();

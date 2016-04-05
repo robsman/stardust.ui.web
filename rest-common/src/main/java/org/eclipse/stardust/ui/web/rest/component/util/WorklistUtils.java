@@ -887,7 +887,7 @@ public class WorklistUtils
    {
       Long totalCount = ProcessWorklistCacheManager.getInstance().getWorklistCount(processDefinition);
       Long totalCountThreshold = ProcessWorklistCacheManager.getInstance().getWorklistCountThreshold(processDefinition);
-      if (totalCount < Long.MAX_VALUE)
+      if (totalCount <= totalCountThreshold)
          return totalCount.toString();
       else
          return restCommonClientMessages.getParamString("common.notification.worklistCountThreshold",
