@@ -12,7 +12,7 @@ package org.eclipse.stardust.ui.web.rest.service.dto.response;
 
 import java.util.List;
 
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePolicyDTO;
 
 /**

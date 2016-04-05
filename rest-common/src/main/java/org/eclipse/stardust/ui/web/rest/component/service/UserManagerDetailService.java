@@ -21,14 +21,13 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
-import org.eclipse.stardust.ui.web.rest.component.util.UserManagerDetailUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils.MODE;
+import org.eclipse.stardust.ui.web.rest.component.util.UserManagerDetailUtils;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserAuthorizationStatusDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailRoleDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailsDTO;
-import org.eclipse.stardust.ui.web.rest.service.utils.UserManagerDetailUtils;
 import org.springframework.stereotype.Component;
 
 @Component

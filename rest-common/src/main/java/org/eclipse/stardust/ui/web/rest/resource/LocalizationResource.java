@@ -82,26 +82,7 @@ public class LocalizationResource
       }
 
    }
-   
-   
-   @GET
-   @Path("/serverTimeZone")
-   public Response getServerTimeZone()
-   {
-      try
-      {
-         Calendar c = GregorianCalendar.getInstance();
-         int timeZoneOffset =   (c.get(Calendar.ZONE_OFFSET) + c.get(Calendar.DST_OFFSET));
-         return Response.ok(timeZoneOffset, MediaType.APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         trace.error("", e);
-         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-      }
-
-   }
-   
+      
    /**
     * @param dateTime - in format dd-mm-yyyy hh:mi:ss (e.g. 22.05.2010-10.45.50)
     * @return
