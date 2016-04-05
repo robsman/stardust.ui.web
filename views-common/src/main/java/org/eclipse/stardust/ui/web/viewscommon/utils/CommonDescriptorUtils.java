@@ -370,13 +370,6 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                                     refModel = ModelCache.findModelCache().getModel(ref.getModelOid());
                                  }
                               }
-                              else
-                              {
-                                 if (data.getModelOID() != model.getModelOID())
-                                 {
-                                    refModel = ModelCache.findModelCache().getModel(data.getModelOID());
-                                 }
-                              }
                               Class dataClass = dataPathDetails.getMappedType();
                               IXPathMap xPathMap = ClientXPathMap.getXpathMap(refModel, dataDetails);
                               String xPath = StructuredDataXPathUtils
