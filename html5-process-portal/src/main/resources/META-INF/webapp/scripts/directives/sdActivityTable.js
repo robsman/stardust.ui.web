@@ -1071,6 +1071,7 @@
 
 			if (selectedItems.length > 0) {
 				var activitiesData = [];
+				var SERVER_DATE_FORMAT = 'yy-mm-dd';
 
 				if (self.completeDialog.confirmationType === 'dataMapping') {
 					// When data fields are filled in a dialog
@@ -1081,7 +1082,7 @@
 							dataMappings[mapping.id] = mapping.typeName;
 							if (mapping.typeName === 'date') {
 								var dt = new Date(self.completeDialog.outData[mapping.id]);
-								outData[mapping.id] = dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate() + "T00:00:00";
+								outData[mapping.id] = jQuery.datepicker.formatDate(SERVER_DATE_FORMAT, dt) + "T00:00:00";
 							} else {
 								outData[mapping.id] = self.completeDialog.outData[mapping.id];
 							}
@@ -1106,7 +1107,7 @@
 								dataMappings[mapping.id] = mapping.typeName;
 								if (mapping.typeName === 'date') {
 									var dt = new Date(item.inOutData[mapping.id]);
-									outData[mapping.id] = dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate() + "T00:00:00";
+									outData[mapping.id] = jQuery.datepicker.formatDate(SERVER_DATE_FORMAT, dt) + "T00:00:00";
 								} else {
 									outData[mapping.id] = item.inOutData[mapping.id];
 								}

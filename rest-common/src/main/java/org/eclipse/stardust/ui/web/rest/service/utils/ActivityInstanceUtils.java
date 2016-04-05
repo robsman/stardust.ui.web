@@ -61,7 +61,7 @@ public class ActivityInstanceUtils
 
    private static final String STATUS_PREFIX = "views.activityTable.statusFilter.";
    
-   private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+   private static final String DATE_FORMAT = "yyyy-MM-dd";
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
@@ -249,7 +249,7 @@ public class ActivityInstanceUtils
                          }
                     	 else
                     	 {
-                    		 value = new SimpleDateFormat(DATE_TIME_FORMAT).format(value);
+                    		 value = new SimpleDateFormat(DATE_FORMAT).format(value);
                     	 }
                      }
                      dto.inOutData.put(entry.getKey(), value);
