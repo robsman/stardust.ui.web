@@ -38,7 +38,7 @@ public class ReportingResource
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/personal")
+   @Path("/participant")
    @ResponseDescription("Returns grant level reports of the logged in user in the form of List<FolderDTO> json")
    public Response getPersonalReports()
    {

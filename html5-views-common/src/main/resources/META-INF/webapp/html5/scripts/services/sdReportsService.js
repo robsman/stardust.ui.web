@@ -52,7 +52,7 @@
 	//saved reports folder.
 	sdReportsService.prototype.getPersonalReports = function(){
 
-		var url = this.rootUrl + "/services/rest/portal/reports/personal";
+		var url = this.rootUrl + "/services/rest/portal/reports/participant";
 		var deferred = this.$q.defer();
 
 		this.$http({
