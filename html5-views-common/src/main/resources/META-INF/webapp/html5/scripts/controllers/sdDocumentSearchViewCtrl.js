@@ -575,4 +575,17 @@
 		return preferenceStore;
 	};
 
+	/**
+	 * This function appears to do nothing but actually is quite important.
+	 * Current use case is to tie this to an ng-click handler on the parent div
+	 * of our actions popover button. When the click bubbles up this will initiate 
+	 * a second digest to force the popover to display its content retrieved via template url.
+	 * At least that is currently what I think this does.
+	 * @return {[type]} [description]
+	 */
+	DocumentSearchViewCtrl.prototype.foo = function(){
+		//do nothing explicitly, but assign it to a ng-click directive to intiate an angular digest.
+		//Sort of like a UI based $Apply
+	};
+
 })();
