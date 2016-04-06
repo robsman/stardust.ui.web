@@ -388,14 +388,14 @@
     return deferred.promise;
   };
   
-  documentRepoService.prototype.renameDocument = function(docId,newName){
+  documentRepoService.prototype.renameDocument = function(docId,newName,currentMimeType){
 
       var deferred = this.$q.defer();
       var url= this.documentRoot + "/" + docId;
       var contentType;
       var data = { "name" : newName};
 
-      contentType = this.sdMimeTypeService.getMimeTypeFromFileName(newName);
+      contentType = this.sdMimeTypeService.getMimeTypeFromFileName(newName, currentMimeType);
       data.contentType = contentType;
 
       this.$http({

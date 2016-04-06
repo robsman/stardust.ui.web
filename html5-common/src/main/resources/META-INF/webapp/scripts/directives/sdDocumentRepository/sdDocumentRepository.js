@@ -983,7 +983,7 @@
       return;
     }
 
-    this.documentService.renameDocument(docId,newName)
+    this.documentService.renameDocument(docId,newName,nodeItem.contentType)
     .then(function(doc){
       nodeItem.name = doc.name;
       nodeItem.contentType = doc.contentType;

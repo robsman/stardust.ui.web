@@ -135,7 +135,7 @@
 	 */
 	function MimeTypeService() {
 
-		MimeTypeService.prototype.getMimeTypeFromFileName = function(fileName){
+		MimeTypeService.prototype.getMimeTypeFromFileName = function(fileName,defaultMimeType){
 			var key,
 				result;
 
@@ -147,7 +147,7 @@
 			}
 
 			//default if we don't have a match
-			return 'application/octet-stream';
+			return defaultMimeType || 'application/octet-stream';
 
 		};
 		/**
