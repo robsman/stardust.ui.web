@@ -14,63 +14,79 @@
 		this.grants = [];
 		this.personalReports = [];
 		this.eventBus = eventBus;
-
+		this.particpantPaths = {};
 		i18n = sdI18nService.getInstance('views-common-messages');
 		this.header = i18n.translate("views.myReportsView.header");
+		this.user = {};
 
-		sdReportsService.getCurrentUser()
+		//Important that we invoke the service for participant paths first as that contains server side code for initialization of
+		//of the root report folder and its subfolders in the case where the root report folder does not exist.
+		// 1: ROOT/reports 2: ROOT/reports/designs 3: ROOT/reports/saved-reports
+		sdReportsService.getParticipantReports() //#3 Role/Org paths, .designs = ReportDefinitions, .saved-reports=Saved-Reports
+		.then(function(paths){
+			that.participantPaths = paths;
+			return sdReportsService.getCurrentUser();//retrieve current user and then build up all paths 
+		})
+		//Next we need to verify and build out (if neccessary) the structure for our Saved-Reports Node.
+		//This includes the Report root of the users document path as well as the Report roots two children [saved-reports,designs]
 		.then(function(user){
+			that.user = user;
+			return sdReportsService.verifySavedReportsStructure(user.myDocumentsFolderPath);
+		})
+		//Now that we are confident that our underlying folder structure exists, build out our path hash maps
+		.then(function(){
+
 			var promises =[
-				sdReportsService.getRoleOrgReportDefinitionGrants(user.id),
-				sdReportsService.getPersonalReports(),
-				sdReportsService.getReportPaths(user.myDocumentsFolderPath)
+				sdReportsService.getRoleOrgReportDefinitionGrants(that.user.id), //retrieve grants
+				sdReportsService.getReportDefinitionPaths(that.user.myDocumentsFolderPath), //#1,#2 Public/Private Report Defintions
+				sdReportsService.getSavedReportsPaths(that.user.myDocumentsFolderPath)//, //#4,#5 Saved-Reports node, public and private folders
 			];
+			
 			return $q.all(promises);
 		})
 		.then(function(vals){
 
-			var paths = angular.extend({},vals[2]);;
-			var grants = vals[0];
+			var grants = vals[0]; 
 			var grantMap = {};
-			var personalReports ={};
-			var savedReports ={};
+			var reportDefinitionPaths = vals[1];
+			var savedReportPaths = vals[2];
 
-			//Make a hashmap of our grants to speed up access as we will need
-			//to resolve every report parent folder.
+			//build grant map from which we will acquire folder names for participant reports
 			grants.forEach(function(grant){
 				grantMap[grant.qualifiedId] = grant;
 			});
-			
-			//Caluclate each hashMap path key and name for personal reports.
-			vals[1].designs.forEach(function(item){
 
-				var grantName;
-				var parsedQID;
+			//Loop through all designs and add then to the reportDefinition hash map
+			that.participantPaths["designs"].forEach(function(item){
 
-				parsedQID = item.path.split("/")[2];
-				grantName = grantMap[parsedQID].name;
-				personalReports[item.path]=grantName;
+				var grant;
+				var qualifiedId;
+				var name;
 
-			});
+				qualifiedId = item.path.split("/")[2];
+				grant = grantMap[qualifiedId];
+				name = (!grant)?qualifiedId:grant.name;
 
-			//Caluclate each hashMap path key and name for saved reports.
-			vals[1]["saved-reports"].forEach(function(item){
-
-				var grantName;
-				var parsedQID;
-
-				parsedQID = item.path.split("/")[2];
-				grantName = grantMap[parsedQID].name;
-				savedReports[item.path]=grantName;
+				reportDefinitionPaths[item.path] =name;
 
 			});
+			that.reportDefinitionPaths = reportDefinitionPaths;
 
-			//hash map of all paths
-			paths = angular.extend({},paths,personalReports,savedReports);
-			that.paths = paths;
+			//Loop through all designs and add then to the saved-reports hash map
+			that.participantPaths["saved-reports"].forEach(function(item){
 
-			//TODO:Saved Reports
-			that.savedReportsPaths = {};
+				var grant;
+				var qualifiedId;
+				var name;
+				
+				qualifiedId = item.path.split("/")[2];
+				grant = grantMap[qualifiedId];
+				name = (!grant)?qualifiedId:grant.name;
+
+				savedReportPaths[item.path] = name;
+
+			});
+			that.savedReportPaths = savedReportPaths;
 			
 
 		})
@@ -78,6 +94,28 @@
 			//TODO:err handling
 		});
 
+	}
+	
+	sdMyReportsViewCtrl.prototype.customSort = function(a,b){
+
+		var name1 = (a.name)?a.name.toUpperCase():a.path,
+        name2 = (b.name)?b.name.toUpperCase():b.path;
+
+        if(a.name==="PUBLIC REPORT DEFINITIONS"){
+        	return -1;
+        }
+
+        if(a.name==="PRIVATE REPORT DEFINITIONS"){
+        	return -1;
+        }
+
+	    if(a.nodeType !== b.nodeType){
+	      if(a.nodeType==="folder"){return -1;}
+	      else{return 1;}
+	    }
+	    else if(name1===name2){return 0;}
+	    else if(name1 < name2){return -1;}
+	    else{return 1;}
 	}
 
 	sdMyReportsViewCtrl.prototype.eventHook = function(data,e){
