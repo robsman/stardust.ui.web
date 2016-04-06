@@ -321,6 +321,12 @@ define(
 						enumerationType : "staticData:priorityLevel",
 						operators : ["E", "LE", "GE", "NE"],
 						customSort : true
+					},
+					benchmarkValue : {
+						id : "benchmarkValue",
+						name : this.getI18N("reporting.definitionView.additionalFiltering.benchmarkValue"),
+						type : this.metadata.enumerationType,
+						enumerationType : "modelData:benchmarkDefinitions"
 					}
 					}
 					},
@@ -467,6 +473,12 @@ define(
 							   display : "singleSelect",
 							   operators : ["E"],
 							   enumerationType : "staticData:activityTypes"
+							},
+							benchmarkValue : {
+								id : "benchmarkValue",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.benchmarkValue"),
+								type : this.metadata.enumerationType,
+								enumerationType : "modelData:benchmarkDefinitions"
 							}
 						}
 					}/*,
@@ -519,6 +531,11 @@ define(
 							id : "Completed",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.completed"),
 							order : 4
+						},
+						halted : {
+							id : "Halted",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.halted"),
+							order : 6
 						}
 					},
 					activityStates : {
@@ -549,6 +566,14 @@ define(
 						interrupted : {
 							id : "Interrupted",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.interrupted")
+						},
+						halting : {
+							id : "Halting",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.halting")
+						},
+						halted : {
+							id : "Halted",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.halted")
 						}						
 					},
 					priorityLevel : {
@@ -728,15 +753,23 @@ define(
 								processDefinitions : {
 									newAccountOpening : {
 										id : "newAccountOpening",
-										name : "New Account Opening"
+										name : "New Account Opening",
+										activities: [{
+												id: "{PredefinedModel}CaseProcess:{PredefinedModel}DefaultCaseActivity",
+												name: "Default Case Activity",
+												auxiliary: false,
+												interactive: true
+											}]
 									},
 									complianceCheck : {
 										id : "complianceCheck",
-										name : "Compliance Check"
+										name : "Compliance Check",
+										activities: []
 									},
 									payment : {
 										id : "payment",
-										name : "Payment"
+										name : "Payment",
+										activities: []
 									}
 								},
 								participants : {
@@ -755,6 +788,54 @@ define(
 									branchManager : {
 										id : "branchManager",
 										name : "Branch Manager"
+									}
+								},
+								benchmarkDefinitions : {
+									"1": {
+										id : "1",
+										name : "General Processing 1",
+										description : "General Benchmarks 1",
+										categories : [{
+											"id": "77df2bb8-af69-426e-be59-84b18f04cc33",
+											"index": 1,
+											"name": "On Time",
+											"color": "#00FF00"
+										},
+										{
+											"id": "d1fee32c-cb5b-4637-bb5d-b611acfe636a",
+											"index": 2,
+											"name": "Almost Late",
+											"color": "#FFFF00"
+										},
+										{
+											"id": "00910fc6-0637-47a0-ad33-19180090b967",
+											"index": 3,
+											"name": "Late",
+											"color": "#FF0000"
+										}]
+									},
+									"2" : {
+										id : "2",
+										name : "General Processing 2",
+										description : "General Benchmarks 2",
+										categories : [{
+											"id": "77df2bb8-af69-426e-be59-84b18f04cc30",
+											"index": 1,
+											"name": "On Time",
+											"color": "#00FF00"
+										},
+										{
+											"id": "d1fee32c-cb5b-4637-bb5d-b611acfe636a",
+											"index": 2,
+											"name": "Almost Late",
+											"color": "#FFFF00"
+										},
+										{
+											"id": "00910fc6-0637-47a0-ad33-19180090b967",
+											"index": 3,
+											"name": "Late",
+											"color": "#FF0000"
+										}]
 									}
 								}
 							};
@@ -2292,6 +2373,45 @@ define(
 				};
 				
 				this.getDatePickerProperties();
+            /**
+             * 
+             */
+            ReportingService.prototype.getRuntimeBenchmarkCategories = function(
+            		bOids) {
+            	
+            	var strbOids ='';
+    			angular.forEach(bOids, function(bOid) {
+    				strbOids = strbOids + bOid.id + ','
+    			});
+    			
+    			var lastIndex = strbOids.lastIndexOf(",");
+    	        var oids = strbOids.substring(0, lastIndex);
+            	
+            	var deferred = jQuery.Deferred();
+
+            	var self = this;
+            	jQuery
+            	    .ajax({
+            	        type: "GET",
+            	        async: false,
+            	        beforeSend: function(request) {
+            	            request
+            	                .setRequestHeader(
+            	                    "Authentication",
+            	                    self
+            	                    .getBasicAuthenticationHeader());
+            	        },
+            	        url: self.getRootUrl() + "/services/rest/portal/benchmark-definitions/run-time/categories?oids=" + oids,
+            	        contentType: "application/json",
+            	    }).done(function(data) {
+            	        deferred.resolve(data);
+            	    }).fail(function(response) {
+            	        deferred.reject(response);
+            	    });
+
+            	return deferred.promise();
+            };
+            
 			}
 			
 			/**
@@ -2313,13 +2433,15 @@ define(
 						}else{
 							//TODO: remove this when filter and parameter format is same for DATE
 							//special parameter, in case of date, there are multiple fields so change the format here
-							if(parameters[itemInd].value && parameters[itemInd].value.from){
-								var pValue = ["from", "to", "duration", "durationUnit"];
+							if(parameters[itemInd].value && (parameters[itemInd].value.from || parameters[itemInd].value.to)){
+								var pValue = (parameters[0].metadata.fromTo) ? ["from", "to"] : ["from", "duration", "durationUnit"];
 								var actualValue = parameters[itemInd].value; //complex object startDate = {from : "", to : ""};
 								var formattedValue = ""; 
 								for (var int = 0; int < pValue.length; int++) {
-									if(actualValue[pValue[int]]){
-										formattedValue += actualValue[pValue[int]] + ",";	
+									if(actualValue[pValue[int]]) {
+										formattedValue += actualValue[pValue[int]] + ",";		
+									} else if (pValue[int] == "from" || pValue[int] == "to") {
+										formattedValue += "null,";	
 									}
 								}
 								parametersString += formattedValue.slice(0,-1);

@@ -1455,6 +1455,23 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
          key = replaceSpecialChars(key);
          var value = record[selColumn];
          b[key] = value;
+         
+         if (selectedColumns[selColumn].metadata && selectedColumns[selColumn].metadata.javaType && 
+        				 selectedColumns[selColumn].metadata.javaType == "java.math.BigDecimal" && 
+        				 selectedColumns[selColumn].metadata.xPath && 
+        				 selectedColumns[selColumn].metadata.xPath == "Price") {
+        	 if (record[selColumn] && !isNaN(record[selColumn])) {
+        		 var decimalPrecision = 2;
+        		 var recordStr = record[selColumn].toString();
+        		 var index = recordStr.indexOf(".");
+        		 if (index != -1 && (recordStr.length - index) >= 4) {
+        			 //Value is having more than 2 decimal precision
+        			 record[selColumn] = recordStr.slice(0, recordStr.indexOf(".") + decimalPrecision + 1);
+        		 } else {
+        			 record[selColumn] = ((record[selColumn] * 100) / 100).toFixed(decimalPrecision);
+        		 }
+        	 }
+         }
       }
       a.push(b);
    }
@@ -1470,6 +1487,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
          * 
          */
         ReportRenderingController.prototype.saveReportInstance = function(report, parameters) {
+        	var deferred = jQuery.Deferred();
         	var self = this;
         	if (report) {
 				this.report = report;
@@ -1484,16 +1502,19 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
                 .done(
                       function(data) {
                     	// save report instance along with report definition
-                    		self.saveReportInstance_(self.report, data, null);
+                    		self.saveReportInstance_(self.report, data, null).then(function(data) {
+                    			deferred.resolve(data);
+                    		});
                       }).fail(function(data) {
-                
+                    	  deferred.reject(data);
                       });
-				return;
 			}else{
 				if (parent.iPopupDialog) {
 					parent.iPopupDialog.openPopup(self.prepareSaveReportInstance());
+					deferred.reject();
 				}
 			}
+        	return deferred.promise();
 		};
         
 		/**
@@ -1543,7 +1564,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 					var popupData = {
 						attributes : {
 							width : "650px",
-							height : "290px",
+							height : "310px",
 							src : this.reportingService.getRootUrl()
 									+ "/plugins/bpm-reporting/views/templates/reportStoragePopup.html"
 						},
