@@ -104,30 +104,16 @@
 				<td sda-exporter="rowData.ownerDetails.displayName"><sd-user-details sda-user-oid="rowData.ownerDetails.oid" sda-account="rowData.ownerDetails.displayName" sda-aid-prefix="COM-SrchDoc-DocSrchTbl-Author"></sd-user-details>
 				</td>
 				<td>
-					<div style="text-align: right; white-space: nowrap;">
-						<button
-							ng-click="docSearchViewCtrl.openProcessDialog(rowData); "
-							title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-tooltip-process')}}"
-							class="button-link tbl-tool-link"
-							aid="COM-SrchDoc-DocSrchTbl-ActionsOpenProc">
-							<i class="pi pi-process pi-lg"></i>
+					<div ng-click="1==1" style="text-align: right; white-space: nowrap;">
+						
+						<button sd-popover  
+								sda-placement="auto left-top"
+								title="{{i18n('processportal.toolbars-workflowActions-tooltip-actions')}}"
+						        sda-template="docSearchViewCtrl.actionsPopoverTemplateUrl"
+						        class="button-link tbl-tool-link">
+						        <i class="pi pi-actions pi-lg"></i>
 						</button>
-						<button
-							ng-click="docSearchViewCtrl.openAttachToProcessDialog(rowData);"
-							title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}"
-							class="button-link tbl-tool-link"
-							aid="COM-SrchDoc-DocSrchTbl-ActionsAttachDocToProc">
-							<i class="pi pi-fw pi-lg pi-attach-document"></i>
-						</button>
-						<sd-document-download sda-document-id="rowData.uuid"
-							sda-document-name="rowData.name" sda-aid-prefix="COM-SrchDoc-DocSrchTbl-ActionsDownload"></sd-document-download>
-						<button
-							ng-click="docSearchViewCtrl.setShowDocumentVersions(rowData.uuid,rowData.name);"
-							title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-versionHistory')}}"
-							class="button-link tbl-tool-link"
-							aid="COM-SrchDoc-DocSrchTbl-ActionsVersionHistory">
-							<i class="pi pi-fw pi-lg pi-document-versions"></i>
-						</button>
+
 					</div>
 				</td>
 			</tr>

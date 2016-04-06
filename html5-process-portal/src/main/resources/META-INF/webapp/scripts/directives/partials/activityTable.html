@@ -342,12 +342,11 @@
 				<td sda-column-type="ACTIONS">
 					<div style="text-align: right; white-space: nowrap;">
 						
-						<button sd-popover  
-								sda-placement="auto left-top"
-								title="{{i18n('processportal.toolbars-workflowActions-tooltip-actions')}}"
-						        sda-template="activityTableCtrl.actionsPopoverTemplateUrl"
-						        class="button-link tbl-tool-link">
-						        <i class="pi pi-actions pi-lg"></i>
+						<button ng-click="activityTableCtrl.$openNotes(rowData);" aid="PP-ActivityTable-OpenNotesAction"  ng-if="::activityTableCtrl.isActionButtonVisible('notes')" 
+						   	    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
+								title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
+								<i class="pi pi-notes-empty pi-lg" ng-if ="rowData.notesCount === 0"></i>
+								<i class="pi pi-notes pi-lg" ng-if ="rowData.notesCount > 0 "></i>
 						</button>
 
 						<button ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"  ng-if="::activityTableCtrl.isActionButtonVisible('processDocuments')"
@@ -361,6 +360,14 @@
 						        ng-click="activityTableCtrl.openProcessDocumentsPopover(rowData)" 
 						        class="button-link tbl-tool-link">
 	  		  					<i class="pi pi-process-documents pi-lg"></i>
+						</button>
+
+						<button sd-popover  
+								sda-placement="auto left-top"
+								title="{{i18n('processportal.toolbars-workflowActions-tooltip-actions')}}"
+						        sda-template="activityTableCtrl.actionsPopoverTemplateUrl"
+						        class="button-link tbl-tool-link">
+						        <i class="pi pi-actions pi-lg"></i>
 						</button>
 
 					</div>

@@ -775,17 +775,23 @@ tr.properties-panel-documentRow>td {
 	padding-bottom: 20px;
 }
 
-/*Popover content classes*/
-.popover-content .button-list button{
-	display: block;
-	border-bottom: solid 1px #ddd;
-	min-width:200px;
-	min-width: 100px;
-	text-align: left;
+.popover-content .menu-list{
+	min-width: 150px;
 }
-.popover-content .button-list span{
-	margin:5px;
-	position: absolute;
-	left: 40px;
+
+.popover-content .menu-list span{
 	color: #333;
+	position: absolute;
+    left: 40px;
+    display: inline-block;
+    max-width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.popover-content .menu-list .menu-container{
+	border-bottom: solid 1px #ddd;
+	cursor:pointer;
+	padding: 2px 0 2px 0;
 }

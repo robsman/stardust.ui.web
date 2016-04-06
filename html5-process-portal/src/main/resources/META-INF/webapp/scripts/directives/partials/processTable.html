@@ -162,6 +162,19 @@
 
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
+						
+						<button ng-click=" processTableCtrl.openNotes(rowData);"
+						    	aid="PP-ProcessTable-OpenNotes"
+								title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
+							<i class="pi pi-notes-empty pi-lg" ng-if ="rowData.notesCount === 0" ></i>
+							<i class="pi pi-notes pi-lg" ng-if ="rowData.notesCount > 0" ></i>
+						</button>
+
+						<button ng-click="processTableCtrl.openProcessDocumentsPopover(rowData);" aid="PP-ProcessTable-OpenProcessDocuments"
+								title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link" sd-popover  sda-placement ="left auto"
+							    sda-template="processTableCtrl.processDocumentsPopover.url">
+								<i class="pi pi-process-documents pi-lg"></i>
+						</button>
 
 						<button sd-popover  
 								ng-click="processTableCtrl.openActionsPopover()"
@@ -170,12 +183,6 @@
 						        sda-template="processTableCtrl.actionsPopover.url"
 						        class="button-link tbl-tool-link">
 						        <i class="pi pi-actions pi-lg"></i>
-						</button>
-
-						<button ng-click="processTableCtrl.openProcessDocumentsPopover(rowData);" aid="PP-ProcessTable-OpenProcessDocuments"
-								title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link" sd-popover  sda-placement ="left auto"
-							    sda-template="processTableCtrl.processDocumentsPopover.url">
-								<i class="pi pi-process-documents pi-lg"></i>
 						</button>
 						
 					</div>

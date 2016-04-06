@@ -1,0 +1,58 @@
+<div class="menu-list">
+
+	<div class="menu-container"
+		 ng-click="docSearchViewCtrl.openProcessDialog(rowData); "
+		 aid="COM-SrchDoc-DocSrchTbl-ActionsOpenProc">
+
+		<i title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-tooltip-process')}}" 
+		   class="pi pi-process pi-lg menu-link tbl-tool-link">
+		</i>
+		<span>
+			{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-tooltip-process')}}
+		</span>
+
+	</div>
+
+	<div class="menu-container"
+		 ng-click="docSearchViewCtrl.openAttachToProcessDialog(rowData);"
+		 aid="COM-SrchDoc-DocSrchTbl-ActionsAttachDocToProc">
+
+		<i class="pi pi-fw pi-lg pi-attach-document menu-link tbl-tool-link" 
+		   title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}">
+		</i>
+
+		<span>
+			{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}
+		</span>
+
+	</div>
+	
+	<div class="menu-container">
+
+		<sd-document-download 
+			sda-document-id="rowData.uuid"
+			sda-document-name="rowData.name" 
+			sda-aid-prefix="COM-SrchDoc-DocSrchTbl-ActionsDownload">
+		</sd-document-download>
+
+		<span>
+			{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-downloadFile')}}
+		</span>
+
+	</div>
+
+	<div class="menu-container"
+			ng-click="docSearchViewCtrl.setShowDocumentVersions(rowData.uuid,rowData.name);"
+			aid="COM-SrchDoc-DocSrchTbl-ActionsVersionHistory">
+
+		<i class="pi pi-fw pi-lg pi-document-versions menu-link tbl-tool-link" 
+		   title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-versionHistory')}}">
+		</i>
+
+		<span>
+			{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-versionHistory')}}
+		</span>
+
+	</div>
+
+</div>

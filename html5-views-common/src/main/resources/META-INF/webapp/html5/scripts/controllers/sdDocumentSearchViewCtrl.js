@@ -46,6 +46,9 @@
 		_sdLoggedInUserService = sdLoggedInUserService;
 		_sdPreferenceService = sdPreferenceService;
 
+		//Base URL to prepend to our actions popover templateUrl
+		this.actionsPopoverTemplateUrl = sdUtilService.getBaseUrl() + 'plugins/html5-views-common/html5/partials/views/documentSearchResultActionsPopover.html';
+
 		// variable for search result table
 		this.documentSearchResult = {};
 		this.documentVersions = {};
