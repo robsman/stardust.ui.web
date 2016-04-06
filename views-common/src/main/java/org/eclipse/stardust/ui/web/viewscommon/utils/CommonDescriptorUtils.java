@@ -516,17 +516,7 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
          {
             if (!allDescriptors.containsKey(dataPath.getId()))
             {
-               DataPath existing = allDescriptors.get(dataPath.getId());
-               if (!DescriptorColumnUtils.isCompositeOrLinkDescriptor(existing) && !existing.getData().equals(dataPath.getData()))
-               {
-                  trace.warn("* Duplicate datapath detected with id: " + dataPath.getNamespace() + "->"
-                        + dataPath.getData() + "->" + dataPath.getId() + "(" + existing.getNamespace() + "->"
-                        + existing.getData() + "->" + existing.getId() + ")");
-               }
-            }
-            else
-            {
-               allDescriptors.put(dataPath.getId(), dataPath);
+               allDescriptors.put(dataPath.getId(), dataPath);               
             }
          }
       }
