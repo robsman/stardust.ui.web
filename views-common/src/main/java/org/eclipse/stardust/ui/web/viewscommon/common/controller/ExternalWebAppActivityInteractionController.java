@@ -19,6 +19,7 @@ import static org.eclipse.stardust.engine.core.interactions.Interaction.getInter
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.common.error.InvalidArgumentException;
@@ -40,6 +42,7 @@ import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.engine.core.runtime.command.impl.ExtractSessionInfoCommand;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
@@ -51,6 +54,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * @author Robert.Sauer
@@ -170,8 +175,8 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       ApplicationContext context = ai.getActivity().getApplicationContext(
             EXT_WEB_APP_CONTEXT_ID);
 
-      FacesContext fc = FacesContext.getCurrentInstance();
-      HttpServletRequest req = (HttpServletRequest) fc.getExternalContext().getRequest();
+      HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+      ServletContext servletContext = req.getSession().getServletContext();
 
       Boolean embedded = (Boolean) context.getAttribute("carnot:engine:ui:externalWebApp:embedded");
 
@@ -185,13 +190,13 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       else
       {
       // allow base URI override via parameter
-          servicesBaseUri = fc.getExternalContext().getInitParameter("InfinityBpm.ServicesBaseUri");
+          servicesBaseUri = servletContext.getInitParameter("InfinityBpm.ServicesBaseUri");
       if (isEmpty(servicesBaseUri))
       {
          servicesBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}/services/";
       }
 
-          portalBaseUri = fc.getExternalContext().getInitParameter("InfinityBpm.PortalBaseUri");
+          portalBaseUri = servletContext.getInitParameter("InfinityBpm.PortalBaseUri");
       if (isEmpty(portalBaseUri))
       {
          portalBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}";
@@ -252,7 +257,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       if (MashupControllerUtils.isEnabled())
       {
          MashupContextConfigManager contextConfigManager = (MashupContextConfigManager) ManagedBeanUtils
-               .getManagedBean(fc, MashupContextConfigManager.BEAN_NAME);
+               .getManagedBean(FacesContext.getCurrentInstance(), MashupContextConfigManager.BEAN_NAME);
          if (null != contextConfigManager)
          {
             // retrieve real credentials
@@ -283,7 +288,14 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          }
       }
 
-      return fc.getExternalContext().encodeResourceURL(panelUri);
+      try
+      {
+         return new URI(panelUri).toString();
+      }
+      catch (URISyntaxException e)
+      {
+         return panelUri;
+      }
    }
 
    /**
