@@ -3993,7 +3993,7 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .iceMnuItm a:hover .iceOutTxt, .iceMnuItmVrt a:hover .iceOutTxt, .iceMnuItm a:hover .iceMnuItmLabel {
-    color: #FFFFFF;
+    color: #FFFFFF !important;
 }
 
 .iceMnuItmLabel {
