@@ -61,7 +61,6 @@
 
 			return $resource(restUrl).get().$promise.then(function(result){
 				userCache = result;
-				console.log(userCache);
 				deferred.resolve( userCache );
 			});
 
@@ -78,7 +77,6 @@
 
 			return $resource(restUrl).get().$promise.then(function(result){
 				permissionCache = result;
-				console.log(permissionCache);
 				deferred.resolve( permissionCache );
 			});
 
