@@ -17,8 +17,8 @@
 	 * 
 	 */
 	angular.module('bpm-common.services').provider('sdLocalizationService', function() {
-		this.$get = [ 'sdUtilService', function(sdUtilService) {
-			var service = new LocalizationService(sdUtilService);
+		this.$get = [ 'sdUtilService','$resource' ,'$q', function(sdUtilService, $resource, $q) {
+			var service = new LocalizationService( sdUtilService, $resource, $q);
 			return service;
 		} ];
 	});
@@ -27,20 +27,36 @@
 	/**
 	 * 
 	 */
-	function LocalizationService(sdUtilService) {
+	function LocalizationService( sdUtilService, $resource, $q) {
 
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/localization";
 		/**
 		 * 
 		 */
 		LocalizationService.prototype.getInfo = function() {
-			var restUrl = REST_BASE_URL + "/info";
-			var self = this;
-
 			if (!localizationInfo) {
-				localizationInfo = sdUtilService.syncAjax(restUrl);
+				throw "Localization Info not loaded yet";
 			}
 			return localizationInfo;
+		};
+		
+		/**
+		 * 
+		 */
+		/**
+		 * 
+		 */
+		this.loadInfo = function() {
+			var deferred = $q.defer();
+
+			var restUrl = REST_BASE_URL + "/info";
+
+			return $resource(restUrl).get().$promise.then(function(result){
+				localizationInfo = result;
+				deferred.resolve( localizationInfo );
+			});
+
+			return deferred.promise;
 		};
 	}
 })();

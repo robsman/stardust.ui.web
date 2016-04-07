@@ -800,3 +800,7 @@ tr.properties-panel-documentRow>td {
 	background:#ffffE0;
 }
 
+.sd-portal-loading {
+  display : none;
+}
+

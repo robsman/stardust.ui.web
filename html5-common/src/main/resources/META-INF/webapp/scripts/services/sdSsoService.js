@@ -42,14 +42,8 @@
 				
 				beginInitilization().
 				done(function (data) {
-					
 					trace.debug("Success response: ", data);
-					var msg = "IPP Initialization successfull."
-					var success = {
-							message : msg
-						};
-					deferred.resolve(success);
-					
+					deferred.resolve(data);
 				}).fail(function (data) {
 					
 					trace.debug("Failure response : ", data);
@@ -61,9 +55,8 @@
 						failure.status = data.status;
 					}
 					if(data.statusText) {
-						failure.message = data.statusText;
+						failure.statusText = data.statusText;
 					}
-
 					deferred.reject(failure);
 
 				});

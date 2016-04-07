@@ -17,8 +17,8 @@
 	 * 
 	 */
 	angular.module('workflow-ui.services').provider('sdLoggedInUserService', function() {
-		this.$get = [ 'sdUtilService', function(sdUtilService) {
-			var service = new LoggedInUserService(sdUtilService);
+		this.$get = [ 'sdUtilService', '$resource' ,'$q', function( sdUtilService, $resource, $q) {
+			var service = new LoggedInUserService( sdUtilService, $resource, $q);
 			return service;
 		} ];
 	});
@@ -26,7 +26,7 @@
 	/**
 	 * 
 	 */
-	function LoggedInUserService(sdUtilService) {
+	function LoggedInUserService(sdUtilService, $resource, $q) {
 		var userCache = null;
 		var permissionCache = null;
 
@@ -35,9 +35,8 @@
 		 * 
 		 */
 		this.getUserInfo = function() {
-			var restUrl = REST_BASE_URL + "/whoAmI";
 			if (!userCache) {
-				userCache = sdUtilService.syncAjax(restUrl);
+				throw 'User Info not loaded';
 			}
 			return userCache;
 		};
@@ -46,13 +45,45 @@
 		 * 
 		 */
 		this.getRuntimePermissions = function() {
-			var restUrl = REST_BASE_URL + "/whoAmI/runtime-permissions";
 			if (!permissionCache) {
-				permissionCache = sdUtilService.syncAjax(restUrl).availablePermissions;
+				throw 'Run time permission not loaded';
 			}
 			return permissionCache;
 		};
 		
-		this.getUserInfo();
+		/**
+		 * 
+		 */
+		this.loadUserInfo = function() {
+			var deferred = $q.defer();
+
+			var restUrl = REST_BASE_URL + "/whoAmI";
+
+			return $resource(restUrl).get().$promise.then(function(result){
+				userCache = result;
+				console.log(userCache);
+				deferred.resolve( userCache );
+			});
+
+			return deferred.promise;
+		};
+
+		/**
+		 * 
+		 */
+		this.loadRuntimePermissions = function() {
+			var deferred = $q.defer();
+
+			var restUrl = REST_BASE_URL + "/whoAmI/runtime-permissions";
+
+			return $resource(restUrl).get().$promise.then(function(result){
+				permissionCache = result;
+				console.log(permissionCache);
+				deferred.resolve( permissionCache );
+			});
+
+			return deferred.promise;
+		};
+		
 	}
 })();
