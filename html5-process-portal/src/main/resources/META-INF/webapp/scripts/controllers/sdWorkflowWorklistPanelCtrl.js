@@ -54,7 +54,7 @@
 			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
 				if(self.syncPanel == true){
 					self.syncPanel = false;
-					self.refreshMyAssignmentPanel(self.showEmptyWorklists, false);
+					self.refreshMyAssignmentPanel(self.showEmptyWorklists, true);
 				}
 				
 			}
@@ -63,7 +63,7 @@
 		sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){
 			var activePerspective = sdSidebarService.getActivePerspectiveName();
 			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
-				self.refreshMyAssignmentPanel(self.showEmptyWorklists, false);
+				self.refreshMyAssignmentPanel(self.showEmptyWorklists, true);
 			}else{
 				self.syncPanel = true;
 			}				
