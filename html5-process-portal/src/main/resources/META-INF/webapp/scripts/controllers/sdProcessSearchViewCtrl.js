@@ -545,9 +545,11 @@
 	 * 
 	 */
 	ProcessSearchViewCtrl.prototype.toggleAuxiliaryProcess = function() {
+		var deferred = _q.defer();
 		if (this.query.processSearchCriteria.showAuxiliaryProcess) {
 			this.query.processSearchCriteria.showAuxiliaryProcess = false;
 			this.procSrchProcess = this.allBusinessProcesses;
+			deferred.resolve();
 		} else {
 			this.query.processSearchCriteria.showAuxiliaryProcess = true;
 			var self = this;
@@ -555,15 +557,20 @@
 				this.getAllUniqueProcesses(false).then(function(processes) {
 					self.procSrchProcess = processes;
 					self.initializeCriteria();
+					//Create Processes and Activities lookup map Object
+					self.createProcessesActivitiesMap();
+					deferred.resolve();
 					return;
 				});
 			} else {
 				self.procSrchProcess = self.procSrchAuxProcess;
 				self.initializeCriteria();
+				deferred.resolve();
 				return;
 			}
 		}
 		this.initializeCriteria();
+		return deferred.promise;
 	}
 	
 	
@@ -947,20 +954,28 @@
 	    	  this.processSrchCaseOwner = params[this.CASE_OWNER];
 	      }
 
-	      if (params[this.PROCESS_FILTERS] === this.AUXILIARY_PROCESSES) {
-	    	  this.query.processSearchCriteria.showAuxiliaryProcess = true;
-	    	  this.filterProcessDefinitionList();
-	      }
-	      
 	      var self = this;
 	      
-	      this.prePopulateSelectedProcess(params[this.PROCESSES]).then(function() {
-	    	  self.query.processSearchCriteria.procSrchProcessSelected = params[self.PROCESSES];
-		      
-	    	  //For Descriptors
-		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
-		      deferred.resolve();
-	      });
+	      if (params[this.PROCESS_FILTERS] && params[this.PROCESS_FILTERS][0] && params[this.PROCESS_FILTERS][0] === this.AUXILIARY_PROCESSES) {
+	    	  this.toggleAuxiliaryProcess().then(function() {
+	    		  self.prePopulateSelectedProcess(params[self.PROCESSES]).then(function() {
+	    	    	  self.query.processSearchCriteria.procSrchProcessSelected = params[self.PROCESSES];
+	    		      
+	    	    	  //For Descriptors
+	    		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
+	    		      deferred.resolve();
+	    	      });
+	    	  });
+	      } else {
+	    	  self.prePopulateSelectedProcess(params[self.PROCESSES]).then(function() {
+    	    	  self.query.processSearchCriteria.procSrchProcessSelected = params[self.PROCESSES];
+    		      
+    	    	  //For Descriptors
+    		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
+    		      deferred.resolve();
+    	      });
+	      }
+	      
 	      return deferred.promise; 
 	};
 	
@@ -1126,28 +1141,47 @@
 			  this.activitySrchPerformer = [{ "id" : params[this.PERFORMER] }];
 	      }
 	      
-	      this.preSelectFilters(params);
-	      
-	      if (params[this.PROCESS_FILTERS] === this.AUXILIARY_PROCESSES) {
-	    	  this.query.processSearchCriteria.showAuxiliaryProcess = true;
-	    	  this.filterProcessDefinitionList();
-	      } 
 	      
 	      var self = this;
-	      this.prePopulateSelectedProcess(params[this.PROCESSES]).then(function() {
-	    	  self.query.processSearchCriteria.procSrchProcessSelected = params[self.PROCESSES];
-		      
-	    	  //For Descriptors
-		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
-		      
-		      
-		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function() {
-			      //Set Activity State and Criticality after processChange as it resets it.
-			      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
-		    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
-		    	  deferred.resolve();
-		      });
-	      });
+	      if (params[this.PROCESS_FILTERS] && params[this.PROCESS_FILTERS][0] && params[this.PROCESS_FILTERS][0] === this.AUXILIARY_PROCESSES) {
+	    	  this.toggleAuxiliaryProcess().then(function() {
+	    		  self.prePopulateSelectedProcess(params[self.PROCESSES]).then(function() {
+	    	    	  self.query.processSearchCriteria.procSrchProcessSelected = params[self.PROCESSES];
+	    	    	  
+	    	    	  this.preSelectFilters(params);
+	    	    	  
+	    	    	  //For Descriptors
+	    		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
+	    		      
+	    		      
+	    		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function() {
+	    			      //Set Activity State and Criticality after processChange as it resets it.
+	    			      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
+	    		    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
+	    		    	  deferred.resolve();
+	    		      });
+	    		      
+	    		      deferred.resolve();
+	    	      });
+	    	  });
+	      } else {
+	    	  self.prePopulateSelectedProcess(params[self.PROCESSES]).then(function() {
+    	    	  self.query.processSearchCriteria.procSrchProcessSelected = params[self.PROCESSES];
+    	    	  
+    	    	  //For Descriptors
+    		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
+    		      
+    		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function() {
+    			      //Set Activity State and Criticality after processChange as it resets it.
+    			      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
+    		    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
+    		    	  deferred.resolve();
+    		      });
+    		      
+    		      deferred.resolve();
+    	      });
+	      }
+	      
 	      return deferred.promise;
 	};
 	
@@ -1155,25 +1189,31 @@
 	 * 
 	 */
 	ProcessSearchViewCtrl.prototype.preSelectFilters = function(params) {
-		var processFilters = params[this.PROCESS_FILTERS];
-		if (processFilters != null) {
-			for (var int = 0; int < processFilters.length; int++) {
-				if (processFilters[int] == this.AUXILIARY_PROCESSES) {
-					this.query.processSearchCriteria.showAuxiliaryProcess = true;
-			    	this.filterProcessDefinitionList();
-				}
-			}
-		}
+		var isInteractiveActivitiesFilterSet = false;
 		
 		var activityFilters = params[this.ACTIVITY_FILTERS];
 		if (activityFilters != null) {
 			for (var int = 0; int < activityFilters.length; int++) {
-				if (params[int] == this.INTERACTIVE_ACTIVITIES) {
-					this.query.processSearchCriteria.showInteractiveActivities = true;	
-				} else if (params[int] == this.NONINTERACT_ACTIVITIES) {
-					this.query.processSearchCriteria.showNonInteractiveActivities = true;
-				} else if (params[int] == this.AUXILIARY_ACTIVITIES) {
-					this.query.processSearchCriteria.showAuxiliaryActivities = true;
+				if (params[this.ACTIVITY_FILTERS][int] == this.INTERACTIVE_ACTIVITIES) {
+					isInteractiveActivitiesFilterSet = true;
+					break;
+				}
+			}
+		}
+		
+		if (isInteractiveActivitiesFilterSet) {
+			this.query.processSearchCriteria.showInteractiveActivities = false;
+			this.toggleInteractiveActivities();
+		} else {
+			this.toggleInteractiveActivities();
+		}
+		
+		if (activityFilters != null) {
+			for (var int = 0; int < activityFilters.length; int++) {
+				if (params[this.ACTIVITY_FILTERS][int] == this.NONINTERACT_ACTIVITIES) {
+					this.toggleNonInteractiveActivities();
+				} else if (params[this.ACTIVITY_FILTERS][int] == this.AUXILIARY_ACTIVITIES) {
+					this.toggleAuxiliaryActivities();
 				}
 			}
 		}
@@ -1454,7 +1494,11 @@
 	 */
 	function findValueById(procSrchStates, processStateId) {
 		for (var i = 0; i < procSrchStates.length; i++) {
-			if (procSrchStates[i].value == processStateId) {
+			if (isNaN(processStateId) || isNaN(procSrchStates[i].value)) {
+				if(procSrchStates[i].value == processStateId) {
+					return procSrchStates[i].name;;
+				}
+			} else if (procSrchStates[i].value.toUpperCase() == processStateId.toUpperCase()) {
 				return procSrchStates[i].name;
 			}
 		}
@@ -1465,7 +1509,12 @@
 	 */
 	function findIdByValue(procSrchStates, processStateValue) {
 		for (var i = 0; i < procSrchStates.length; i++) {
-			if (procSrchStates[i].name == processStateValue) {
+			if (isNaN(processStateValue) || isNaN(procSrchStates[i].name)) {
+				if (procSrchStates[i].name == processStateValue) {
+					return procSrchStates[i].value;
+				}
+			}
+			if (procSrchStates[i].name.toUpperCase() == processStateValue.toUpperCase()) {
 				return procSrchStates[i].value;
 			}
 		}
