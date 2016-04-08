@@ -15,6 +15,7 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.Iterator;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -127,11 +128,14 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
       model.getRole().add(admin);
       mapper.map(admin);
 
-      if (request.has("createBusinessDate")) {
-         DataType businessDate = facade.createPrimitiveData(model, "BusinessDate", "Business Date",
+      if (request.has("createBusinessDate"))
+      {
+         facade.createPrimitiveData(model, "BusinessDate", "Business Date",
                ModelerConstants.DATE_PRIMITIVE_DATA_TYPE);
       }
-
+      
+      model.setId(preventDuplicateFilenames(model.getId()));
+      
       modelService.getModelManagementStrategy()
             .getModels()
             .put(model.getId(), model);
@@ -197,5 +201,24 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
          modelMgtStrategy.deleteModel(model);
       }
       return changes;
+   }
+   
+   private String preventDuplicateFilenames(String modelID) 
+   {
+      for (Iterator<ModelType> i = modelService.getModelManagementStrategy()
+            .getModels().values().iterator(); i.hasNext();)
+      {
+         ModelType modelType = i.next();
+         if (modelType != null)
+         {
+            if ((modelID + ".xpdl").equals(modelService
+                  .getModelManagementStrategy().getModelFileName(modelType)))
+            {
+               modelID = modelID + "1";
+               return preventDuplicateFilenames(modelID);
+            }
+         }
+      }
+      return modelID;
    }
 }
