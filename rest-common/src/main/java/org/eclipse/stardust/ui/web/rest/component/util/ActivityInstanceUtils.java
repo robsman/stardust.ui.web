@@ -366,8 +366,60 @@ public class ActivityInstanceUtils
       else
       {
          NotificationMap nMap = new NotificationMap();
-         nMap.addFailure(new NotificationDTO(oid, "interaction controller not found", ""));
+         nMap.addFailure(new NotificationDTO(oid, "Interaction controller not found", ""));
          throw new NotificationMapException(nMap, Status.BAD_REQUEST);
+      }
+   }
+
+   /**
+    * @param oid
+    * @param toUser
+    * @param withData
+    * @return
+    * @throws NotificationMapException
+    */
+   @SuppressWarnings({"rawtypes", "unchecked"})
+   public ActivityInstance suspend(long oid, boolean toUser, boolean withData) throws NotificationMapException
+   {
+      if (!withData)
+      {
+         if (toUser)
+         {
+            return serviceFactoryUtils.getWorkflowService().suspendToUser(oid);
+         }
+         else
+         {
+            return serviceFactoryUtils.getWorkflowService().suspendToDefaultPerformer(oid);
+         }
+      }
+      else
+      {
+         ActivityInstance activityInstance = getActivityInstance(oid);
+
+         IActivityInteractionController interactionController = ActivityInteractionUtils
+               .getInteractionController(activityInstance.getActivity());
+
+         if (null != interactionController)
+         {
+            // TODO: Check? interactionController.closePanel(activityInstance, ClosePanelScenario.COMPLETE, null)
+            String contextId = interactionController.getContextId(activityInstance);
+            Map outData = interactionController.getOutDataValues(activityInstance);
+            
+            if (toUser)
+            {
+               return serviceFactoryUtils.getWorkflowService().suspendToUser(oid, contextId, outData);
+            }
+            else
+            {
+               return serviceFactoryUtils.getWorkflowService().suspendToDefaultPerformer(oid, contextId, outData);
+            }
+         }
+         else
+         {
+            NotificationMap nMap = new NotificationMap();
+            nMap.addFailure(new NotificationDTO(oid, "Interaction controller not found", ""));
+            throw new NotificationMapException(nMap, Status.BAD_REQUEST);
+         }
       }
    }
 

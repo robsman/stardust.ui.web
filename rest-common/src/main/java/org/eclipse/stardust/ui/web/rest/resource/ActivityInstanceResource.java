@@ -1051,6 +1051,42 @@ public class ActivityInstanceResource
       }
    }
 
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/suspend-and-save/{oid}")
+   public Response suspendAndSave(@PathParam("oid") Long oid, @QueryParam("toUser") @DefaultValue("false") boolean toUser)
+   {
+      try
+      {
+         ActivityInstanceDTO dto = activityInstanceService.suspend(oid, toUser, true);
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(dto), MediaType.APPLICATION_JSON).build();
+      }
+      catch (NotificationMapException e)
+      {
+         ResponseBuilder rb = Response.ok(GsonUtils.toJsonHTMLSafeString(e.getNotificationMap()), MediaType.APPLICATION_JSON);
+         rb.status(Status.BAD_REQUEST);
+         return rb.build();
+      }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/suspend/{oid}")
+   public Response suspend(@PathParam("oid") Long oid, @QueryParam("toUser") @DefaultValue("false") boolean toUser)
+   {
+      try
+      {
+         ActivityInstanceDTO dto = activityInstanceService.suspend(oid, toUser, false);
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(dto), MediaType.APPLICATION_JSON).build();
+      }
+      catch (NotificationMapException e)
+      {
+         ResponseBuilder rb = Response.ok(GsonUtils.toJsonHTMLSafeString(e.getNotificationMap()), MediaType.APPLICATION_JSON);
+         rb.status(Status.BAD_REQUEST);
+         return rb.build();
+      }
+   }
+
    /**
     * 
     * @param options

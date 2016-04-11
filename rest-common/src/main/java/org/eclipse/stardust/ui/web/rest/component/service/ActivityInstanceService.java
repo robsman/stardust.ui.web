@@ -261,6 +261,19 @@ public class ActivityInstanceService
    }
 
    /**
+    * @param activityOID
+    * @param toUser
+    * @param withData
+    * @return
+    * @throws NotificationMapException
+    */
+   public ActivityInstanceDTO suspend(Long activityOID, boolean toUser, boolean withData) throws NotificationMapException
+   {
+      ActivityInstance ai = activityInstanceUtils.suspend(activityOID, toUser, withData);
+      return DTOBuilder.build(ai, ActivityInstanceIntractionDTO.class);
+   }
+
+   /**
     * @param activityInstanceOid
     * @return
     */
