@@ -397,6 +397,42 @@
 			that.state = "error"
 		});
 
+		/*
+		invocations.forEach(function(params){
+			that.__uploadFile.apply(that,params);
+		});*/
+		if(this.$scope.singleThreaded){
+			this.uploadSynchronously(invocations);
+		}
+		else{
+			this.uploadAsynchronously(invocations);
+		}
+		
+	};
+
+	fileRepoUploadController.prototype.uploadSynchronously = function(invocations){
+
+		var that = this;
+		
+		var fx = function(invocations){
+
+			var invocation = invocations.pop();
+			var promise = invocation[3].promise;
+
+			promise.finally(function(){
+				if(invocations.length > 0){
+					fx(invocations);
+				}
+			});
+			that.__uploadFile.apply(that,invocation);
+		};
+
+		fx(invocations);
+
+	};
+
+	fileRepoUploadController.prototype.uploadAsynchronously = function(invocations){
+		var that = this;
 		invocations.forEach(function(params){
 			that.__uploadFile.apply(that,params);
 		});
@@ -500,6 +536,9 @@
 
 		linkfx = function(scope, element, attrs){
 
+			//if attribute is present the we operate synchronously
+			scope.singleThreaded = (attrs.sdaSynchronous != undefined);
+
 			scope.$watch('parentPath', function(newValue, oldValue, scope) {
 				scope.repoUploadCtrl.parentPath = newValue;
 			});
@@ -561,9 +600,10 @@
 			"scope": {
 				"subTitle" : "@sdaSubTitle",
 				"initCallback" : "&sdaOnInit",
-				"targetDocument" : "=sdaTargetDocument",
-				"doExplode" : "=sdaExplodeMode",
+				"targetDocument" : "=sdaTargetDocument", //only applicable for Uploading Zip expansions and new versions of existing docs
+				"doExplode" : "=sdaExplodeMode", //set to true and supply targetDocument in order to invoke folder expansion
 				"fileKey" : "@sdaFileKey",
+				"synchronous" : "@sdaSynchronous", //no value required or evaluated, presence of attribute will force behavior.
 				"parentPath" : "=sdaParentPath",
 				"documentTypes" : "=sdaDocumentTypes",
 				"url" : "@sdaUrl"
