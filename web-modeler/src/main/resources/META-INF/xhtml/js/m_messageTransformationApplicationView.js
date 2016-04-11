@@ -1588,7 +1588,7 @@ define(
 					this.advancedMappingCheckbox.change({
 															"view" : this
 														},function(event) {
-															if (view.advancedMappingCheckbox.attr("checked")) {
+															if (this.checked==true/*view.advancedMappingCheckbox.attr("checked")*/) {
 																var advMapping = "true";
 															} else {
 																var advMapping = null;
