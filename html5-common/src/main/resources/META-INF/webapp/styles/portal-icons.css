@@ -1161,6 +1161,7 @@ span.pi-case:before{
 	content: "\f274"; /* fa-calendar-check-o */
 }
 
+.pi-upload-failure:before,
 .pi-error:before {
 	font-family: "FontAwesome";
 	content: "\f071"; /* fa-exclamation-triangle */
@@ -1322,7 +1323,6 @@ span.pi-case:before{
 	content:'\f074'; /* fa-reverse */
 }
 
-.pi-upload-failure:before,
 .pi-deploy-failure:before,
 .pi-dialog-error:before{
 	font-family:"FontAwesome";

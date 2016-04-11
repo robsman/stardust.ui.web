@@ -27,53 +27,44 @@
 											style='float: left; margin-left: 2px;'></i>
 									</a></td>
 								</tr>
-								<tr
-									ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
-									<td ng-show="propertiesPageController.totalNotes > 0"
-										style="padding-top: 1em"><a href='#'
-										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesPanel')}}"
-										class='heading'
-										style='cursor: pointer; text-decoration: none;'> <i
-											class='pi pi-notes pi-lg'></i>
-									</a></td>
-									<td ng-show="propertiesPageController.totalNotes == 0"><a
-										href='#'
-										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesView')}}"
-										class='heading'
-										style='cursor: pointer; text-decoration: none;'> <i
-											class='pi pi-notes-empty pi-lg'></i>
-									</a></td>
+
+								<tr ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
+									<td ng-class="{active : propertiesPageController.selectedPropertiesPage=='notes'}">
+										<a 	href='#'
+											title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesPanel')}}"
+											class='heading'
+											style='cursor: pointer; text-decoration: none;'> 
+											
+											<div>
+												<i 	ng-class="{'pi-notes-empty' : propertiesPageController.totalNotes==0,'pi-notes' : propertiesPageController.totalNotes > 0}" 
+													class='pi pi-lg'>
+												</i>
+											</div>
+
+											<span>{{propertiesPageController.totalNotes}}</span>
+										
+										</a>
+
+									</td>
 								</tr>
-								<tr
-									ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
-									<td><a
-										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesView')}}"
-										href='#'> <span>
-												{{propertiesPageController.totalNotes}} </span></a></td>
-								</tr>
-								<tr
-									ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
-									<td ng-show="propertiesPageController.totalAttachments > 0"
-										style="padding-top: 1em"><a href='#'
-										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
-										class='heading'
-										style='cursor: pointer; text-decoration: none;'> <i
-											class='pi pi-invert pi-lg'></i>
-									</a></td>
-									<td ng-show="propertiesPageController.totalAttachments == 0"><a
-										href='#'
-										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
-										class='heading'
-										style='cursor: pointer; text-decoration: none;'> <i
-											class='pi pi-text pi-lg'></i>
-									</a></td>
-								</tr>
-								<tr
-									ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
-									<td><a
-										title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
-										href='#'> <span>
-												{{propertiesPageController.totalAttachments}} </span></a></td>
+
+								<tr ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
+									<td ng-class="{active : propertiesPageController.selectedPropertiesPage=='documents'}">
+										<a 	href='#'
+											title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
+											class='heading'
+											style='cursor: pointer; text-decoration: none;'>
+
+											<div>
+												<i class='pi pi-lg'
+												   ng-class="{'pi-invert' : propertiesPageController.totalAttachments > 0,'pi-text' : propertiesPageController.totalAttachments == 0}">
+												</i>
+											</div>
+
+											<span >{{propertiesPageController.totalAttachments}}</span>
+
+										</a>
+									</td>
 								</tr>
 							</tbody>
 						</table>
