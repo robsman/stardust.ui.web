@@ -593,6 +593,7 @@ public class WorklistUtils
             {
                if (!assemblyNodeCreated)
                {
+                  assemblyLineNode = addAssemblyLineChild(showEmptyWorklist, tempRootNode, assemblyLineNode);
                   assemblyNodeCreated = true;             
                }
               
@@ -610,7 +611,6 @@ public class WorklistUtils
 
          if (tempRootNode != null)
          {
-            assemblyLineNode = addAssemblyLineChild(showEmptyWorklist, tempRootNode, assemblyLineNode);
             tempRootNode.activityCount = getTotalActivityCountForParentNode(tempRootNode);
             rootUserObjectList.add(tempRootNode);
          }
