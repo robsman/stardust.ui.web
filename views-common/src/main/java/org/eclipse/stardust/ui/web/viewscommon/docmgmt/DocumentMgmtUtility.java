@@ -972,9 +972,8 @@ public class DocumentMgmtUtility
 
       // open the zip file stream
       ZipInputStream stream = new ZipInputStream(new ByteArrayInputStream(bytes));
-      DocumentMgmtUtility.createFolderIfNotExists(partitionFolderPath);
-
-      partitionFolderPath = partitionFolderPath + "/";
+      Folder parentFolder = DocumentMgmtUtility.createFolderIfNotExists(partitionFolderPath);
+      partitionFolderPath = parentFolder.getPath() + "/";
 
       try
       {
