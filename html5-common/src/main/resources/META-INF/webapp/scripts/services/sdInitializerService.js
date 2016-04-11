@@ -76,6 +76,9 @@ function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfi
 	function initializePortal (sucessData) {
 		loadLoggedInUserData().then(function () {
 			afterIntialization(true, sucessData);
+		},function( error ) {
+			trace.debug("Failed to load logged in user data", error);
+			afterIntialization(false, error);
 		});
 	}
 
