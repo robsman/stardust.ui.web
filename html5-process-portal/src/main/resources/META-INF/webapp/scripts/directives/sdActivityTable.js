@@ -193,7 +193,7 @@
 				angular.forEach(toolBarButtons, function(button) {
 					var buttonType = button.attributes['sda-toolbar-type'].value;
 					if(toolbar.indexOf(buttonType) === -1) {
-						button.remove();
+						jQuery(button).remove();
 					}
 					allAvailableButtons.push(buttonType);
 				});
