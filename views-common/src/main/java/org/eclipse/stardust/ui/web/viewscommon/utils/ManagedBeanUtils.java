@@ -48,48 +48,26 @@ public abstract class ManagedBeanUtils
    {
       Object bean = null;
       if (FacesContext.getCurrentInstance() != null)
-      {
+   {
+         bean = context.getApplication().getVariableResolver().resolveVariable(context, beanId);
+   }
+      else
+   {
          try
          {
-            bean = context.getApplication().getVariableResolver().resolveVariable(context, beanId);
+            ServletContext servletContext = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                  .getRequest().getSession().getServletContext();
+            ApplicationContext applicationContext = WebApplicationContextUtils
+                  .getRequiredWebApplicationContext(servletContext);
+            bean = applicationContext.getBean(beanId);   
          }
          catch (Throwable t)
          {
-            trace.error("FacesContext: Failed to retrieve or initialize spring based bean...." + beanId + "ERROR: "
-                  + t.getMessage());
-            bean = getManagedBeanFromSpringContext(beanId);
+            trace.error("Failed to retrieve or initialize spring based bean...." + beanId + "ERROR: " +  t.getMessage());
          }
-      }
-      else
-      {
-         bean = getManagedBeanFromSpringContext(beanId);
-      }
+   }
       return bean;
    }
-   
-   /**
-    * @param beanId
-    * @return
-    */
-   private static Object getManagedBeanFromSpringContext(String beanId)
-   {
-      Object bean = null;
-      
-      try
-      {
-         ServletContext servletContext = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-               .getRequest().getSession().getServletContext();
-         ApplicationContext applicationContext = WebApplicationContextUtils
-               .getRequiredWebApplicationContext(servletContext);
-         bean = applicationContext.getBean(beanId);
-      }
-      catch (Throwable t)
-      {
-         trace.error("Failed to retrieve or initialize spring based bean...." + beanId + "ERROR: " + t.getMessage());
-      }
-      return bean;
-   }
-   
    
    /**
     * @param name
