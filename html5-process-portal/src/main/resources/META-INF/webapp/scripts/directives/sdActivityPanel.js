@@ -39,8 +39,23 @@
 						'<button ng-click="complete();" title="Complete" ng-disabled="!renderActivityUi">\n' +
 							'<span>Complete</span>\n' +
 						'</button>\n' +
+						'<button ng-click="suspendAndSave();" title="Complete" ng-disabled="!renderActivityUi">\n' +
+							'<span>Suspend & Save</span>\n' +
+						'</button>\n' +
+						'<button ng-click="suspendAndSave(true);" title="Complete" ng-disabled="!renderActivityUi">\n' +
+							'<span>Suspend & Save (User)</span>\n' +
+						'</button>\n' +
+						'<button ng-click="suspend()" title="Complete" ng-disabled="!renderActivityUi">\n' +
+							'<span>Suspend</span>\n' +
+						'</button>\n' +
+						'<button ng-click="suspend(true)" title="Complete" ng-disabled="!renderActivityUi">\n' +
+							'<span>Suspend (User)</span>\n' +
+						'</button>\n' +
 					'</div>' +
-					'<div>{{actionStatus}}</div>' +
+					'<div style="height: 40px;">' +
+						'<div style="color: red;">(At the moment actions only work for same domain environment)</div>' +
+						'<div><b>{{actionStatus}}</b></div>' +
+					'<div>' +
 					'<div ng-if="renderActivityUi">' +
  						'<iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="auto" ' +
  							'style="{{activityUiStyle}}" ' +
@@ -68,8 +83,8 @@
 		 *
 		 */
 		function ActivityPanelCompiler(scope, element, attr, ctrl) {
-			var MA_REST_END_POINT = sdUtilService.getBaseUrl() + "services/rest/process-portal/manualActivity/";
-			var AI_REST_END_POINT = sdUtilService.getBaseUrl() + "services/rest/portal/activity-instances/";
+			var MA_REST_END_POINT = sdUtilService.getBaseUrl() + 'services/rest/process-portal/manualActivity/';
+			var AI_REST_END_POINT = sdUtilService.getBaseUrl() + 'services/rest/portal/activity-instances/';
 
 			var sdData = ctrl[0];
 		
@@ -99,18 +114,62 @@
 					var activityIframe = element.find('iframe');
 					var iFrameScope = activityIframe[0].contentWindow.angular.element('html').scope();
 					if (iFrameScope.saveData()) {
-						var httpResponse = $http.post(AI_REST_END_POINT + "complete/" + activityOid);
+						var httpResponse = $http.post(AI_REST_END_POINT + 'complete/' + activityOid);
 						httpResponse.success(function(data) {
-							scope.actionStatus = 'Complete Success.';
+							scope.actionStatus = 'Complete Success';
 							scope.renderActivityUi = false;
-							console.log('Complete Success', data);
+							console.log(scope.actionStatus, data);
 						}).error(function(data) {
-							scope.actionStatus = 'Complete Failed.';
-							console.log('Complete Failed', data);
+							scope.actionStatus = 'Complete Failed';
+							console.log(scope.actionStatus, data);
 						});
 					} else {
 						iFrameScope.$apply();
 					}
+				}
+
+				/*
+				 * 
+				 */
+				scope.suspendAndSave = function(toUser) {
+					var activityIframe = element.find('iframe');
+					var iFrameScope = activityIframe[0].contentWindow.angular.element('html').scope();
+					if (iFrameScope.saveData()) {
+						var url = AI_REST_END_POINT + 'suspend-and-save/' + activityOid;
+						if (toUser) {
+							url += '?toUser=true';
+						}
+						var httpResponse = $http.post(url);
+						httpResponse.success(function(data) {
+							scope.actionStatus = 'Suspend And Save Success To ' + (toUser ? 'User' : 'Participant');
+							scope.renderActivityUi = false;
+							console.log(scope.actionStatus, data);
+						}).error(function(data) {
+							scope.actionStatus = 'Suspend And Save Failed To ' + (toUser ? 'User' : 'Participant');
+							console.log(scope.actionStatus, data);
+						});
+					} else {
+						iFrameScope.$apply();
+					}
+				}
+
+				/*
+				 * 
+				 */
+				scope.suspend = function(toUser) {
+					var url = AI_REST_END_POINT + 'suspend/' + activityOid;
+					if (toUser) {
+						url += '?toUser=true';
+					}
+					var httpResponse = $http.post(url);
+					httpResponse.success(function(data) {
+						scope.actionStatus = 'Suspend Success To ' + (toUser ? 'User' : 'Participant');
+						scope.renderActivityUi = false;
+						console.log(scope.actionStatus, data);
+					}).error(function(data) {
+						scope.actionStatus = 'Suspend Failed To ' + (toUser ? 'User' : 'Participant');
+						console.log(scope.actionStatus, data);
+					}); 
 				}
 			}
 
@@ -135,11 +194,20 @@
 					var params = scope.panelUrl.substring(scope.panelUrl.indexOf('?') + 1);
 					
 					interactionId = sdUtilService.extractParamsFromUri(params)['interactionId'];
+					if (interactionId) {
+						interactionUri = MA_REST_END_POINT + interactionId;
+					} else {
+						interactionUri = sdUtilService.extractParamsFromUri(params)['ippInteractionUri'];
+						if (interactionUri.indexOf('/') == 0) {
+							interactionUri = interactionUri.substring(1);
+						}
+						interactionUri = sdUtilService.getBaseUrl() + interactionUri;
+
+						interactionId = interactionUri.substring(interactionUri.lastIndexOf('/') + 1);
+					}
+
 					var decodedId = window.atob(interactionId);
 					activityOid = decodedId.substring(0, decodedId.indexOf('|'));
-
-					var urlPrefix = scope.panelUrl.substring(0, scope.panelUrl.indexOf("/plugins"));
-					interactionUri = MA_REST_END_POINT + interactionId;
 				});
 			}
 		}
