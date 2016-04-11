@@ -1214,11 +1214,8 @@
 
 			return false;
 		}
-
-		/*
-		 *
-		 */
-		ActivityTableCompiler.prototype.completeAll = function(res) {
+		
+		ActivityTableCompiler.prototype.completeAll = function() {
 			var self = this;
 			var STATUS_PARTIAL_SUCCESS = 'partialSuccess';
 			var STATUS_SUCCESS = 'success';
@@ -1230,99 +1227,96 @@
 					nameIdMap : {}
 			};
 
-			var promise = res.promise;
 			var selectedItems = self.selectedActivity;
+			
+			angular.forEach(selectedItems, function(item) {
+				self.completeActivityResult.nameIdMap[item.activityOID] = item.activity.name;
+			});
 
-			promise.then(function() {
-				angular.forEach(selectedItems, function(item) {
-					self.completeActivityResult.nameIdMap[item.activityOID] = item.activity.name;
-				});
+			if (selectedItems.length > 0) {
+				var activitiesData = [];
 
-				if (selectedItems.length > 0) {
-					var activitiesData = [];
+				if (self.completeDialog.confirmationType === 'dataMapping') {
+					// When data fields are filled in a dialog
+					angular.forEach(selectedItems, function(item, index) {
+						var outData = self.completeDialog.outData;
+						var dataMappings = {};
+						angular.forEach(self.completeDialog.dataMappings, function(mapping) {
+							dataMappings[mapping.id] = mapping.typeName;
+						});
+						activitiesData.push({
+							oid : item.activityOID,
+							outData : outData,
+							dataMappings : dataMappings
+						});
+					});
 
-					if (self.completeDialog.confirmationType === 'dataMapping') {
-						// When data fields are filled in a dialog
-						angular.forEach(selectedItems, function(item, index) {
-							var outData = self.completeDialog.outData;
+				} else {
+					// When data fields are filled inline in the
+					// table
+					angular.forEach(selectedItems,
+							function(item, index) {
+						if (item.dataMappings) {
+							var outData = item.inOutData;
 							var dataMappings = {};
-							angular.forEach(self.completeDialog.dataMappings, function(mapping) {
+							angular.forEach(item.dataMappings, function(
+									mapping) {
 								dataMappings[mapping.id] = mapping.typeName;
 							});
+
 							activitiesData.push({
 								oid : item.activityOID,
 								outData : outData,
 								dataMappings : dataMappings
 							});
-						});
-
-					} else {
-						// When data fields are filled inline in the
-						// table
-						angular.forEach(selectedItems,
-								function(item, index) {
-							if (item.dataMappings) {
-								var outData = item.inOutData;
-								var dataMappings = {};
-								angular.forEach(item.dataMappings, function(
-										mapping) {
-									dataMappings[mapping.id] = mapping.typeName;
-								});
-
-								activitiesData.push({
-									oid : item.activityOID,
-									outData : outData,
-									dataMappings : dataMappings
-								});
-							}
-						});
-					}
-
-					if (activitiesData.length > 0) {
-						trace.debug("Complete activity called for ",activitiesData.length ," activities.");
-						sdActivityInstanceService
-						.completeAll(activitiesData)
-						.then(
-								function(result) {
-
-									self.showCompleteNotificationDialog = true;
-									self.completeActivityResult.notifications = result;
-									self.refresh();
-
-
-									if (result.failure.length > 0 && result.success.length > 0) {
-										// partial Success
-										self.completeActivityResult.status = STATUS_PARTIAL_SUCCESS;
-										self.completeActivityResult.title = sgI18nService
-										.translate(
-												'processportal.views-completeActivityDialog-notification-title-error',
-										'ERROR');
-										trace.debug("Complete activity finished with partial success.");
-										trace.debug("Failed  activites - ",result.failure);
-									} else if (result.success.length === activitiesData.length) {
-										// Success
-										self.completeActivityResult.status = STATUS_SUCCESS;
-										self.completeActivityResult.title = sgI18nService
-										.translate(
-												'processportal.views-completeActivityDialog-notification-title-success',
-										'SUCCESS');
-										trace.debug("Complete activity finished with no failures.");
-									} else {
-										self.completeActivityResult.status = STATUS__FAILURE;
-										self.completeActivityResult.title = sgI18nService
-										.translate(
-												'processportal.views-completeActivityDialog-notification-title-error',
-										'ERROR');
-										trace.debug("Complete activity failed.");
-										trace.debug("Failed  activites - ",result.failure);
-									}
-
-								});
-					} else {
-						self.dataTable.setSelection([]);
-					}
+						}
+					});
 				}
-			});
+
+				if (activitiesData.length > 0) {
+					trace.debug("Complete activity called for ",activitiesData.length ," activities.");
+					sdActivityInstanceService
+					.completeAll(activitiesData)
+					.then(
+							function(result) {
+
+								self.showCompleteNotificationDialog = true;
+								self.completeActivityResult.notifications = result;
+								self.refresh();
+
+
+								if (result.failure.length > 0 && result.success.length > 0) {
+									// partial Success
+									self.completeActivityResult.status = STATUS_PARTIAL_SUCCESS;
+									self.completeActivityResult.title = sgI18nService
+									.translate(
+											'processportal.views-completeActivityDialog-notification-title-error',
+									'ERROR');
+									trace.debug("Complete activity finished with partial success.");
+									trace.debug("Failed  activites - ",result.failure);
+								} else if (result.success.length === activitiesData.length) {
+									// Success
+									self.completeActivityResult.status = STATUS_SUCCESS;
+									self.completeActivityResult.title = sgI18nService
+									.translate(
+											'processportal.views-completeActivityDialog-notification-title-success',
+									'SUCCESS');
+									trace.debug("Complete activity finished with no failures.");
+								} else {
+									self.completeActivityResult.status = STATUS__FAILURE;
+									self.completeActivityResult.title = sgI18nService
+									.translate(
+											'processportal.views-completeActivityDialog-notification-title-error',
+									'ERROR');
+									trace.debug("Complete activity failed.");
+									trace.debug("Failed  activites - ",result.failure);
+								}
+
+							});
+				} else {
+					self.dataTable.setSelection([]);
+				}
+			}
 		};
 
 		/**

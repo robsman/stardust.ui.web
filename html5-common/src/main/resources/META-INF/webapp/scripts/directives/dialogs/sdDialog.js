@@ -179,9 +179,6 @@
           });
         
         exposeAPI($attrs.sdDialog);
-
-        // Expose closeDialog to the provided scope.
-        self.dialogScope.closeThisDialog = closeDialog;
         
         $scope.$on('$destroy', onDestroyDialog);
       }
@@ -348,6 +345,9 @@
         // If 'sda-template' is provided, it is the content of the template that gets appended to the popup body
         // else actual directive body contents will be appended.
         self.cloneScope = self.dialogScope.$new();
+        
+        // Expose closeDialog to the provided scope.
+        self.cloneScope.closeThisDialog = closeDialog;
         $transclude(self.cloneScope, function(clone) {
           var dialogElem = self.dialogElem;
           var templatePlaceHolder = dialogElem.find('.transclude');

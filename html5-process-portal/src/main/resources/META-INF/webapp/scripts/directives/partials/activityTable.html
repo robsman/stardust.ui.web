@@ -378,9 +378,8 @@
 
 	<div sd-dialog
 		sda-show="activityTableCtrl.showCompleteDialog"
-		sda-type="confirm" sda-title="{{activityTableCtrl.completeAllDialog.title}}"
-		sda-scope="this" sda-on-open="activityTableCtrl.$completeAll(res)" sda-confirm-action-label="{{activityTableCtrl.completeAllDialog.confirmLabel}}"
-	    sda-cancel-action-label="{{activityTableCtrl.completeAllDialog.cancelLabel}}"
+		sda-type="custom" sda-title="{{activityTableCtrl.completeAllDialog.title}}"
+		sda-scope="this"
 		sda-template="{{activityTableCtrl.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/completeActivityDialog.html')}}">
 	</div>
 	<div sd-dialog
