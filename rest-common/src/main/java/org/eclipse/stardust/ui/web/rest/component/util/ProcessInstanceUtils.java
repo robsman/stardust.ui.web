@@ -1822,6 +1822,8 @@ public class ProcessInstanceUtils
       dto.duration = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
             .getDuration(pi);
       dto.processName = I18nUtils.getProcessName(processDefinition);
+      dto.rootProcessName = pi.getRootProcessInstanceName();
+      
       String startingUserLabel = UserUtils.getUserDisplayLabel(pi.getStartingUser());
       dto.createUser = startingUserLabel;
 

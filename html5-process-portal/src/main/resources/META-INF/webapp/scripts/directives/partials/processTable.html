@@ -89,6 +89,9 @@
 				<th sda-name="caseOwner" sda-label="{{i18n('views-common-messages.overview-CaseOwner')}}" sda-sortable="false"
 					sda-visible="{{processTableCtrl.isColumnVisible('caseOwner')}}">
 				</th>
+				<th sda-name="rootProcessName" sda-field="rootProcessName" sda-label="{{i18n('views-common-messages.views-activityTable-column-rootProcess')}}" sda-sortable="false" sda-filterable="false"
+					sda-visible="{{processTableCtrl.isColumnVisible('rootProcessName')}}">
+				</th>
 				<th ng-repeat="descCol in processTableCtrl.descritorCols"
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"  sda-filterable="{{descCol.filterable}}"
 					sda-sortable="{{descCol.sortable}}" sda-visible="{{processTableCtrl.isColumnVisible(descCol.id)}}">
@@ -155,6 +158,7 @@
 				<td sda-field="processInstanceRootOID" sda-data-type="int"></td>
 				<td sda-field="endTime" sda-data-type="dateTime"></td>
 				<td sda-field="caseOwner" ></td>
+				<td sda-field="rootProcessName"></td>
 				<td ng-repeat="descCol in processTableCtrl.descritorCols"
 					 sda-data-type="{{descCol.dataType}}" sda-exporter="processTableCtrl.getDescriptorValueForExport( rowData.processDescriptorsValues[colData.field])">
 					<div sd-descriptor-content sda-value="rowData.processDescriptorsValues[colData.field]" sda-data-type = "colData.dataType"> </div>
