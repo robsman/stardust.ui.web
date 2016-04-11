@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 SunGard CSA LLC and others.
+ * Copyright (c) 2016 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,9 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
+
+(function () {
+	'use strict';
 
 angular.module('bpm-common.services').provider(
 		'sdInitializerService',
@@ -29,28 +32,35 @@ angular.module('bpm-common.services').provider(
 		});
 
 /**
- * 
+ *
  */
 function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfigService, sdLocalizationService,
 		sgPubSubService, sdLoggerService) {
 
 	var trace = sdLoggerService.getLogger('bpm-common.services.sdInitializerService');
 	var self = this;
-	this.intializationFailureEvent = "sd-initialization-failure";
-	this.intializationSuccessEvent = "sd-initialization-success";
 	
+	this.event = {
+			initializeSuccess : "sd-initialization-success",
+			initializeFailure : "sd-initialization-failure"
+	}
+
+	/**
+	 *
+	 */
 	this.start = function () {
 
 		if (sdEnvConfigService.getSsoServiceUrl()) {
-			trace.debug("SSO service URL found.Intialization Portal with SSO");
+			trace.debug("SSO service URL found.Initializing Portal with SSO");
 			intializePortalWithSSO();
 		} else {
-			trace.debug("SSO service not found in env config URL found.Intialization Portal with out SSO");
+			trace.debug("SSO service URL not found in env config.Initializing Portal without SSO");
 			initializePortal();
 		}
-	}
+	};
+
 	/**
-	 * 
+	 *
 	 */
 	function intializePortalWithSSO () {
 		sdSsoService.initialize().then(function (sucessData) {
@@ -61,7 +71,7 @@ function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfi
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	function initializePortal (sucessData) {
 		loadLoggedInUserData().then(function () {
@@ -70,7 +80,7 @@ function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfi
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	function loadLoggedInUserData () {
 
@@ -79,33 +89,31 @@ function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfi
 		var localizationInfoPromise = sdLocalizationService.loadInfo();
 
 		var servicesToBeLoaded = [userInfoPromise, runTimePermissionsPromise, localizationInfoPromise];
-		trace.debug("Loading Portal Intialization services");
+		trace.debug("Loading Portal Initialization services");
 		return $q.all(servicesToBeLoaded);
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	function afterIntialization (initializationSuccess, data) {
+		trace.debug("Portal Initialization complete.");
 		var pubSubMessage = {
-			message : '',
-			success : false
+			message : ''
 		};
-	
+
 		if (initializationSuccess) {
-			trace.debug("Intialization success.Publishing event :-"+self.intializationSuccessEvent, data);
-			var msg = "IPP Initialization successfull."
+			var msg = "IPP Initialization successfull.";
 			pubSubMessage.message = msg;
-			sgPubSubService.publish(self.intializationSuccessEvent, pubSubMessage);
+			trace.debug("Publishing Sucess Event : "+ self.event.initializeSuccess , pubSubMessage);
+			sgPubSubService.publish( self.event.initializeSuccess, pubSubMessage);
 		} else {
-			trace.debug("Intialization failure.Publishing event :-"+self.intializationFailureEvent, data);
-			var msg = "IPP Initialization failed."
+			var msg = "IPP Initialization failed.";
 			pubSubMessage.message = msg;
 			angular.merge(pubSubMessage, data);
-			sgPubSubService.publish(self.intializationFailureEvent, pubSubMessage);
+			trace.debug("Publishing event :-"+ self.event.initializeFailure, pubSubMessage);
+			sgPubSubService.publish( self.event.initializeFailure, pubSubMessage);
 		}
-	
-		
-		
 	}
 }
+})();

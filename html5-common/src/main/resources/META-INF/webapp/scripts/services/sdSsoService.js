@@ -15,15 +15,18 @@
 
 (function () {
 
-	angular.module('bpm-common.services').provider('sdSsoService', function () {
-		this.$get = ['$injector', 'sdLoggerService', 'sdEnvConfigService','$q', function ($injector, sdLoggerService, sdEnvConfigService, $q) {
-			var service = new sdSsoService($injector, sdLoggerService, sdEnvConfigService, $q);
-			return service;
-		}];
-	});
+	angular.module('bpm-common.services').provider(
+			'sdSsoService',
+			function () {
+				this.$get = ['$injector', 'sdLoggerService', 'sdEnvConfigService', '$q',
+						function ($injector, sdLoggerService, sdEnvConfigService, $q) {
+							var service = new sdSsoService($injector, sdLoggerService, sdEnvConfigService, $q);
+							return service;
+						}];
+			});
 
 	/*
-	 *
+	 * 
 	 */
 	function sdSsoService ($injector, sdLoggerService, sdEnvConfigService, $q) {
 
@@ -31,46 +34,39 @@
 		var ippBaseUrl = sdEnvConfigService.getBaseUrl();
 		var ssoServiceURL = sdEnvConfigService.getSsoServiceUrl();
 		/*
-		 *
+		 * 
 		 */
 		this.initialize = function () {
 			var deferred = $q.defer();
-			
+
 			var ssoServiceURL = sdEnvConfigService.getSsoServiceUrl();
-			
+
 			if (ssoServiceURL) {
-				
-				beginInitilization().
-				done(function (data) {
-					trace.debug("Success response: ", data);
+
+				beginInitilization().done(function (data) {
+					trace.debug("SSO Initialization successfull : ", data);
 					deferred.resolve(data);
 				}).fail(function (data) {
-					
-					trace.debug("Failure response : ", data);
-					var msg = "IPP Initialization failed."
-						var failure = {
-							message : msg
-					};
-					if(data.status) {
+					trace.debug("SSO Initialization failed : ", data);
+					var failure = {};
+					if (data.status) {
 						failure.status = data.status;
 					}
-					if(data.statusText) {
+					if (data.statusText) {
 						failure.statusText = data.statusText;
 					}
 					deferred.reject(failure);
-
 				});
 			} else {
 				var noURlfailure = {
-						message : "Couldn't find ssoServiceURL in Env config."
-					};
-					
+					message : "Couldn't find ssoServiceURL in Env config."
+				};
+
 				deferred.reject(noURlfailure);
 			}
-			
-			return  deferred.promise;
-		};
 
+			return deferred.promise;
+		};
 
 		function beginInitilization () {
 			return getSAMLResponse().then(loginIPPWithSAML).then(initializeIPP);
@@ -119,6 +115,6 @@
 				url : url
 			});
 		}
-		
+
 	}
 })();
