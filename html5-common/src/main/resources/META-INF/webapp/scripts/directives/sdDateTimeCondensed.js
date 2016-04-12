@@ -372,7 +372,7 @@
 		//Special case where user just opens and closes the datePicker without selecting anything or
 		//where the user has blanked out both values in the control. We will treat this like a reset
 		//to the control and explicitly set validity to true and our view value to null.
-		if(dateLong==="" && timeStr ===""){
+		if(!dateLong && !timeStr){
 			this.ngModelCtrl.$setViewValue(null);
 			this.ngModelCtrl.$setValidity('validate', true);
 			return
