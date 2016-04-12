@@ -265,7 +265,7 @@
 				.then(
 						function(states) {
 							self.activitySrchState = [ {
-								value : "3",
+								value : 3,
 								label : _sdProcessSearchService
 										.getI18MessageString('business-control-center-messages.views-processSearchView-chooseProcess-options-alive-label'),
 								name : "alive",
@@ -275,7 +275,7 @@
 									.concat(states);
 
 							var default_state = [ {
-								value : "-9999",
+								value : -9999,
 								label : _sdProcessSearchService
 										.getI18MessageString('business-control-center-messages.views-processSearchView-chooseProcess-options-all-label'),
 								name : "all",
@@ -1156,7 +1156,7 @@
 	    		      
 	    		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function() {
 	    			      //Set Activity State and Criticality after processChange as it resets it.
-	    			      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
+	    			      self.query.processSearchCriteria.activitySrchStateSelected = parseInt(params[self.STATE]);
 	    		    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
 	    		    	  deferred.resolve();
 	    		      });
@@ -1168,12 +1168,14 @@
 	    	  self.prePopulateSelectedProcess(params[self.PROCESSES]).then(function() {
     	    	  self.query.processSearchCriteria.procSrchProcessSelected = params[self.PROCESSES];
     	    	  
+    	    	  self.preSelectFilters(params);
+    	    	  
     	    	  //For Descriptors
     		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
     		      
     		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function() {
     			      //Set Activity State and Criticality after processChange as it resets it.
-    			      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
+    			      self.query.processSearchCriteria.activitySrchStateSelected = parseInt(params[self.STATE]);
     		    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
     		    	  deferred.resolve();
     		      });
