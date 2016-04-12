@@ -258,6 +258,10 @@ td, th {
 										tabindex="0" unselectable="on"
 										style="min-width: 0px; max-width: none;"><div
 											class="tablesorter-header-inner">Response Description</div></th>
+									<th class="confluenceTh sortableHeader" data-column="5"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">DTO Description</div></th>		
 									<th class="confluenceTh sortableHeader" data-column="6"
 										tabindex="0" unselectable="on"
 										style="min-width: 0px; max-width: none;"><div
@@ -309,17 +313,16 @@ td, th {
 											rows="15" cols="50" ng-model="endpoint.responseDescription"> </textarea>
 										<h4>Preview:</h4>
 										<div markdown="endpoint[editingColumnName]"></div></td>
-
-									<td class="confluenceTd editable" title="Double-click to edit"
-										ng-show="!editing(endpoint, 'description')"
-										ng-dblclick="edit(endpoint, 'description')"><span>{{endpoint.method}}()</span>
-										<div markdown=endpoint.description></div></td>
-									<td class="confluenceTd"
-										title="Remember to copy to Java class post editing"
-										ng-show="editing(endpoint, 'description')"><textarea
-											rows="15" cols="50" ng-model="endpoint.description"> </textarea>
-										<h4>Preview:</h4> <span>{{endpoint.method}}()</span>
-										<div markdown="endpoint[editingColumnName]"></div></td>
+									<td class="confluenceTd"><div
+											ng-show="!!endpoint.requestDTO">
+											<span >Request DTO: </span><span>{{endpoint.requestDTO}}</span>
+										</div> <br />
+										<div ng-show="!!endpoint.responseDTO">
+											Response DTO: <span>{{endpoint.responseDTO}}</span>
+										</div></td>
+									<td class="confluenceTd">
+											<span>{{endpoint.method}}() </span>
+									</td>
 								</tr>
 
 							</tbody>

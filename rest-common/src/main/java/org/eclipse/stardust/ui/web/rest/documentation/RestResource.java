@@ -393,6 +393,13 @@ public class RestResource
       {
          newEndpoint.responseDescription = res.value();
       }
+      
+      DTODescription dtos = javaMethod.getAnnotation(DTODescription.class);
+      if (dtos != null)
+      {
+         newEndpoint.requestDTO = dtos.request();
+         newEndpoint.responseDTO = dtos.response();
+      }
 
       exploreParameters(javaMethod, newEndpoint);
       return newEndpoint;

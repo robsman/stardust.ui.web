@@ -33,6 +33,8 @@ public class EndPointDTO
    public String description;
    public String requestDescription;
    public String responseDescription;
+   public String requestDTO;
+   public String responseDTO;
    
    public String relativePath = "";
 
