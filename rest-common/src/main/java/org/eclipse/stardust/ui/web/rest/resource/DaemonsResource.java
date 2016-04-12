@@ -28,6 +28,7 @@ import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.dto.DaemonDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author Subodh.Godbole
@@ -48,7 +49,8 @@ public class DaemonsResource
    {
       try
       {
-         List<Daemon> daemons = serviceFactoryUtils.getAdministrationService().getAllDaemons(true);
+
+         List<Daemon> daemons = serviceFactoryUtils.getAdministrationService().getAllDaemons(false);
          List<DaemonDTO> daemonsDto = DTOBuilder.buildList(daemons, DaemonDTO.class);
          QueryResultDTO result = new QueryResultDTO();
          result.list = daemonsDto;
@@ -62,7 +64,21 @@ public class DaemonsResource
          return Response.serverError().build();
       }
    }
-
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{daemonType}")
+   public Response getDaemon(@PathParam("daemonType") String daemonType){
+	   try{
+		   Daemon daemon = serviceFactoryUtils.getAdministrationService().getDaemon(daemonType, true);
+		   DaemonDTO daemonDTO = DTOBuilder.build(daemon, DaemonDTO.class);
+		   return Response.status(200).entity(daemonDTO.toJson()).build();
+	   }
+	   catch(Exception e){
+		   return Response.serverError().build();
+	   }
+   }
+   
    @PUT
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{daemonType}/start")

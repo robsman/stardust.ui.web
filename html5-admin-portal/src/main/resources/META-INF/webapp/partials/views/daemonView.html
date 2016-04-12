@@ -37,7 +37,12 @@
 					<td sda-data-type="dateTime"></td>
 					<td sda-data-type="dateTime"></td>
 					<td sda-exporter="ctrl.getDaemonStatus(rowData)">{{ctrl.getDaemonStatus(rowData)}}</td>
-					<td></td>
+					<td>
+						<i class="pi pi-spinner pi-spin" 
+						   ng-show="rowData.acknowledgementState==undefined">
+						</i>
+						<span>{{rowData.acknowledgementState}}</span>
+					</td>
 					<td></td>
 					<td style="white-space: nowrap; text-align: center;">
 						<button ng-show="rowData.running" ng-click="ctrl.stopDaemon(rowData);"

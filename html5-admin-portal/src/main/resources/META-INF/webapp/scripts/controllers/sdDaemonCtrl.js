@@ -81,19 +81,55 @@
 	 */
 	controller.prototype.fetchDaemonsData = function() {
 		var self = this;
-		_sdDaemonService.fetchDaemons().then(function(data) {
+		_sdDaemonService.fetchDaemons()
+		.then(function(data) {
+
+			var promises=[];
 			self.data = data;
+
 			if (self.daemonDataTable != null) {
 				self.daemonDataTable.refresh();
 			} else {
 				self.showDaemonTable = true;
 			}
 
+			data.list.forEach(function(daemon){
+				_sdDaemonService.getDaemon(daemon.type)
+				.then(function(v){
+					self.updateDaemonAcknowledgeState(v.type,v.acknowledgementState);
+					self.daemonDataTable.refresh();
+				})
+				["catch"](function(err){
+					trace.log("Error fetching " + daemon.type + " ACK State: ",error);
+				})
+			});
+
 		}, function(error) {
 			trace.log("Error in fetching Daemons",error);
 		});
 	};
 
+	/**
+	 * Helper function to update the acknowledgement state of a benchmark type
+	 * in our existing data collection.
+	 * @param  {[type]} benchmarkType [description]
+	 * @param  {[type]} state         [description]
+	 * @return {[type]}               [description]
+	 */
+	controller.prototype.updateDaemonAcknowledgeState = function(benchmarkType,state){
+
+		var self = this;
+		var i;
+		var index;
+
+		for(var i = 0; i < self.data.list.length;i++){
+			index = i;
+			if(self.data.list[i].type===benchmarkType){
+				self.data.list[i].acknowledgementState = state;
+				break;
+			}
+		}
+	}
 	/*
 	 * 
 	 */

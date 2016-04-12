@@ -35,11 +35,22 @@
 	function DaemonService($resource, sgI18nService, sdUtilService) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + 'services/rest/portal/daemons';
 
-		/*
-		 * 
+		/**
+		 * Returns all daemon data other than the acknowledge state which can be acquired 
+		 * individually per daemon using the getDaemon function.
+		 * @return {[type]}            [description]
 		 */
 		DaemonService.prototype.fetchDaemons = function() {
 			return $resource(REST_BASE_URL + "/all").get().$promise;
+		}
+
+		/**
+		 * Returns daemon data including ack state.
+		 * @param  {[type]} daemonType [description]
+		 * @return {[type]}            [description]
+		 */
+		DaemonService.prototype.getDaemon = function(daemonType) {
+			return $resource(REST_BASE_URL + "/" + daemonType).get().$promise;
 		}
 
 		/*
