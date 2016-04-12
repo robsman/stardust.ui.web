@@ -706,7 +706,7 @@ button.close {
 .propertiesContent {
 	min-height: 200px;
 	max-height: 330px;
-	overflow: overlay;
+	overflow: auto;
 }
 
 .properties-panel textarea {
