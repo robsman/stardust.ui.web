@@ -257,7 +257,8 @@
 
 	//Get the Role/org based reports, should return two collections , designs and saved-reports,
 	//designs will be used underneath Report Definitions while saved-reports will be merged with 
-	//the Saved Reports node. (#3)
+	//the Saved Reports node. Note that the server side REST endpoint has the side effect of
+	//building out the defaul structure for the Report Definitions node if it does not exist.(#3)
 	sdReportsService.prototype.getParticipantReports = function(){
 
 		var url = this.rootUrl + "/services/rest/portal/reports/participant";

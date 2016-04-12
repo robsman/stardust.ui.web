@@ -64,10 +64,13 @@
 				var name;
 
 				qualifiedId = item.path.split("/")[2];
-				grant = grantMap[qualifiedId];
-				name = (!grant)?qualifiedId:grant.name;
 
-				reportDefinitionPaths[item.path] =name;
+				//now look up our item in our hash map for grants, if it isnt there
+				//the current user doesnt have that grant and we dont add the path
+				grant = grantMap[qualifiedId];
+				if(grant){
+					reportDefinitionPaths[item.path] =grant.name;
+				}
 
 			});
 			that.reportDefinitionPaths = reportDefinitionPaths;
@@ -80,10 +83,13 @@
 				var name;
 				
 				qualifiedId = item.path.split("/")[2];
-				grant = grantMap[qualifiedId];
-				name = (!grant)?qualifiedId:grant.name;
 
-				savedReportPaths[item.path] = name;
+				//now look up our item in our hash map for grants, if it isnt there
+				//the current user doesnt have that grant and we dont add the path
+				grant = grantMap[qualifiedId];
+				if(grant){
+					savedReportPaths[item.path] = grant.name;
+				}
 
 			});
 			that.savedReportPaths = savedReportPaths;
