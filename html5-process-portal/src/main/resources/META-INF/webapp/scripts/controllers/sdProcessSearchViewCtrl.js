@@ -1156,7 +1156,7 @@
 	    		      
 	    		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function() {
 	    			      //Set Activity State and Criticality after processChange as it resets it.
-	    			      self.query.processSearchCriteria.activitySrchStateSelected = parseInt(params[self.STATE]);
+	    			      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
 	    		    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
 	    		    	  deferred.resolve();
 	    		      });
@@ -1175,7 +1175,7 @@
     		      
     		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function() {
     			      //Set Activity State and Criticality after processChange as it resets it.
-    			      self.query.processSearchCriteria.activitySrchStateSelected = parseInt(params[self.STATE]);
+    			      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
     		    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
     		    	  deferred.resolve();
     		      });
@@ -1358,7 +1358,7 @@
 			params[this.SEARCH_OPT] = this.SEARCH_OPT_PROCESS;
 			
 		}
-		if (params[this.STATE] == null) {
+		if (params[this.STATE] == null && params[this.SEARCH_OPT] === this.SEARCH_OPT_PROCESS) {
 			params[this.STATE] = this.procSrchState[0].value; 
 		}
 		if (params[this.PRIORITY] == null) {
@@ -1375,7 +1375,7 @@
 		if (params[this.CRITICALITY] == null) {
 			params[this.CRITICALITY] = this.activitySrchCriticality[0].name; 
 		}
-		if (this.SEARCH_OPT_ACTIVITY == params[this.SEARCH_OPT]) {
+		if (this.SEARCH_OPT_ACTIVITY === params[this.SEARCH_OPT]) {
 			if (params[this.STATE] == null) {
 				params[this.STATE] = this.activitySrchState[0].name;
 			}
