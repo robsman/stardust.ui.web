@@ -10,13 +10,14 @@
  
 (function(){
 	
-	sdReportsService.$inject = ["$http", "$q", "sdUtilService", "sgI18nService"];
+	sdReportsService.$inject = ["$http", "$q", "sdUtilService", "sgI18nService", "$timeout"];
 	
-	function sdReportsService($http, $q, sdUtilService, sgI18nService){
+	function sdReportsService($http, $q, sdUtilService, sgI18nService, $timeout){
 		this.$http = $http;
 		this.$q = $q;
 		this.rootUrl = sdUtilService.getRootUrl();
 	    this.i18n = sgI18nService.translate;
+	    this.$timeout = $timeout;
 	};
 	
 	/**
@@ -41,8 +42,7 @@
 			return that.$q.all(promises);
 		})
 		.then(function(vals){
-			deferred.resolve()
-
+			deferred.resolve();
 		})
 		["catch"](function(err){
 			deferred.reject(err);
@@ -143,7 +143,7 @@
 	 */
 	sdReportsService.prototype.__createSRRoot = function(myDocumentsFolderPath){
 
-		var url = this.rootUrl + "/services/rest/portal/folders" + myDocumentsFolderPath + "/reports";
+		var url = this.rootUrl + "/services/rest/portal/folders" + myDocumentsFolderPath + "/reports?create=true";
 		var that = this;
 		var deferred = this.$q.defer();
 
@@ -156,19 +156,6 @@
 			deferred.resolve();
 		})
 		["catch"](function(err){
-
-			if(err.status===404){
-				return that.createFolder(myDocumentsFolderPath + "/","reports");
-			}
-			else{
-				deferred.reject();
-			}
-			
-		})
-		.then(function(){
-			deferred.resolve();
-		})
-		["catch"](function(){
 			deferred.reject();
 		});
 
@@ -183,7 +170,7 @@
 	 */
 	sdReportsService.prototype.__createSRPrivateReports = function(myDocumentsFolderPath){
 
-		var url = this.rootUrl + "/services/rest/portal/folders" + myDocumentsFolderPath + "/reports/saved-reports";
+		var url = this.rootUrl + "/services/rest/portal/folders" + myDocumentsFolderPath + "/reports/saved-reports?create=true";
 		var that = this;
 		var deferred = this.$q.defer();
 
@@ -196,19 +183,6 @@
 			deferred.resolve();
 		})
 		["catch"](function(err){
-
-			if(err.status===404){
-				return that.createFolder(myDocumentsFolderPath + "/reports/","saved-reports");
-			}
-			else{
-				deferred.reject();
-			}
-			
-		})
-		.then(function(){
-			deferred.resolve();
-		})
-		["catch"](function(){
 			deferred.reject();
 		});
 
@@ -223,7 +197,7 @@
 	 */
 	sdReportsService.prototype.__createSRPublicReports = function(myDocumentsFolderPath){
 
-		var url = this.rootUrl + "/services/rest/portal/folders" + myDocumentsFolderPath + "/reports/designs";
+		var url = this.rootUrl + "/services/rest/portal/folders" + myDocumentsFolderPath + "/reports/designs?create=true";
 		var that = this;
 		var deferred = this.$q.defer();
 
@@ -236,20 +210,7 @@
 			deferred.resolve();
 		})
 		["catch"](function(err){
-
-			if(err.status===404){
-				return that.createFolder(myDocumentsFolderPath + "/reports/","designs");
-			}
-			else{
-				deferred.reject();
-			}
-			
-		})
-		.then(function(){
-			deferred.resolve();
-		})
-		["catch"](function(){
-			deferred.reject();
+			deferred.reject();		
 		});
 
 		return deferred.promise;
