@@ -18,7 +18,7 @@
 	angular.module('admin-ui').controller(
 			'sdDaemonCtrl',
 			['sdDaemonService', 'sdLoggedInUserService', 'sgI18nService', '$filter', '$q', 'sdDataTableHelperService',
-					'sdLoggerService', controller]);
+					'sdLoggerService','$timeout', controller]);
 
 	var _sdDaemonService;
 	var _sdLoggedInUserService;
@@ -26,13 +26,14 @@
 	var _filter;
 	var _q;
 	var _sdDataTableHelperService;
+	var _timeout;
 	var trace;
 
 	/*
 	 * 
 	 */
 	function controller(sdDaemonService, sdLoggedInUserService, sgI18nService, $filter, $q, sdDataTableHelperService,
-			sdLoggerService) {
+			sdLoggerService,$timeout) {
 		
 		_sdDaemonService = sdDaemonService;
 		_sdLoggedInUserService = sdLoggedInUserService;
@@ -41,6 +42,7 @@
 		_q = $q;
 		_sdDataTableHelperService = sdDataTableHelperService;
 		trace = sdLoggerService.getLogger('admin-ui.sdDaemonCtrl');
+		_timeout = $timeout;
 
 		this.initialize();
 
@@ -94,13 +96,20 @@
 			}
 
 			data.list.forEach(function(daemon){
+
+				//stopped daemons will have an ack status, only running ones
+				//need to be specifically queried.
+				if(daemon.acknowledgementState != undefined){return;}
+
 				_sdDaemonService.getDaemon(daemon.type)
 				.then(function(v){
+
 					self.updateDaemonAcknowledgeState(v.type,v.acknowledgementState);
 					self.daemonDataTable.refresh();
+					
 				})
 				["catch"](function(err){
-					trace.log("Error fetching " + daemon.type + " ACK State: ",error);
+					trace.log("Error fetching " + daemon.type + " ACK State: ",err);
 				})
 			});
 
