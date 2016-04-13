@@ -786,7 +786,7 @@
 					var clearFilterAid = "PP-DataTable-Clear-Filter-"+col.name;
 					var closeFilterAid = "PP-DataTable-Close-Filter-"+col.name;
 					var resetFilterAid = "PP-DataTable-Reset-Filter-"+col.name;
-					var sortFilterAid = "PP-DataTable-Sort"+col.name;
+					var sortFilterAid = "PP-DataTable-Sort-"+col.name;
 					filterMarkup =
 						'<span flt-anchor="' + col.name + '"></span>' +
 						'<button class="button-link tbl-col-flt" ng-show="!' + filterSet + '" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}" aid="'+OpenFilterAid+'">\n' +
