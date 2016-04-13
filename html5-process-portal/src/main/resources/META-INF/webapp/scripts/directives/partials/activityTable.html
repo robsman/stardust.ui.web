@@ -353,6 +353,7 @@
 						        title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}"
 						        sd-popover  
 						        sda-trigger="none" 
+						        aid="PP-ActivityTable-OpenProcessDocuments"
 						        sda-is-open="activityTableCtrl.processPopover.showDocumentPopover && rowData.activityOID == activityTableCtrl.processPopover.data.activityOID" 
 						        sda-template="activityTableCtrl.openDocumentTemplateUrl"  
 						        sda-action-type="processDocuments" 
@@ -364,6 +365,7 @@
 
 						<button sd-popover  
 								sda-placement="auto left-top"
+								aid="PP-ActivityTable-OpenActionsPopover"
 								title="{{i18n('processportal.toolbars-workflowActions-tooltip-actions')}}"
 						        sda-template="activityTableCtrl.actionsPopoverTemplateUrl"
 						        class="button-link tbl-tool-link">

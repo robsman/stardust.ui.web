@@ -113,46 +113,46 @@
 			'<div class="tbl-toolbar-section">\n' +
 				'<div class="right" ng-if="$dtApi.enableSaveState">' +
 					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
-						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState-not\')}}">\n' +
+						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState-not\')}}" aid="PP-DataTable-SaveFiltersOFF">\n' +
 						'<i class="pi pi-favorite pi-lg"></i>\n' +
 					'</button>\n'+
 					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="!$dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
-						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState\')}}">\n' +
+						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState\')}}" aid="PP-DataTable-SaveFiltersON">\n' +
 						'<i class="pi pi-favorite-not pi-lg"></i>\n' +
 					'</button>\n'+
 				'</div>\n'+
 				'<div ng-class="$dtApi.enableSaveState ? \'tbl-toolbar-section\' : \'\'">\n' +
-					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" '+
+					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" aid="PP-DataTable-columnSelector"'+
 						'ng-click="$dtApi.toggleColumnSelector()" sda-is-open="$dtApi.showSelectColumns" ' +
 						 'sd-popover sda-template="\'columnSelector.html\'" '+
 						 'sda-placement="auto bottom-left" '+
 						' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}">\n' +
 						'<i class="pi pi-column-selector pi-lg"></i>\n' +
 					'</button>\n' +
-					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportExcel" ng-click=""' +
-						' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}">\n' +
+					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportExcel" ng-click="" aid="PP-DataTable-exportExcel"' +
+						' title="{{i18n(\'portal-common-messages.common-genericDataTable-exportasExcel\')}}">\n' +
 						'<i class="pi pi-export pi-lg"></i>\n' +
 					'</button>\n' +
 					'<button class="button-link tbl-toolbar-item  tbl-tool-joined-link tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
-						' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}">\n' +
+						' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" aid="PP-DataTable-exportAsCSV">   \n ' +
 						'<i class="pi pi-export pi-lg"></i>\n' +
 					'</button>\n' +
-					'<button ng-if="$dtApi.enableExportCSV" class="button-link tbl-toolbar-item tbl-tool-link" sd-popover sda-template="\'exportAsCSV.html\'" '+
-					  'sda-placement="auto bottom-left"  ng-click="$dtApi.setExportPopoverVisibility()">\n' +
+					'<button ng-if="$dtApi.enableExportCSV" class="button-link tbl-toolbar-item tbl-tool-link" sd-popover sda-template="\'exportAsCSV.html\'"  aid="PP-DataTable-exportMenu"'+
+					  'sda-placement="auto bottom-left"  ng-click="$dtApi.setExportPopoverVisibility()"  aid="PP-DataTable-exportAsCSV">\n' +
 						'<i class="pi pi-bottom pi-menu-dropdown"></i>\n' +
 					'</button>'+
 					'<script id="exportAsCSV.html" type="text/ng-template">'+
 						'<div>'+
-						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' +
+						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})" aid="PP-DataTable-exportCurrentPage">' +
 							'{{i18n(\'html5-common.export-options-current-page-current-fields\')}}\n' +
 						'</a></div>\n' +
-						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: false, allCols: true})">' +
+						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: false, allCols: true})" aid="PP-DataTable-exportCurrentAllFields">' +
 							'{{i18n(\'html5-common.export-options-current-page-all-fields\')}}\n' +
 						'</a></div>\n' +
-						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: true, allCols: false})">' +
+						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: true, allCols: false})" aid="PP-DataTable-exportAllPagesCurrentFields">' +
 							'{{i18n(\'html5-common.export-options-all-pages-current-fields\')}}\n' +
 						'</a></div>\n' +
-						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: true})">' +
+						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: true})" aid="PP-DataTable-exportAllPagesAllFields">' +
 							'{{i18n(\'html5-common.export-options-all-pages-all-fields\')}}\n' +
 						'</a></div>\n'+
 						'</div>'+
@@ -161,7 +161,7 @@
 						 '<div>'+
 							 '<div class="popup-dlg-hdr">\n' +
 								'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' +
-								'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()">\n' +
+								'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" aid="PP-DataTable-filterPopupClose" ng-click="$dtApi.toggleColumnSelector()">\n' +
 									'<i class="pi pi-close pi-lg" />\n' +
 								'</button>\n' +
 							'</div>\n' +
@@ -174,11 +174,11 @@
 											'<option value="PARTITION">{{i18n(\'portal-common-messages.common-preferenceScope-options-partition\')}}</option>\n' +
 										'</select>\n' +
 									'</span>\n' +
-									'<button class="button-link tbl-col-sel-link" ng-if="$dtApi.columnSelectorAdmin" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
+									'<button class="button-link tbl-col-sel-link" ng-if="$dtApi.columnSelectorAdmin" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()" aid="PP-DataTable-lockColumns">\n' +
 										'<span class="pi pi-lg pi-lock" ng-show="$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-unlock\')}}"></span>\n' +
 										'<span class="pi pi-lg pi-unlock" ng-show="!$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-lock\')}}"></span>\n' +
 									'</button>\n' +
-									'<button class="button-link tbl-col-sel-link pi pi-reset pi-lg" ng-click="$dtApi.resetColumnSelector()" title ="{{i18n(\'portal-common-messages.common-reset\')}}" style="cursor: pointer;"></button>\n' +
+									'<button class="button-link tbl-col-sel-link pi pi-reset pi-lg" ng-click="$dtApi.resetColumnSelector()" aid="PP-DataTable-resetColumns" title ="{{i18n(\'portal-common-messages.common-reset\')}}" style="cursor: pointer;"></button>\n' +
 								'</div>\n' +
 								'<div class="tbl-col-sel-list">\n' +
 									'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop sda-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
@@ -188,8 +188,8 @@
 								'</div>\n' +
 							'</div>\n' +
 							'<div class="popup-dlg-footer">\n' +
-								'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-apply\')}}" ng-click="$dtApi.applyColumnSelector()" />' +
-								'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()" />' +
+								'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-apply\')}}" ng-click="$dtApi.applyColumnSelector()" aid="PP-DataTable-applyColumnSelection"/>' +
+								'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()" aid="PP-DataTable-resetColumnSelection"/>' +
 							'</div>\n' +
 						'</div>\n'+
 					'</script>\n'+
@@ -781,13 +781,18 @@
 					var filterSet = '$dtApi.isColumnFilterSet(\'' + col.name + '\')';
 					var filterTitle = '$dtApi.getColumnFilterTitle(\'' + col.name + '\')';
 					var stopEvent = 'bpmCommon.stopEvent($event);';
-
+					var OpenFilterAid = "PP-DataTable-Open-Filter-"+col.name;
+					var applyFilterAid = "PP-DataTable-Apply-Filter-"+col.name;
+					var clearFilterAid = "PP-DataTable-Clear-Filter-"+col.name;
+					var closeFilterAid = "PP-DataTable-Close-Filter-"+col.name;
+					var resetFilterAid = "PP-DataTable-Reset-Filter-"+col.name;
+					var sortFilterAid = "PP-DataTable-Sort"+col.name;
 					filterMarkup =
 						'<span flt-anchor="' + col.name + '"></span>' +
-						'<button class="button-link tbl-col-flt" ng-show="!' + filterSet + '" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
+						'<button class="button-link tbl-col-flt" ng-show="!' + filterSet + '" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}" aid="'+OpenFilterAid+'">\n' +
 							'<i class="pi pi-filter"></i>\n' +
 						'</button>\n' +
-						'<button class="button-link tbl-col-flt-set" ng-show="' + filterSet + '" ng-click="' + stopEvent + resetFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter-tooltip\')}}">\n' +
+						'<button class="button-link tbl-col-flt-set" ng-show="' + filterSet + '" ng-click="' + stopEvent + resetFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter-tooltip\')}}" aid="'+resetFilterAid+'">\n' +
 							'<i class="pi pi-filter"></i>\n' +
 						'</button>\n' +
 						'<button class="button-link" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
@@ -800,7 +805,7 @@
 							'<div class="popup-dlg-hdr">\n' +
 								'<span class="popup-dlg-hdr-txt">' +
 									'{{i18n("portal-common-messages.common-filterPopup-dataFilterByLabel")}} ' + col.title + '</span>\n' +
-								'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '">\n' +
+								'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" aid='+ closeFilterAid +' ng-click="' + toggleFilter + '">\n' +
 									'<i class="pi pi-close pi-lg" />\n' +
 								'</button>\n' +
 							'</div>\n' +
@@ -810,8 +815,8 @@
 								'</div>\n' +
 							'\n</div>\n' +
 							'<div class="popup-dlg-footer">\n' +
-								'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-filterPopup-applyFilter\')}}" ng-click="' + applyFilter + '" />' +
-								'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter\')}}" ng-click="' + resetFilterAndClose + '" />' +
+								'<input type="submit" class="button primary" aid='+ applyFilterAid +' value="{{i18n(\'portal-common-messages.common-filterPopup-applyFilter\')}}" ng-click="' + applyFilter + '" />' +
+								'<input type="submit" class="button secondary" aid='+ clearFilterAid +' value="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter\')}}" ng-click="' + resetFilterAndClose + '" />' +
 							'</div>\n' +
 						'</div>\n';
 				}
@@ -821,7 +826,7 @@
 						'<div class="tbl-col-flt-wrapper">' + filterMarkup + '</div>\n' +
 						'<div>\n' +
 							'<span class="tbl-hdr-col-label">' + col.title + '</span>' +
-							'<span class="pi pi-tbl-sort pi-lg" />' +
+							'<span class="pi pi-tbl-sort pi-lg"  aid='+ sortFilterAid +'/>' +
 						'</div>\n' +
 					'</div>';
 

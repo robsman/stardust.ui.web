@@ -1,7 +1,7 @@
 <label
 	margin-bottom: 0px; ng-bind="i18n('admin-portal-messages.views-common-processes-label')"></label>
 <div>
-	<button class="button-link"
+	<button class="button-link" aid="PP-ProcessActivityFilter-Toggle-Aux-Process"
 		title="{{filterCtrl.showAuxillaryProcess ? i18n('views-common-messages.processHistory-processTable-hideAuxiliaryProcess') :
 	i18n('views-common-messages.processHistory-processTable-showAuxiliaryProcess') }}"
 		ng-click="filterCtrl.showHideAuxillaryProcess()">
@@ -10,7 +10,8 @@
 	</button>
 </div>
 <div>
-  <select style="height: 75px; min-width: 200px; max-width: 350px;" name="processes" ng-model="filterData.processes" multiple
+  <select style="height: 75px; min-width: 200px; max-width: 350px;" name="processes" aid="PP-ProcessActivityFilter-Selector-Process"
+  		  ng-model="filterData.processes" multiple 
           ng-change="filterCtrl.updateProcess()" ng-init="filterData.processes = filterData.processes || ['-1']">
          <option title="{{process.name}}"
                  ng-repeat="process in filterCtrl.processes | filter:{'auxillary': filterCtrl.showAuxillaryProcess } : filterCtrl.auxComparator | orderBy:['order','name']"
@@ -22,7 +23,7 @@
 	<br /> <label
 		margin-bottom: 0px; ng-bind="i18n('admin-portal-messages.views-common-activities-label')"></label>
 	<div>
-		<button class="button-link"
+		<button class="button-link" aid="PP-ProcessActivityFilter-Toggle-Aux-Activity"
 			title="{{filterCtrl.showAuxillaryActivity ? i18n('views-common-messages.processHistory-processTable-hideAuxiliaryActivities') :
 	i18n('views-common-messages.processHistory-processTable-showAuxiliaryActivities') }}"
 			ng-click="filterCtrl.showHideAuxillaryActivity()">
@@ -31,7 +32,7 @@
 		</button>
 	</div>
 	<div>
-		<select style="height: 75px; min-width: 200px; max-width: 350px;"
+		<select style="height: 75px; min-width: 200px; max-width: 350px;" aid="PP-ProcessActivityFilter-Selector-Activity"
 			name="activities" ng-model="filterData.activities" multiple
 			ng-init="filterData.activities = filterData.activities || ['-1']">
 			<option title="{{activity.name}}"
