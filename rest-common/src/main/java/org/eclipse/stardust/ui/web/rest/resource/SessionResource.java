@@ -32,7 +32,7 @@ public class SessionResource
    
    @GET
    @Path("/ping")
-   public Response getActivityInstance()
+   public Response ping()
    {
       return Response.ok().build();
    }

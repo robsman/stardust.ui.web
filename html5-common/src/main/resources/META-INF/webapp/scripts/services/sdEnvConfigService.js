@@ -85,5 +85,13 @@
 				return envConfigs.navPaths[id];
 			}
 		};
+		
+		/*
+		 * 
+		 */
+		EnvConfigService.prototype.getHeartbeatInterval = function() {
+			return envConfigs.heartBeatInterval;
+		};
+
 	};
 })();

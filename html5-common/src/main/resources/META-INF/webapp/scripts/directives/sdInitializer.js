@@ -33,13 +33,13 @@
 
 				sdInitializerService.start();
 
-				sgPubSubService.subscribe( sdInitializerService.event.initializeSuccess, function ( data ) {
-					trace.debug("In "+ sdInitializerService.event.initializeSuccess);
+				sgPubSubService.subscribe( sdInitializerService.events.success, function ( data ) {
+					trace.debug("In "+ sdInitializerService.events.success);
 					afterIntialization();
 				});
 				
-				sgPubSubService.subscribe( sdInitializerService.event.initializeFailure, function ( data) {
-					trace.debug("In "+ sdInitializerService.event.initializeFailure);
+				sgPubSubService.subscribe( sdInitializerService.events.failure, function ( data) {
+					trace.debug("In "+ sdInitializerService.events.failure);
 					afterIntialization();
 				});
 

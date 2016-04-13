@@ -15,26 +15,24 @@
 
 (function () {
 
-	angular.module('bpm-common.services').provider(
-			'sdSsoService',
-			function () {
-				this.$get = ['$injector', 'sdLoggerService', 'sdEnvConfigService', '$q',
-						function ($injector, sdLoggerService, sdEnvConfigService, $q) {
-							var service = new sdSsoService($injector, sdLoggerService, sdEnvConfigService, $q);
-							return service;
-						}];
-			});
+	 angular.module('bpm-common.services').service('sdSsoService',
+	 	['$injector', 'sdLoggerService', 'sdEnvConfigService', '$q','$interval' ,'sdSessionService',
+	 	SsoService]);
 
 	/*
-	 * 
+	 *
 	 */
-	function sdSsoService ($injector, sdLoggerService, sdEnvConfigService, $q) {
+	var DEFAULTS = {
+			heatbeatInterval : 60
+	}
+
+	function SsoService ($injector, sdLoggerService, sdEnvConfigService, $q, $interval, sdSessionService) {
 
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdSsoService');
 		var ippBaseUrl = sdEnvConfigService.getBaseUrl();
 		var ssoServiceURL = sdEnvConfigService.getSsoServiceUrl();
 		/*
-		 * 
+		 *
 		 */
 		this.initialize = function () {
 			var deferred = $q.defer();
@@ -42,9 +40,8 @@
 			var ssoServiceURL = sdEnvConfigService.getSsoServiceUrl();
 
 			if (ssoServiceURL) {
-
 				beginInitilization().done(function (data) {
-					trace.debug("SSO Initialization successfull : ", data);
+					startHeartbeat();
 					deferred.resolve(data);
 				}).fail(function (data) {
 					trace.debug("SSO Initialization failed : ", data);
@@ -95,8 +92,7 @@
 
 			var data = data.substring(samlIndex + samlResponseIndex);
 			saml = data.substring(0, data.indexOf('\"'));
-			trace.debug('Successfull SAML RESPONSE: ' + saml);
-			trace.debug("Login in to IPP using SAML RESPONSE");
+			trace.debug('SAML token retrieved from  Response.Logging in IPP with SAML token.');
 
 			return jQuery.ajax({
 				type : "POST",
@@ -114,6 +110,20 @@
 				type : "GET",
 				url : url
 			});
+		}
+
+
+		function startHeartbeat() {
+
+			var interval = sdEnvConfigService.getHeartbeatInterval();
+
+			if(interval) {
+					trace.debug("Hearbeat Interval configured in config :- "+interval +" seconds");
+			} else {
+				interval = DEFAULTS.heatbeatInterval;
+					trace.debug("Hearbeat Interval not configured in config.Using default :- "+interval +" seconds");
+			}
+			sdSessionService.startHeartbeat(interval);
 		}
 
 	}

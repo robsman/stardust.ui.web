@@ -39,11 +39,7 @@ function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfi
 
 	var trace = sdLoggerService.getLogger('bpm-common.services.sdInitializerService');
 	var self = this;
-	
-	this.event = {
-			initializeSuccess : "sd-initialization-success",
-			initializeFailure : "sd-initialization-failure"
-	}
+
 
 	/**
 	 *
@@ -77,7 +73,7 @@ function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfi
 		loadLoggedInUserData().then(function () {
 			afterIntialization(true, sucessData);
 		},function( error ) {
-			trace.debug("Failed to load logged in user data", error);
+			trace.debug("Failed to load logged in user data : ", error);
 			afterIntialization(false, error);
 		});
 	}
@@ -92,7 +88,7 @@ function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfi
 		var localizationInfoPromise = sdLocalizationService.loadInfo();
 
 		var servicesToBeLoaded = [userInfoPromise, runTimePermissionsPromise, localizationInfoPromise];
-		trace.debug("Loading Portal Initialization services");
+		trace.debug("Loading Portal Initialization services.");
 		return $q.all(servicesToBeLoaded);
 	}
 
@@ -106,17 +102,26 @@ function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfi
 		};
 
 		if (initializationSuccess) {
-			var msg = "IPP Initialization successfull.";
+			var msg = "IPP Initialization successful.";
 			pubSubMessage.message = msg;
-			trace.debug("Publishing Sucess Event : "+ self.event.initializeSuccess , pubSubMessage);
-			sgPubSubService.publish( self.event.initializeSuccess, pubSubMessage);
+			trace.debug("Publishing Success Event : "+ self.events.success , pubSubMessage);
+			sgPubSubService.publish( self.events.success, pubSubMessage);
 		} else {
 			var msg = "IPP Initialization failed.";
 			pubSubMessage.message = msg;
 			angular.merge(pubSubMessage, data);
-			trace.debug("Publishing event :-"+ self.event.initializeFailure, pubSubMessage);
-			sgPubSubService.publish( self.event.initializeFailure, pubSubMessage);
+			trace.debug("Publishing Failure Event : "+ self.events.failure, pubSubMessage);
+			sgPubSubService.publish( self.events.failure, pubSubMessage);
 		}
 	}
+
+
+	/**
+	 *
+	 */
+	InitializerService.prototype.events = {
+			success : "sd-initialization-success",
+			failure : "sd-initialization-failure"
+	};
 }
 })();
