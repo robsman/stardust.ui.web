@@ -35,6 +35,7 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
+import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
@@ -561,6 +562,21 @@ public class ProcessInstanceService
    {
       ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, fetchDescriptors, withHierarchyInfo);
       ProcessInstanceDTO dto = processInstanceUtilsREST.buildProcessInstanceDTO(process);
+      return dto;
+   }
+
+   /**
+    * @param oid
+    * @param fetchDescriptors
+    * @param withEvents
+    * @return
+    * @throws ResourceNotFoundException 
+    */
+   public QueryResultDTO getAllProcessInstances(Long oid, boolean fetchDescriptors, boolean withEvents)
+         throws ResourceNotFoundException
+   {
+      ProcessInstances process = processInstanceUtilsREST.getAllProcessInstances(oid, fetchDescriptors, withEvents);
+      QueryResultDTO dto = processInstanceUtilsREST.buildProcessListResult(process);
       return dto;
    }
 

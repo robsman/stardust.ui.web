@@ -30,6 +30,9 @@ import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
+import org.eclipse.stardust.engine.api.query.ActivityInstances;
+import org.eclipse.stardust.engine.api.query.HistoricalEventPolicy;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
@@ -51,6 +54,7 @@ import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.component.util.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceIntractionDTO;
@@ -445,6 +449,27 @@ public class ActivityInstanceService
    }
 
    /**
+    * @param oid
+    * @param withEvents
+    * @return
+    */
+   public AbstractDTO getAllActivityInstancesForProcess(Long processInstanceOid, boolean withEvents)
+   {
+      ActivityInstanceQuery aiQuery = ActivityInstanceQuery.findAll();
+      ProcessInstanceFilter processFilter = new ProcessInstanceFilter(processInstanceOid, false);
+      aiQuery.where(processFilter);
+      aiQuery.orderBy(ActivityInstanceQuery.START_TIME).and(ActivityInstanceQuery.OID);
+
+      if (withEvents)
+      {
+         aiQuery.setPolicy(HistoricalEventPolicy.ALL_EVENTS);
+      }
+
+      ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(aiQuery);
+      return ActivityTableUtils.buildTableResult(activityInstances, MODE.ACTIVITY_TABLE);   
+   }
+   
+   /**
     * @return
     */
    public QueryResultDTO getInstancesByOids( DataTableOptionsDTO options, List<Long> oids, ActivityInstanceQuery query)
@@ -643,4 +668,5 @@ public class ActivityInstanceService
    public ActivityInstance getActivityInstance(Long activityOId){
       return activityInstanceUtils.getActivityInstance(activityOId);
    }
+  
 }

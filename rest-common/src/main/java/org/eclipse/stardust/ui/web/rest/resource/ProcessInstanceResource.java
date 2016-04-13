@@ -44,10 +44,13 @@ import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessSta
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.component.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.component.util.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.TrafficLightViewUtils;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
@@ -57,6 +60,7 @@ import org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.util.MapAdapter;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
@@ -76,6 +80,9 @@ public class ProcessInstanceResource
 
    @Autowired
    private ProcessInstanceService processInstanceService;
+   
+   @Autowired
+   private ActivityInstanceService activityInstanceService;
 
    @Autowired
    ProcessDefinitionService processDefService;
@@ -522,17 +529,55 @@ public class ProcessInstanceResource
             .build();
    }
 
+   /**
+    * @param oid
+    * @param fetchDescriptors
+    * @param withHierarchyInfo
+    * @param withEvents
+    * @return
+    * @throws ResourceNotFoundException
+    */
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{oid}")
+   @ResponseDescription("If the request url contains query parameter hierarchy=true, expect the reponse containing list of all process instances in the hierarchy"
+         + "else a single ProcessInstanceDTO")
+   @DTODescription(response = "org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO")
    public Response getProcessByOid(@PathParam("oid") Long oid,
          @QueryParam("fetchDescriptors") @DefaultValue("false") boolean fetchDescriptors,
-         @QueryParam("withHierarchyInfo") @DefaultValue("false") boolean withHierarchyInfo)
+         @QueryParam("hierarchy") @DefaultValue("false") boolean withHierarchyInfo,
+         @QueryParam("withEvents") @DefaultValue("false") boolean withEvents) throws ResourceNotFoundException
    {
-      return Response.ok(processInstanceService.getProcessByOid(oid, fetchDescriptors, withHierarchyInfo).toJson(),
-            MediaType.APPLICATION_JSON).build();
+      if (withHierarchyInfo)
+      {
+         return Response.ok(processInstanceService.getAllProcessInstances(oid, fetchDescriptors, withEvents).toJson(),
+               MediaType.APPLICATION_JSON).build();
+      }
+      else
+      {
+         return Response.ok(processInstanceService.getProcessByOid(oid, fetchDescriptors, withHierarchyInfo).toJson(),
+               MediaType.APPLICATION_JSON).build();
+      }
    }
 
+   /**
+    * @param oid
+    * @param withEvents
+    * @return
+    * @throws ResourceNotFoundException
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{oid}/activity-instances")
+   @ResponseDescription("Response contains the list of all activity instance for the given process instance.")
+   @DTODescription(response = "org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO")
+   public Response getAllActivityInstances(@PathParam("oid") Long oid,
+         @QueryParam("withEvents") @DefaultValue("false") boolean withEvents) throws ResourceNotFoundException
+   {
+      return Response.ok(activityInstanceService.getAllActivityInstancesForProcess(oid, withEvents).toJson(),
+            MediaType.APPLICATION_JSON).build();
+   }
+   
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("startingActivityOID/{aiOid}")

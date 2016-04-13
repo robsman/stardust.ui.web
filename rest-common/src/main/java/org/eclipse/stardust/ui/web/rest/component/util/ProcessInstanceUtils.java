@@ -43,6 +43,7 @@ import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.HistoricalEventPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
@@ -61,9 +62,9 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.SpawnOptions;
+import org.eclipse.stardust.engine.api.runtime.SpawnOptions.SpawnMode;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
-import org.eclipse.stardust.engine.api.runtime.SpawnOptions.SpawnMode;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -100,6 +101,7 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
@@ -178,6 +180,7 @@ public class ProcessInstanceUtils
       {
          ProcessInstanceDetailsPolicy processInstanceDetailsPolicy = new ProcessInstanceDetailsPolicy(
                ProcessInstanceDetailsLevel.Default);
+         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
          processInstanceDetailsPolicy.getOptions().add(ProcessInstanceDetailsOptions.WITH_HIERARCHY_INFO);
          query.setPolicy(processInstanceDetailsPolicy);
       }
@@ -191,7 +194,47 @@ public class ProcessInstanceUtils
 
       return pi;
    }
-   
+
+   /**
+    * @param oid
+    * @param fetchDescriptors
+    * @param withEvents
+    * @return
+    * @throws ResourceNotFoundException 
+    */
+   public ProcessInstances getAllProcessInstances(long oid, boolean fetchDescriptors, boolean withEvents)
+         throws ResourceNotFoundException
+   {
+      ProcessInstance processInstance = getProcessInstance(oid);
+
+      if (null == processInstance)
+      {
+         throw new ResourceNotFoundException(MessagesViewsCommonBean.getInstance().get(
+               "common.process.instance.notfound"));
+      }
+
+      ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
+      query.getFilter().and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.isEqual(processInstance.getRootProcessInstanceOID()));
+      query.orderBy(ProcessInstanceQuery.START_TIME);
+
+      if (withEvents)
+      {
+         query.setPolicy(HistoricalEventPolicy.ALL_EVENTS);
+      }
+
+      if (fetchDescriptors)
+      {
+         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      }
+
+      ProcessInstanceDetailsPolicy processInstanceDetailsPolicy = new ProcessInstanceDetailsPolicy(
+            ProcessInstanceDetailsLevel.Default);
+      processInstanceDetailsPolicy.getOptions().add(ProcessInstanceDetailsOptions.WITH_HIERARCHY_INFO);
+      query.setPolicy(processInstanceDetailsPolicy);
+
+      return serviceFactoryUtils.getQueryService().getAllProcessInstances(query);
+   }
+
    /**
     * 
     * @param oid
