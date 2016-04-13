@@ -40,7 +40,7 @@
 			}
 			return userCache;
 		};
-		
+
 		/**
 		 * 
 		 */
@@ -50,7 +50,7 @@
 			}
 			return permissionCache;
 		};
-		
+
 		/**
 		 * 
 		 */
@@ -59,7 +59,7 @@
 
 			var restUrl = REST_BASE_URL + "/whoAmI";
 
-			return $resource(restUrl).get().$promise.then(function(result){
+			$resource(restUrl).get().$promise.then(function(result){
 				userCache = result;
 				deferred.resolve( userCache );
 			});
@@ -75,13 +75,13 @@
 
 			var restUrl = REST_BASE_URL + "/whoAmI/runtime-permissions";
 
-			return $resource(restUrl).get().$promise.then(function(result){
+			$resource(restUrl).get().$promise.then(function(result){
 				permissionCache = result;
 				deferred.resolve( permissionCache );
 			});
 
 			return deferred.promise;
 		};
-		
+
 	}
 })();
