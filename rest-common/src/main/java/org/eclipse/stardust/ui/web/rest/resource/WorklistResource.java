@@ -37,8 +37,12 @@ import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.MyProcessDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager.ParticipantInfoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Subodh.Godbole
@@ -67,19 +71,21 @@ public class WorklistResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
-   @Path("/participant/{participantQId}")
-   public Response getWorklistForParticipant(@PathParam("participantQId") String participantQId,
+   @Path("/participant")
+   public Response getWorklistForParticipant(
          @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
          @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
          @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
-         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, @QueryParam("userId") String userId,String postData)
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir,
+         @QueryParam("userId") String userId, String postData)
    {
       try
       {
          DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
-
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant( participantQId, userId, options);
+        
+         ParticipantInfoDTO participantInfoDTO = getParticipantInfo(postData);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant( participantInfoDTO, userId, options);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
@@ -436,6 +442,19 @@ public class WorklistResource
       result.list = myProcesses;
       return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
       
+   }
+   
+   /**
+    * @param postData
+    * @return
+    */
+   private ParticipantInfoDTO getParticipantInfo(String postData)
+   {
+      JsonObject postJSON =  new JsonMarshaller().readJsonObject(postData);
+      String  departmentQId = postJSON.has("departmentQId") ? postJSON.get("departmentQId").getAsString() : null;
+      String  participantQId = postJSON.has("participantQId") ? postJSON.get("participantQId").getAsString() : null;
+      ParticipantInfoDTO dto = new ParticipantInfoDTO(participantQId, departmentQId);
+      return dto;
    }
 
    /**

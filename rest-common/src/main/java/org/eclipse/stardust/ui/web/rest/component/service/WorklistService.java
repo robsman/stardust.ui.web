@@ -29,6 +29,7 @@ import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.WorklistParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager.ParticipantInfoDTO;
 import org.springframework.stereotype.Component;
 
 /**
@@ -49,9 +50,9 @@ public class WorklistService
     * @param string
     * @return
     */
-   public QueryResultDTO getWorklistForParticipant(String participantQId, String userId, DataTableOptionsDTO options)
+   public QueryResultDTO getWorklistForParticipant(ParticipantInfoDTO participantDTO, String userId, DataTableOptionsDTO options)
    {
-      QueryResult< ? > queryResult = worklistUtils.getWorklistForParticipant(participantQId, userId, options);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForParticipant(participantDTO, userId, options);
       return getTableResult(queryResult, options.fetchTrivialManualActivities);
    }
 

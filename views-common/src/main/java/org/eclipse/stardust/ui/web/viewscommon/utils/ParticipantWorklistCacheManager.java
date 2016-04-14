@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -21,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
@@ -47,7 +47,8 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
 
    private Map<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> participantWorklists;
    
-   private Map<String, ParticipantInfo> participantInfoMap;
+   private Map<ParticipantInfoDTO, ParticipantInfo> participantInfoMap;
+   
    /**
     * @return
     */
@@ -70,6 +71,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
    public void reset()
    {
       participantWorklists = new LinkedHashMap<ParticipantInfoWrapper, ParticipantWorklistCacheEntry>();
+      participantInfoMap = new LinkedHashMap<ParticipantInfoDTO, ParticipantInfo>();
       ParticipantInfo worklistOwner = null;
       try
       {
@@ -89,7 +91,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
                         new ParticipantWorklistCacheEntry(worklist.getTotalCount(), WorklistUtils
                               .createWorklistQuery(worklistOwner), WorklistUtils.getAllUserAssignedActivities(),
                               worklist.getTotalCountThreshold(), entry.getKey()));
-                  addParticipantInfoToCache( worklistOwner.getQualifiedId(), worklistOwner);
+                  addParticipantInfoToCache( new ParticipantInfoDTO(worklistOwner.getQualifiedId()), worklistOwner);
                }
                else
                {
@@ -105,14 +107,18 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
                         && null != ((OrganizationInfo) worklistOwner).getDepartment())
                   {
                      OrganizationInfo organization = (OrganizationInfo) worklistOwner;
-                     addParticipantInfoToCache(worklistOwner.getQualifiedId() + organization.getDepartment().getId(),
-                           worklistOwner);
+                     addParticipantInfoToCache( new ParticipantInfoDTO(worklistOwner.getQualifiedId(), organization.getDepartment().toString()), worklistOwner);
+                  }
+                  else if (worklistOwner instanceof RoleInfo
+                        && null != ((RoleInfo) worklistOwner).getDepartment())
+                  {
+                     RoleInfo role = (RoleInfo) worklistOwner;
+                     addParticipantInfoToCache( new ParticipantInfoDTO(worklistOwner.getQualifiedId(), role.getDepartment().toString()), worklistOwner);
                   }
                   else
                   {
-                     addParticipantInfoToCache(worklistOwner.getQualifiedId(), worklistOwner);
+                     addParticipantInfoToCache( new ParticipantInfoDTO(worklistOwner.getQualifiedId()), worklistOwner);
                   }
-
                }
             }
          }
@@ -311,27 +317,96 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
     * @param participantQID
     * @return
     */
-   public ParticipantInfo getParticipantInfoFromCache(String participantQID)
+   public ParticipantInfo getParticipantInfoFromCache(ParticipantInfoDTO participantDTO)
    {
-      return participantInfoMap.get(participantQID);
+      return participantInfoMap.get(participantDTO);
    }
 
    /**
-    * 
-    * @param participantQID
+    * @param participantDTO
     * @param participantInfo
     */
-   private void addParticipantInfoToCache(String participantQID, ParticipantInfo participantInfo)
+   private void addParticipantInfoToCache(ParticipantInfoDTO participantDTO,
+         ParticipantInfo participantInfo)
    {
       if (null == participantInfoMap)
       {
-         participantInfoMap = new LinkedHashMap<String, ParticipantInfo>();
+         participantInfoMap = new LinkedHashMap<ParticipantInfoDTO, ParticipantInfo>();
+      }
+      participantInfoMap.put(participantDTO, participantInfo);
+   }
+   
+   /**
+    *
+    */
+   public static final class ParticipantInfoDTO implements Serializable
+   {
+      private static final long serialVersionUID = -2659357845106111645L;
+      private String participantQId;
+      private String departmentQId;
+      
+      public ParticipantInfoDTO(String participantQId, String departmentQId)
+      {
+         super();
+         this.participantQId = participantQId;
+         this.departmentQId = departmentQId;
       }
       
-      if (!participantInfoMap.containsKey(participantQID))
+      public ParticipantInfoDTO(String participantQId)
       {
-         participantInfoMap.put(participantQID, participantInfo);
+         super();
+         this.participantQId = participantQId;
       }
+
+      @Override
+      public int hashCode()
+      {
+         final int prime = 31;
+         int result = 1;
+         result = prime * result
+               + ((departmentQId == null) ? 0 : departmentQId.hashCode());
+         result = prime * result
+               + ((participantQId == null) ? 0 : participantQId.hashCode());
+         return result;
+      }
+
+      @Override
+      public boolean equals(Object obj)
+      {
+         if (this == obj)
+            return true;
+         if (obj == null)
+            return false;
+         if (getClass() != obj.getClass())
+            return false;
+         ParticipantInfoDTO other = (ParticipantInfoDTO) obj;
+         if (departmentQId == null)
+         {
+            if (other.departmentQId != null)
+               return false;
+         }
+         else if (!departmentQId.equals(other.departmentQId))
+            return false;
+         if (participantQId == null)
+         {
+            if (other.participantQId != null)
+               return false;
+         }
+         else if (!participantQId.equals(other.participantQId))
+            return false;
+         return true;
+      }
+
+      /* (non-Javadoc)
+       * @see java.lang.Object#toString()
+       */
+      @Override
+      public String toString()
+      {
+         return "ParticipantInfoDTO [participantQId=" + participantQId
+               + ", departmentQId=" + departmentQId + "]";
+      }
+      
    }
    
    /**

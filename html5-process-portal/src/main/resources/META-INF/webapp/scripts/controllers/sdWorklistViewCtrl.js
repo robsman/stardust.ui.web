@@ -116,6 +116,7 @@
 
 		if(params.participantQId) {
 				query.participantQId = params.participantQId;
+				query.departmentQId = params.departmentQId;
 		} else if (params.processQId) {
 				query.processQId = params.processQId;
 		} else if (params.pInstanceOids) {

@@ -130,6 +130,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.JsfBackingBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager.ParticipantInfoDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.QualityAssuranceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
@@ -2052,8 +2053,14 @@ public class ActivityDetailsBean extends UIComponentBean
       if (null == result && query.has("participantQId"))
       {
          String participantQId = query.get("participantQId").getAsString();
+         String departmentQId = null;
+         if(query.has("departmentQId")) {
+            departmentQId =  query.get("departmentQId").getAsString();
+         }
+         
+         ParticipantInfoDTO participantInfoDTO = new ParticipantInfoDTO(participantQId, departmentQId);
          result = ((WorklistUtils) FacesUtils.getBeanFromContext("worklistUtils"))
-               .getWorklistForParticipant(participantQId,
+               .getWorklistForParticipant(participantInfoDTO,
                      ServiceFactoryUtils.getSessionContext().getUser().getId(), options);
       }
       if (null == result && query.has("processQId"))

@@ -39,6 +39,8 @@ public class WorklistParticipantDTO extends AbstractDTO implements Comparable<Wo
    public String id;
 
    public String participantQId;
+   
+   public String departmentQId;
 
    public String userId;
 

@@ -28,6 +28,7 @@ import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
@@ -71,6 +72,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager.ParticipantInfoDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils.ModelResubmissionActivity;
@@ -104,10 +106,10 @@ public class WorklistUtils
     * @param participantQId
     * @return
     */
-   public QueryResult< ? > getWorklistForParticipant(String participantQId, String userId, DataTableOptionsDTO options)
+   public QueryResult< ? > getWorklistForParticipant(ParticipantInfoDTO participantDTO, String userId, DataTableOptionsDTO options)
    {
       // If the userId is not passed consider the user to be the logged in user.
-      // User id is required to differentiate between the particpants when the deputy logs
+      // User id is required to differentiate between the participants when the deputy logs
       // in
 
       if (StringUtils.isEmpty(userId))
@@ -115,7 +117,7 @@ public class WorklistUtils
          userId = userService.getLoggedInUser().id;
       }
       ParticipantInfo participantInfo = ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(
-            participantQId);
+            participantDTO);
       WorklistQuery query = (WorklistQuery) ParticipantWorklistCacheManager.getInstance().getWorklistQuery(
             participantInfo, userId);
 
@@ -160,8 +162,9 @@ public class WorklistUtils
 
          ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
 
-         ParticipantInfo participantInfo = ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(
+         ParticipantInfoDTO participantInfoDTO = new ParticipantInfoDTO(
                user.getQualifiedId());
+         ParticipantInfo participantInfo = ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(participantInfoDTO);
 
          if (options.filter == null)
          {
@@ -406,8 +409,9 @@ public class WorklistUtils
 
       UserDTO loggedInUser = userService.getLoggedInUser();
 
+      ParticipantInfoDTO participantInfoDTO = new ParticipantInfoDTO(loggedInUser.qualifiedId);
       ParticipantInfo participantInfo = ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(
-            loggedInUser.qualifiedId);
+            participantInfoDTO);
 
       if (null == options.filter)
       {
@@ -658,7 +662,15 @@ public class WorklistUtils
                   && null != ((OrganizationInfo) participantInfo).getDepartment())
             {
                OrganizationInfo organization = (OrganizationInfo) participantInfo;
-               child.participantQId = participantInfo.getQualifiedId() + organization.getDepartment().getId();
+               child.participantQId = participantInfo.getQualifiedId();
+               child.departmentQId = organization.getDepartment().toString(); //Gets the hierarchy of depts in / separated string
+            }
+            else if (participantInfo instanceof RoleInfo
+                  && null != ((RoleInfo) participantInfo).getDepartment())
+            {
+               RoleInfo role = (RoleInfo) participantInfo;
+               child.participantQId = participantInfo.getQualifiedId();
+               child.departmentQId = role.getDepartment().toString(); //Gets the hierarchy of depts in / separated string
             }
             else
             {

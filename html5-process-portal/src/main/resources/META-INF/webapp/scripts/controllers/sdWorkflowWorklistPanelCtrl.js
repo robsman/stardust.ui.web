@@ -129,6 +129,7 @@
 				"userId" : data.valueItem.userId,
 				"id" : data.valueItem.id,
 				"participantQId" : data.valueItem.participantQId,
+				"departmentQId" : data.valueItem.departmentQId,
 				"name" : data.valueItem.labelName
 			};
 
