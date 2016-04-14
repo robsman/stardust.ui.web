@@ -398,10 +398,17 @@ public final class SessionContext implements Serializable
          else
          {
             //TODO: review why it is required
-            if (FacesContext.getCurrentInstance() != null)
+            try
             {
-               FacesContext.getCurrentInstance().getExternalContext().getSessionMap()
-                     .put("infinity.tenant", loggedInUser.getPartitionId());
+               if (FacesContext.getCurrentInstance() != null)
+               {
+                  FacesContext.getCurrentInstance().getExternalContext().getSessionMap()
+                        .put("infinity.tenant", loggedInUser.getPartitionId());
+               }
+            }
+            catch (Exception e)
+            {
+               trace.warn("Could not add infinity.tenant into session map for " + loggedInUser.getPartitionId());
             }
          }
       }
