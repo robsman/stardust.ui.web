@@ -75,12 +75,12 @@
 		this.currentUser.permissions = sdLoggedInUserService.getRuntimePermissions();
 		
 		//Test if user can read runtime artifact and assign to our object
-		this.readRuntimeArtifact = this.currentUser.permissions.some(function(v){
+		this.readRuntimeArtifact = this.currentUser.permissions.availablePermissions.some(function(v){
 			return v==="readRuntimeArtifact";
 		});
 		
 		//Test if user can deploy runtime artifact and assign to our object
-		this.deployRuntimeArtifact = this.currentUser.permissions.some(function(v){
+		this.deployRuntimeArtifact = this.currentUser.permissions.availablePermissions.some(function(v){
 			return v==="deployRuntimeArtifact";
 		});
 		
