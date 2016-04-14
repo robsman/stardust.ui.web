@@ -34,6 +34,7 @@ import org.eclipse.stardust.ui.web.common.event.ViewDataEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry;
@@ -73,8 +74,8 @@ public class ManualActivityIframeInteractionController implements IActivityInter
     */
    public String providePanelUri(ActivityInstance ai)
    {
-      HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-
+      HttpServletRequest req = FacesUtils.getHttpRequest();
+      
       String contextUri = "/${request.contextPath}";
       contextUri = contextUri.replace("/${request.contextPath}", req.getContextPath());
       

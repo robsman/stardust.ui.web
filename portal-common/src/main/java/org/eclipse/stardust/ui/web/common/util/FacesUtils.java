@@ -48,6 +48,8 @@ import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Provides Utility methods that can be called from XHTMLs
@@ -249,6 +251,31 @@ public class FacesUtils implements Constants
    public static Object getBeanFromContext(FacesContext context, String beanName)
    {
       return ManagedBeanUtils.getManagedBean(context, beanName);
+   }
+
+   /**
+    * @return
+    */
+   public static HttpServletRequest getHttpRequest()
+   {
+      HttpServletRequest req = null;
+
+      if (null != RequestContextHolder.getRequestAttributes())
+      {
+         req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+      }
+
+      if (null == req)
+      {
+         FacesContext fc = FacesContext.getCurrentInstance();
+
+         if (null != fc && null != fc.getExternalContext())
+         {
+            req = (HttpServletRequest) fc.getExternalContext().getRequest();
+         }
+      }
+
+      return req;
    }
    
    /**

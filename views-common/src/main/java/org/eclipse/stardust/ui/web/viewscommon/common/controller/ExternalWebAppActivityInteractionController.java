@@ -175,7 +175,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       ApplicationContext context = ai.getActivity().getApplicationContext(
             EXT_WEB_APP_CONTEXT_ID);
 
-      HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+      HttpServletRequest req = FacesUtils.getHttpRequest();
       ServletContext servletContext = req.getSession().getServletContext();
 
       Boolean embedded = (Boolean) context.getAttribute("carnot:engine:ui:externalWebApp:embedded");
