@@ -52,8 +52,7 @@
 							'<span>Suspend (User)</span>\n' +
 						'</button>\n' +
 					'</div>' +
-					'<div style="height: 40px;">' +
-						'<div style="color: red;">(At the moment actions only work for same domain environment)</div>' +
+					'<div style="height: 25px;">' +
 						'<div><b>{{actionStatus}}</b></div>' +
 					'<div>' +
 					'<div ng-if="renderActivityUi">' +
@@ -111,8 +110,7 @@
 				 * 
 				 */
 				scope.complete = function() {
-					var activityIframe = element.find('iframe');
-					var iFrameScope = activityIframe[0].contentWindow.angular.element('html').scope();
+					var iFrameScope = getActivityIframeScope();
 					if (iFrameScope.saveData()) {
 						var httpResponse = $http.post(AI_REST_END_POINT + 'complete/' + activityOid);
 						httpResponse.success(function(data) {
@@ -132,8 +130,7 @@
 				 * 
 				 */
 				scope.suspendAndSave = function(toUser) {
-					var activityIframe = element.find('iframe');
-					var iFrameScope = activityIframe[0].contentWindow.angular.element('html').scope();
+					var iFrameScope = getActivityIframeScope();
 					if (iFrameScope.saveData()) {
 						var url = AI_REST_END_POINT + 'suspend-and-save/' + activityOid;
 						if (toUser) {
@@ -209,6 +206,19 @@
 					var decodedId = window.atob(interactionId);
 					activityOid = decodedId.substring(0, decodedId.indexOf('|'));
 				});
+			}
+
+			/*
+			 * 
+			 */
+			function getActivityIframeScope() {
+				var activityIframe = element.find('iframe');
+				try {
+					var iFrameScope = activityIframe[0].contentWindow.angular.element('html').scope();
+					return iFrameScope;
+				} catch (e) {
+					throw 'Error while accessing activity iFrame. Might not be accessible due to cross domain scenario.';
+				}
 			}
 		}
 	
