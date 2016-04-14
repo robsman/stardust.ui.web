@@ -13,6 +13,7 @@
  */
 package org.eclipse.stardust.ui.web.rest.dto;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,16 @@ public class WorklistFilterDTO implements FilterDTO
    public RangeDTO processOID;
 
    public Map<String, DescriptorFilterDTO> descriptorFilterMap;
+   
+   public BusinessObjectDTO businessObject;
 
+   public static class BusinessObjectDTO
+   {
+      public String dataId;
+      public String primaryKey;
+      public List<Serializable> identifiers;
+   }
+   
    public static class ProcessActivityDTO
    {
       public List<String> processes;

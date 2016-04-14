@@ -38,12 +38,15 @@
 					<i class="pi pi-save pi-lg"></i>
 			</button>
 		</div>
-		<div class="tbl-toolbar-section"  ng-if="::activityTableCtrl.isWorklistMode();">
+		<div class="tbl-toolbar-section">
 			<button ng-click="activityTableCtrl.refresh()" aid="PP-ActivityTable-refresh" sda-toolbar-type="refresh"
 					 title="{{i18n('processportal.launchPanels-worklists-button-refresh')}}"
 					 class="button-link tbl-toolbar-item tbl-tool-link">
-					 <i class="pi pi-refresh pi-lg pi-lg"></i>
+					 <i class="pi pi-refresh pi-lg"></i>
 			</button>
+		</div>
+		<div ng-if="!activityTableCtrl.isActivityTableMode();" class="tbl-toolbar-section">
+			<div sd-business-object-filter-dialog></div>
 		</div>
 	</div>
 	<table sd-data-table="{{activityTableCtrl.tableHandleExpr}}" sd-data="activityTableCtrl.fetchPage(params)" sda-ready="activityTableCtrl.ready"

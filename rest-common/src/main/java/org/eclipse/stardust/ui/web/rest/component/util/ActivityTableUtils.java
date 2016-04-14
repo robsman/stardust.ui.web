@@ -50,6 +50,7 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
+import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
@@ -400,6 +401,16 @@ public class ActivityTableUtils
          for (ParticipantDTO user : filterDTO.completedBy.participants)
          {
             or.add(new org.eclipse.stardust.engine.api.query.PerformedByUserFilter(user.OID));
+         }
+      }
+      
+      // Business Object
+      if (null != filterDTO.businessObject)
+      {
+         FilterOrTerm or = filter.addOrTerm();
+         for (Serializable id : filterDTO.businessObject.identifiers)
+         {
+            or.add(DataFilter.isEqual(filterDTO.businessObject.dataId, filterDTO.businessObject.primaryKey, id));
          }
       }
       addDescriptorFilters(query, filterDTO);
