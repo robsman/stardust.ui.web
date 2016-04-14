@@ -10,7 +10,7 @@
 	</button>
 </div>
 <div>
-  <select style="height: 75px; min-width: 200px; max-width: 350px;" name="processes" aid="PP-ProcessActivityFilter-Selector-Process"
+  <select ng-if="true" style="height: 75px; min-width: 200px; max-width: 350px;" name="processes" aid="PP-ProcessActivityFilter-Selector-Process"
   		  ng-model="filterData.processes" multiple 
           ng-change="filterCtrl.updateProcess()" ng-init="filterData.processes = filterData.processes || ['-1']">
          <option title="{{process.name}}"
@@ -32,7 +32,7 @@
 		</button>
 	</div>
 	<div>
-		<select style="height: 75px; min-width: 200px; max-width: 350px;" aid="PP-ProcessActivityFilter-Selector-Activity"
+		<select ng-if="true" style="height: 75px; min-width: 200px; max-width: 350px;" aid="PP-ProcessActivityFilter-Selector-Activity"
 			name="activities" ng-model="filterData.activities" multiple
 			ng-init="filterData.activities = filterData.activities || ['-1']">
 			<option title="{{activity.name}}"
