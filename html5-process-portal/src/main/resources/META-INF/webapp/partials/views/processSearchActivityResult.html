@@ -1,17 +1,11 @@
-<div>
-	<!-- View Toolbar -->
-	<sd-refresh sda-on-refresh="procSearchViewCtrl.refresh()" aid="BCC-ProcSrch-ActSrchResultTbl"></sd-refresh>
+<div class="view-panel-content">
+	<div class="tbl-title">{{i18n('business-control-center-messages.views-processSearchView-activityTable-title')}}</div>
 
-	<!-- View Content -->
-	<div class="view-panel-content">
-		<div class="tbl-title">{{i18n('business-control-center-messages.views-processSearchView-activityTable-title')}}</div>
-
-		<div sd-activity-table="procSearchViewCtrl.activityDataTable"
-			sda-mode="activityTable"
-			sd-data="procSearchViewCtrl.performSearch(params)"
-			sda-ready="procSearchViewCtrl.showProcSearchResult"
-			sda-preference-module="ipp-business-control-center"
-			sda-preference-id="preference"
-			sda-preference-name="ipp-business-control-center.processSearch.activityTable.selectedColumns"></div>
-	</div>
+	<div sd-activity-table="procSearchViewCtrl.activityDataTable"
+		sda-mode="activityTable"
+		sd-data="procSearchViewCtrl.performSearch(params)"
+		sda-ready="procSearchViewCtrl.showProcSearchResult"
+		sda-preference-module="ipp-business-control-center"
+		sda-preference-id="preference"
+		sda-preference-name="ipp-business-control-center.processSearch.activityTable.selectedColumns"></div>
 </div>

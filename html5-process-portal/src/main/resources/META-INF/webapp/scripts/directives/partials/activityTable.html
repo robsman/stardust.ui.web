@@ -38,7 +38,7 @@
 					<i class="pi pi-save pi-lg"></i>
 			</button>
 		</div>
-		<div class="tbl-toolbar-section">
+		<div class="tbl-toolbar-section"  ng-if="::activityTableCtrl.isWorklistMode();">
 			<button ng-click="activityTableCtrl.refresh()" aid="PP-ActivityTable-refresh" sda-toolbar-type="refresh"
 					 title="{{i18n('processportal.launchPanels-worklists-button-refresh')}}"
 					 class="button-link tbl-toolbar-item tbl-tool-link">
