@@ -820,7 +820,7 @@
 		ActivityTableCompiler.prototype.cleanLocals = function() {
 			this.dirtyDataForms = [];
 		};
-
+		
 		/*
 		 *
 		 */
@@ -841,13 +841,8 @@
 
 			self.cachedQuery.options = options;
 			
-			if (this.boFilter) {
-				if (!self.cachedQuery.options.filters) {
-					self.cachedQuery.options.filters = {};
-				}
-				
-				self.cachedQuery.options.filters.businessObject = this.boFilter;
-			}
+			// Adds BO filter to query if present
+			addBOFilterToQuery.call(this);
 
 			var showResubmitLink = false;
 			if(self.cachedQuery.id == 'allResubmissionInstances' || self.cachedQuery.type == 'resubmission'){
@@ -900,6 +895,19 @@
 			}
 			return deferred.promise;
 		};
+
+		/**
+		 * 
+		 */
+		function addBOFilterToQuery() {
+			if (this.boFilter) {
+				if (!this.cachedQuery.options.filters) {
+					this.cachedQuery.options.filters = {};
+				}
+				
+				this.cachedQuery.options.filters.businessObject = this.boFilter;
+			}
+		}
 
 		/*
 		 *

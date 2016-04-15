@@ -27,6 +27,9 @@
 				});
 		return {
 			restrict : 'A',
+			scope: {
+				selectedBoMaxDisplayLength: '@sdaSelectedBoMaxDisplayLength'
+			},
 			templateUrl : sdUtilService.getBaseUrl()
 					+ 'plugins/html5-process-portal/scripts/directives/partials/businessObjectFilterDialog.html',
 			controller : [ '$scope', 'sdBusinessObjectManagementService',
@@ -36,18 +39,34 @@
 
 	function BusinessObjectFilterDialogCtrl($scope,
 			sdBusinessObjectManagementService) {
-		this.parentScope = $scope;
 		this.bomService = sdBusinessObjectManagementService;
 		this.open = false;
+		this.parentScope = $scope.$parent;
+		setBOMaxDisplayLenght.call(this, $scope);
+		this.attributes = $scope.attributes;
+		
+		
 		$scope.boDialog = this;
 
 		this.initializeBOs();
+	}
+	
+	function setBOMaxDisplayLenght(scope) {
+		if (scope.selectedBoMaxDisplayLength) {
+			try {
+				this.selectedBoMaxDisplayLength = parseInt(scope.selectedBoMaxDisplayLength);
+			} catch (e) {
+				this.selectedBoMaxDisplayLength = 35;
+			}
+		} else {
+			this.selectedBoMaxDisplayLength = 35;
+		}
 	}
 
 	BusinessObjectFilterDialogCtrl.prototype.initializeBOs = function() {
 		var self = this;
 		this.bos = [];
-		this.selectedBOInstances = [];
+		this.selectedInstances = [];
 		this.bomService.getBusinessObjects().then(
 				function(bos) {
 					if (bos && bos.models) {
@@ -68,12 +87,45 @@
 
 				});
 	};
+	
+	BusinessObjectFilterDialogCtrl.prototype.setSelectedBOInstancesString = function() {
+		var self = this;
+		var str;
+		if (this.selectedBOInstances && this.selectedBOInstances.length > 0) {
+			str = this.selectedBO.name + ": ";
+			jQuery.each(this.selectedBOInstances, function(_, bo) {
+				str = str + bo[self.primaryKeyForSelectedBO] + ","
+			});
+		}
+
+		this.selectedBOInstancesString = truncateStringToLength(str, this.selectedBoMaxDisplayLength);
+	};
+	
+	function truncateStringToLength(str, length) {
+		if (str !== undefined && str !== null) {
+			if (str.length <= (length + 1)) { // "+ 1" is to compensate for the trailing comma
+				return truncateTralingComma(str)
+			} else {
+				if (length > 3) {
+					return str.substring(0, (length - 3)) + "..."
+				} else {
+					return "..."; 
+				}
+			}
+		}
+		
+		return str;
+	}
+	
+	function truncateTralingComma(str) {
+		return str.substring(0, (str.length - 1));
+	}
 
 	BusinessObjectFilterDialogCtrl.prototype.boSelectionChanged = function() {
 		var self = this;
-		this.selectedBOInstances = [];
-		if (this.selectedBO) {
-			jQuery.each(this.selectedBO.fields, function(_, field) {
+		this.selectedInstances = [];
+		if (this.selectedType) {
+			jQuery.each(this.selectedType.fields, function(_, field) {
 				if (field.primaryKey) {
 					self.primaryKeyForSelectedBO = field.id;
 				}
@@ -81,24 +133,26 @@
 		}
 	};
 
-	BusinessObjectFilterDialogCtrl.prototype.filterBySelectedBOs = function() {
+	BusinessObjectFilterDialogCtrl.prototype.applyFilter = function() {
 		var self = this;
 		var boFilter = {
-			dataId : self.selectedBO.id,
+			dataId : self.selectedType.id,
 			primaryKey : self.primaryKeyForSelectedBO,
 			identifiers : []
 		};
-		if (this.selectedBOInstances && this.selectedBOInstances.length > 0) {
-			jQuery.each(this.selectedBOInstances, function(_, bo) {
+		if (this.selectedInstances && this.selectedInstances.length > 0) {
+			jQuery.each(this.selectedInstances, function(_, bo) {
 				boFilter.identifiers.push(bo[self.primaryKeyForSelectedBO]);
 			});
-		} else {
-			// TODO
 		}
 
 		this.parentScope.activityTableCtrl.boFilter = boFilter;
 		this.parentScope.activityTableCtrl.refresh();
 
+		this.selectedBO = this.selectedType;
+		this.selectedBOInstances = this.selectedInstances;
+		this.setSelectedBOInstancesString();
+		
 		this.closeDialog();
 	};
 
@@ -108,6 +162,7 @@
 
 		this.parentScope.activityTableCtrl.boFilter = undefined;
 		this.parentScope.activityTableCtrl.refresh();
+		this.setSelectedBOInstancesString();
 
 		this.closeDialog();
 	};
@@ -116,7 +171,7 @@
 			matchStr) {
 		var self = this;
 		var results = [];
-		jQuery.each(this.boInstances[this.selectedBO.id], function(_, v) {
+		jQuery.each(this.boInstances[this.selectedType.id], function(_, v) {
 			if (v[self.primaryKeyForSelectedBO].indexOf(matchStr) > -1) {
 				results.push(v);
 			}
@@ -126,10 +181,14 @@
 	};
 
 	BusinessObjectFilterDialogCtrl.prototype.openDialog = function() {
+		this.selectedType = this.selectedBO;
+		this.selectedInstances = this.selectedBOInstances;
 		this.open = true;
 	};
 
 	BusinessObjectFilterDialogCtrl.prototype.closeDialog = function() {
+		this.selectedType = undefined;
+		this.selectedInstances = [];
 		this.open = false;
 	};
 

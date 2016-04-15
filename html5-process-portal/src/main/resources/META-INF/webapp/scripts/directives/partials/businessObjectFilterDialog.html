@@ -1,8 +1,27 @@
-<button ng-click="boDialog.toggleDialogOpenState()" aid=""
-	title="{{i18n('processportal.toolbars-workflowActions-tooltip-boFilter')}}"
-	class="button-link tbl-toolbar-item tbl-tool-link">
-	<i class="pi pi-filter pi-lg"></i>
-</button>
+<table>
+	<tr>
+		<td>
+			<button ng-click="boDialog.toggleDialogOpenState()" aid="worklist-tools-boFilter-open"
+				title="{{i18n('processportal.toolbars-workflowActions-tooltip-boFilter')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				ng-show="!boDialog.selectedBOInstances || boDialog.selectedBOInstances.length < 1">
+				<i class="pi pi-filter pi-lg"></i>
+			</button>
+			<button ng-click="boDialog.resetFilter()" aid="worklist-tools-boFilter-reset"
+				title="{{i18n('processportal.toolbars-workflowActions-tooltip-boFilter')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				ng-show="boDialog.selectedBOInstances && boDialog.selectedBOInstances.length > 0">
+				<i class="pi pi-filter pi-lg"></i>
+			</button>
+		</td>
+		<td>
+			<button ng-click="boDialog.toggleDialogOpenState()" ng-show="boDialog.selectedBOInstancesString"
+				aid="worklist-tools-boFilter-selected-list" class="button-link">
+				{{boDialog.selectedBOInstancesString}}
+			</button>
+		</td>
+	</tr>
+</table>
 <div style="position: absolute; z-index: 1;" ng-show="boDialog.open">
 	<div style="position: absolute;" class="popup-dlg">
 		<div class="popup-dlg-hdr">
@@ -11,11 +30,11 @@
 				ng-click="boDialog.closeDialog()" style="cursor: pointer"></i>
 		</div>
 		<div class="popup-dlg-cnt tbl-col-flt-dlg-cnt">
-			<select ng-model="boDialog.selectedBO" style="width: 95%;"
+			<select ng-model="boDialog.selectedType" style="width: 95%;"
 				ng-change="boDialog.boSelectionChanged()"
 				ng-options="bo as bo.name for bo in boDialog.bos">
 			</select>
-			<div ng-show="boDialog.selectedBO != null">
+			<div ng-show="boDialog.selectedType != null">
 				<div sd-auto-complete
 					sda-matches="boDialog.businessObjectInstancesData"
 					sda-match-str="boDialog.matchVal"
@@ -24,16 +43,16 @@
 					class="sd-participant-selector"
 					sda-container-class="sd-ac-container"
 					sda-item-hot-class="sd-ac-item-isActive"
-					sda-selected-matches="boDialog.selectedBOInstances"
+					sda-selected-matches="boDialog.selectedInstances"
 					sda-allow-duplicates="false" sda-allow-multiple="true"
 					sda-clear-on-select="true"
-					sda-aid-prefix="COM-benchmark-tlv-businessObjectInstances"
+					sda-aid-prefix="worklist-tools-boFilter-autoComplete"
 					style="width: 95%; margin-top: 5px;"></div>
 			</div>
 		</div>
 		<div class="popup-dlg-footer">
 			<input type="submit" class="button primary" value="Apply Filter"
-				ng-click="boDialog.filterBySelectedBOs();"><input
+				ng-click="boDialog.applyFilter();"><input
 				type="submit" class="button secondary" value="Reset Filter"
 				ng-click="boDialog.resetFilter()">
 		</div>
