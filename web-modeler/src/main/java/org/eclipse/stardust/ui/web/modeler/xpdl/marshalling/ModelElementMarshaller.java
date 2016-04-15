@@ -3535,9 +3535,9 @@ public class ModelElementMarshaller implements ModelMarshaller
       dataMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
             dataMapping.getDataPath());
             
-      if(AttributeUtil.getAttribute(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY) != null)
+      if(AttributeUtil.getAttribute(dataMapping, PredefinedConstants.MANDATORY_DATA_MAPPING) != null)
       {
-         dataMappingJson.addProperty(ModelerConstants.DATA_MAPPING_MANDATORY, AttributeUtil.getBooleanValue(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY));         
+         dataMappingJson.addProperty(PredefinedConstants.MANDATORY_DATA_MAPPING, AttributeUtil.getBooleanValue(dataMapping, PredefinedConstants.MANDATORY_DATA_MAPPING));         
       }
       
       return dataMappingJson;

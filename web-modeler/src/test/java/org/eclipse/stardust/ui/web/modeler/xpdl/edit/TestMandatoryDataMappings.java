@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.modeler.xpdl.edit;
 
 import org.junit.Test;
 
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
 
@@ -23,14 +24,14 @@ public class TestMandatoryDataMappings extends RecordingTestcase
    {
       providerModel = modelService.findModel("MandatoryDataMappingsModel");
 
-      String command = "{\"commandId\":\"modelElement.update\",\"modelId\":\"MandatoryDataMappingsModel\",\"changeDescriptions\":[{\"oid\":\"62\",\"changes\":{\"mandatoryDataMapping\" : \"true\"}}]}";
+      String command = "{\"commandId\":\"modelElement.update\",\"modelId\":\"MandatoryDataMappingsModel\",\"changeDescriptions\":[{\"oid\":\"62\",\"changes\":{\"" + PredefinedConstants.MANDATORY_DATA_MAPPING + "\" : \"true\"}}]}";
       replaySimple(command, "mandatoryDataMapping", null, true);    
       
       ProcessDefinitionType processDefinitionType = providerModel.getProcessDefinition().get(0);
       ActivityType activityType = processDefinitionType.getActivity().get(0);
       DataMappingType dataMappingType = activityType.getDataMapping().get(0);
 
-      GenericModelingAssertions.assertAttribute(dataMappingType, "mandatoryDataMapping", "true");      
+      GenericModelingAssertions.assertAttribute(dataMappingType, PredefinedConstants.MANDATORY_DATA_MAPPING, "true");      
    }
   
    @Override

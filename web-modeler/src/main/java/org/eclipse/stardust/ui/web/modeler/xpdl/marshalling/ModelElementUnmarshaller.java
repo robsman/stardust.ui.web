@@ -822,13 +822,13 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          dataMapping.setDirection(directionType);
       }
       
-      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_MAPPING_MANDATORY))
+      if (hasNotJsonNull(dataMappingJson, PredefinedConstants.MANDATORY_DATA_MAPPING))
       {
-         AttributeUtil.setBooleanAttribute(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY, dataMappingJson.get(ModelerConstants.DATA_MAPPING_MANDATORY).getAsBoolean());
+         AttributeUtil.setBooleanAttribute(dataMapping, PredefinedConstants.MANDATORY_DATA_MAPPING, dataMappingJson.get(PredefinedConstants.MANDATORY_DATA_MAPPING).getAsBoolean());
       }
       else
       {
-         AttributeUtil.setAttribute(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY, null);
+         AttributeUtil.setAttribute(dataMapping, PredefinedConstants.MANDATORY_DATA_MAPPING, null);
       }
    }
 
@@ -1026,13 +1026,13 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       activity.getDataMapping().add(dataMapping);
       data.getDataMappings().add(dataMapping);
       
-      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_MAPPING_MANDATORY))
+      if (hasNotJsonNull(dataMappingJson, PredefinedConstants.MANDATORY_DATA_MAPPING))
       {
-         AttributeUtil.setBooleanAttribute(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY, dataMappingJson.get(ModelerConstants.DATA_MAPPING_MANDATORY).getAsBoolean());
+         AttributeUtil.setBooleanAttribute(dataMapping, PredefinedConstants.MANDATORY_DATA_MAPPING, dataMappingJson.get(PredefinedConstants.MANDATORY_DATA_MAPPING).getAsBoolean());
       }
       else
       {
-         AttributeUtil.setAttribute(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY, null);
+         AttributeUtil.setAttribute(dataMapping, PredefinedConstants.MANDATORY_DATA_MAPPING, null);
       }      
       
       return dataMapping;
