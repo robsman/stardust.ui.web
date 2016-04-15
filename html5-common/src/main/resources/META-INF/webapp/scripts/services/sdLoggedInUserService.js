@@ -16,7 +16,7 @@
 	/**
 	 * 
 	 */
-	angular.module('workflow-ui.services').provider('sdLoggedInUserService', function() {
+	angular.module('bpm-common.services').provider('sdLoggedInUserService', function() {
 		this.$get = [ 'sdUtilService', '$resource' ,'$q', function( sdUtilService, $resource, $q) {
 			var service = new LoggedInUserService( sdUtilService, $resource, $q);
 			return service;

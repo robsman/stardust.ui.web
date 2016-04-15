@@ -77,7 +77,12 @@ var html5Deps = function() {
         'sdUtilDirectives' : [ 'html5-common/scripts/directives/sdUtilDirectives'],
         'sdRepositoryUploadDialog': [ 'html5-common/scripts/directives/dialogs/sdRepositoryUploadDialog'],
         'sdVersionHistoryDialog': [ 'html5-views-common/html5/scripts/directives/sdVersionHistoryDialog'],
-        'documentRepositoryService': ['html5-common/scripts/directives/sdDocumentRepository/documentRepositoryService']
+        'documentRepositoryService': ['html5-common/scripts/directives/sdDocumentRepository/documentRepositoryService'],
+        'sdLoggedInUserService' : ['html5-common/scripts/services/sdLoggedInUserService'],
+        'sdInitializerService' :  [ 'html5-common/scripts/services/sdInitializerService'],
+        'sdInitializer' :  [ 'html5-common/scripts/directives/sdInitializer'],
+        'sdSsoService' :  [ 'html5-common/scripts/services/sdSsoService'],
+        'sdSessionService' : ['html5-common/scripts/services/sdSessionService']
       },
       shim : {
         'jquery.dataTables' : [ 'jquery' ],
@@ -118,8 +123,12 @@ var html5Deps = function() {
         'sdRepositoryUploadDialog' : ['html5CommonMain'],
         'sdUtilDirectives': ['html5CommonMain'],
         'sdVersionHistoryDialog': ['documentRepositoryService'],
-        'documentRepositoryService': ['sdMimeTypeService', 'sdUtilService']
-        
+        'documentRepositoryService': ['sdMimeTypeService', 'sdUtilService'],
+        'sdLoggedInUserService' : ['html5CommonMain','sdUtilService'],
+        'sdSessionService' : ['sdUtilService','sdLoggerService'],
+        'sdSsoService': ['sdEnvConfigService', 'sdSessionService','html5CommonMain'],
+        'sdInitializerService' : ['html5CommonMain','sdSsoService','sdLoggedInUserService'],
+        'sdInitializer' : ['sdInitializerService']
       },
       deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap","ckeditor","portalApplication",
           "html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
@@ -127,7 +136,7 @@ var html5Deps = function() {
           'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover', 
           'sdAutoComplete','sdRichTextEditor','sdTree','sdFolderTree','sdProcessDocumentTree', 'sdDateTimeFilter', 'sdNotesPanel', 
           'sdActivityPanelPropertiesPage', 'sdProcessDocumentsPanel', 'uiBootstrap', 'sdFileDropbox', 'sdUtilDirectives',
-          'sdVersionHistoryDialog', 'documentRepositoryService']
+          'sdVersionHistoryDialog', 'documentRepositoryService', 'sdInitializer']
     };
 
     copyValues(config.paths, reqMod.paths);
@@ -146,16 +155,61 @@ var html5Deps = function() {
           }];
       });
     
-      module.provider('sgPubSubService', function () {
-          this.$get = ['$rootScope', function ($rootScope) {
-              var service = {};
-              service.subscribe = function() {
-                  
-              };
-              return service;
-          }];
-      });
-      
+    module.provider('sgPubSubService', function () {
+    	this.$get = [ function () {
+    		var listeners = {};
+    		var service = {};
+    		/*
+    		 * 
+    		 */
+    		function getCount(topicListeners) {
+    			var count = 0;
+    			for(var id in topicListeners) {
+    				count++;
+    			}
+    			return count;
+    		}
+
+    		
+    		service.subscribe = function(topic, callback) {
+
+    			if (!topic || !callback) {
+    				return;
+    			}
+
+    			listeners[topic] = listeners[topic] || {};
+    			var id = getCount(listeners[topic]);
+    			listeners[topic][id] = callback;
+
+    			// Unsubscribe function
+    			var ret = function() {
+    				if (listeners[topic] && listeners[topic][id]) {
+    					delete listeners[topic][id];
+    				}
+    			};
+
+
+    		};
+    		service.publish = function(topic, payload) {
+    			var ret = [];
+
+    			var allListeners = listeners[topic] || {};
+    			for(var id in allListeners) {
+    				ret.push(allListeners[id](payload));
+    			}
+
+    			for(var i in ret) {
+    				if (ret[i] !== 'object' && ret[i] == false) {
+    					return false;
+    				}
+    			}
+
+    			return true;
+    		};
+    		return service;
+    	}];
+    });
+
 
     /**
      * requireJs injection service is not available as bpm-ui module

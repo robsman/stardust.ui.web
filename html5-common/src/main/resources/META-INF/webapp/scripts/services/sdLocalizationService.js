@@ -14,7 +14,7 @@
 	'use strict';
 
 	/**
-	 * 
+	 *
 	 */
 	angular.module('bpm-common.services').provider('sdLocalizationService', function() {
 		this.$get = [ 'sdUtilService','$resource' ,'$q', function(sdUtilService, $resource, $q) {
@@ -25,13 +25,13 @@
 
 	var localizationInfo = null;
 	/**
-	 * 
+	 *
 	 */
 	function LocalizationService( sdUtilService, $resource, $q) {
 
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/localization";
 		/**
-		 * 
+		 *
 		 */
 		LocalizationService.prototype.getInfo = function() {
 			if (!localizationInfo) {
@@ -39,19 +39,19 @@
 			}
 			return localizationInfo;
 		};
-		
+
 		/**
-		 * 
+		 *
 		 */
 		/**
-		 * 
+		 *
 		 */
 		this.loadInfo = function() {
 			var deferred = $q.defer();
 
 			var restUrl = REST_BASE_URL + "/info";
 
-			return $resource(restUrl).get().$promise.then(function(result){
+			 $resource(restUrl).get().$promise.then(function(result){
 				localizationInfo = result;
 				deferred.resolve( localizationInfo );
 			});
