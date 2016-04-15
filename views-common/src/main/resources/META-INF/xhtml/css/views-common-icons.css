@@ -49,12 +49,12 @@
 
 .activity_qa_passed:before{
 	font-family: "FontAwesome";
-	content: "\f087"; /* fa-thumbs-o-up */
+	content: "\f14a"; /* fa-check-square */
 }
 
 .activity_qa_failed:before{
 	font-family: "FontAwesome";
-	content: "\f088"; /* fa-thumbs-o-down */
+	content: "\f05e"; /* fa-ban */
 }
 
 .activity_qa_await:before{
@@ -223,7 +223,7 @@
 
 .qa-manager:before {
 	font-family:"FontAwesome";
-	content:"\f087"; /* fa-thumbs-o-up */
+	content:"\f14a"; /* fa-check-square */
 }
 
 .preference-store:before {

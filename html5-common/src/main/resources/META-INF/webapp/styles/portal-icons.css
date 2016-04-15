@@ -821,14 +821,16 @@ span.pi-case:before{
 	content: "\f0e5"; /* fa-comment-o */
 }
 
+.pi-on-time,
 .pi-qa-passed:before{
 	font-family: "FontAwesome";
-	content: "\f087"; /* fa-thumbs-o-up */
+	content: "\f14a"; /* fa-check-square */
 }
 
+.pi-late,
 .pi-qa-failed:before{
 	font-family: "FontAwesome";
-	content: "\f088"; /* fa-thumbs-o-down */
+	content: "\f05e"; /* fa-ban */
 }
 
 .pi-qa-waiting:before{
