@@ -50,7 +50,7 @@
 				majorFactor : (1000 * 60 * 60) // 1 Hour
 			},
 			minutes : {
-				majorFactorWidth : TOTAL_WIDTH / 15,  
+				majorFactorWidth : TOTAL_WIDTH / 15,
 				minorFactorWidth : TOTAL_WIDTH / (15 * 15), // 15 mins
 				minorFactor : (1000 * 60 ), // 1 Min
 				majorFactor : (1000 * 60  * 15)// 15 mins
@@ -58,7 +58,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	function Controller($scope, sdProcessInstanceService, sdLoggerService, $filter,
 			sdPreferenceService, sdActivityInstanceService, sdCommonViewUtilService, sgI18nService, $q, sdLocalizationService, $parse) {
@@ -75,7 +75,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.intialize = function($scope) {
 		var self = this;
@@ -104,13 +104,13 @@
 		var params = queryGetter($scope);
 		self.selected.process = params.processInstanceOId;
 		self.tableReady = true;
-		
+
 		self.currentTimeLine = {};
 		self.estimatedEndTimeLine = {};
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.populateLegendCategories = function(benchmarkPresent,  benchmarkName) {
 		var self = this;
@@ -126,8 +126,8 @@
 			var benchmark = 	{
 					id : "benchmark",
 					label : benchmarkName
-			}	
-			self.legendCategories.push(benchmark)	
+			}
+			self.legendCategories.push(benchmark)
 			self.selected.legend = "benchmark";
 			self.legends = self.benchmarkCategories;
 
@@ -138,7 +138,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getBenchmarkCategories = function(data) {
 		var deferred = _q.defer();
@@ -147,7 +147,7 @@
 		var benchmarkPresent = data.benchmark.value > 0 ;
 		if(benchmarkPresent){
 
-			_sdProcessInstanceService.getBenchmarkDetailsProcess(data.benchmark.oid, self.process.qualifiedId).then(function(data){ 
+			_sdProcessInstanceService.getBenchmarkDetailsProcess(data.benchmark.oid, self.process.qualifiedId).then(function(data){
 
 				self.extractExpectedDurations(data.processDefinitions);
 				angular.forEach(data.categories,function(cat){
@@ -170,7 +170,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.extractExpectedDurations = function(processDefinitions){
 		var self = this;
@@ -180,28 +180,28 @@
 
 			angular.forEach(process.activities,function(activity){
 				durations[process.id].activities[activity.id] = activity.expectedDuration;
-			}); 
+			});
 		});
 		self.expectedDurations = durations;
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getExpectedDurationForProcess = function(pQid){
 		var self = this;
 		if(self.expectedDurations) {
-			
+
 			if(self.expectedDurations[pQid]) {
 				return self.expectedDurations[pQid].expectedDuration;
 			}
-			
+
 		}
 		return undefined;
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getExpectedDurationForActivity = function(pQid, aid){
 		var self = this;
@@ -213,7 +213,7 @@
 
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.expandSubProcess = function(row){
 		var self = this;
@@ -242,7 +242,7 @@
 
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getBarColor = function( value, type, hasBenchmark) {
 		var self = this;
@@ -257,7 +257,7 @@
 					found = _filter("filter")(statuses,{aiValue : value} , true)
 				}
 
-				if(found){
+				if(found &&  found[0] !== undefined){
 					color = found[0].color;
 				}
 
@@ -272,7 +272,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getTimeFrames = function(){
 
@@ -289,7 +289,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getAvailableStatuses = function(){
 
@@ -341,7 +341,15 @@
 			color : '#8A2BE2',
 			aiValue : 1,
 			piValue : ''
-		}];
+		},
+		{
+			label : _sgI18nService
+			.translate('views-common-messages.views-activityTable-statusFilter-halted'),
+			color : '#EFAE39',
+			aiValue : 10,
+			piValue : 6
+		}
+		];
 	}
 
 	/**
@@ -386,7 +394,7 @@
 				first.setDate(first.getDate() + 1);
 			}
 		document.getElementById("minorTimeLine").innerHTML = temptableHolder;
-		
+
 		//If the first has been incremented to the 1st of next month .Show the major tool bar with the previous month
 		if(first.getDate() == 1) {
 			first.setDate(first.getDate() - 1)
@@ -398,7 +406,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.drawTimeFrameHours = function(startTime, endTime) {
 
@@ -450,7 +458,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.drawTimeFrameMinutes = function(startTime, endTime) {
 		var self = this;
@@ -472,7 +480,7 @@
 		var quaterHourWidth = factor.majorFactorWidth;
 		var currentDay = new Date(first);
 		self.minorTimeFrameWidth = quaterHourWidth;
-		
+
 		while (second > first) {
 			if (isNextDay(currentDay,first)) {
 				var record = new Date(first);
@@ -504,7 +512,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.computeDifference = function(startTime,
 			endTime, factor) {
@@ -514,7 +522,7 @@
 		return {difference : differenceInFactor, padding : correctionForPadding} ;
 	};
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.mouseEnter = function(event, xOffset) {
 		var self = this;
@@ -526,7 +534,7 @@
 
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.onLegendChange = function() {
 		var self = this;
@@ -539,9 +547,9 @@
 				break;
 		}
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.activate = function(col) {
 		_sdActivityInstanceService.activate(col.oid).then(
@@ -551,7 +559,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.onTimeFrameChange = function() {
 		var self = this;
@@ -560,7 +568,7 @@
 
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.drawTimeFrames = function() {
 		var self = this;
@@ -593,7 +601,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	function isNextDay(timeOne, timeTwo){
 
@@ -611,35 +619,35 @@
 		return false;
 	}
 	/**
-	 * 
+	 *
 	 */
 	function isNextMonth(timeOne, timeTwo){
 		if(timeOne.getYear() < timeTwo.getYear()) {
 			return true;
 		}
 		if(timeOne.getYear() == timeTwo.getYear()) {
-			if(timeOne.getMonth() < timeTwo.getMonth()) 
+			if(timeOne.getMonth() < timeTwo.getMonth())
 				return true;
 		}
 		return false;
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.expandAll = function() {
 		this.dataTable.expandAll();
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.collapseAll = function() {
 		this.dataTable.collapseAll();
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.toggleAuxiliary = function() {
 		this.showAuxiliary = !this.showAuxiliary;
@@ -647,7 +655,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getAuxTitle = function() {
 		if(this.showAuxiliary){
@@ -657,7 +665,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.auxFilter = function(rowData) {
 		if (this.showAuxiliary) {
@@ -677,7 +685,7 @@
 		var data = {};
 
 		if(!params) {
-			
+
 			self.currentTime = new Date(); //Current Time Load once intially
 
 			_sdProcessInstanceService.getProcessByOid(self.selected.process).then(function(process){
@@ -710,7 +718,7 @@
 				} else {
 					trace.debug("Fetching data for  process",process.oid);
 					self.getBenchmarkCategories(process).then(function() {
-					
+
 						self.process.expectedEndTime = self.getExpectedDurationForProcess(process.qualifiedId) * ONE_HOUR_IN_MIILS + process.startTime;
 						var parent = self.constructDataForProcess(process);
 						parent.children = [];
@@ -724,12 +732,12 @@
 							data.totalCount =	data.list.length;
 							deferred.resolve(data);
 						});
-					});	
+					});
 				}
 			});
 
 		} else {
-			
+
 			trace.debug("Lazy loading children for parent",params.parent.piOid);
 			self.getChildren(params.parent.piOid, params.parent.qualifiedId).then(function(childrens) {
 				data.list = childrens;
@@ -742,7 +750,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getChildren = function(oid, qId) {
 		var self = this;
@@ -761,7 +769,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.constructDataForActivity = function(pQId ,data) {
 		var self = this;
@@ -778,7 +786,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.constructDataForProcess = function(data){
 		var self = this;
@@ -787,17 +795,17 @@
 		normalizedData.days = self.getGraphData(normalizedData,'days');
 		normalizedData.hours = self.getGraphData(normalizedData,'hours');
 		normalizedData.minutes = self.getGraphData(normalizedData,'minutes');
-		
+
 		self.calculateGridLines('days',normalizedData.days);
 		self.calculateGridLines('hours',normalizedData.hours);
 		self.calculateGridLines('minutes',normalizedData.minutes);
-		
+
 		self.determineAppropriateTimeFrame(normalizedData);
 		return normalizedData;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.calculateGridLines = function(timeFrame, data){
 		this.currentTimeLine[timeFrame] = data.delay + data.completed + 220;
@@ -805,12 +813,12 @@
 			this.estimatedEndTimeLine[timeFrame] = data.delay + data.completed + data.inflight+220;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.determineAppropriateTimeFrame = function(data){
-		
+
 		if(  (data.endTime - data.startTime) < ONE_HOUR_IN_MIILS  ){
 			this.selected.timeFrame = "minutes";
 		}else if((data.endTime - data.startTime) < ONE_DAY_IN_MIILS) {
@@ -820,9 +828,9 @@
 		}
 		this.onTimeFrameChange();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.calculateGridLines = function(timeFrame, data){
 		this.currentTimeLine[timeFrame] = data.delay + data.completed + 220;
@@ -830,12 +838,12 @@
 			this.estimatedEndTimeLine[timeFrame] = data.delay + data.completed + data.inflight+220;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.determineAppropriateTimeFrame = function(data){
-		
+
 		if(  (data.endTime - data.startTime) < ONE_HOUR_IN_MIILS  ){
 			this.selected.timeFrame = "minutes";
 		}else if((data.endTime - data.startTime) < ONE_DAY_IN_MIILS) {
@@ -848,7 +856,7 @@
 
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.normalizeActivityData = function(pQId,activity) {
 		var self = this;
@@ -871,9 +879,9 @@
 			var activityId = activity.activity.name.replace(/\s/g, "");
 			expectedDuraion = self.getExpectedDurationForActivity(pQId,activityId);
 		}
-		
-		
-		
+
+
+
 		var data = {
 				name : activity.activity.name,
 				startTime :  activity.startTime,
@@ -895,9 +903,9 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
-	Controller.prototype.normalizeProcessData = function(piData) { 
+	Controller.prototype.normalizeProcessData = function(piData) {
 		var self = this;
 		var statusColor = self.getBarColor(piData.status.value,"Process",false);
 		var bColor = self.getBarColor(piData,"Process", true);
@@ -921,16 +929,16 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
-	Controller.prototype.getClassForCompletedBar = function(length) { 
+	Controller.prototype.getClassForCompletedBar = function(length) {
 		if(length < 1){
 			return "img-rounded"
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	function getFactor (timeframe){
 		var factor = null;
@@ -949,7 +957,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getStartTime = function(timeFrame){
 		var self = this;
@@ -970,7 +978,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getChartData = function(rowData)
 	{
@@ -987,7 +995,7 @@
 		return rowData.days;
 	}
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getRowColor = function(rowData)
 	{
@@ -1001,7 +1009,7 @@
 		return rowData.sColor;
 	}
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getLabel = function(rowData)
 	{
@@ -1011,10 +1019,10 @@
 				return rowData.benchmarkCategory.label;
 			}
 		}
-		return rowData.status.label;  
+		return rowData.status.label;
 	}
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getGraphData = function(item, timeFrame){
 
@@ -1028,7 +1036,7 @@
 		var delay = self.computeDifference(startTime.getTime(),
 				item.startTime, factor);
 		var inflightLength = null;
-		
+
 
 		var status = item.status;
 		if(self.selected.legend == "benchmark" && item.benchmarkCategory.label) {
@@ -1068,7 +1076,7 @@
 				completed : completed,
 				inflight : inflight
 		};
-		
+
 		return graphData;
 	}
 
