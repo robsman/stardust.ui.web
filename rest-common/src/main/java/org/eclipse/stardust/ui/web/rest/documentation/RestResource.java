@@ -130,7 +130,7 @@ public class RestResource
                nContainerDTOs.put(resKey, endpointsContainerDTOs.get(resKey));
             }
          }
-         
+
          endpointsContainerDTOs = nContainerDTOs;
 
       }
@@ -416,21 +416,51 @@ public class RestResource
       DTODescription dtos = javaMethod.getAnnotation(DTODescription.class);
       if (dtos != null)
       {
-         newEndpoint.requestDTO = dtos.request();
-         newEndpoint.responseDTO = dtos.response();
+         String requestDTO = dtos.request();
+         String responseDTO = dtos.response();
 
-         if (!org.springframework.util.StringUtils.isEmpty(newEndpoint.requestDTO))
+         if (!org.springframework.util.StringUtils.isEmpty(requestDTO))
          {
-            JsonObject je = jsonElconverDTOtoJson(newEndpoint.requestDTO);
-            newEndpoint.requestDTOJson = je.toString();
-            newEndpoint.requestDTO = StringUtils.substringAfterLast(newEndpoint.requestDTO, ".");
+            newEndpoint.requestDTOs = new LinkedHashMap<String, String>();
+            String[] classes = null;
+
+            if (requestDTO.contains(","))
+            {
+               classes = requestDTO.split(",");
+            }
+            else
+            {
+               classes = new String[] {requestDTO};
+            }
+
+            for (String classN : classes)
+            {
+               JsonObject je = jsonElconverDTOtoJson(classN);
+               String className = StringUtils.substringAfterLast(classN, ".");
+               newEndpoint.requestDTOs.put(className, je.toString());
+            }
          }
 
-         if (!org.springframework.util.StringUtils.isEmpty(newEndpoint.responseDTO))
+         if (!org.springframework.util.StringUtils.isEmpty(responseDTO))
          {
-            JsonObject je = jsonElconverDTOtoJson(newEndpoint.responseDTO);
-            newEndpoint.responseDTOJson = je.toString();
-            newEndpoint.responseDTO = StringUtils.substringAfterLast(newEndpoint.responseDTO, ".");
+            newEndpoint.responseDTOs = new LinkedHashMap<String, String>();
+
+            String[] classes = null;
+            if (responseDTO.contains(","))
+            {
+               classes = responseDTO.split(",");
+            }
+            else
+            {
+               classes = new String[] {responseDTO};
+            }
+
+            for (String classN : classes)
+            {
+               JsonObject je = jsonElconverDTOtoJson(classN);
+               String className = StringUtils.substringAfterLast(classN, ".");
+               newEndpoint.responseDTOs.put(className, je.toString());
+            }
          }
       }
 
@@ -465,7 +495,14 @@ public class RestResource
          }
          else
          {
-            jsonel.addProperty(field.getName(), StringUtils.substringAfterLast(field.getType().getName(), "."));
+            if (field.getType().getName().contains("."))
+            {
+               jsonel.addProperty(field.getName(), StringUtils.substringAfterLast(field.getType().getName(), "."));
+            }
+            else
+            {
+               jsonel.addProperty(field.getName(), field.getType().getName());
+            }
          }
       }
 

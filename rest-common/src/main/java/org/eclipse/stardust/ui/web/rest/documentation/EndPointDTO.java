@@ -33,11 +33,10 @@ public class EndPointDTO
    public String description;
    public String requestDescription;
    public String responseDescription;
-   public String requestDTO;
-   public String responseDTO;
-   public String requestDTOJson;
-   public String responseDTOJson;
-
+   
+   public Map<String, String> requestDTOs;
+   public Map<String, String> responseDTOs;
+   
    public String relativePath = "";
 
    public Map<String, ParameterDTO> queryParams = new HashMap<String, ParameterDTO>();

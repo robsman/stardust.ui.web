@@ -6,7 +6,7 @@
 <style>
 body {
 	font-family: verdana;
-    font-size: 12px;
+	font-size: 12px;
 }
 
 table, th, td {
@@ -26,7 +26,7 @@ table, th, td {
 
 .confluenceTh {
 	font-weight: 400;
-	background-color: #E5E5E5 
+	background-color: #E5E5E5
 }
 
 .path {
@@ -111,24 +111,22 @@ td, th {
     var app = angular.module('restViewApp', ['ngResource']);
 
     app.directive('sdStateDisplay', function() {
-      
       return {
         link: function(scope, el, attrs) {
           scope.$watch(attrs['sdStateDisplay'], function(newval) {
             switch (attrs['sdStateDisplay'] % 2) {
-              case 0:
-                el.css('background-color', 'white')
-                break;
-              case 1:
-                el.css('background-color', '#F5F5F5')
-                break;
+            case 0:
+              el.css('background-color', 'white')
+              break;
+            case 1:
+              el.css('background-color', '#F5F5F5')
+              break;
             }
           });
         }
       }
     });
-    
-    
+
     //directive to support markdown rendering
     app.directive('markdown', function() {
       var converter = new Showdown.converter();
@@ -143,6 +141,25 @@ td, th {
           renderMarkdown();
         }
       };
+    });
+
+    app.directive('sdPayloadJson', function() {
+      return {
+        scope: {
+          payload: '=sdaPayloadMap'
+        },
+        controller: function($scope) {
+          $scope.plr = {};
+          $scope.beautifyJson = function(jsonel) {
+            if (jsonel) {
+              var jsonObj = JSON.parse(jsonel);
+              return JSON.stringify(jsonObj, null, "\t");
+            }
+            return;
+          }
+        },
+        templateUrl: "payloadJson.html"
+      }
     });
 
     app.controller('Controller', ['$scope', '$resource', function($scope, $resource) {
@@ -287,9 +304,7 @@ td, th {
 			<div ng-repeat="(moduleName, moduleValue) in modules">
 				<div ng-repeat="(resourceName, resourceValue) in moduleValue">
 					<br> <br>
-					<h4 style="display: inline; fond-weight:500">
-						Base Path:
-					</h4>
+					<h4 style="display: inline; fond-weight: 500">Base Path:</h4>
 					<div style="display: inline;" class="path">{{resourceValue.basePath}}</div>
 
 					<div ng-show="resourceValue.description">
@@ -337,7 +352,8 @@ td, th {
 								</tr>
 							</thead>
 							<tbody>
-								<tr ng-repeat="endpoint in resourceValue.endpoints" sd-state-display="{{$index}}">
+								<tr ng-repeat="endpoint in resourceValue.endpoints"
+									sd-state-display="{{$index}}">
 									<td class="confluenceTd"><span
 										ng-class="endpoint.httpMethod | lowercase">{{endpoint.httpMethod}}
 									</span></td>
@@ -364,18 +380,10 @@ td, th {
 										ng-show="!editing(endpoint, 'requestDescription')"
 										ng-dblclick="edit(endpoint, 'requestDescription')"><div
 											markdown=endpoint.requestDescription></div>
-										<div ng-show="!!endpoint.requestDTO">
-											<div title="click to view json"
-												ng-click="endpoint.requestDTOExpanded=!endpoint.requestDTOExpanded">
-												<i ng-show="!endpoint.requestDTOExpanded"
-													class="pi pi-trigger-collapsed pi-lg"></i> <i
-													ng-show="endpoint.requestDTOExpanded"
-													class="pi pi-trigger-expanded pi-lg"></i> Request Json:
-												{{endpoint.requestDTO}}
-											</div>
-											<div ng-show="endpoint.requestDTOExpanded">
-												<pre>{{beautifyJson(endpoint.requestDTOJson)}}</pre>
-											</div>
+										<div ng-show="!!endpoint.requestDTOs">
+											<strong>Request Json:</strong>
+											<sd-payload-json sda-payload-map="endpoint.requestDTOs">
+											</sd-payload-json>
 										</div></td>
 									<td class="confluenceTd"
 										title="Remember to copy to Java class post editing"
@@ -388,18 +396,10 @@ td, th {
 										ng-show="!editing(endpoint, 'responseDescription')"
 										ng-dblclick="edit(endpoint, 'responseDescription')"><div
 											markdown=endpoint.responseDescription></div>
-										<div ng-show="!!endpoint.responseDTO">
-											<div title="click to view json"
-												ng-click="endpoint.responseDTOExpanded=!endpoint.responseDTOExpanded">
-												<i ng-show="!endpoint.responseDTOExpanded"
-													class="pi pi-trigger-collapsed pi-lg"></i> <i
-													ng-show="endpoint.responseDTOExpanded"
-													class="pi pi-trigger-expanded pi-lg"></i> Response Json:
-												{{endpoint.responseDTO}}
-											</div>
-											<div ng-show="endpoint.responseDTOExpanded">
-												<pre>{{beautifyJson(endpoint.responseDTOJson)}}</pre>
-											</div>
+										<div ng-show="!!endpoint.responseDTOs">
+											<strong>Response Json:</strong>
+											<sd-payload-json sda-payload-map="endpoint.responseDTOs">
+											</sd-payload-json>
 										</div></td>
 									<td class="confluenceTd editing"
 										title="Remember to copy to Java class post editing"
@@ -420,5 +420,17 @@ td, th {
 		</div>
 	</div>
 
+	<script type="text/ng-template" id="payloadJson.html">
+    <div ng-repeat='(dtoName, dtoValue) in payload'>
+      <div title="click to view json" ng-click="plr[dtoName]=!plr[dtoName]">
+        <i ng-show="!plr[dtoName]" class="pi pi-trigger-collapsed pi-1-5x" style="vertical-align: sub"></i> 
+        <i ng-show="plr[dtoName]" class="pi pi-trigger-expanded pi-1-5x" style="vertical-align: sub"></i>
+        {{dtoName}}
+      </div>
+      <div ng-show="plr[dtoName]">
+        <pre>{{beautifyJson(dtoValue)}}</pre>
+      </div>
+    </div>
+  </script>
 </body>
 </html>
