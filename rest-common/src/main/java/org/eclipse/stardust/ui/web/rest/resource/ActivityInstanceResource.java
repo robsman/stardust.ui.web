@@ -63,11 +63,15 @@ import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionServi
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.TrafficLightViewUtils;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.CompletedActivitiesStatisticsDTO;
+import org.eclipse.stardust.ui.web.rest.dto.CriticalityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
@@ -132,6 +136,7 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{activityInstanceOid: \\d+}")
+   @DTODescription(response = "org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO")
    public Response getActivityInstance(@PathParam("activityInstanceOid") long activityInstanceOid)
    {
       try
@@ -156,6 +161,7 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{activityInstanceOid: \\d+}/correspondence-process-instance")
+   @DTODescription(response = "org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO")
    public Response getCorrespondenceProcessInstance(@PathParam("activityInstanceOid") Long activityInstanceOid)
    {
       ProcessInstanceDTO processInstanceDTO = processInstanceService
@@ -167,6 +173,19 @@ public class ActivityInstanceResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/trivialManualActivitiesDetails")
+   @RequestDescription("Post data needs to be JSON in the below format \r\n" 
+         + "``` javascript\r\n" 
+         + "[ \"oid1\",\"oid2\",...] //List of OIDs \r\n"
+         + "```\r\n")
+   @ResponseDescription("Returns the below JSON\n" 
+         + "``` javascript\r\n" 
+         + "{\"oid\" :\r\n" + 
+         "    {\r\n" + 
+         "        \"dataMappings\":[],\r\n" + 
+         "        \"inOutData\":{}\r\n" + 
+         "    }\r\n" + 
+         "}\r\n"
+         + "```\r\n")
    public Response getTrivialManualActivitiesDetails(String postedData)
    {
       try
@@ -370,6 +389,19 @@ public class ActivityInstanceResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/completeAll")
+   @RequestDescription("Post data needs to be JSON in the below format \r\n" + 
+         "``` javascript\r\n" +
+         "[{\"oid\" : ,\r\n" + 
+         "  \"dataMappings\":{},\r\n" + 
+         "  \"outData\" : {}\r\n" + 
+         "}\r\n" + 
+         "]\r\n"
+         + "```")
+   @ResponseDescription("Returns the below JSON\r\n" + 
+         "``` javascript\r\n" + 
+         "{\"failure[{\"OID\":<number>,\"message\":<String>}],\r\n"
+         + "\"success\":[{\"OID\":<number>,\"message\":<String>}]}\n" + 
+         "```")
    public Response completeAll(String postedData)
    {
       try
@@ -415,6 +447,14 @@ public class ActivityInstanceResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("completeRendezvous.json")
+   @RequestDescription("POST JSON needs to be in the below format.\r\n"
+         + "``` javascript\r\n"
+         + "{ 'pendingActivityInstance' : {'OID' : 1}, \r\n "
+         + "  'document': {'id' : String } "
+         + "}\r\n"
+         + "```")
+   @ResponseDescription("Response will have List of \r\n")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO")
    public Response completeRendezvous(String postedData)
    {
       try
@@ -449,6 +489,17 @@ public class ActivityInstanceResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/abort")
+   @ResponseDescription("Returns the below JSON\r\n" + 
+         "``` javascript\r\n" + 
+         "{\"failure[{\"OID\":<number>,\"message\":<String>}],\n" + 
+         "\"success\":[{\"OID\":<number>,\"message\":<String>}]}\n" + 
+         "```")
+   @RequestDescription("Post data needs to be JSON in the below format\r\n"
+         + "``` javascript\n"
+         + "{'scope' : 'string',\r\n"
+         + " 'activities' : []\r\n"
+         + "}\r\n"
+         + "```")
    public Response abortActivities(String postedData)
    {
       return Response.ok(getActivityInstanceService().abortActivities(postedData), MediaType.APPLICATION_JSON).build();
@@ -463,6 +514,30 @@ public class ActivityInstanceResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/searchParticipants")
+   @RequestDescription("The Request JSON should be in below format \r\n"
+         + "``` javascript\r\n"
+         + "{\r\n" + 
+         "    searchText:String value //can be empty\r\n" + 
+         "    participantType: String value //default=All, one of All, Users, Roles, Organizations, Department\r\n" + 
+         "    limitedSearch: boolean value //default true, indicates scope of search around activities or across models\r\n" + 
+         "    activities : Array of type Long//if it single activity and limitedSearch = false, all active models will searched,\r\n" + 
+         "     //limitedSearch=false, but required always due to legacy code\r\n" + 
+         "     //in case of multiple activities, common participants are searched\r\n" + 
+         "    disableAdministrator = boolean value, // default is false, Indicates that the predefined <code>ADMINISTRATOR</code> role is not a valid delegate\r\n" + 
+         "    excludeUserType = boolean value // default is false, used in worklist configuration flow where only standard model participants are valid\r\n" + 
+         "}\r\n"
+         + "```")
+   @ResponseDescription("Returns the below JSON(List of ParticipantDTO)\r\n"
+         + "``` javascript\r\n"
+         + "[{\n" + 
+         "    qualifiedId : string value //e.g. {M2015}Administrator\r\n" + 
+         "    OID : long value //for departments OID is must\r\n" + 
+         "    name : string value //I18ned participant Name\r\n" + 
+         "    type : string value //any of the [USER, USERGROUP, ROLE, SCOPED_ROLE, ORGANIZATION, SCOPED_ORGANIZATION, DEPARTMENT]\r\n" + 
+         "    onlineStatus : boolean //[true or false]//applicable to user only\r\n" + 
+         "}, ...]\r\n"
+         + "```")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO")
    public Response searchParticipant(String postedData, @QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize)
    {
@@ -482,6 +557,8 @@ public class ActivityInstanceResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/searchAllParticipants/{searchText}/{maxMatches}")
+   @ResponseDescription("Returns the below JSON(List of ParticipantDTO)\r\n")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO")
    public Response searchAllParticipant(@PathParam("searchText") String searchText,
          @PathParam("maxMatches") int maxMatches)
    {
@@ -501,6 +578,32 @@ public class ActivityInstanceResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/delegate")
+   @RequestDescription("The post data needs to be JSON format as below\r\n"
+         + "``` javascript\r\n"
+         + "{\n" + 
+         "    activities : [OId1, OId2....],\n" + 
+         "    participant: qualifiedId or OID,\n" + 
+         "    participantType: String value //one of[USER, USERGROUP, ROLE, SCOPED_ROLE, ORGANIZATION, SCOPED_ORGANIZATION, DEPARTMENT]\n" + 
+         "     \n" + 
+         "    //Optional\n" + 
+         "    updateNotes: boolean, //indicates if notes needs to be updated\n" + 
+         "    buildDefaultNotes:boolean,   //indicates if default notes needs to be generated in case not provided with request\n" + 
+         "    notes: String //notes content\n" + 
+         "    delegateCase: boolean,\n" + 
+         "    context: String value  // varies based on type of activity\n" + 
+         "    activityOutData : {\n" + 
+         "        key1 : {\n" + 
+         "            value\n" + 
+         "        },\n" + 
+         "        key2 : value\n" + 
+         "    } //This is optional and only required when delegated from activity panel\n" + 
+         "}\r\n"
+         + "```")
+   @ResponseDescription("Returns the below JSON\r\n" + 
+         "``` javascript\r\n" + 
+         "{\"failure[{\"OID\":<number>,\"message\":<String>}],\r\n"
+         + "\"success\":[{\"OID\":<number>,\"message\":<String>}]}\n" + 
+         "```")
    public Response delegateActivity(String postedData) throws PortalRestException, PortalException
    {
       // postedData = "{activities:[12], participantType:'User', participant:1}";
@@ -522,6 +625,7 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{oid}/correspondence-out")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO")
    public Response getCorrespondenceOutFolder(@PathParam("oid") Long activityOid)
    {
       FolderDTO folderDto = activityInstanceService.getCorrespondenceOutFolder(activityOid);
@@ -541,6 +645,20 @@ public class ActivityInstanceResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/performDefaultDelegate")
+   @RequestDescription("Post data needs to be JSON in the below format\r\n" +
+         "``` javascript\r\n" + 
+         "{\n" + 
+         "oid :  //oid of the activity,\n" + 
+         "state //ActivityInstanceState\n" + 
+         " \n" + 
+         "}\r\n"
+         + "```")
+   @ResponseDescription("Returns the below JSON\r\n"
+         + "``` javascript\r\n"
+         + "{\"failure\":[{\"OID\": <number> }],\r\n"
+         + "\"success\":[{\"OID\":<number> }]"
+         + "}\r\n"
+         + "```")
    public Response performDefaultDelegate(String postedData) throws PortalRestException, PortalException
    {
       return Response.ok(delegationComponent.performDefaultDelegate(postedData), MediaType.APPLICATION_JSON).build();
@@ -553,6 +671,8 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/availableCriticalities")
+   @ResponseDescription("The response json will have list of CriticalityDTO\r\n")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.core.DTOAttribute.CriticalityDTO")
    public Response getAvailiableCriticalities()
    {
       try
@@ -575,6 +695,7 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/allCounts")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.InstanceCountsDTO")
    public Response getAllCounts()
    {
       try
@@ -595,6 +716,14 @@ public class ActivityInstanceResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/allActivities")
+   @DTODescription(request="org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO")
+   @ResponseDescription("Return JSON with below information\r\n"
+         + "``` javascript\r\n"
+         + "{\n" 
+         + "  totalCount: <number>\n" 
+         + "  list: [] // Activity Instance Details\n" 
+         + "}\r\n"
+         + "```")
    public Response getAllActivities(@QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
@@ -622,6 +751,22 @@ public class ActivityInstanceResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/forTLVByCategory")
+   @RequestDescription("The post data JSON format as below\r\n"
+         + "``` javascript\r\n"
+         + "{\r\n"
+         + "bOids :[4]\r\n" + 
+         "benchmarkCategory : 1\r\n" + 
+         "dateType : 'BUSINESS_DATE' \r\n" + 
+         "dayOffset : -3\n" + 
+         "descriptors : {fetchAll: true, visibleColumns: []}\n" + 
+         "drillDownType : 'PROCESS_WORKITEM'\r\n" + 
+         "fetchTrivialManualActivities : false\r\n" + 
+         "processActivitiesMap : {{DocumentDescriptor}Document_Descriptor: [\"{DocumentDescriptor}SecondActivity\"]}\n" + 
+         "state: 'Active'\r\n"
+         + "}\r\n"
+         + "```")
+   @ResponseDescription("Response will have list of ActivityInstanceDTO\r\n")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO")
    public Response getActivitiesForTLVByCategory(@QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
@@ -793,6 +938,13 @@ public class ActivityInstanceResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/reactivate")
+   @RequestDescription("Post data needs to be JSON in the below format\r\n" + 
+         "``` javascript\r\n" + 
+         "{\n" + 
+         "  activityOID : {activityOID}\n" + 
+         "}\r\n"
+         + "```")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.NotificationMap")
    public Response reactivate(String postedData)
    {
       Map<String, Object> data = JsonDTO.getAsMap(postedData);
@@ -811,6 +963,7 @@ public class ActivityInstanceResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/activate")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO")
    public Response activate(@QueryParam("interactionAware") @DefaultValue("false") Boolean interactionAware, String postedData)
    {
       try
@@ -835,7 +988,9 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/statistics/completedActivities")
-   public Response getStatsForCompletedActivities(String postedData)
+   @ResponseDescription("The response will contain list of CompletedActivitiesStatisticsDTO\r\n")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.CompletedActivitiesStatisticsDTO")
+   public Response getStatsForCompletedActivities()
    {
       try
       {
@@ -857,7 +1012,9 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/statistics/postponedActivities")
-   public Response getStatsByPostponedActivities(String postedData)
+   @ResponseDescription("The response will contain list of PostponedActivitiesResultDTO\r\n")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.PostponedActivitiesResultDTO")
+   public Response getStatsByPostponedActivities()
    {
       try
       {
@@ -880,6 +1037,8 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/pendingActivities")
+   @ResponseDescription("The response will contain list of PendingActivitiesStatisticsDTO\r\n")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.PendingActivitiesStatisticsDTO")
    public Response getPendingActivities()
    {
       try
@@ -897,6 +1056,8 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/allRoleColumns")
+   @ResponseDescription("The response will contain list of SelectItemDTO having roleId and name\r\n")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.SelectItemDTO")
    public Response getRoleColumns()
    {
       return Response.ok(AbstractDTO.toJson(activityInstanceService.getAllRoles()), MediaType.APPLICATION_JSON).build();
@@ -908,6 +1069,8 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/participantColumns")
+   @ResponseDescription("The response will contain list of ColumnDTO having qualifiedId as id and Participant name as label\r\n")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ColumnDTO")
    public Response getParticipantColumns()
    {
       try
@@ -928,7 +1091,9 @@ public class ActivityInstanceResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
-   @Path("/oids")
+   @Path("/byOids")
+   @ResponseDescription("The Response will contain list of ActivityInstanceDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO")
    public Response getByActivityInstanceOids(@QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
@@ -972,6 +1137,8 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/statistics/completedActivitiesByTeamLead")
+   @ResponseDescription("The Response will contain list of CompletedActivitiesStatisticsDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.CompletedActivitiesStatisticsDTO")
    public Response getPerformanceStatsByTeamLead()
    {
       try
@@ -989,6 +1156,8 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/process/oid/{piOid}")
+   @ResponseDescription("The response will contain list of ActivityInstanceDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO")
    public Response getWorklistByProcess(@PathParam("piOid") long piOid)
    {
       try
@@ -1036,6 +1205,7 @@ public class ActivityInstanceResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/complete/{activityOid}")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO")
    public Response complete(@PathParam("activityOid") Long activityOid)
    {
       try
@@ -1054,6 +1224,7 @@ public class ActivityInstanceResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/suspend-and-save/{oid}")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO")
    public Response suspendAndSave(@PathParam("oid") Long oid, @QueryParam("toUser") @DefaultValue("false") boolean toUser)
    {
       try
@@ -1072,6 +1243,7 @@ public class ActivityInstanceResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/suspend/{oid}")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO")
    public Response suspend(@PathParam("oid") Long oid, @QueryParam("toUser") @DefaultValue("false") boolean toUser)
    {
       try

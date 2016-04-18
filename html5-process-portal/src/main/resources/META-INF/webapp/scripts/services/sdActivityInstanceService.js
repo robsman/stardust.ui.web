@@ -312,7 +312,7 @@
 		 */
 		ActivityInstanceService.prototype.getByOids = function(query, oidsArray) {
 			var oids = oidsArray.join(',');
-			var restUrl = REST_BASE_URL + "oids";
+			var restUrl = REST_BASE_URL + "byOids";
 			restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, 'oids=' + oids);
 
 			var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
