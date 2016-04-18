@@ -534,6 +534,7 @@ Icon implementations
 	content:"\f0e6"; /* fa-comments-o */
 }
 
+.pi-qa-activity-pass:before,
 .pi-quick-complete:before{
 	font-family:FontAwesome;
 	content:"\f14a"; /* fa-check-square */
@@ -1315,6 +1316,7 @@ span.pi-case:before{
 	content:'\f05d'; /* fa-check-circle-o */
 }
 
+.pi-qa-activity-fail:before,
 .pi-deny:before{
 	font-family:"FontAwesome";
 	content:'\f05e'; /* fa-ban */
