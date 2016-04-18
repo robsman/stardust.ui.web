@@ -40,6 +40,7 @@
       <module>rest-common</module>
       <module>benchmark</module>
       <module>stardust-web-camel</module>
+      <module>stardust-web-camel-templating</module>
    </modules>
 
    <build>

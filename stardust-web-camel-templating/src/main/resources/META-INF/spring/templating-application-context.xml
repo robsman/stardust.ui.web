@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:camel="http://camel.apache.org/schema/spring"
+   xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+   <bean id="customVelocityContextAppender"
+      class="org.eclipse.stardust.engine.extensions.templating.enricher.VelocityContextAppenderProcessor">
+      <constructor-arg value="default-velocity-tools.xml" />
+   </bean>
+   <bean id="requestHandler" class="org.eclipse.stardust.engine.extensions.templating.core.RequestHandler">
+      <property name="appender" ref="customVelocityContextAppender" />
+   </bean>
+</beans>

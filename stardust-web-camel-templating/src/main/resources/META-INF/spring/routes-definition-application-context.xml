@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+    ">
+   <routeContext id="defaultTemplatingRoutes" xmlns="http://camel.apache.org/schema/spring">
+      <route id="templateFromClasspath" autoStartup="true">
+         <from uri="direct://templateFromClasspath" />
+         <process ref="customVelocityContextAppender" />
+         <choice>
+            <when>
+               <simple>${header.CamelTemplatingLocation} == "classpath"</simple>
+               <setHeader headerName="CamelVelocityResourceUri">
+                  <simple>${header.CamelTemplatingTemplate}</simple>
+               </setHeader>
+               <to
+                  uri="templating:classpath?format=${header.CamelTemplatingFormat}&amp;template=${header.CamelTemplatingTemplate}&amp;outputName=${header.CamelTemplatingOutputName}&amp;convertToPdf=${header.CamelTemplatingConvertToPdf}" />
+            </when>
+         </choice>
+         <setHeader headerName="ippDmsDocumentName">
+            <simple>$simple{header.CamelTemplatingOutputName}</simple>
+         </setHeader>
+         <to uri="bean:documentHandler?method=createAttachmentFromExchangeBody" />
+      </route>
+      <route id="templateFromRepository" autoStartup="true">
+         <from uri="direct://templateFromRepository" />
+         <process ref="customVelocityContextAppender" />
+         <choice>
+            <when>
+               <simple>${header.CamelTemplatingLocation} == "repository"</simple>
+               <setHeader headerName="ippDmsTargetPath">
+                  <simple>templates/${header.CamelTemplatingTemplate}</simple>
+               </setHeader>
+               <to uri="bean:documentHandler?method=retrieveContent" />
+               <setHeader headerName="CamelTemplatingTemplateContent">
+                  <simple>$simple{header.ippDmsDocumentContent}</simple>
+               </setHeader>
+               <setHeader headerName="CamelVelocityTemplate">
+                  <simple>$simple{header.ippDmsDocumentContent}</simple>
+               </setHeader>
+               <to
+                  uri="templating:repository?format=${header.CamelTemplatingFormat}&amp;template=${header.CamelTemplatingTemplate}&amp;outputName=${header.CamelTemplatingOutputName}&amp;convertToPdf=${header.CamelTemplatingConvertToPdf}" />
+            </when>
+         </choice>
+         <setHeader headerName="ippDmsDocumentName">
+            <simple>$simple{header.CamelTemplatingOutputName}</simple>
+         </setHeader>
+         <to uri="bean:documentHandler?method=createAttachmentFromExchangeBody" />
+      </route>
+      <route id="templateFromData" autoStartup="true">
+         <from uri="direct://templateFromData" />
+         <process ref="customVelocityContextAppender" />
+         <to
+            uri="templating:data?format=${header.CamelTemplatingFormat}&amp;outputName=${header.CamelTemplatingOutputName}&amp;convertToPdf=${header.CamelTemplatingConvertToPdf}" />
+         <setHeader headerName="ippDmsDocumentName">
+            <simple>$simple{header.CamelTemplatingOutputName}</simple>
+         </setHeader>
+         <to uri="bean:documentHandler?method=createAttachmentFromExchangeBody" />
+      </route>
+      <route id="templateDocumentRequest" autoStartup="true">
+         <from uri="direct://templateDocumentRequest" />
+         <convertBodyTo type="org.eclipse.stardust.engine.extensions.templating.core.TemplatingRequest" />
+         <to uri="bean:requestHandler?method=handleRequest" />
+         <setHeader headerName="ippDmsDocumentName">
+               <simple>$simple{header.CamelTemplatingOutputName}</simple>
+         </setHeader>
+         <to uri="bean:documentHandler?method=createAttachmentFromExchangeBody" />
+      </route>
+   </routeContext>
+</beans>

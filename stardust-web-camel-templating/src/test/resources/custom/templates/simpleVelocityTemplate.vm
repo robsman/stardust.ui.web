@@ -1,0 +1,1 @@
+Hello $personInput.firstName $personInput.lastName $date.format('dd/MM/yyyy',$personInput.dob)

@@ -1,0 +1,27 @@
+#macro(formatDate $format $object)$date.format($format,$object)#end
+#macro(getInputs)
+#set($e = '=')
+#foreach($header in $in.headers.keySet())
+#set($variableName="${esc.d}$header")
+#if($in.headers.get($header))
+#set($variable="${esc.h}set($variableName $e ${esc.d}in.headers.get(${esc.d}header))")
+#evaluate($variable)
+#else
+#set($variable="${esc.h}set($variableName $e $esc.q$esc.q)")
+#evaluate($variable)
+#end
+#end
+#set($docreq.format=$CamelTemplatingFormat)
+#set($docreq.documentRequest=$CORRESPONDENCE)
+#end
+#macro(setOutputs )
+#set ($e='=')
+#foreach($header in $in.headers.keySet())
+#set($variableName="${esc.d}$header")
+#if(($header) && !("$!header" == ""))
+#set($variable="${esc.h}set(${esc.d}headers.$header $e $variableName  )")
+#else
+##ignore variable
+#end
+#end
+#end
