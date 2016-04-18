@@ -278,7 +278,11 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			
 			if (options.noLabel == undefined || !options.noLabel) {
 				var labelDiv = htmlElement.create("div", {parent: elemMain}); 
-				var panelLabelClasses = "panel-label" + isMandatory ? "" : "panel-label-padded";
+				var panelLabelClasses = "panel-label";
+				
+				if(!isMandatory) {
+					panelLabelClasses+= " panel-label-padded"
+				}
 				var elemLabel = htmlElement.create("label", 
 						{parent: labelDiv, value: this.getLabel(path), attributes: {class: panelLabelClasses}});
 				if (isMandatory) {
