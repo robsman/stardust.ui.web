@@ -13,13 +13,16 @@ package org.eclipse.stardust.ui.web.rest.documentation;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +52,8 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.SystemPropertyUtils;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Yogesh.Manware
@@ -114,6 +119,20 @@ public class RestResource
                this.searchAllEndPoints("org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.service"));
          endpointsContainerDTOs.get("views-common").putAll(
                this.searchAllEndPoints("org.eclipse.stardust.ui.web.viewscommon.docmgmt"));
+
+         Map<String, Map<String, ResourceDTO>> nContainerDTOs = new LinkedHashMap<String, Map<String, ResourceDTO>>();
+         nContainerDTOs.put("rest-common", endpointsContainerDTOs.get("rest-common"));
+         Set<String> resKeys = endpointsContainerDTOs.keySet();
+         for (String resKey : resKeys)
+         {
+            if (!"rest-common".equals(resKey))
+            {
+               nContainerDTOs.put(resKey, endpointsContainerDTOs.get(resKey));
+            }
+         }
+         
+         endpointsContainerDTOs = nContainerDTOs;
+
       }
       catch (IOException e)
       {
@@ -393,16 +412,64 @@ public class RestResource
       {
          newEndpoint.responseDescription = res.value();
       }
-      
+
       DTODescription dtos = javaMethod.getAnnotation(DTODescription.class);
       if (dtos != null)
       {
          newEndpoint.requestDTO = dtos.request();
          newEndpoint.responseDTO = dtos.response();
+
+         if (!org.springframework.util.StringUtils.isEmpty(newEndpoint.requestDTO))
+         {
+            JsonObject je = jsonElconverDTOtoJson(newEndpoint.requestDTO);
+            newEndpoint.requestDTOJson = je.toString();
+            newEndpoint.requestDTO = StringUtils.substringAfterLast(newEndpoint.requestDTO, ".");
+         }
+
+         if (!org.springframework.util.StringUtils.isEmpty(newEndpoint.responseDTO))
+         {
+            JsonObject je = jsonElconverDTOtoJson(newEndpoint.responseDTO);
+            newEndpoint.responseDTOJson = je.toString();
+            newEndpoint.responseDTO = StringUtils.substringAfterLast(newEndpoint.responseDTO, ".");
+         }
       }
 
       exploreParameters(javaMethod, newEndpoint);
       return newEndpoint;
+   }
+
+   /**
+    * @param className
+    * @return
+    */
+   private JsonObject jsonElconverDTOtoJson(String className)
+   {
+      JsonObject jsonel = new JsonObject();
+      Class< ? > c = null;
+      try
+      {
+         c = Class.forName(className);
+      }
+      catch (ClassNotFoundException e)
+      {
+         // TODO Auto-generated catch block
+         return jsonel;
+      }
+      Field[] fields = c.getFields();
+
+      for (Field field : fields)
+      {
+         if (AbstractDTO.class.isAssignableFrom(field.getType()))
+         {
+            jsonel.add(field.getName(), jsonElconverDTOtoJson(field.getType().getName()));
+         }
+         else
+         {
+            jsonel.addProperty(field.getName(), StringUtils.substringAfterLast(field.getType().getName(), "."));
+         }
+      }
+
+      return jsonel;
    }
 
    /**

@@ -35,13 +35,15 @@ public class EndPointDTO
    public String responseDescription;
    public String requestDTO;
    public String responseDTO;
-   
+   public String requestDTOJson;
+   public String responseDTOJson;
+
    public String relativePath = "";
 
    public Map<String, ParameterDTO> queryParams = new HashMap<String, ParameterDTO>();
    public Map<String, ParameterDTO> pathParams = new HashMap<String, ParameterDTO>();
    public Map<String, ParameterDTO> defaultParams = new HashMap<String, ParameterDTO>();
-   
+
    public String uuid = UUID.randomUUID().toString();
 
    public static class ParameterDTO

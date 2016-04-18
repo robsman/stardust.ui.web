@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PORTAL REST</title>
+
+<style>
+body {
+	font-family: "georgia";
+	font-size: "12px";
+}
+
+table, th, td {
+	padding: 4px;
+}
+
+.navigation {
+	list-style: none;
+	margin-left: 200px;
+	border-left: 10px solid #b14040;
+	padding: 10px;
+}
+
+.editable:hover {
+	cursor: pointer;
+}
+
+.confluenceTh {
+	font-weight: bold;
+	background-color: #f0f0f0
+}
+
+.path {
+	color: blue;
+}
+
+.moduleName {
+	color: #b14040;
+	font-size: 18px;
+}
+
+h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
+	color: #b14040;
+}
+
+.endpointUrl {
+	font-size: 16px;
+	text-decoration: underline;
+	font-family: "monospace";
+}
+
+.formattedData {
+	font-size: 12px;
+}
+
+.get, .put, .post, .delete {
+	color: white;
+}
+
+.get {
+	background-color: #0f6ab4
+}
+
+.post {
+	background-color: #10a54a
+}
+
+.put {
+	background-color: #c5862b;
+}
+
+.delete {
+	background-color: #a41e22;
+}
+
+.confluenceTh, .confluenceTd {
+	border: 1px solid #ddd;
+	vertical-align: top;
+	text-align: left;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+td, th {
+	display: table-cell;
+}
+</style>
+<link rel="stylesheet" href="styles/portal-icons.css">
+<link rel="stylesheet" href="styles/html5-common.css">
+
+<script src="../../portal-shell/js/libs/angular/1.4.4/angular.js"></script>
+<script
+	src="../../portal-shell/js/libs/angular/1.2.11/angular-resource.js"></script>
+<script src="../../portal-shell/js/libs/angular-md/showdown.js"></script>
+
+<script type="text/javascript">
+  (function() {
+
+    function getBaseUrl() {
+      // When loaded from framework i.e index.html, location.href points
+      // to contextRoot
+      var baseURL = '';
+      if (location.href.indexOf("plugins") > -1) {
+        // If plugins encountered in the location url 
+        baseURL = location.href.substring(0, location.href.indexOf("plugins"));
+      }
+      return baseURL;
+    }
+
+    var app = angular.module('restViewApp', ['ngResource']);
+
+    //directive to support markdown rendering
+    app.directive('markdown', function() {
+      var converter = new Showdown.converter();
+      return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+          function renderMarkdown() {
+            var htmlText = converter.makeHtml(scope.$eval(attrs.markdown) || '');
+            element.html(htmlText);
+          }
+          scope.$watch(attrs.markdown, renderMarkdown);
+          renderMarkdown();
+        }
+      };
+    });
+
+    app.controller('Controller', ['$scope', '$resource', function($scope, $resource) {
+      var REST_BASE_URL = getBaseUrl() + "services/rest/portal/portal-rest";
+      var restResource = $resource(REST_BASE_URL);
+
+      $scope.refresh = function() {
+        document.body.style.cursor = "wait";
+        restResource.get().$promise.then(function(responseData) {
+
+          //initialize expand-collapse feature
+          $scope.modules = {};
+          $scope.modulesPanel = {};
+          $scope.resourcesPanel = {};
+          for ( var moduleName in responseData) {
+            if (moduleName.indexOf('$') != 0) {
+              $scope.modules[moduleName] = responseData[moduleName];
+              $scope.modulesPanel[moduleName] = true;
+              for ( var resourceName in responseData[moduleName]) {
+                $scope.resourcesPanel[resourceName] = false;
+              }
+            }
+          }
+
+          document.body.style.cursor = "default";
+          $scope.loading = false;
+
+        }, function(error) {
+          alert("something went wrong, have you logged in?");
+        })
+      }
+
+      $scope.expandAllResources = function() {
+        for ( var moduleName in $scope.modulesPanel) {
+          $scope.modulesPanel[moduleName] = true;
+        }
+        for ( var resourceName in $scope.resourcesPanel) {
+          $scope.resourcesPanel[resourceName] = true;
+        }
+      }
+
+      $scope.collapseAllResources = function() {
+        for ( var moduleName in $scope.modulesPanel) {
+          $scope.modulesPanel[moduleName] = false;
+        }
+        for ( var resourceName in $scope.resourcesPanel) {
+          $scope.resourcesPanel[resourceName] = false;
+        }
+      }
+
+      $scope.beautifyJson = function(jsonel) {
+        if (jsonel) {
+          var jsonObj = JSON.parse(jsonel);
+          return JSON.stringify(jsonObj, null, "\t");
+        }
+        return;
+      }
+
+      $scope.expandAll = function(moduleName) {
+        $scope.modulesPanel[moduleName] = true;
+        for ( var resourceName in $scope.modules[moduleName]) {
+          $scope.resourcesPanel[resourceName] = true;
+        }
+      }
+
+      $scope.collapseAll = function(moduleName) {
+        for ( var resourceName in $scope.modules[moduleName]) {
+          $scope.resourcesPanel[resourceName] = false;
+        }
+      }
+
+      $scope.edit = function(element, columnName) {
+        $scope.editingUuid = element.uuid;
+        $scope.editingColumnName = columnName;
+        $scope.selectedData = element[columnName];
+      }
+
+      $scope.editing = function(element, columnName) {
+        return ($scope.editingUuid == element.uuid && $scope.editingColumnName === columnName);
+      }
+
+      $scope.refresh();
+
+    }]);
+
+  })();
+</script>
+
+
+</head>
+<body ng-app="restViewApp">
+	<div class="wiki-content" ng-controller="Controller"
+		id="resources_container">
+		<h1 style="display: inline">Portal Rest Endpoints</h1>
+		<i style="margin-left: 15px" ng-click="expandAllResources()"
+			class="pi pi-expand-all pi-1-5x"></i> <i style="margin-left: 10px"
+			ng-click="collapseAllResources()" class="pi pi-collapse-all pi-1-5x"></i>
+		<i style="margin-left: 15px" ng-click="loading=true; refresh()"
+			class="pi pi-refresh pi-1-5x"></i>
+		<div ng-hide="loading" style="">
+			<ul class="navigation">
+				<li ng-repeat="(moduleName, moduleValue) in modules"><span
+					ng-click="modulesPanel[moduleName] = !modulesPanel[moduleName]">
+						<i ng-show="!modulesPanel[moduleName]"
+						class="pi pi-trigger-collapsed pi-2x"></i> <i
+						ng-show="modulesPanel[moduleName]"
+						class="pi pi-trigger-expanded pi-2x"></i> <a
+						style="vertical-align: super" href="#{{moduleName}}"
+						class="moduleName">{{moduleName}}</a>
+				</span> <i title="Expand All Endpoints" ng-show="modulesPanel[moduleName]"
+					ng-click="expandAll(moduleName)" style="margin-left: 10px;"
+					class="pi pi-expand-all pi-1x"></i> <i
+					title="Collapse All Endpoints" ng-show="modulesPanel[moduleName]"
+					ng-click="collapseAll(moduleName)" style="margin-left: 5px;"
+					class="pi pi-collapse-all pi-1x"></i>
+
+					<ul ng-show="modulesPanel[moduleName]"
+						style="list-style-type: none">
+						<li ng-repeat="(resourceName, resourceValue) in moduleValue"
+							ng-click="resourcesPanel[resourceName] = !resourcesPanel[resourceName]"><span>
+								<i ng-show="!resourcesPanel[resourceName]"
+								class="pi pi-trigger-collapsed pi-1-5x"
+								style="vertical-align: sub"></i> <i
+								ng-show="resourcesPanel[resourceName]"
+								class="pi pi-trigger-expanded pi-1-5x"
+								style="vertical-align: sub"></i> <a href="#{{resourceName}}">{{resourceName}}
+									({{resourceValue.basePath}})</a>
+						</span>
+							<ul ng-show="resourcesPanel[resourceName]"
+								style="list-style-type: none">
+								<li ng-repeat="endpoint in resourceValue.endpoints"><span>
+										<a href="#{{endpoint.uuid}}"><span
+											ng-class="endpoint.httpMethod | lowercase"
+											style="font-size: 10px">{{endpoint.httpMethod}} </span> <span
+											style="margin-left: 5px">{{endpoint.path}}</span> </a>
+								</span></li>
+							</ul></li>
+					</ul></li>
+			</ul>
+
+
+			<div ng-repeat="(moduleName, moduleValue) in modules">
+				<div ng-repeat="(resourceName, resourceValue) in moduleValue">
+					<br> <br>
+					<h4 style="display: inline">
+						<strong>Base Path:</strong>
+					</h4>
+					<div style="display: inline;" class="path">{{resourceValue.basePath}}</div>
+
+					<div ng-show="resourceValue.description">
+						<strong>Description:</strong> <span>{{resourceValue.description}}</span>
+					</div>
+					<br>
+					<h4 style="display: inline;">
+						<strong>Resource Path:</strong>
+					</h4>
+
+					<div style="display: inline;" class="path">{{resourceValue.qualifiedName}}</div>
+
+					<div>
+						<table>
+							<thead>
+								<tr class="tablesorter-headerRow">
+									<th class="confluenceTh sortableHeader" data-column="1"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">HTTP Method</div></th>
+									<th class="confluenceTh sortableHeader" data-column="0"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Path</div></th>
+									<th class="confluenceTh sortableHeader" data-column="2"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Path Params</div></th>
+									<th class="confluenceTh sortableHeader" data-column="3"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Query Params</div></th>
+									<th class="confluenceTh sortableHeader" data-column="4"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Request Description</div></th>
+									<th class="confluenceTh sortableHeader" data-column="5"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Response Description</div></th>
+									<th class="confluenceTh sortableHeader" data-column="6"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Description</div></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="endpoint in resourceValue.endpoints">
+									<td class="confluenceTd"><span
+										ng-class="endpoint.httpMethod | lowercase">{{endpoint.httpMethod}}
+									</span></td>
+									<td class="confluenceTd path"><span id="{{endpoint.uuid}}">&nbsp;{{endpoint.path}}</span>
+										<br> <span class="endpointUrl"><a target="_blank"
+											href="{{endpoint.relativePath}}">{{endpoint.uri}}</a></span><br>
+									</td>
+									<td class="confluenceTd"><ul>
+											<li
+												ng-repeat="(paramName, paramValue) in endpoint.pathParams">
+												<span>{{paramName}}: </span> <span>
+													{{paramValue.javaType}}</span>
+											</li>
+										</ul></td>
+									<td class="confluenceTd"><ul>
+											<li
+												ng-repeat="(paramName, paramValue) in endpoint.queryParams">
+												<span>{{paramName}}: </span> <span>
+													{{paramValue.javaType}}</span>
+											</li>
+										</ul></td>
+
+									<td class="confluenceTd editable" title="Double-click to edit"
+										ng-show="!editing(endpoint, 'requestDescription')"
+										ng-dblclick="edit(endpoint, 'requestDescription')"><div
+											markdown=endpoint.requestDescription></div>
+										<div ng-show="!!endpoint.requestDTO">
+											<div title="click to view json"
+												ng-click="endpoint.requestDTOExpanded=!endpoint.requestDTOExpanded">
+												<i ng-show="!endpoint.requestDTOExpanded"
+													class="pi pi-trigger-collapsed pi-lg"></i> <i
+													ng-show="endpoint.requestDTOExpanded"
+													class="pi pi-trigger-expanded pi-lg"></i> Request Json:
+												{{endpoint.requestDTO}}
+											</div>
+											<div ng-show="endpoint.requestDTOExpanded">
+												<pre>{{beautifyJson(endpoint.requestDTOJson)}}</pre>
+											</div>
+										</div></td>
+									<td class="confluenceTd"
+										title="Remember to copy to Java class post editing"
+										ng-show="editing(endpoint, 'requestDescription')"><textarea
+											rows="15" cols="50" ng-model="endpoint.requestDescription"> </textarea>
+										<h4>Preview:</h4>
+										<div markdown="endpoint[editingColumnName]"></div></td>
+
+									<td class="confluenceTd editable" title="Double-click to edit"
+										ng-show="!editing(endpoint, 'responseDescription')"
+										ng-dblclick="edit(endpoint, 'responseDescription')"><div
+											markdown=endpoint.responseDescription></div>
+										<div ng-show="!!endpoint.responseDTO">
+											<div title="click to view json"
+												ng-click="endpoint.responseDTOExpanded=!endpoint.responseDTOExpanded">
+												<i ng-show="!endpoint.responseDTOExpanded"
+													class="pi pi-trigger-collapsed pi-lg"></i> <i
+													ng-show="endpoint.responseDTOExpanded"
+													class="pi pi-trigger-expanded pi-lg"></i> Response Json:
+												{{endpoint.responseDTO}}
+											</div>
+											<div ng-show="endpoint.responseDTOExpanded">
+												<pre>{{beautifyJson(endpoint.responseDTOJson)}}</pre>
+											</div>
+										</div></td>
+									<td class="confluenceTd editing"
+										title="Remember to copy to Java class post editing"
+										ng-show="editing(endpoint, 'responseDescription')"><textarea
+											rows="15" cols="50" ng-model="endpoint.responseDescription"> </textarea>
+										<h4>Preview:</h4>
+										<div markdown="endpoint[editingColumnName]"></div></td>
+									<td class="confluenceTd"><span>{{endpoint.method}}()
+									</span></td>
+								</tr>
+
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

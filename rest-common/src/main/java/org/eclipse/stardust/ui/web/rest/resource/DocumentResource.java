@@ -256,7 +256,7 @@ public class DocumentResource
          "Properties //document properties map\r\n" + 
          "```")
    @ResponseDescription("If the document is updated successfully, it returns updated document DTO")
-   @DTODescription(request = "org.eclipse.stardust.engine.extensions.dms.data.DocumentType.DocumentContentRequestDTO", response = "org.eclipse.stardust.ui.web.rest.dto.DocumentDTO")
+   @DTODescription(request = "org.eclipse.stardust.ui.web.rest.dto.request.DocumentContentRequestDTO", response = "org.eclipse.stardust.ui.web.rest.dto.DocumentDTO")
    public Response uploadVersion(@PathParam("documentId") String documentId, List<Attachment> attachments)
          throws Exception
    {
