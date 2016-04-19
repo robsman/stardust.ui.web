@@ -22,7 +22,6 @@
 
 #gantt_chart_container {
 	overflow-x: auto;
-	min-height: 350px;
 	width :100%
 }
 
@@ -40,6 +39,18 @@
   border-left: 1px dotted #7081FF;
   z-index: 2;
 }
+
+.gantt-chart-tooltip {
+    min-width: 100px;
+    padding : 15px;
+    border: 1px solid #007d8a;
+    border-radius: 3px;
+    color: #464646;
+    position: absolute;
+    z-index: 1020;
+    background: #fff;
+}
+
 
 .majorTimeLine {
 	text-align: center;
@@ -91,7 +102,7 @@
 }
 
 .ganttChart-popup-legend-category {
-	width: 175px;
+	width: 160px;
 	color: white;
 	font-weight: bold;
 	text-align: center;
@@ -111,6 +122,9 @@
 	white-space:nowrap;
 }
 
+#gantt_chart_container .dataTables_wrapper{
+	margin-bottom: 90px;
+}
 .gantt-chart-time-frame-picker {
 	margin: 5px 5px 5px 0;
 	min-width: 180px;
