@@ -39,6 +39,7 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.service.RepositoryService;
 import org.eclipse.stardust.ui.web.rest.component.service.ResourcePolicyService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
 import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
 import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
@@ -84,6 +85,7 @@ public class FolderResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{folderId : .*}")
    @ResponseDescription("Returns folderDTO json object")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO")
    public Response getFolder(@PathParam("folderId") String folderId,
          @QueryParam("levelOfDetail") @DefaultValue("1") int levelOfDetail,
          @QueryParam("create") @DefaultValue("false") boolean createIfDoesNotExist) throws ResourceNotFoundException
@@ -105,6 +107,7 @@ public class FolderResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/policy/{folderId: .*}")
    @ResponseDescription("Returns ResourcePolicyContainerDTO containing losts of own and inherited policies in the form of ResourcePolicyDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.ResourcePolicyContainerDTO")
    public Response getFolderPolicies(@PathParam("folderId") String folderId) throws Exception
    {
       folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
@@ -124,6 +127,7 @@ public class FolderResource
    @RequestDescription("accepts list of ResourcePolicyDTO\r\n" + "\r\n"
          + "**Note:** *Participant object can be replaced with simple key value pair of  \"participantQualifiedId\"* ")
    @ResponseDescription("if the folder policies are updated successfully, expect *Operation completed successfully.*")
+   @DTODescription(request="org.eclipse.stardust.ui.web.rest.dto.ResourcePolicyDTO")
    public Response updateFolderPolicies(@PathParam("folderId") String folderId, String postedData) throws Exception
    {
       Type type = new TypeToken<List<ResourcePolicyDTO>>()
@@ -152,6 +156,7 @@ public class FolderResource
    @Path("{folderId: .*}")
    @RequestDescription("Either url should contain complete path or message body must contain *parentFolderPath* and *name* to be created")
    @ResponseDescription("On success, sents back FolderDTO in response")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO")
    public Response createFolder(@PathParam("folderId") String folderId, String postedData)
          throws DocumentManagementServiceException, UnsupportedEncodingException, ResourceNotFoundException
    {

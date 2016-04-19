@@ -23,6 +23,8 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.ModelServiceBean;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ModelDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,8 @@ public class ModelResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/")
+   @ResponseDescription("The response will contain list of ModelDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ModelDTO")
    public Response getModels(@QueryParam("allActive") @DefaultValue("false") Boolean allActive,
          @QueryParam("includePredefinedModel") @DefaultValue("false") Boolean includePredefinedModel)
    {

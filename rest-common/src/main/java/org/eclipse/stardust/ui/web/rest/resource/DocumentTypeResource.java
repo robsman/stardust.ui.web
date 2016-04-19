@@ -21,6 +21,8 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.DocumentTypeService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentTypeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,6 +48,8 @@ public class DocumentTypeResource
     */
    @GET
    @Produces(MediaType.APPLICATION_JSON)
+   @ResponseDescription("The response will contain list of DocumentTypeDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DocumentTypeDTO")
    public Response getDocumentTypes()
    {
       try

@@ -28,6 +28,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.service.NotesService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
 import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
 import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.NotesResultDTO;
@@ -58,6 +59,7 @@ public class NotesResource
    @Path("/{processInstanceOid}")
    @RequestDescription("*asc* specifies an order of notes returned from server, by default it is false")
    @ResponseDescription("json of QueryResultDTO containing NoteDTO - Process Instance level as well as Activity Instance level notes")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.NotesResultDTO")
    public Response getNotes(@PathParam("processInstanceOid") long processInstanceOid,
          @QueryParam("asc") @DefaultValue("false") boolean asc)
    {
@@ -72,6 +74,7 @@ public class NotesResource
    @Path("/process/{processInstanceOid}")
    @RequestDescription("*asc* specifies an order of notes returned from server, by default it is false")
    @ResponseDescription("json of QueryResultDTO containing NoteDTO - Just Process Instance level notes")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.NotesResultDTO")
    public Response getProcessNotes(@PathParam("processInstanceOid") long processInstanceOid,
          @QueryParam("asc") @DefaultValue("false") boolean asc)
    {
@@ -119,6 +122,7 @@ public class NotesResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/activity/{activityInstanceOid}")
    @ResponseDescription("Returns Activity Instance level notes")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.NotesResultDTO")
    public Response getActivityNotes(@PathParam("activityInstanceOid") long activityInstanceOid,
          @QueryParam("asc") @DefaultValue("false") boolean asc)
    {

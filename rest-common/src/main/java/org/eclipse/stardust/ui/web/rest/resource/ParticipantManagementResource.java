@@ -35,6 +35,9 @@ import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.ParticipantManagementService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InvalidateUserStatusDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMessageDTO;
@@ -71,6 +74,15 @@ public class ParticipantManagementResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/allUsers")
+   @RequestDescription("Posted Data needs to be JSON with below information\r\n"
+         + "``` javascript\r\n" +
+         "{\n" + 
+         "  filters: {},\n" + 
+         "  hideInvalidatedUsers :true or false\n" + 
+         "}\r\n"
+         + "```")
+   @ResponseDescription("The response will contain list of UserDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.UserDTO")
    public Response getAllUsers(@QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
@@ -110,6 +122,7 @@ public class ParticipantManagementResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/openCreateCopyModifyUser/{mode}/{oid}")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.UserDTO")
    public Response getCreateCopyModifyUserData(@PathParam("mode") String mode, @PathParam("oid") long oid)
    {
       try
@@ -139,6 +152,7 @@ public class ParticipantManagementResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/createCopyModifyUser/{mode}")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.UserProfileStatusDTO")
    public Response createCopyModifyUser(@PathParam("mode") String mode, String postData)
    {
       try
@@ -168,6 +182,13 @@ public class ParticipantManagementResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/invalidateUsers")
+   @RequestDescription("The post data needs to be in JSON format\r\n"
+         + "``` javascript\r\n"
+         + "{"
+         + " userOids : [] \r\n"
+         + "}\r\n"
+         + "```")   
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.InvalidateUserStatusDTO")
    public Response invalidateUsers(String postData)
    {
       try
@@ -197,6 +218,14 @@ public class ParticipantManagementResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/delegateToDefaultPerformer")
+   @RequestDescription("Posted Data needs to be JSON with below information\r\n"
+         + "``` javascript\r\n" + 
+         "{\n" + 
+         " userOids:[1,2,3] // user oids\n" + 
+         "activityInstanceOids :[10,20,30]\n" + 
+         "}\r\n"
+         + "```")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.NotificationMessageDTO")
    public Response delegateToDefaultPerformer(String postData)
    {
       try

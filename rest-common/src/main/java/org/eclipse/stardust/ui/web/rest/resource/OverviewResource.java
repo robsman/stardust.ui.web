@@ -26,6 +26,8 @@ import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.OverviewService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 
@@ -47,6 +49,8 @@ public class OverviewResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/allLogEntries")
+   @ResponseDescription("The response will contain list of LogEntryDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.LogEntryDTO")
    public Response getAllLogEntries(@QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
          @QueryParam("orderBy") @DefaultValue("timeStamp") String orderBy,

@@ -24,6 +24,8 @@ import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.ResourceLoginTimeService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 
 /**
@@ -46,6 +48,8 @@ public class LoginTimeInfoResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
+   @ResponseDescription("The response will contain list of ResourceLoginInfoDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ResourceLoginInfoDTO")
    public Response getResourceLoginTimeInfo()
    {
       try

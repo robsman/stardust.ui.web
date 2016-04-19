@@ -34,8 +34,8 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.DocumentSearchService;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
 import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
-import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchFilterAttributesDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InfoDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
@@ -125,6 +125,8 @@ public class DocumentSearchResource
     */
    @GET
    @Path("/loadDocumentVersions/{documentId}")
+   @ResponseDescription("The response will contain list of DocumentVersionDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DocumentVersionDTO")
    public Response getDocumentVersions(@PathParam("documentId") String documentId)
    {
 
@@ -149,6 +151,8 @@ public class DocumentSearchResource
     */
    @GET
    @Path("/loadAvailableProcessDefinitions")
+   @ResponseDescription("The response will contain list of SelectItemDTO having processInstanceOID and name")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.SelectItemDTO")
    public Response loadAvailableProcessDefinitions()
    {
       try
@@ -173,6 +177,13 @@ public class DocumentSearchResource
     */
    @POST
    @Path("/attachDocumentsToProcess/{processOID}")
+   @RequestDescription("PostData should have below JSON format\r\n"
+         + "``` javascript\r\n"
+         + "{\n"
+         + " documentIds : []\r\n"
+         + "}\r\n"
+         + "```")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.InfoDTO")
    public Response attachDocumentsToProcess(@PathParam("processOID") String processOID, String postData)
    {
       try
