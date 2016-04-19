@@ -6,10 +6,10 @@ import java.io.IOException;
 
 import org.apache.camel.CamelContext;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.extensions.itext.converter.InvalidFormatException;
 import org.eclipse.stardust.engine.extensions.templating.enricher.VelocityContextAppenderProcessor;
 
 import com.lowagie.text.DocumentException;
-import com.sungard.infinity.integration.itext.converter.InvalidFormatException;
 
 public class VelocityRequestHandler implements IRequestHandler
 {

@@ -14,8 +14,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import org.eclipse.stardust.engine.extensions.json.GsonHandler;
 import org.eclipse.stardust.engine.extensions.templating.core.TemplatingRequest;
-import org.eclipse.stardust.integration.GsonHandler;
 
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)

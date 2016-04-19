@@ -17,11 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import com.lowagie.text.DocumentException;
 
-import com.sungard.infinity.integration.itext.converter.InvalidFormatException;
-import com.sungard.infinity.integration.itext.converter.StringToPdfConverter;
-
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.extensions.itext.converter.InvalidFormatException;
+import org.eclipse.stardust.engine.extensions.itext.converter.StringToPdfConverter;
 
 public class VelocityTemplatesHandler
 {

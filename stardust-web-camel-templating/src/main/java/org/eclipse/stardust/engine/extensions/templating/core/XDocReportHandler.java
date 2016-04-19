@@ -11,14 +11,13 @@ import org.apache.camel.util.ResourceHelper;
 
 import com.lowagie.text.DocumentException;
 
-import com.sungard.infinity.integration.itext.converter.InvalidFormatException;
-
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.template.IContext;
 import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
 
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.extensions.itext.converter.InvalidFormatException;
 import org.eclipse.stardust.engine.extensions.templating.enricher.VelocityContextAppenderProcessor;
 
 public class XDocReportHandler
