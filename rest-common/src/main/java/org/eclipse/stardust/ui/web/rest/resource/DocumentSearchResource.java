@@ -33,6 +33,9 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.DocumentSearchService;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
+import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchFilterAttributesDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InfoDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
@@ -63,6 +66,16 @@ public class DocumentSearchResource
     */
    @GET
    @Path("/searchAttributes")
+   @ResponseDescription("Return JSON with below information\r\n"
+         + "``` javascript\r\n" + 
+         "{\n" + 
+         "typicalFileTypes :[] //list of file types\n" + 
+         "documentTypes : [] // list of document types\n" + 
+         "repositories : []  // list of repositories\n" + 
+         "allRegisteredMimeFileTypes : []  // list of all MIME file types\n" + 
+         "}\r\n"
+         + "```")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DocumentSearchFilterAttributesDTO")
    public Response searchAttributes()
    {
 
@@ -85,6 +98,8 @@ public class DocumentSearchResource
     */
    @GET
    @Path("/loadProcessByDocument/{documentId}")
+   @ResponseDescription("The response will contain list of ProcessInstanceDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO")
    public Response loadProcessByDocument(@PathParam("documentId") String documentId)
    {
 

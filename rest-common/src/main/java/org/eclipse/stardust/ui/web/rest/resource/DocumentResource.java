@@ -147,6 +147,7 @@ public class DocumentResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId}/document-type")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DocumentTypeDTO")
    public Response getDocumentType(@PathParam("documentId")
    String documentId) throws PortalRestException
    {
@@ -170,6 +171,7 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId}/document-type")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DocumentDTO")
    public Response setDocumentType(@PathParam("documentId")
    String documentId, String postedData)
    {
@@ -516,6 +518,7 @@ public class DocumentResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/policy/{documentId: .*}")
    @ResponseDescription("Returns ResourcePolicyContainerDTO containing losts of own and inherited policies in the form of ResourcePolicyDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.ResourcePolicyContainerDTO")
    public Response getDocumentPolicies(@PathParam("documentId") String documentId) throws Exception
    {
       return Response.ok(GsonUtils.toJsonHTMLSafeString(resourcePolicyService.getPolicy(documentId, false))).build();
