@@ -17,7 +17,7 @@
 		this.$http = $http;
 		this.$q = $q;
 		this.rootPath = "/documents";
-		this.subFolders = ["/documents/stamps","/documents/correspondance-templates"];
+		this.subFolders = ["/documents/stamps","/documents/correspondence-templates"];
 
 		this.baseUrl = sdUtilService.getBaseUrl() + "services/rest/portal/folders";
 	};
