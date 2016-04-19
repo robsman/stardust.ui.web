@@ -22,8 +22,18 @@
 
 #gantt_chart_container {
 	overflow-x: auto;
-	min-height: 350px;
 	width :100%
+}
+
+.gantt-chart-tooltip {
+    min-width: 100px;
+    padding : 15px;
+    border: 1px solid #007d8a;
+    border-radius: 3px;
+    color: #464646;
+    position: absolute;
+    z-index: 1020;
+    background: #fff;
 }
 
 .gantt-chart-legend-option {
@@ -109,6 +119,10 @@
 	padding: 0px;
 	text-align: left;
 	white-space:nowrap;
+}
+
+#gantt_chart_container .dataTables_wrapper{
+	margin-bottom: 90px;
 }
 
 .gantt-chart-time-frame-picker {
