@@ -2,13 +2,13 @@
 	<div>
 		<table>
 			<tr>
-				<td><label>{{ctrl.i18n.('modeler.model.propertyView.webService.retries.noOfRetries')}}</label></td>
+				<td><label>{{ctrl.i18n('modeler.model.propertyView.webService.retries.noOfRetries')}}</label></td>
 				<td><input type="number" ng-model="ctrl.noOfRetries" min="0"
 					max="10" ng-blur="ctrl.onRetryChange()"
 					style="padding-right: 0px; width: 70px"></td>
 			</tr>
 			<tr>
-				<td><label>{{ctrl.i18n.('modeler.model.propertyView.webService.retries.retryInterval')}}</label></td>
+				<td><label>{{ctrl.i18n('modeler.model.propertyView.webService.retries.retryInterval')}}</label></td>
 				<td><input type="number" ng-model="ctrl.retryInterval" min="0"
 					max="60" ng-blur="ctrl.onRetryChange()"
 					ng-disabled="!ctrl.noOfRetries || ctrl.noOfRetries < 1"
