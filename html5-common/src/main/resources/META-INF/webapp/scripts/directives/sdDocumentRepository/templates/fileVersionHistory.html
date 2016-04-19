@@ -8,10 +8,11 @@
 	   sd-data ="ctrl.currentFileVersionHistory">
 	   <thead>
 		   	<tr>
-		   		<th sda-name="revisionName" sda-label="Version No"></th>
-		   		<th sda-name="name" sda-label="Document Name"></th>
-		   		<th sda-name="owner" sda-label="Author"></th>
-		   		<th sda-name="dateLastModified" sda-label="Modified Date"></th>
+		   		<th sda-name="revisionName" sda-label="{{ctrl.textMap.versionDialog.versionNo}}"></th>
+		   		<th sda-name="name" sda-label="{{ctrl.textMap.versionDialog.documentName}}"></th>
+		   		<th sda-name="owner" sda-label="{{ctrl.textMap.versionDialog.author}}"></th>
+		   		<th sda-name="dateLastModified" sda-label="{{ctrl.textMap.versionDialog.modifiedDate}}"></th>
+		   		<th sda-name="comments" sda-label="{{ctrl.textMap.versionDialog.comments}}"></th>
 		   	</tr>
 	   </thead>
 	   <tbody>
@@ -35,6 +36,7 @@
 	   				{{rowData.dateLastModified | date:'short'}}
 	   				</span>
 	   			</td>
+	   			<td sda-field="comment"></td>
 	   		</tr>
 	   </tbody>
 </table>

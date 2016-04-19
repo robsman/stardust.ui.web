@@ -214,6 +214,12 @@
     textMap.bind.provider = i18n.translate("views.bindRepositoryDialog.provider");
     textMap.unbind = {};
     textMap.unbind.confirmation = i18n.translate("common.confirmUnbindRepo.message.label");
+    textMap.versionDialog = {};
+    textMap.versionDialog.versionNo = i18n.translate("views.documentView.documentVersion.versionNo");
+    textMap.versionDialog.documentName = i18n.translate("views.documentPanelView.documentPropertiesPanel.DocumentName");
+    textMap.versionDialog.author = i18n.translate("views.documentView.properties.author.label");
+    textMap.versionDialog.modifiedDate = i18n.translate("views.documentView.documentVersion.modifiedDate");
+    textMap.versionDialog.modifiedDate = i18n.translate("views.common.comments.label");
 
     return textMap;
   };

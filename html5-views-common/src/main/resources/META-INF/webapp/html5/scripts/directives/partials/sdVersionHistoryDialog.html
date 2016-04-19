@@ -28,6 +28,7 @@
 				   		<th sda-name="name" sda-label="{{verHistoryCtrl.textMap.documentName}}"></th>
 				   		<th sda-name="owner" sda-label="{{verHistoryCtrl.textMap.author}}"></th>
 				   		<th sda-name="dateLastModified" sda-label="{{verHistoryCtrl.textMap.modificationDate}}"></th>
+				   		<th sda-name="comments" sda-label="{{verHistoryCtrl.textMap.comments}}"></th>
 				   	</tr>
 			   </thead>
 			   <tbody>
@@ -51,6 +52,7 @@
 			   				{{rowData.dateLastModified | date:'short'}}
 			   				</span>
 			   			</td>
+			   			<td sda-field="comment"></td>
 			   		</tr>
 			   </tbody>
 		</table>

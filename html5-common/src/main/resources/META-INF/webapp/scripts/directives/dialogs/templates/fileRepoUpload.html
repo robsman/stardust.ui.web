@@ -93,11 +93,11 @@
 							<button ng-show="file.fileState==1" 
 							        ng-click="file.send=!file.send" 
 							        ng-class="{'pi-add' : file.send, 'pi-delete' : !file.send}" 	
-							        class="pi pi-lg">
+							        class="pi pi-1x">
 							</button>
-							<i ng-show="file.fileState==2" class="pi pi-spin pi-loading"></i>
-							<i ng-attr-title="{{file.message}}" style="color:red;cursor:pointer;" ng-show="file.fileState==3" class="pi pi-upload-failure"></i>
-							<i ng-show="file.fileState==4" style="color:green;" class="pi pi-upload-success"></i>
+							<i ng-show="file.fileState==2" class="pi pi-spin pi-loading pi-1x"></i>
+							<i ng-attr-title="{{file.message}}" style="color:red;cursor:pointer;" ng-show="file.fileState==3" class="pi pi-upload-failure pi-1x"></i>
+							<i ng-show="file.fileState==4" style="color:green;" class="pi pi-upload-success pi-1x"></i>
 							<span ng-show="file.fileState==2"> 
 							{{ (file.percentUploaded * 100) | number:0}}
 							</span>

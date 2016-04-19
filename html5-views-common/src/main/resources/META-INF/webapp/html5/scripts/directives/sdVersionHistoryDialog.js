@@ -82,6 +82,7 @@
 			textMap.documentName = i18n.translate("views.documentPanelView.documentPropertiesPanel.DocumentName");
 			textMap.author = i18n.translate("views.documentSearchView.author.label");
 			textMap.modificationDate = i18n.translate("views.documentView.documentVersion.modifiedDate");
+			textMap.comments = i18n.translate("views.common.comments.label");
 			textMap.header = i18n.translate("views.documentView.documentVersion.versionHistoryHeader");
 
 			return textMap;		
