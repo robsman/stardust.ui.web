@@ -25,6 +25,8 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.Daemon;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.DaemonDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
@@ -45,6 +47,8 @@ public class DaemonsResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/all")
+   @ResponseDescription("The response will contain list of DaemonDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DaemonDTO")
    public Response getAll()
    {
       try
@@ -68,6 +72,7 @@ public class DaemonsResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{daemonType}")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DaemonDTO")
    public Response getDaemon(@PathParam("daemonType") String daemonType){
 	   try{
 		   Daemon daemon = serviceFactoryUtils.getAdministrationService().getDaemon(daemonType, true);
@@ -82,6 +87,7 @@ public class DaemonsResource
    @PUT
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{daemonType}/start")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DaemonDTO")
    public Response startDaemon(@PathParam("daemonType") String daemonType)
    {
       try
@@ -103,6 +109,7 @@ public class DaemonsResource
    @PUT
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{daemonType}/stop")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DaemonDTO")
    public Response stopDaemon(@PathParam("daemonType") String daemonType)
    {
       try

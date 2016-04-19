@@ -25,6 +25,8 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.ActivitySearchService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.ActivitySearchDTO;
@@ -43,6 +45,7 @@ public class ActivitySearchResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/allResubmissionActivityInstances")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.ActivitySearchDTO")
    public Response getAllResubmissionActivityInstances()
    {
       ActivitySearchDTO asDTO = activitySearchService.getAllResubmissionActivityInstances();
@@ -52,6 +55,7 @@ public class ActivitySearchResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/allActivityInstances")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.ActivitySearchDTO")
    public Response getAllActivityInstances()
    {
       ActivitySearchDTO asDTO = activitySearchService.getAllActivityInstances();
@@ -61,6 +65,7 @@ public class ActivitySearchResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/worklistForUser/{userOID}")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.ActivitySearchDTO")
    public Response getWorklistForUser(@PathParam("userOID") long userOID)
    {
       ActivitySearchDTO asDTO = activitySearchService.getWorklistForUser(userOID);
@@ -70,6 +75,8 @@ public class ActivitySearchResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/users")
+   @ResponseDescription("The response will contain list of UserDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.UserDTO")
    public Response getUsersByCriteria(@QueryParam("firstName") @DefaultValue("") String firstName, @QueryParam("lastName") @DefaultValue("") String lastName)
    {
       List<UserDTO> listOfUsers = activitySearchService.getUsers_anyLike(firstName, lastName);

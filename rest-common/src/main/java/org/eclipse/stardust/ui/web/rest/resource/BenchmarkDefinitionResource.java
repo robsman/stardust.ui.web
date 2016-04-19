@@ -35,6 +35,9 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.service.BenchmarkDefinitionService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.BenchmarkCategoryDTO;
 import org.eclipse.stardust.ui.web.rest.dto.BenchmarkDefinitionDTO;
@@ -65,6 +68,55 @@ public class BenchmarkDefinitionResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/design-time")
+   @ResponseDescription("Return list of design-time Benchmark Definitions\r\n"
+         + "``` javascript\r\n"
+         + "\n" + 
+         "{\n" + 
+         "  \"benchmarkDefinitions\": [\n" + 
+         "    {\n" + 
+         "      \"metadata\": {\n" + 
+         "        \"author\": \"motu\",\n" + 
+         "        \"lastModifiedDate\": 1433132165\n" + 
+         "      },\n" + 
+         "      \"content\": {\n" + 
+         "        \"id\": \"13bd0f8e-45d0-4a7b-9d03-ed4d288bbdd4\",\n" + 
+         "        \"name\": \"Benchmark Definition 1\",\n" + 
+         "        \"description\": \"Benchmark Definition 1 Description\",\n" + 
+         "        \"categories\": [\n" + 
+         "           \n" + 
+         "        ],\n" + 
+         "        \"defaults\": {\n" + 
+         "           \n" + 
+         "        },\n" + 
+         "        \"models\": [\n" + 
+         "           \n" + 
+         "        ]\n" + 
+         "      }\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "      \"metadata\": {\n" + 
+         "        \"author\": \"motu\",\n" + 
+         "        \"lastModifiedDate\": 1433132165\n" + 
+         "      },\n" + 
+         "      \"content\": {\n" + 
+         "        \"id\": \"38724575-46ec-4bd6-93b5-cf38bb6bd308\",\n" + 
+         "        \"name\": \"Benchmark Definition 2\",\n" + 
+         "        \"description\": \"Benchmark Definition 2 Description\",\n" + 
+         "        \"categories\": [\n" + 
+         "           \n" + 
+         "        ],\n" + 
+         "        \"defaults\": {\n" + 
+         "           \n" + 
+         "        },\n" + 
+         "        \"models\": [\n" + 
+         "           \n" + 
+         "        ]\n" + 
+         "      }\n" + 
+         "    },\n" + 
+         "     \n" + 
+         "  ]\n" + 
+         "}\r\n"
+         + "```")
    public Response getBenchmarkDefinitions()
    {
          List<BenchmarkDefinitionDTO> benchmarkDefs = benchmarkDefinitionService.getBenchmarkDefinitions();
@@ -83,6 +135,55 @@ public class BenchmarkDefinitionResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/run-time")
+   @ResponseDescription("Return list of run-time Benchmark\r\n"
+         + "``` javascript\r\n"
+         + "{\n" + 
+         "  \"benchmarkDefinitions\": [\n" + 
+         "    {\n" + 
+         "      \"metadata\": {\n" + 
+         "        \"runtimeOid\": 11\n" + 
+         "        \"modifiedBy\": \"\",\n" + 
+         "        \"lastModified\": 0\n" + 
+         "      },\n" + 
+         "      \"content\": {\n" + 
+         "        \"id\": \"13bd0f8e-45d0-4a7b-9d03-ed4d288bbdd4\",\n" + 
+         "        \"name\": \"Benchmark Definition 1\",\n" + 
+         "        \"description\": \"Benchmark Definition 1 Description\",\n" + 
+         "        \"categories\": [\n" + 
+         "           \n" + 
+         "        ],\n" + 
+         "        \"defaults\": {\n" + 
+         "           \n" + 
+         "        },\n" + 
+         "        \"models\": [\n" + 
+         "           \n" + 
+         "        ]\n" + 
+         "      }\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "      \"metadata\": {\n" + 
+         "        \"author\": \"motu\",\n" + 
+         "        \"lastModifiedDate\": 1433132165\n" + 
+         "      },\n" + 
+         "      \"content\": {\n" + 
+         "        \"id\": \"38724575-46ec-4bd6-93b5-cf38bb6bd308\",\n" + 
+         "        \"name\": \"Benchmark Definition 2\",\n" + 
+         "        \"description\": \"Benchmark Definition 2 Description\",\n" + 
+         "        \"categories\": [\n" + 
+         "           \n" + 
+         "        ],\n" + 
+         "        \"defaults\": {\n" + 
+         "           \n" + 
+         "        },\n" + 
+         "        \"models\": [\n" + 
+         "           \n" + 
+         "        ]\n" + 
+         "      }\n" + 
+         "    },\n" + 
+         "     \n" + 
+         "  ]\n" + 
+         "}\r\n" + 
+         "```")
    public Response getRuntimeBenchmarkDefinitions()
    {
          List<BenchmarkDefinitionDTO> benchmarkDefs = benchmarkDefinitionService.getRuntimeBenchmarkDefinitions();
@@ -112,6 +213,8 @@ public class BenchmarkDefinitionResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/run-time/categories")
+   @ResponseDescription("The response will contain list of BenchmarkCategoryDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.BenchmarkCategoryDTO")
    public Response getRuntimeBenchmarkCategories(@QueryParam("oids") String benchmarkOids)
    {
          Set<BenchmarkCategoryDTO> benchmarkDefs = benchmarkDefinitionService
@@ -131,6 +234,13 @@ public class BenchmarkDefinitionResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/run-time")
+   @RequestDescription("The post data should be in below JSON format\r\n"
+         + "``` javascript\r\n"
+         + "{ \n" + 
+         "      \"id\": \"13bd0f8e-45d0-4a7b-9d03-ed4d288bbdd4\",\n" + 
+         "      \"validFrom\": 1433132950\n" + 
+         "}\r\n"
+         + "```")
    public Response publishBenchmarkDefinition(String postedData)
    {
          JsonObject benchmarkJSON = JsonDTO.getJsonObject(postedData);

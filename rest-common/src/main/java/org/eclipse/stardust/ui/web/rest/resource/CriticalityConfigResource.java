@@ -15,6 +15,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.service.CriticalityConfigService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
 import org.eclipse.stardust.ui.web.rest.dto.CriticalityConfigDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,6 +37,7 @@ public class CriticalityConfigResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/fetch")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.CriticalityConfigDTO")
    public Response getCriticalityConfig()
    {
       try
@@ -53,6 +55,7 @@ public class CriticalityConfigResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/save")
+   @DTODescription(request="org.eclipse.stardust.ui.web.rest.dto.CriticalityConfigDTO")
    public Response save(String postData) {
       CriticalityConfigDTO criticalityConfigDTO = GsonUtils.fromJson(postData, CriticalityConfigDTO.class);
       try
@@ -71,6 +74,7 @@ public class CriticalityConfigResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/import")
+   
    public Response importCriticalityConfig(String postData) {
       JsonObject json = GsonUtils.readJsonObject(postData);
       String uuid = GsonUtils.extractString(json, "uuid");

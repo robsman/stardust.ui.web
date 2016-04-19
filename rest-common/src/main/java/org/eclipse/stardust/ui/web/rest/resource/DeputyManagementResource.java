@@ -29,6 +29,9 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.DeputyManagementService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 
@@ -51,6 +54,8 @@ public class DeputyManagementResource
     */
    @GET
    @Path("/users")
+   @ResponseDescription("The response will contain list of DeputyMemberDetailDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DeputyMemberDetailDTO")
    public Response loadUsers()
    {
       try
@@ -67,6 +72,8 @@ public class DeputyManagementResource
 
    @GET
    @Path("/deputiesForUser/{userOID}")
+   @ResponseDescription("The response will contain list of DeputyMemberDetailDTO for given userOID")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DeputyMemberDetailDTO")
    public Response loadDeputiesForUser(@PathParam("userOID") String userOID)
    {
       try
@@ -83,6 +90,8 @@ public class DeputyManagementResource
 
    @GET
    @Path("/deputiesForUser/{userOID}/{searchValue}/{searchMode}")
+   @ResponseDescription("The response will contain list of ParticipantDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO")
    public Response getDeputyUsersData(@PathParam("userOID") String userOID,
          @PathParam("searchValue") String searchValue, @PathParam("searchMode") String searchMode)
    {
@@ -102,6 +111,8 @@ public class DeputyManagementResource
 
    @GET
    @Path("/authorizations/{userOID}")
+   @ResponseDescription("The response will contain list of SelectItemDTO having participantId and name")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.SelectItemDTO")
    public Response getAuthorizations(@PathParam("userOID") String userOID)
    {
       try
@@ -127,6 +138,16 @@ public class DeputyManagementResource
 
    @POST
    @Path("/addOrModifyDeputy")
+   @RequestDescription("Posted Data needs to be JSON with below information.\r\n"
+         + "``` javascript\r\n" +
+         "{\n" + 
+         "  userOID : userOID,\n" + 
+         "  deputyOID : deputyOID,\n" + 
+         "  validFrom : validFrom,\n" + 
+         "  validTo : validTo,          modelParticipantIds : modelParticipantIds,\n" + 
+         "mode : mode\n" + 
+         "            }\r\n"
+         + "```")
    public Response addOrModifyDeputy(String postData)
    {
 
@@ -161,6 +182,13 @@ public class DeputyManagementResource
 
    @POST
    @Path("/removeUserDeputy")
+   @RequestDescription("Posted Data needs to be JSON with below information.\r\n"
+         + "``` javascript\r\n" + 
+         "{\n" + 
+         "  userOID : userOID,\n" + 
+         "  deputyOID : deputyOID,\n" + 
+         " }\r\n"
+         + "```")
    public Response removeUserDeputy(String postData)
    {
 

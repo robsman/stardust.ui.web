@@ -21,6 +21,8 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.ArtifactTypeService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ArtifactTypeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,8 @@ public class ArtifactTypeResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/run-time")
+   @ResponseDescription("The response will contain list of ArtifactTypeDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.ArtifactTypeDTO")
    public Response getRuntimeArtifactTypes()
    {
       try
