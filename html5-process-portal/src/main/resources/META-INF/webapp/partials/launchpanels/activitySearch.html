@@ -63,7 +63,7 @@
 		</div>
 
 		<div ng-repeat="data in ctrl.worklistMapOfParams | sdMapOrderBy:'index':'desc'">
-			<span class="label-item">{{data.name}}:</span> 
+			<span class="label-item" style="padding-right: 0px;">{{data.name}}:</span> 
 			<a href="#" ng-click="ctrl.openWorklistView(data.id, data);" data-placement="right"> 
 			   <span ng-bind="sdI18n('processportal.launchPanels-worklists-items','',[ctrl.worklistMap[data.id]])"></span>
 			</a>
