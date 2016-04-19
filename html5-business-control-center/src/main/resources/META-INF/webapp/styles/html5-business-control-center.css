@@ -101,6 +101,10 @@
 	display: none;
 }
 
+#gantt_chart_container span.pi-tbl-sort {
+	display: none;
+}
+
 #gantt_chart_container .tbl-hdr-col {
 	padding: 0px;
 	text-align: left;

@@ -1,10 +1,10 @@
 <div sg-stretch-to-bottom class="view-panel">
 <div class="ng-hide" ng-show="true" ng-controller="sdGanttChartCtrl as ctrl">
 	<!-- ng-show="ctrl.columnData.length > 0" -->
-	<div >	
+	<div >
 		<div class="heading"  > {{ctrl.process.processName}} (#{{ctrl.process.oid}})</div>
 		<div> <span class="iceOutLbl spacing-right">{{i18n('business-control-center-messages.views-customColumn-startDate')}}</span> <span> {{ctrl.process.startTime | date: ctrl.timeFormat}} </span> </div>
-		<div> 
+		<div>
 			<select class="gantt-chart-select-box" ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();"  ng-if ="ctrl.legendCategories.length > 1"
 					ng-options="opt.id as opt.label for opt in ctrl.legendCategories" aid="BCC-GanttChart-ChangeLegend">
 			</select>
@@ -14,28 +14,28 @@
 				<i class="pi pi-legend pi-lg gantt-chart-legend-symbol" ng-attr-style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
 			</span>
 		</div>
-	
+
 <div id="gantt_chart_container">
-		
+
 	<table sd-data-table="ctrl.dataTable" sd-data="ctrl.fetchData(params)" sda-ready="ctrl.tableReady" style="width: auto;"
 			sda-mode="local" sda-no-pagination="true" sda-filter-handler="ctrl.auxFilter(rowData);" sda-tree-table>
 			<thead >
 				<tr>
-					<th sda-label="">  
+					<th sda-label="">
 						<div class="gantt-chart-time-frame-picker">
 							<select class="gantt-chart-select-box" ng-model="ctrl.selected.timeFrame" ng-change="ctrl.onTimeFrameChange();" aid="BCC-GanttChart-ChangeTimeFrame"
-							 ng-options="opt.id as opt.label for opt in ctrl.timeFrames"> </select> 
+							 ng-options="opt.id as opt.label for opt in ctrl.timeFrames"> </select>
 						</div>
-						<div class="gantt-chart-tool-bar">	
-							<button class="button-link tbl-toolbar-item tbl-tool-link" 
+						<div class="gantt-chart-tool-bar">
+							<button class="button-link tbl-toolbar-item tbl-tool-link"
 							        title="{{i18n('business-control-center-messages.views-ganttChartView-expandAll')}}" ng-click="ctrl.expandAll();">
 							           <i class="pi pi-expand-all pi-lg"> </i>
 							</button>
-							<button class="button-link tbl-toolbar-item tbl-tool-link" 
+							<button class="button-link tbl-toolbar-item tbl-tool-link"
 							        title="{{i18n('business-control-center-messages.views-ganttChartView-collapseAll')}}" ng-click="ctrl.collapseAll();">
 							           <i class="pi pi-collapse-all pi-lg"> </i>
 							 </button>
-							<button class="button-link tbl-toolbar-item tbl-tool-link" 
+							<button class="button-link tbl-toolbar-item tbl-tool-link"
 							        title="{{ctrl.getAuxTitle();}}" ng-click="ctrl.toggleAuxiliary();">
 							        <i ng-class="ctrl.showAuxiliary ? 'pi pi-lg pi-eye-open' : 'pi pi-lg pi-eye-close'" > </i>
 							</button>
@@ -44,17 +44,17 @@
 					<th  sda-label=""  >
 					 	<div class="currentTimeLine" ng-attr-style="left :{{ctrl.currentTimeLine[ctrl.selected.timeFrame]}}px;" ng-if="ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame] > 0">.</div>
 					 	<div class="currentTimeLine" ng-attr-style="left :{{ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame]}}px;" ng-if="ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame] > 0">.</div>
-					
-						<div style="clear:both;"> 
-								<span ng-repeat = "major in ctrl.majorTimeFrames" class="majorTimeLine" ng-attr-style="width :{{major.width}}px;" ng-mouseenter="major.toolTip = true;ctrl.mouseEnter($event, 75)" ng-mouseleave="major.toolTip = false" >
+
+						<div style="clear:both;">
+								<span ng-repeat = "major in ctrl.majorTimeFrames" class="majorTimeLine" ng-attr-style="width :{{major.width}}px;" ng-mouseenter="major.toolTip = true; ctrl.mouseEnter($event, 50)" ng-mouseleave="major.toolTip = false" >
 										<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
 										<span ng-if="ctrl.selected.timeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
-											<div class="popup-dlg worklist-tooltip" ng-show="major.toolTip" ng-attr-style="color: black;margin-left:{{ctrl.position}}px;" >
+											<div class="gantt-chart-tooltip " ng-show="major.toolTip" ng-attr-style="color: black;margin-left:{{ctrl.position}}px;" >
 									  			<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
 												<span ng-if="ctrl.selected.timeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
 											 </div>
 								</span>
-								 
+
 						</div>
 						<div style="clear:both;" id="minorTimeLine">
 								<span ng-repeat = "minor in ctrl.minorTimeFrames" class="minorTimeLine" ng-attr-style="width : {{ctrl.minorTimeFrameWidth}}px;">
@@ -62,10 +62,10 @@
 											<span ng-if="ctrl.selected.timeFrame == 'hours'"> {{minor.value}}</span>
 											<span ng-if="ctrl.selected.timeFrame == 'minutes'"> {{minor.value}}</span>
 								</span>
-								
-						</div> 
-					
-					
+
+						</div>
+
+
 					 </th>
 				</tr>
 			</thead>
@@ -73,25 +73,25 @@
 				<tr>
 					<td sda-tree-column >
 					<div style="white-space: nowrap;">
-						<span class="identifierIcon spacing-right"  ng-switch on="rowData.type"> 
+						<span class="identifierIcon spacing-right"  ng-switch on="rowData.type">
 							<span ng-switch-default>  <i class="pi pi-activity pi-lg"> </i></span>
 							<span ng-switch-when="process"> <i class="pi pi-process pi-lg"></i></span>
 							<span ng-switch-when="Subprocess"><i class="pi pi-process  pi-lg"></i></span>
 						</span>
-						<span ng-bind="rowData.name" class="spacing-right"> </span> 
+						<span ng-bind="rowData.name" class="spacing-right"> </span>
 						<span ng-show="rowData.activatable"  class="gantt-chart-activate-button">
 							<button ng-click="ctrl.activate(rowData);" class="button-link tbl-tool-link" title="{{i18n('business-control-center-messages.common-tooltip-activate')}}">
 								 <span ><i class="pi pi-activate pi-lg"></i> </span>
 							</button>
-						</span> 
+						</span>
 					</div>
 					</td>
-					<td style="padding-left: 0px;"> 
+					<td style="padding-left: 0px;">
 						<span ng-mouseleave="rowData.toolTip = false"> <span
 							ng-mouseenter="rowData.toolTip = true;ctrl.mouseEnter($event)"
 							class="timeline timeLineCompleted" ng-class="ctrl.getClassForCompletedBar(ctrl.getChartData(rowData).inflight);"
 							ng-attr-style="width :{{ctrl.getChartData(rowData).completed}}px ; margin-left :{{ctrl.getChartData(rowData).delay}}px ; background-color: {{ctrl.getRowColor(rowData)}};color:{{ctrl.getRowColor(rowData)}}">.
-						</span> 
+						</span>
 						<span
 							ng-mouseenter="rowData.toolTip = true;ctrl.mouseEnter($event,ctrl.getChartData(rowData).completed)"
 							ng-if="ctrl.getChartData(rowData).inflight > 0"
@@ -99,13 +99,13 @@
 							ng-attr-style="width :{{ctrl.getChartData(rowData).inflight}}px ; background-color: {{ctrl.getRowColor(rowData)}};color:{{ctrl.getRowColor(rowData)}}">.
 						</span>
 					</span>
-						<div class="popup-dlg worklist-tooltip" ng-show="rowData.toolTip"
+						<div class="gantt-chart-tooltip " ng-show="rowData.toolTip"
 							ng-attr-style="margin-left:{{ctrl.getChartData(rowData).delay+ctrl.position}}px;">
 							<div ng-ig="rowData.benchmarkCategory" class="ganttChart-popup-legend-category"
 								ng-attr-style="background-color: {{ctrl.getRowColor(rowData)}}">
 								{{ctrl.getLabel(rowData)}}
 							</div>
-		
+
 							<div>{{i18n('business-control-center-messages.views-customColumn-startDate')}}
 								: {{rowData.startTime | date:ctrl.timeFormat}}</div>
 							<div ng-if="!rowData.expectedEndTime">{{i18n('business-control-center-messages.views-customColumn-endDate')}}

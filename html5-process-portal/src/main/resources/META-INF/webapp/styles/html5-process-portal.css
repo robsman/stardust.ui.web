@@ -169,8 +169,19 @@ padding : 5px;;
 .worklist-tooltip-label{
 	font-weight: bold;
 }
-.worklist-tooltip{
+.worklist-tooltip {
 	background-color: #FFEDF0;
+}
+
+.gantt-chart-tooltip {
+    min-width: 100px;
+    padding : 15px;
+    border: 1px solid #007d8a;
+    border-radius: 3px;
+    color: #464646;
+    position: absolute;
+    z-index: 1020;
+    background: #fff;
 }
 
 .activity-table-priority-combo {

@@ -345,7 +345,7 @@
 		{
 			label : _sgI18nService
 			.translate('views-common-messages.views-activityTable-statusFilter-halted'),
-			color : '#EFAE39',
+			color : '#e62e2e',
 			aiValue : 10,
 			piValue : 6
 		}
@@ -867,12 +867,21 @@
 		var expectedDuraion = null;
 		var qualifiedId = null;
 		var auxiliary = activity.auxillary;
+		var status = activity.status;
+		var benchmarkCategory = activity.benchmark;
+
+		// In case the activity is subprocess type . Override the activity values with
+		// the onces beloning to the process.
 		if(activity.activity.implementationTypeId == 'Subprocess'){
 			var process =  _sdProcessInstanceService.getProcessByStartingActivityOid( activity.activityOID, true);
 			piOid = process.oid
 			auxiliary = process.auxillary;
 			qualifiedId = process.qualifiedId;
 			expectedDuraion = self.getExpectedDurationForProcess(process.qualifiedId);
+			status = process.status;
+			statusColor = self.getBarColor(process.status.value,"Process",false);
+			bColor = self.getBarColor(process,"Process", true);
+			benchmarkCategory = process.benchmark;
 		}
 
 		if(!expectedDuraion) {
@@ -881,24 +890,24 @@
 		}
 
 
-
 		var data = {
-				name : activity.activity.name,
-				startTime :  activity.startTime,
-				endTime :  activity.lastModification,
-				sColor : statusColor,
-				bColor : bColor,
-				activatable : activity.activatable,
-				status : activity.status,
-				oid : activity.activityOID,
-				benchmarkCategory : activity.benchmark,
-				type : activity.activity.implementationTypeId,
-				subProcessId : (activity.processInstance) ? activity.processInstance.oid : null,
-						auxiliary : auxiliary,
-						piOid : piOid,
-						expectedEndTime : expectedDuraion ? (activity.startTime+expectedDuraion * ONE_HOUR_IN_MIILS) : 0,
-								qualifiedId :qualifiedId
-		}
+	    name: activity.activity.name,
+	    startTime: activity.startTime,
+	    endTime: activity.lastModification,
+	    sColor: statusColor,
+	    bColor: bColor,
+	    activatable: activity.activatable,
+	    status: status,
+	    oid: activity.activityOID,
+	    benchmarkCategory: benchmarkCategory,
+	    type: activity.activity.implementationTypeId,
+	    subProcessId: (activity.processInstance) ? activity.processInstance.oid : null,
+	    auxiliary: auxiliary,
+	    piOid: piOid,
+	    expectedEndTime: expectedDuraion ? (activity.startTime + expectedDuraion * ONE_HOUR_IN_MIILS) : 0,
+	    qualifiedId: qualifiedId
+	}
+
 		return data;
 	};
 
