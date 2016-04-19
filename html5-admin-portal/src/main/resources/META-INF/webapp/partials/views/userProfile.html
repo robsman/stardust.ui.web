@@ -113,7 +113,7 @@
 					style="width: 210px; align: center;"
 					ng-options="opt.value as opt.label for opt in ctrl.user.allRealms"
 					aid="ADM-PartMgmt-UserPopup-Realm"
-					ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication"></select></td>
+					ng-disabled="ctrl.mode == 'MODIFY_USER' || !ctrl.user.isInternalAuthentication"></select></td>
 			</tr>
 			<tr>
 				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-email-label')

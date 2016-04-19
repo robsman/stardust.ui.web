@@ -826,3 +826,6 @@ tr.properties-panel-documentRow>td {
   display : none;
 }
 
+select[disabled="disabled"] {
+    background: #EEEEEE;
+}
