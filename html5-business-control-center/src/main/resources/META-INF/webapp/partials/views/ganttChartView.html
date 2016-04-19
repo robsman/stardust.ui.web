@@ -72,15 +72,16 @@
 			<tbody>
 				<tr>
 					<td sda-tree-column >
-					<div style="white-space: nowrap;">
-						<span class="identifierIcon spacing-right"  ng-switch on="rowData.type">
+					<div  class="gantt-chart-process-tree">
+						<span class="identifierIcon spacing-right" ng-switch on="rowData.type">
 							<span ng-switch-default>  <i class="pi pi-activity pi-lg"> </i></span>
 							<span ng-switch-when="process"> <i class="pi pi-process pi-lg"></i></span>
 							<span ng-switch-when="Subprocess"><i class="pi pi-process  pi-lg"></i></span>
 						</span>
 						<span ng-bind="rowData.name" class="spacing-right"> </span>
 						<span ng-show="rowData.activatable"  class="gantt-chart-activate-button">
-							<button ng-click="ctrl.activate(rowData);" class="button-link tbl-tool-link" title="{{i18n('business-control-center-messages.common-tooltip-activate')}}">
+							<button ng-click="ctrl.activate(rowData);" class="button-link tbl-tool-link" 
+							 title="{{i18n('business-control-center-messages.common-tooltip-activate')}}">
 								 <span ><i class="pi pi-activate pi-lg"></i> </span>
 							</button>
 						</span>

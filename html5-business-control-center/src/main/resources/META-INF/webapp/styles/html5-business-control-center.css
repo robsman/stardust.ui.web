@@ -142,3 +142,8 @@
 	min-width: 100px;
     width: auto;
 }
+
+.gantt-chart-process-tree {
+	white-space: nowrap;
+	 margin-right: 30px;
+}
