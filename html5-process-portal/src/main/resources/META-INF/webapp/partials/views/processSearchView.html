@@ -53,7 +53,7 @@
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedFrom-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><div sd-date-time-picker ng-model-onblur
+								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procStartFrom"
 									name="procStartFrom"
 									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1" 
@@ -63,7 +63,7 @@
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedTo-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><div sd-date-time-picker ng-model-onblur
+								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procStartTo"
 									name="procStartTo"
 									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
@@ -80,7 +80,7 @@
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-endTimeFrom-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><div sd-date-time-picker ng-model-onblur
+								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procEndFrom"
 									name="procEndFrom"
 									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1" 
@@ -90,7 +90,7 @@
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-endTimeTo-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><div sd-date-time-picker ng-model-onblur
+								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procEndTo"
 									name="procEndTo"
 									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
@@ -228,7 +228,7 @@
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedFrom-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><div sd-date-time-picker ng-model-onblur
+								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actStartFrom"
 									name="acttartFrom" 
 									sda-aid-prefix="BCC-ActivitySrch-StartedFrom"/></td>
@@ -237,7 +237,7 @@
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedTo-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><div sd-date-time-picker ng-model-onblur
+								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actStartTo"
 									name="actStartTo" 
 									sda-aid-prefix="BCC-ActivitySrch-StartedTo"/></td>
@@ -253,7 +253,7 @@
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-modifyTimeFrom-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><div sd-date-time-picker ng-model-onblur
+								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actModifyFrom"
 									name="actModifyFrom" 
 									sda-aid-prefix="BCC-ActivitySrch-ModifyTimeFrom"/></td>
@@ -262,7 +262,7 @@
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-modifyTimeTo-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><div sd-date-time-picker ng-model-onblur
+								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actModifyTo"
 									name="actModifyTo" 
 									sda-aid-prefix="BCC-ActivitySrch-ModifyTimeTo"/></td>
@@ -426,7 +426,7 @@
 										style="white-space: nowrap;">
 										<tr>
 											<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-first')}}</label></td>
-											<td><div sd-date-time-picker id="from"
+											<td><div sd-date-time-condensed id="from"
 												name="from"
 												ng-model="procSearchViewCtrl.selected[descCol.id]"
 												ng-model-onblur
@@ -439,7 +439,7 @@
 										</tr>
 										<tr>
 											<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-last')}}</label></td>
-											<td><div sd-date-time-picker id="to"
+											<td><div sd-date-time-condensed id="to"
 												name="to"
 												ng-model="procSearchViewCtrl.selected[descCol.title]"
 												ng-model-onblur
