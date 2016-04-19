@@ -236,17 +236,17 @@ define(
                               .createTemplatingHandlerRouteDefinition("text", "embedded",
                                        HeaderInputContent, null, null, false);
                      header += "    <setHeader headerName=\"" + Headerkey + "\">\n";
-                     header += "       <simple>$simple{body}</simple>\n";
+                     header += "       <simple>'$simple{body}'</simple>\n";
 
                   } else
                   {
                    header += "    <setHeader headerName=\"" + Headerkey + "\">\n";
-                   header += "        <constant>"
+                   header += "        <constant>'"
                             + HeaderInputContent.replace(new RegExp("\n", 'g'), " ")
                                            .replace(new RegExp("toDate", 'g'), "formatDate")
                                            .replace(new RegExp("{{", 'g'), "' + ").replace(
                                                     new RegExp("}}", 'g'), " + '")
-                            + "</constant>\n";
+                            + "'</constant>\n";
                   }
                   
                   header += "    </setHeader>\n";
@@ -293,14 +293,6 @@ define(
                   route += "        }\n";
                   route += "        return hash;\n";
                   route += "     }\n";
-                  route += "function isJson(str) {\n";
-                  route += "try {\n";
-                  route += " JSON.parse(str);\n";
-                  route += " } catch (e) {\n";
-                  route += "return false;\n";
-                  route += "}\n";
-                  route += "return true;\n";
-                  route += "}\n";
                   route += "var processInstanceOid = request.headers.get('ippProcessInstanceOid');\n";
                   route += "var activityInstanceOid = request.headers.get('ippActivityInstanceOid');\n";
                   route += "var partition = request.headers.get('ippPartition');\n";
@@ -356,32 +348,31 @@ define(
                   markup = markup.replace(new RegExp("(&amp;)", 'g'), "&");
                   markup = markup.replace(new RegExp("(&quot;)", 'g'), "\"");
                   route += "<![CDATA[\n";
-                   route += "if(isJson(subject)){\n";
-                   route += " subject= JSON.parse(subject);\n";
-                   route += "} else {\n";
-
-                   route += "}\n";
-                 route += "if(isJson(to)){\n";
-                 route += " to= JSON.parse(to);\n";
-                 route += "} else {\n";
-
-                 route += "}\n";
-                 route += "if(isJson(from)){\n";
-                 route += " from= JSON.parse(from);\n";
-                 route += "} else {\n";
-
-                 route += "}\n";
-                 route += "if(isJson(cc)){\n";
-                 route += " cc= JSON.parse(cc);\n";
-                 route += "} else {\n";
-
-                 route += "}\n";
-                 route += "if(isJson(bcc)){\n";
-                 route += " bcc= JSON.parse(bcc);\n";
-                 route += "} else {\n";
-
-                 route += "}\n";
-                  
+                  route += "if(subject && subject.indexOf(\"" + "'" + "\") === 0){\n";
+                  route += "var subject= eval('(' + subject+ ')');\n";
+                  route += "} else {\n";
+                  route += "var subject= eval(subject);\n";
+                  route += "}\n";
+                  route += "if(to && to.indexOf(\"" + "'" + "\") === 0){\n";
+                  route += "var to= eval('(' + to+ ')');\n";
+                  route += "} else {\n";
+                  route += "var to= eval(to);\n";
+                  route += "}\n";
+                  route += "if(from && from.indexOf(\"" + "'" + "\") === 0){\n";
+                  route += "var from= eval('(' + from+ ')');\n";
+                  route += "} else {\n";
+                  route += "var from= eval(from);\n";
+                  route += "}\n";
+                  route += "if(cc && cc.indexOf(\"" + "'" + "\") === 0){\n";
+                  route += "var cc= eval('(' + cc+ ')');\n";
+                  route += "} else {\n";
+                  route += "var cc= eval(cc);\n";
+                  route += "}\n";
+                  route += "if(bcc && bcc.indexOf(\"" + "'" + "\") === 0){\n";
+                  route += "var bcc= eval('(' + bcc+ ')');\n";
+                  route += "} else {\n";
+                  route += "var bcc= eval(bcc);\n";
+                  route += "}\n";
                   route += "\nvar response=' ';\n";
                   if (attributes["stardust:emailOverlay::templateSource"] == "data")
                   {
@@ -428,7 +419,7 @@ define(
                   route += "   </constant>\n";
                   route += "</setHeader>\n";
                   // execute java sript
-                  route += "<to uri=\"language:javascript\"/>\n";
+                  route += "<to uri=\"language:rhino-nonjdk\"/>\n";
                   
                   // set processed response to body
                   route += "<setBody>\n";
