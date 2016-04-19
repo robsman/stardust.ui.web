@@ -947,7 +947,7 @@ define(
                      {
                         uri = uri.replace("{" + accessPoint.id + "}", "$simple{header."+ accessPoint.id + "}");
                         route += "<setHeader headerName='" + accessPoint.id + "'>";
-						route += "<javaScript>encodeURI(request.headers.get('"+ accessPoint.id + "'))</javaScript>";
+                  route += "<javaScript>encodeURI(request.headers.get('"+ accessPoint.id + "'))</javaScript>";
                         route += "</setHeader>";
                      }
                      else
@@ -965,7 +965,7 @@ define(
                         uri += "=";
                         uri += "$simple{header." + accessPoint.id + "}";
                         route += "<setHeader headerName='" + accessPoint.id + "'>";
-						route += "<javaScript>encodeURI(request.headers.get('" + accessPoint.id + "'))</javaScript>";
+                  route += "<javaScript>encodeURI(request.headers.get('" + accessPoint.id + "'))</javaScript>";
                         route += "</setHeader>";
                      }
                   }
@@ -1192,7 +1192,7 @@ define(
                       .submitChanges(
                                {
                                   attributes : specificAttributes
-                               }, false);
+                               }, true);
                   }
                };
                /**
