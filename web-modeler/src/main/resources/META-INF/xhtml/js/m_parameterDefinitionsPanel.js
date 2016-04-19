@@ -908,7 +908,7 @@ define(
 					// Initialize event handling
 
 					this.parameterDefinitionsTable.tableScroll({
-						height : 150
+						height : 400
 					});
 				};
 
