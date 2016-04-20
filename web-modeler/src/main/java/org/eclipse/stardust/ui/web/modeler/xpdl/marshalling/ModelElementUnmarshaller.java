@@ -822,9 +822,9 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          dataMapping.setDirection(directionType);
       }
       
-      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_MAPPING_MANDATORY))
+      if (hasNotJsonNull(dataMappingJson, PredefinedConstants.MANDATORY_DATA_MAPPING))
       {
-         AttributeUtil.setBooleanAttribute(dataMapping, PredefinedConstants.MANDATORY_DATA_MAPPING, dataMappingJson.get(ModelerConstants.DATA_MAPPING_MANDATORY).getAsBoolean());
+         AttributeUtil.setBooleanAttribute(dataMapping, PredefinedConstants.MANDATORY_DATA_MAPPING, dataMappingJson.get(PredefinedConstants.MANDATORY_DATA_MAPPING).getAsBoolean());
       }
       else
       {
