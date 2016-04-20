@@ -47,6 +47,7 @@ var html5Deps = function() {
         'ckeditor':['html5-common/libs/ckeditor/ckeditor'],
         'portalApplication' : [ 'common/html5/portalApplication' ],
         'html5CommonMain' : [ 'html5-common/scripts/main' ],
+        'html5ViewsCommonMain' : [ 'html5-views-common/html5/scripts/main' ],
         'sdEventBusService' : [ 'html5-common/scripts/services/sdEventBusService' ],
         'httpInterceptorProvider' : [ 'html5-common/scripts/services/sdHttpInterceptorProvider' ],
         'sdLoggerService' : [ 'html5-common/scripts/services/sdLoggerService' ],
@@ -82,7 +83,9 @@ var html5Deps = function() {
         'sdInitializerService' :  [ 'html5-common/scripts/services/sdInitializerService'],
         'sdInitializer' :  [ 'html5-common/scripts/directives/sdInitializer'],
         'sdSsoService' :  [ 'html5-common/scripts/services/sdSsoService'],
-        'sdSessionService' : ['html5-common/scripts/services/sdSessionService']
+        'sdSessionService' : ['html5-common/scripts/services/sdSessionService'],
+        'sdOpenDocumentLink' : ['html5-process-portal/scripts/directives/sdOpenDocumentLink'],
+        'sdCommonViewUtilService' : ['html5-views-common/html5/scripts/services/sdCommonViewUtilService']
       },
       shim : {
         'jquery.dataTables' : [ 'jquery' ],
@@ -93,7 +96,8 @@ var html5Deps = function() {
         'angularResource' : ['angularjs'],
         'bootstrap' : ['jquery'],
         'uiBootstrap' : ['bootstrap','jquery','angularjs'],
-				'html5CommonMain' : [ 'angularjs', 'portalApplication','uiBootstrap'],
+		'html5CommonMain' : [ 'angularjs', 'portalApplication','uiBootstrap'],
+		'html5ViewsCommonMain' : [ 'angularjs', 'portalApplication'],
         'sdEventBusService' : [ 'html5CommonMain' ],
         'httpInterceptorProvider' : [ 'html5CommonMain' ],
         'sdLoggerService' : [ 'html5CommonMain' ],
@@ -128,15 +132,17 @@ var html5Deps = function() {
         'sdSessionService' : ['sdUtilService','sdLoggerService'],
         'sdSsoService': ['sdEnvConfigService', 'sdSessionService','html5CommonMain'],
         'sdInitializerService' : ['html5CommonMain','sdSsoService','sdLoggedInUserService'],
-        'sdInitializer' : ['sdInitializerService']
+        'sdInitializer' : ['sdInitializerService'],
+        'sdCommonViewUtilService' : ['html5ViewsCommonMain','sdViewUtilService', 'sdLoggerService'],
+        'sdOpenDocumentLink' : ['html5CommonMain','sdUtilService','sdCommonViewUtilService','sdMimeTypeService']
       },
       deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap","ckeditor","portalApplication",
-          "html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
+          "html5CommonMain","html5ViewsCommonMain","sdEventBusService", "httpInterceptorProvider",
           "sdLoggerService", "sdData", "sdDataTable", "sdEnvConfigService",
           'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover', 
           'sdAutoComplete','sdRichTextEditor','sdTree','sdFolderTree','sdProcessDocumentTree', 'sdDateTimeFilter', 'sdNotesPanel', 
           'sdActivityPanelPropertiesPage', 'sdProcessDocumentsPanel', 'uiBootstrap', 'sdFileDropbox', 'sdUtilDirectives',
-          'sdVersionHistoryDialog', 'documentRepositoryService', 'sdInitializer']
+          'sdVersionHistoryDialog', 'documentRepositoryService', 'sdInitializer', 'sdOpenDocumentLink']
     };
 
     copyValues(config.paths, reqMod.paths);
