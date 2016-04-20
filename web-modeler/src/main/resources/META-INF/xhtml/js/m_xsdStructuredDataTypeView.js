@@ -967,7 +967,11 @@ define(
 					var view = this;
 
 					view.bindMouseDownEventHandler();
-
+					
+					m_utils.jQuerySelect(".nameInput", this.tree).on("focus", function(event) {
+							view.preserveFocus(m_utils.jQuerySelect(this), true);
+					});
+					
 					m_utils.jQuerySelect(".nameInput", this.tree).on("change", function(event) {
 							return view.renameElement(m_utils.jQuerySelect(event.target).closest("tr"), m_utils.jQuerySelect(event.target));
 						});
