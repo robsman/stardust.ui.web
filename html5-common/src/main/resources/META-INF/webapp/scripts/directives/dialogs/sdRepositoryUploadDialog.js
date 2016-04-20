@@ -199,7 +199,8 @@
 			   file.type == "application/x-compress" ||
 			   file.type == "application/x-zip-compressed" ||
 			   file.type == "application/zip" ||
-			   file.type == "multipart/x-zip";
+			   file.type == "multipart/x-zip" ||
+			   /\.(zip|zipx)$/i.test(file.name);
 	};
 
 	fileRepoUploadController.prototype.openDocumentView = function(docId){
