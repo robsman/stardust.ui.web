@@ -797,6 +797,16 @@ span.pi-case:before{
 	content: "\f147"; /* fa-minus-square-o */
 }
 
+.pi-table-expand:before{
+	font-family: "FontAwesome";
+	content: "\f0fe"; /* fa-plus-square */
+}
+
+.pi-table-collapse:before{
+	font-family: "FontAwesome";
+	content: "\f146"; /* fa-minus-square */
+}
+
 .pi-deploy-model:before{
 	font-family: "FontAwesome";
 	content: "\f0ac"; /* fa-globe */

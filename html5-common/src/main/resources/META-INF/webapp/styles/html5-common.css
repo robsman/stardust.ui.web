@@ -829,3 +829,48 @@ tr.properties-panel-documentRow>td {
 select[disabled="disabled"] {
     background: #EEEEEE;
 }
+
+/*Section for Process Summary page*/
+/******************************************************/
+/* Put your css in here */
+.process-summary-cell {
+ padding: 2px !important;
+}
+
+.process-summary-table span {
+  padding: 2px;
+}
+
+.process-summary-control {
+  padding: 0px !important;
+  width: 15px;	
+}
+
+.process-summary-control td {
+  padding: 5px;	
+}
+
+.process-summary-control :hover {
+  cursor: pointer;
+}
+
+.process-summary-table {
+  margin: 10px;
+  border-top: 1px lightgray solid;
+  border-right: 1px lightgray solid;
+  border-bottom: 1px lightgray solid;
+  width: 100%;
+}
+
+.process-summary-notes{
+  margin: 10px; 
+  border: 1px solid lightgray
+}
+
+.process-summary-border-top {
+  border-top: 1px lightgray solid;
+}
+
+.process-summary-border-bottom {
+  border-bottom: 1px lightgray solid;
+}

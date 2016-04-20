@@ -77,7 +77,7 @@ public class ActivityInstanceDTO extends AbstractDTO
    public Map<String, DescriptorDTO> descriptorValues;
    
    public String completedBy;
-
+   
    public String participantPerformer;
 
    public int notesCount;
@@ -89,6 +89,8 @@ public class ActivityInstanceDTO extends AbstractDTO
    public Long resubmissionTime;
    
    public String rootProcessName;
+
+   public NotesResultDTO notes;
 
    public void setQualityAssuranceState(QualityAssuranceState state)
    {

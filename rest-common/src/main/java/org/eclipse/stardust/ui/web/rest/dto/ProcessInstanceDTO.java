@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.dto;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.dto.core.DTOAttribute;
@@ -77,4 +78,8 @@ public class ProcessInstanceDTO extends AbstractDTO
    public boolean supportsProcessAttachments;
    
    public String rootProcessName;
+
+   public QueryResultDTO activityInstances;
+
+   public List<DocumentDTO> attachments;
 }

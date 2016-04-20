@@ -68,12 +68,14 @@ import org.eclipse.stardust.ui.web.rest.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.JoinProcessDTO;
 import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.SwitchProcessDTO;
-import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.dto.builder.DocumentDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.dto.request.DetailLevelDTO;
 import org.eclipse.stardust.ui.web.rest.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.AddressBookDataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO;
@@ -97,6 +99,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -120,8 +123,14 @@ public class ProcessInstanceService
    @Resource
    private RepositoryService repositoryService;
    
+   @Autowired
+   private ActivityInstanceService activityInstanceService;
+   
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
+   @Resource
+   private UserService userService;
+   
    
    public ProcessInstanceDTO startProcess(List<Attachment> attachments)
    {
@@ -577,6 +586,24 @@ public class ProcessInstanceService
    {
       ProcessInstances process = processInstanceUtilsREST.getAllProcessInstances(oid, fetchDescriptors, withEvents);
       QueryResultDTO dto = processInstanceUtilsREST.buildProcessListResult(process);
+
+      for (Object pidto : dto.list)
+      {
+         ProcessInstanceDTO processInsDTO = (ProcessInstanceDTO) pidto;
+         processInsDTO.activityInstances = (QueryResultDTO) activityInstanceService.getAllActivityInstancesForProcess(
+               processInsDTO.oid, withEvents);
+         List<DataPathValueDTO> df = getProcessInstanceDocuments(processInsDTO.oid);
+         for (DataPathValueDTO dataPathValueDTO : df)
+         {
+            if(dataPathValueDTO.dataPath.id.equals("PROCESS_ATTACHMENTS")){
+               DetailLevelDTO detailLevelDTO = new DetailLevelDTO();
+               detailLevelDTO.userDetailsLevel = "true";
+               DocumentDTOBuilder.setOwnerDetails(dataPathValueDTO.documents, detailLevelDTO, userService);
+               processInsDTO.attachments = dataPathValueDTO.documents;  
+            }
+         }
+      }
+
       return dto;
    }
 

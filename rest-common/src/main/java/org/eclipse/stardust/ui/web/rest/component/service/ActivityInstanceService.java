@@ -117,6 +117,9 @@ public class ActivityInstanceService
    
    @Resource
    private RepositoryService repositoryService;
+   
+   @Resource
+   private NotesService notesService;
 
    private static final Logger trace = LogManager.getLogger(ActivityInstanceService.class);
 
@@ -466,7 +469,15 @@ public class ActivityInstanceService
       }
 
       ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(aiQuery);
-      return ActivityTableUtils.buildTableResult(activityInstances, MODE.ACTIVITY_TABLE);   
+      QueryResultDTO activityQR = ActivityTableUtils.buildTableResult(activityInstances, MODE.ACTIVITY_TABLE);
+      
+      //Add Notes
+      for (Object aDTOB : activityQR.list)
+      {
+         ActivityInstanceDTO activityInstanceDTO = (ActivityInstanceDTO) aDTOB;
+         activityInstanceDTO.notes = notesService.getActivityNotes(activityInstanceDTO.activityOID, true);
+      }
+      return activityQR;   
    }
    
    /**

@@ -1,0 +1,180 @@
+<div>
+	<div style="padding: 10px 0px 20px 10px">
+		<div class="tbl-toolbar-section">
+			<button class="button-link tbl-toolbar-item tbl-tool-link"
+				ng-click="sdProcessSummaryCtrl.expandAll()" title="Expand All">
+				<i class="pi pi-table-expand pi-1x"></i>
+			</button>
+			<button class="button-link tbl-toolbar-item tbl-tool-link"
+				ng-click="sdProcessSummaryCtrl.collapseAll()" title="Collapse All">
+				<i class="pi pi-table-collapse pi-1x"></i>
+			</button>
+		</div>
+		<div class="tbl-toolbar-section">
+			<button ng-show="!sdProcessSummaryCtrl.showNotes"
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				ng-click="sdProcessSummaryCtrl.showNotes = !sdProcessSummaryCtrl.showNotes"
+				title="Show Notes">
+				<i class="pi pi-notes-empty pi-1x"></i>
+			</button>
+			<button ng-show="sdProcessSummaryCtrl.showNotes"
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				ng-click="sdProcessSummaryCtrl.showNotes = !sdProcessSummaryCtrl.showNotes"
+				title="Hide Notes">
+				<i class="pi pi-notes pi-1x"></i>
+			</button>
+			<button ng-show="!sdProcessSummaryCtrl.showDocuments"
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				ng-click="sdProcessSummaryCtrl.showDocuments = !sdProcessSummaryCtrl.showDocuments"
+				title="Show Documents">
+				<i class="pi pi-text pi-1x"></i>
+			</button>
+			<button ng-show="sdProcessSummaryCtrl.showDocuments"
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				ng-click="sdProcessSummaryCtrl.showDocuments = !sdProcessSummaryCtrl.showDocuments"
+				title="Hide Documents">
+				<i class="pi pi-invert pi-1x"></i>
+			</button>
+		</div>
+		<div class="tbl-toolbar-section">
+			<button class="button-link tbl-toolbar-item tbl-tool-link"
+				ng-click="" title="">
+				<i class="pi pi-download pi-1x"></i>
+			</button>
+		</div>
+	</div>
+	<div>
+		<table class="process-summary-table">
+			<tbody>
+				<tr ng-repeat="flowElement in sdProcessSummaryCtrl.flowElements"
+					ng-show="!{{flowElement.type_=='Activity'}} || sdProcessSummaryCtrl.isProcessExpanded(flowElement.processOid_)">
+					<td
+						ng-hide="{{flowElement.type_=='Activity'}} || (sdProcessSummaryCtrl.isProcessExpanded(flowElement.processOid_) && {{flowElement.type_=='Process'}})"
+						style="background-color: #EEE2CF" class="process-summary-control"><div
+							title="Expand"
+							ng-click="sdProcessSummaryCtrl.toggleProcessSelection(flowElement.processOid_)">
+							<i class="pi pi-table-expand pi-1x"></i>
+						</div></td>
+					<td
+						ng-show="sdProcessSummaryCtrl.isProcessExpanded(flowElement.processOid_) && {{flowElement.type_=='Process'}}"
+						sd-state-display="{{flowElement.processOid_}}"
+						class="process-summary-control"><div title="Collapse"
+							ng-show="{{flowElement.type_=='Process'}}"
+							ng-click="sdProcessSummaryCtrl.toggleProcessSelection(flowElement.processOid_)">
+							<i class="pi pi-table-collapse pi-1x"></i>
+						</div></td>
+					<td class="process-summary-cell process-summary-border-bottom"
+						ng-show="{{flowElement.type_=='Process'}}"><span><i
+							class="pi pi-activity-group pi-1x"></i></span></td>
+					<td width="28%"
+						class="process-summary-cell process-summary-border-bottom"
+						ng-show="{{flowElement.type_=='Process'}}"><span>{{flowElement.processName}}
+							({{flowElement.oid}})</span></td>
+					<td width="10%"
+						class="process-summary-cell process-summary-border-bottom"
+						ng-show="{{flowElement.type_=='Process'}}"><span>{{flowElement.status.label}}</span>
+					</td>
+					<td width="60%"
+						class="process-summary-cell process-summary-border-bottom"
+						ng-show="{{flowElement.type_=='Process'}}"><span>Start
+							Time: {{flowElement.startTime | sdDateTimeFilter}}</span> <span
+						style="margin-left: 5px">Last Modified:
+							{{flowElement.lastModification | sdDateTimeFilter}}</span></td>
+					<td colspan="5" ng-show="{{flowElement.type_=='Activity'}}">
+						<table width="100%">
+							<tbody>
+								<tr>
+									<td sd-state-display="{{flowElement.processOid_}}"
+										class="process-summary-control"><i style="opacity: 0"
+										class="pi pi-table-expand pi-1x"></i></td>
+									<td class="process-summary-border-bottom">
+										<table width="100%">
+											<tr title="Click to view Notes and Documents"
+												ng-click="flowElement.expanded_=!flowElement.expanded_"
+												class="process-summary-control">
+												<td class="process-summary-cell"><i
+													class="pi pi-service-task pi-1x"></i></td>
+												<td width="28%" class="process-summary-cell"><span>
+														{{flowElement.activity.name}}({{flowElement.activityOID}})</span></td>
+												<td width="10%"><span>{{flowElement.status.label}}</span>
+												</td>
+												<td width="60%"><span>Start Time:
+														{{flowElement.startTime | sdDateTimeFilter}}</span> <span
+													style="margin-left: 5px">Last Modified:
+														{{flowElement.lastModification | sdDateTimeFilter}}</span></td>
+											</tr>
+											<tr
+												ng-show="flowElement.expanded_ && sdProcessSummaryCtrl.showNotes && flowElement.notes_">
+												<td colspan="6">
+													<table width="95%" class="process-summary-notes">
+														<tr style="background-color: lightgray">
+															<th><span>Notes</span></th>
+															<th><span>Added By</span></th>
+															<th><span>Participant Performer</span></th>
+															<th><span>Date</span></th>
+														</tr>
+														<tr ng-repeat="note in flowElement.notes_"
+															sd-state-display="{{$index}}"
+															sda-state-display-colors="['white', 'F5F5F5']">
+															<td><span><i class="pi pi-notes-empty pi-1x"></i>
+																	{{note.note}}</span></td>
+															<td><sd-user-image
+																	sda-path="{{note.avatarImageURI}}"></sd-user-image>
+																{{note.creatorName}}</td>
+															<td><span>Participant Performer</span></td>
+															<td><span>{{note.created | sdDateTimeFilter}}</span></td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+											<tr
+												ng-show="flowElement.expanded_ && sdProcessSummaryCtrl.showDocuments && flowElement.documents">
+												<td colspan="6">
+													<table width="95%" class="process-summary-notes">
+														<tr style="background-color: lightgray">
+															<th><span>Document</span></th>
+															<th><span>Uploaded By</span></th>
+															<th><span>Date</span></th>
+														</tr>
+														<tr ng-repeat="document in flowElement.documents">
+															<td><span><i
+																	class="{{sdProcessSummaryCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>{{document.name}}</span></td>
+															<td><sd-user-image
+																	sda-path="{{document.ownerDetails.userImageURI}}"></sd-user-image>
+																{{document.ownerDetails.displayName}}</td>
+															<td><span>{{document.dateLastModified |
+																	sdDateTimeFilter}}</span></td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+											<tr ng-show="flowElement.expanded_">
+												<td colspan="4">
+													<table width="95%" class="process-summary-notes">
+														<tr style="background-color: lightgray">
+															<th><span>Checklist</span></th>
+															<th><span>Performed By</span></th>
+															<th><span>Maker</span></th>
+														</tr>
+														<tr>
+															<td><span>{{flowElement.activity.description}}</span></td>
+															<td><span><sd-user-image
+																		sda-path="{{flowElement.userImageURI}}"></sd-user-image>
+																	{{flowElement.completedBy}}</span></td>
+															<td><span></span></td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+											</tbody>
+										</table>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

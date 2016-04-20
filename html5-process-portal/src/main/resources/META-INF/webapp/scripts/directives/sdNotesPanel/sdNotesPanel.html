@@ -12,13 +12,8 @@
 				<tr class="properties-panel-notesRow"
 					ng-show="notesCtrl.showProcessNotes"
 					ng-repeat="note in notesCtrl.processNotes.list">
-					<td class="properties-panel-content"><img
-						ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-						ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
-						width="24px" height="24px" /> <i
-						class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
-						ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-						style="margin-top: 3px; margin-left: 3px;"></i></td>
+					<td class="properties-panel-content"><sd-user-image
+							sda-path="{{note.avatarImageURI}}"></sd-user-image></td>
 					<td>
 						<table>
 							<tr>
@@ -43,12 +38,10 @@
 				placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addProcessNote')}}">
 	        </textarea>
 
-			<button  class='pi pi-add pi-1x'
-				id="addProcessNoteId" 
+			<button class='pi pi-add pi-1x' id="addProcessNoteId"
 				title="{{notesCtrl.sdI18n('processportal.views.notesPanel.header.addNote')}}"
 				ng-disabled="!(notesCtrl.processNote.length > 0)"
-				ng-click="notesCtrl.addProcessNotes()">
-			</button>
+				ng-click="notesCtrl.addProcessNotes()"></button>
 
 		</div>
 	</div>
@@ -65,13 +58,8 @@
 				</tr>
 				<tr class="notesRow" ng-show="notesCtrl.showActivityNotes"
 					ng-repeat="note in notesCtrl.activityNotes.list">
-					<td class="properties-panel-content"><img
-						ng-if="notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-						ng-src="{{notesCtrl.getUserImageURL(note.avatarImageURI)}}"
-						width="24px" height="24px" /> <i
-						class="{{notesCtrl.getUserImageURL(note.avatarImageURI)}} pi-1x"
-						ng-if="!notesCtrl.isUserImageURLAvailable(note.avatarImageURI)"
-						style="margin-top: 3px; margin-left: 3px;"></i></td>
+					<td class="properties-panel-content"><sd-user-image
+							sda-path="{{note.avatarImageURI}}"></sd-user-image></td>
 					<td>
 						<table>
 							<tr>
@@ -95,12 +83,10 @@
 				placeholder="{{notesCtrl.sdI18n('processportal.views.notesPanel.propertiesPage.addActivityNote')}}">
 	        </textarea>
 
-	        <button  class='pi pi-add pi-1x'
-				id="addActivityNoteId" 
+			<button class='pi pi-add pi-1x' id="addActivityNoteId"
 				title="{{notesCtrl.sdI18n('processportal.views.notesPanel.header.addNote')}}"
 				ng-disabled="!(notesCtrl.activityNote.length > 0)"
-				ng-click="notesCtrl.addActivityNotes()">
-			</button>
+				ng-click="notesCtrl.addActivityNotes()"></button>
 
 		</div>
 	</div>

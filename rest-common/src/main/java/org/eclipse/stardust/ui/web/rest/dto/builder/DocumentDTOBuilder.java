@@ -174,7 +174,7 @@ public class DocumentDTOBuilder
     * @param detailLevelDTO
     * @param userService
     */
-   private static void setOwnerDetails(List<DocumentDTO> documentDTOs, DetailLevelDTO detailLevelDTO,
+   public static void setOwnerDetails(List<DocumentDTO> documentDTOs, DetailLevelDTO detailLevelDTO,
          UserService userService)
    {
       // set Owner details

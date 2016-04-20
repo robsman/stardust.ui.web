@@ -180,17 +180,6 @@
   }
 
   /**
-   * @param userImageURI
-   * @returns
-   */
-  NotesController.prototype.getUserImageURL = function(userImageURI) {
-    // remove a trailing slash from url
-    var rootUrl = this.rootUrl.slice(0, this.rootUrl.length - 1);
-
-    return (userImageURI.indexOf("/") > -1) ? rootUrl + userImageURI : userImageURI;
-  };
-
-  /**
    * 
    */
   NotesController.prototype.openNotesView = function() {
@@ -200,14 +189,6 @@
       "oid": "" + processInstanceOid,
       "processName": this.processNotes.label
     }, false);
-  };
-
-  /**
-   * @param userImageURI
-   * @returns {Boolean}
-   */
-  NotesController.prototype.isUserImageURLAvailable = function(userImageURI) {
-    return (userImageURI.indexOf('/') > -1);
   };
 
   /**

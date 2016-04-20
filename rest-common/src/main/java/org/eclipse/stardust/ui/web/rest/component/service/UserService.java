@@ -141,6 +141,7 @@ public class UserService
       {
          UserDTO userDTO = DTOBuilder.build(user2, UserDTO.class);
          userDTO.displayName = UserUtils.getUserDisplayLabel(user2);
+         userDTO.userImageURI = MyPicturePreferenceUtils.getUsersImageURI(user2);
          userDTOs.add(userDTO);
       }
       return userDTOs;

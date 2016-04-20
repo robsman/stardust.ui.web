@@ -79,13 +79,17 @@ public class DefaultDataPathValueFilter implements IDataPathValueFilter
          {
             DocumentDTO documentDTO = DocumentDTOBuilder.build(document, null);
             // determine the attachment type
-            if (DmsUtils.getActivityInstanceOid(document) != null)
+            Long activityInstanceOid = DmsUtils.getActivityInstanceOid(document);
+            Long processInstanceOid = DmsUtils.getProcessInstanceOid(document);
+            if (activityInstanceOid != null)
             {
                documentDTO.attachmentType = "activity";
+               documentDTO.oid = activityInstanceOid;
             }
-            else if (DmsUtils.getProcessInstanceOid(document) != null)
+            else if (processInstanceOid != null)
             {
                documentDTO.attachmentType = "process";
+               documentDTO.oid = processInstanceOid;
             }
             dataPathValueDTO.documents.add(documentDTO);
          }

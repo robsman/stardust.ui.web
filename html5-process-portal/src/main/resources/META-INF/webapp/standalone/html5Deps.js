@@ -85,7 +85,8 @@ var html5Deps = function() {
         'sdSsoService' :  [ 'html5-common/scripts/services/sdSsoService'],
         'sdSessionService' : ['html5-common/scripts/services/sdSessionService'],
         'sdOpenDocumentLink' : ['html5-process-portal/scripts/directives/sdOpenDocumentLink'],
-        'sdCommonViewUtilService' : ['html5-views-common/html5/scripts/services/sdCommonViewUtilService']
+        'sdCommonViewUtilService' : ['html5-views-common/html5/scripts/services/sdCommonViewUtilService'],
+        'sdProcessSummary': ['html5-process-portal/scripts/directives/sdProcessSummary/sdProcessSummary']
       },
       shim : {
         'jquery.dataTables' : [ 'jquery' ],
@@ -134,7 +135,8 @@ var html5Deps = function() {
         'sdInitializerService' : ['html5CommonMain','sdSsoService','sdLoggedInUserService'],
         'sdInitializer' : ['sdInitializerService'],
         'sdCommonViewUtilService' : ['html5ViewsCommonMain','sdViewUtilService', 'sdLoggerService'],
-        'sdOpenDocumentLink' : ['html5CommonMain','sdUtilService','sdCommonViewUtilService','sdMimeTypeService']
+        'sdOpenDocumentLink' : ['html5CommonMain','sdUtilService','sdCommonViewUtilService','sdMimeTypeService'],
+        'sdProcessSummary':['html5CommonMain','sdUtilService', 'sdMimeTypeService', 'sdPopover']
       },
       deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap","ckeditor","portalApplication",
           "html5CommonMain","html5ViewsCommonMain","sdEventBusService", "httpInterceptorProvider",
@@ -142,7 +144,7 @@ var html5Deps = function() {
           'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover', 
           'sdAutoComplete','sdRichTextEditor','sdTree','sdFolderTree','sdProcessDocumentTree', 'sdDateTimeFilter', 'sdNotesPanel', 
           'sdActivityPanelPropertiesPage', 'sdProcessDocumentsPanel', 'uiBootstrap', 'sdFileDropbox', 'sdUtilDirectives',
-          'sdVersionHistoryDialog', 'documentRepositoryService', 'sdInitializer', 'sdOpenDocumentLink']
+          'sdVersionHistoryDialog', 'documentRepositoryService', 'sdInitializer', 'sdOpenDocumentLink', 'sdProcessSummary']
     };
 
     copyValues(config.paths, reqMod.paths);

@@ -209,8 +209,8 @@ public class ProcessInstanceUtils
 
       if (null == processInstance)
       {
-         throw new ResourceNotFoundException(MessagesViewsCommonBean.getInstance().get(
-               "common.process.instance.notfound"));
+         throw new ResourceNotFoundException(MessagesViewsCommonBean.getInstance().getParamString(
+               "common.process.instance.notfound", String.valueOf(oid)));
       }
 
       ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
