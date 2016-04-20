@@ -345,7 +345,7 @@
 		{
 			label : _sgI18nService
 			.translate('views-common-messages.views-activityTable-statusFilter-halted'),
-			color : '#e62e2e',
+			color : '#EFAE39',
 			aiValue : 10,
 			piValue : 6
 		}
