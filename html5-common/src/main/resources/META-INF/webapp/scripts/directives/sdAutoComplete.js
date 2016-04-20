@@ -16,6 +16,7 @@ angular.module('bpm-common.directives')
     var tmrPromise;
     
     $scope.ui={"selectedIndex" : 0};
+    $scope.hideInput = false;
     $scope.ui.styles={};
     
     $scope.$watch("matchStr",function(){
@@ -147,6 +148,7 @@ angular.module('bpm-common.directives')
 
         if($scope.allowMultiple===false){
           $scope.dataSelected=[];
+           $scope.hideInput = true;
         }
         
         if($scope.allowDuplicates===false){
@@ -175,6 +177,8 @@ angular.module('bpm-common.directives')
     	if($scope.readOnly) {
     		return;
     	}
+
+      $scope.hideInput = false;
     	
       var idx = $scope.dataSelected.indexOf(item);
       $scope.dataSelected.splice(idx,1);
@@ -202,7 +206,7 @@ angular.module('bpm-common.directives')
                    <i ng-class="classGeneratorTPC(item,$index)"></i>\
                      {{item[textProperty] || item}}\
               </div>\
-              <input ng-hide="readOnly" ng-model="matchStr"\
+              <input ng-hide="readOnly || hideInput" ng-model="matchStr"\
                      ng-keyUp="changeWrapper(matchStr)"\
                      style="outline-width:0px;border:none; margin-left:4px"\
                      type="text" aid="{{autoIdPrefix}}-MatchStr" />\
