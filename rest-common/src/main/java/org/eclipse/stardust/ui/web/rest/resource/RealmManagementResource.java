@@ -14,6 +14,8 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.service.RealmManagementService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.RealmDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,6 +39,7 @@ public class RealmManagementResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/fetch")
+   @ResponseDescription("The response will have List of UserRealm")
    public Response getUserRealms()
    {
       try
@@ -55,6 +58,7 @@ public class RealmManagementResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/save")
+   @DTODescription(request="org.eclipse.stardust.ui.web.rest.dto.RealmDTO")
    public Response save(String postData)
    {
       RealmDTO realmDTO = GsonUtils.fromJson(postData, RealmDTO.class);

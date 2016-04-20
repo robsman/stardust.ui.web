@@ -28,6 +28,8 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.service.QualityAssuranceManagementService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.QualityAssuranceActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QualityAssuranceDepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
@@ -59,6 +61,8 @@ public class QualityAssuranceManagementResource
    @GET
    @Path("/activities")
    @Produces(MediaType.APPLICATION_JSON)
+   @ResponseDescription("The response will contain list of QualityAssuranceActivityDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.QualityAssuranceActivityDTO")
    public Response getActivities(
          @QueryParam("showObsoleteActivities") @DefaultValue("false") String showObsoleteActivities)
    {
@@ -79,6 +83,8 @@ public class QualityAssuranceManagementResource
    @Path("/departments")
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
+   @ResponseDescription("The response will contain list of QualityAssuranceDepartmentDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.QualityAssuranceDepartmentDTO")
    public Response getDepartments(String postData)
    {
       try
@@ -102,6 +108,7 @@ public class QualityAssuranceManagementResource
    @Path("/updateQaProbabilities")
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
+   @DTODescription(request="org.eclipse.stardust.ui.web.rest.dto.request.QualityAssuranceRequestDTO")
    public Response updateQaProbabilities(String postData)
    {
       try

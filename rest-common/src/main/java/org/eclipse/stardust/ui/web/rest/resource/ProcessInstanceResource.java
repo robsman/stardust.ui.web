@@ -101,6 +101,7 @@ public class ProcessInstanceResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{processInstanceOid: \\d+}/documents/{documentId}/split")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DocumentDTO")
    public Response splitDocument(@PathParam("processInstanceOid") long processInstanceOid,
          @PathParam("documentId") String documentId, String postedData)
    {
@@ -122,6 +123,8 @@ public class ProcessInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{processInstanceOid: \\d+}/documents")
+   @ResponseDescription("The response will contain List<DataPathValueDTO>")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO")
    public Response getDocuments(@PathParam("processInstanceOid") String processInstanceOid)
    {
       try
@@ -140,6 +143,7 @@ public class ProcessInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{oid}/correspondence")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO")
    public Response getCorrespondenceFolder(@PathParam("oid") Long processOid)
    {
       FolderDTO folderDto = null;
@@ -160,6 +164,8 @@ public class ProcessInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{processInstanceOid: \\d+}/documents/{dataPathId}")
+   @ResponseDescription("The response will contain List<DataPathValueDTO>")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO")
    public Response getDocumentsForDatapath(@PathParam("processInstanceOid") String processInstanceOid,
          @PathParam("dataPathId") String dataPathId)
    {
