@@ -34,6 +34,8 @@ import org.eclipse.stardust.ui.web.bcc.views.ProcessSearchConfigurationBean;
 import org.eclipse.stardust.ui.web.rest.common.ProcessSearchParameterConstants;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessActivityService;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
@@ -69,6 +71,8 @@ public class ProcessActivityResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/performSearch")
+   @ResponseDescription("The response will contain list of ActivityInstanceDTO")
+   @DTODescription(request="org.eclipse.stardust.ui.web.rest.dto.ProcessSearchCriteriaDTO",response="org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO")
    public Response performSearch(@QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,

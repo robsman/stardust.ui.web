@@ -41,6 +41,8 @@ import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.service.AuthorizationManagerService;
 import org.eclipse.stardust.ui.web.rest.component.service.PreferenceService;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.dto.PreferenceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.PermissionDTO;
@@ -141,6 +143,8 @@ public class PreferenceResource
    @GET
    @Path("/partition")
    @Produces(MediaType.APPLICATION_JSON)
+   @ResponseDescription("The response will contain list of PreferenceDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.PreferenceDTO")
    public Response getTenantPreferences()
    {
       try
@@ -163,6 +167,8 @@ public class PreferenceResource
    @GET
    @Path("/user")
    @Produces(MediaType.APPLICATION_JSON)
+   @ResponseDescription("The response will get list of PreferenceDTO according to given userId")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.PreferenceDTO")
    public Response getUserPreferences(@QueryParam("realmId") String realmId, @QueryParam("userId") String userId)
    {
       try
@@ -180,6 +186,8 @@ public class PreferenceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/permissions/grants")
+   @ResponseDescription("The response will have Map of PermissionDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.PermissionDTO")
    public Response getAllPermissions()
    {
       Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.fetchPermissions();
@@ -189,6 +197,8 @@ public class PreferenceResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/permissions/grants")
+   @ResponseDescription("The response will have Map of PermissionDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.PermissionDTO")
    public Response updatePermissions(String postedData)
    {
       Map grantsMap = null;
@@ -256,6 +266,8 @@ public class PreferenceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/participants/clone")
+   @ResponseDescription("The response will have Map of PermissionDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.PermissionDTO")
    public Response cloneParticipant(@QueryParam("sourceParticipantIds") String sourceParticipantIds,
          @QueryParam("targetParticipantIds") String targetParticipantIds)
    {
@@ -269,6 +281,8 @@ public class PreferenceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/participants/restore")
+   @ResponseDescription("The response will have Map of PermissionDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.PermissionDTO")
    public Response restoreParticipants(@QueryParam("participantIds") String participantIds)
    {
       Set<String> participantQualifiedIds = splitUnique(participantIds, ",");

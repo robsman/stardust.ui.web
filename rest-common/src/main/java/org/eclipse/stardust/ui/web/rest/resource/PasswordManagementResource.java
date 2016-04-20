@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.PasswordManagementService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
 import org.eclipse.stardust.ui.web.rest.dto.PasswordRulesDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
@@ -45,6 +46,7 @@ public class PasswordManagementResource
    @GET
    @Path("/rules")
    @Produces(MediaType.APPLICATION_JSON)
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.PasswordRulesDTO")
    public Response getPasswordRules()
    {
       try
@@ -73,6 +75,7 @@ public class PasswordManagementResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/rules")
+   @DTODescription(request="org.eclipse.stardust.ui.web.rest.dto.PasswordRulesDTO")
    public Response savePasswordRules(String postedData)
    {
       try

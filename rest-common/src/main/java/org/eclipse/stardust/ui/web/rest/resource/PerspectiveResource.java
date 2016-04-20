@@ -21,6 +21,8 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.PerspectiveService;
+import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.PerspectiveDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,8 @@ public class PerspectiveResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
+   @ResponseDescription("The response will contain list of PerspectiveDTO")
+   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.PerspectiveDTO")
    public Response getPerspectiveInfo()
    {
       try
