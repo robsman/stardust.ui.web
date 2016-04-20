@@ -22,6 +22,7 @@ import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
@@ -138,9 +139,9 @@ public class ManualActivityUi
             path.setName(dataMapping.getName());
             manualActivityPath.getChildPaths().add(path);
             
-            if (null != dataMapping.getAttribute("mandatoryDataMapping"))
+            if (null != dataMapping.getAttribute(PredefinedConstants.MANDATORY_DATA_MAPPING))
             {
-               path.setMandatory((Boolean) dataMapping.getAttribute("mandatoryDataMapping")); 
+               path.setMandatory((Boolean) dataMapping.getAttribute(PredefinedConstants.MANDATORY_DATA_MAPPING)); 
             }
          }
          else
