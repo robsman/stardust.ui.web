@@ -304,16 +304,25 @@ define(
 						 */
 						PropertiesTree.prototype.initialize = function(
 								categories, element, view) {
-
+							
+							var expandedRows = [];
+							var expClass="";
+							
 							this.categories = categories;
 							this.element = element;
 							this.view = view;
 
 							this.table = m_utils.jQuerySelect("#fieldPropertiesTable");
 							this.tableBody = m_utils.jQuerySelect("table#fieldPropertiesTable tbody");
-
+							
+							//capture currently expanded category rows
+							m_utils.jQuerySelect("#fieldPropertiesTable tr.expanded")
+							.each(function(){
+								expandedRows.push(this.textContent);
+							});
+							
 							this.tableBody.empty();
-
+							
 							if (!element) {
 								return;
 							}
@@ -321,8 +330,20 @@ define(
 							var n = 0;
 
 							for (categoryName in this.categories) {
+								
 								var category = this.categories[categoryName];
-								var content = "<tr id=\"categoryRow-" + n
+								
+								//check if the category was previously expanded
+								if(expandedRows.some(function(name){
+									return name.toUpperCase() === categoryName.toUpperCase();
+								})){
+									expClass="expanded";
+								}
+								else{
+									expClass="";
+								}
+								
+								var content = "<tr class=\"" + expClass+ "\" id=\"categoryRow-" + n
 										+ "\">";
 
 								content += "<td>";
