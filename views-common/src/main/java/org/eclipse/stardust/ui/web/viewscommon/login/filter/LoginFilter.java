@@ -252,7 +252,10 @@ public class LoginFilter implements Filter
      
       SessionContext sessionContext = SessionContext.findSessionContext(facesContext);
 
-      includeCustomJS(facesContext);
+      if (! (requestUri.endsWith(".js") || requestUri.endsWith(".html")))
+      {
+         includeCustomJS(facesContext, requestUri);
+      }
 
       if(null != sessionContext)
       {
@@ -354,7 +357,7 @@ public class LoginFilter implements Filter
     * This is required for JSF Based Activity Panels. This needs to be done at login,
     * Doing this at later stage causes issues when used with ICEPush, like 'unload' event gets fired at browser.
     */
-   protected void includeCustomJS(FacesContext facesContext)
+   protected void includeCustomJS(FacesContext facesContext, String requestUri)
    {
       try
       {
@@ -371,7 +374,7 @@ public class LoginFilter implements Filter
       }
       catch (Exception e)
       {
-         trace.error("Cannot include Custom JS at this point" + e.getMessage());
+         trace.error("Cannot include Custom JS at this point: " + requestUri + " :" + e.getMessage());
       }
    }
 
