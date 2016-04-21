@@ -16,7 +16,6 @@ var html5Deps = function() {
         "html5-common/styles/3rd-party/jquery-plugins/jquery-ui/1.10.2/jquery-ui-custom.css",
         "html5-common/styles/3rd-party/glyphicons/3.3.2/glyphicons.css",
         "html5-common/styles/portal-icons.css",
-        "html5-common/styles/3rd-party/datatables/1.9.4/jquery.dataTables.css",
         "html5-common/styles/3rd-party/bootstrap/3.3.2/css/bootstrap-theme.min.css",
         "html5-common/styles/3rd-party/bootstrap/3.3.2/css/bootstrap-modal.css",
         "html5-common/styles/sd-data-table.css",

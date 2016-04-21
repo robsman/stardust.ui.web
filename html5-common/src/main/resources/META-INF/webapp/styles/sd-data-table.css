@@ -263,3 +263,7 @@
 	top: 0px;
 	font-size:15px;
 }
+
+.dataTable th, .dataTable td {
+    line-height: 20px;
+}
