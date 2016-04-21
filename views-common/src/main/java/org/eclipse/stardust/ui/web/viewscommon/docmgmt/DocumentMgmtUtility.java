@@ -948,6 +948,22 @@ public class DocumentMgmtUtility
    }
 
    /**
+    * @param parentFolder
+    */
+   private static void clearFolder(Folder parentFolder)
+   {
+      for (Folder folder : parentFolder.getFolders())
+      {
+         getDocumentManagementService().removeFolder(folder.getId(), true);
+      }
+      for (Document document : parentFolder.getDocuments())
+      {
+         getDocumentManagementService().removeDocument(document.getId());
+      }
+   }
+
+   
+   /**
     * @param partitionFolderPath
     * @param bytes
     * @param merge
@@ -972,16 +988,21 @@ public class DocumentMgmtUtility
 
       // open the zip file stream
       ZipInputStream stream = new ZipInputStream(new ByteArrayInputStream(bytes));
-      Folder parentFolder = DocumentMgmtUtility.createFolderIfNotExists(partitionFolderPath);
+      Folder parentFolder = DocumentMgmtUtility.createFolderIfNotExists(partitionFolderPath, Folder.LOD_LIST_MEMBERS);
       partitionFolderPath = parentFolder.getPath() + "/";
 
+      // if it is clean and create fresh
+      if (!merge)
+      {
+         clearFolder(parentFolder);
+      }
+      
       try
       {
          // now iterate through each item in the stream. The get next
          // entry call will return a ZipEntry for each file in the
          // stream
          ZipEntry entry;
-         boolean cleanedFolder = true; // clean only root folder
          while ((entry = stream.getNextEntry()) != null)
          {
             // take care of Windows paths
@@ -995,11 +1016,6 @@ public class DocumentMgmtUtility
                // this is only an empty folder, create it
                relativeEntryPath = relativeEntryPath.substring(0, relativeEntryPath.length() - 1);
                createFolderIfNotExists(partitionFolderPath + relativeEntryPath);
-               if (!merge && cleanedFolder)
-               {
-                  cleanupFolder(getFolder(partitionFolderPath + relativeEntryPath));
-                  cleanedFolder = false;
-               }
             }
             else
             {
