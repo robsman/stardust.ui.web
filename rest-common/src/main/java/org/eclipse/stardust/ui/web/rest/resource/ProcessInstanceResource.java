@@ -546,24 +546,14 @@ public class ProcessInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{oid}")
-   @ResponseDescription("If the request url contains query parameter hierarchy=true, expect the reponse containing list of all process instances in the hierarchy"
-         + "else a single ProcessInstanceDTO")
+   @ResponseDescription("return requested ProcessInstanceDTO json")
    @DTODescription(response = "org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO")
    public Response getProcessByOid(@PathParam("oid") Long oid,
          @QueryParam("fetchDescriptors") @DefaultValue("false") boolean fetchDescriptors,
-         @QueryParam("hierarchy") @DefaultValue("false") boolean withHierarchyInfo,
          @QueryParam("withEvents") @DefaultValue("false") boolean withEvents) throws ResourceNotFoundException
    {
-      if (withHierarchyInfo)
-      {
-         return Response.ok(processInstanceService.getAllProcessInstances(oid, fetchDescriptors, withEvents).toJson(),
-               MediaType.APPLICATION_JSON).build();
-      }
-      else
-      {
-         return Response.ok(processInstanceService.getProcessByOid(oid, fetchDescriptors, withHierarchyInfo).toJson(),
-               MediaType.APPLICATION_JSON).build();
-      }
+      return Response.ok(processInstanceService.getProcessByOid(oid, fetchDescriptors).toJson(),
+            MediaType.APPLICATION_JSON).build();
    }
 
    /**
@@ -575,12 +565,12 @@ public class ProcessInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{oid}/activity-instances")
-   @ResponseDescription("Response contains the list of all activity instance for the given process instance.")
-   @DTODescription(response = "org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO")
+   @ResponseDescription("Response contains the list of all activity instance for the given process instance with hirarachy")
+   @DTODescription(response = "org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO, org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO")
    public Response getAllActivityInstances(@PathParam("oid") Long oid,
          @QueryParam("withEvents") @DefaultValue("false") boolean withEvents) throws ResourceNotFoundException
    {
-      return Response.ok(activityInstanceService.getAllActivityInstancesForProcess(oid, withEvents).toJson(),
+      return Response.ok(processInstanceService.getProcessSummary(oid).toJson(),
             MediaType.APPLICATION_JSON).build();
    }
    

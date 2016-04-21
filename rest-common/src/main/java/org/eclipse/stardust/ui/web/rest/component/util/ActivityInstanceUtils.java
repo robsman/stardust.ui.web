@@ -12,7 +12,6 @@ package org.eclipse.stardust.ui.web.rest.component.util;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable;
-import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAuxiliaryActivity;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isSupportsWeb;
 
 import java.io.Serializable;
@@ -34,7 +33,9 @@ import javax.annotation.Resource;
 import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
+import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
@@ -62,6 +63,7 @@ import org.eclipse.stardust.engine.api.runtime.TransitionTarget;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.model.utils.ActivityReportUtils;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalExecutionTimePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.OpenActivitiesStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.OpenActivitiesStatisticsQuery;
@@ -88,7 +90,6 @@ import org.eclipse.stardust.ui.web.rest.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.util.ActivityInteractionUtils;
-import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
@@ -578,6 +579,25 @@ public class ActivityInstanceUtils
          return true;
       }
       return false;
+   }
+   
+   /**
+    * @param activity
+    * @return
+    */
+   public static boolean isAuxiliaryActivity(Activity activity)
+   {
+      Boolean auxiliaryAttr = null;
+      Object attr = activity.getAttribute(PredefinedConstants.ACTIVITY_IS_AUXILIARY_ATT);
+      if (attr instanceof Boolean)
+      {
+         auxiliaryAttr = (Boolean) attr;
+      }
+      else if (attr instanceof String && !StringUtils.isEmpty((String) attr))
+      {
+         auxiliaryAttr = Boolean.valueOf((String) attr);
+      }
+      return ActivityReportUtils.isAuxiliaryActivity(auxiliaryAttr, activity.getImplementationType());
    }
 
    /**

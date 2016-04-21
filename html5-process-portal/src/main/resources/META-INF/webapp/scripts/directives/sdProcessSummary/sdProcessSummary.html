@@ -50,8 +50,8 @@
 					ng-show="!{{flowElement.type_=='Activity'}} || sdProcessSummaryCtrl.isProcessExpanded(flowElement.processOid_)">
 					<td
 						ng-hide="{{flowElement.type_=='Activity'}} || (sdProcessSummaryCtrl.isProcessExpanded(flowElement.processOid_) && {{flowElement.type_=='Process'}})"
-						style="background-color: #EEE2CF" class="process-summary-control"><div
-							title="Expand"
+						sd-state-display="{{flowElement.processOid_}}"
+						class="process-summary-control"><div title="Expand"
 							ng-click="sdProcessSummaryCtrl.toggleProcessSelection(flowElement.processOid_)">
 							<i class="pi pi-table-expand pi-1x"></i>
 						</div></td>
@@ -68,8 +68,7 @@
 							class="pi pi-activity-group pi-1x"></i></span></td>
 					<td width="28%"
 						class="process-summary-cell process-summary-border-bottom"
-						ng-show="{{flowElement.type_=='Process'}}"><span>{{flowElement.processName}}
-							({{flowElement.oid}})</span></td>
+						ng-show="{{flowElement.type_=='Process'}}"><span>{{flowElement.activity.name}}({{flowElement.activityOID}})</span></td>
 					<td width="10%"
 						class="process-summary-cell process-summary-border-bottom"
 						ng-show="{{flowElement.type_=='Process'}}"><span>{{flowElement.status.label}}</span>
@@ -78,8 +77,11 @@
 						class="process-summary-cell process-summary-border-bottom"
 						ng-show="{{flowElement.type_=='Process'}}"><span>Start
 							Time: {{flowElement.startTime | sdDateTimeFilter}}</span> <span
-						style="margin-left: 5px">Last Modified:
-							{{flowElement.lastModification | sdDateTimeFilter}}</span></td>
+						ng-show="{{flowElement.status.value == 2}}"
+						style="margin-left: 5px">End Time:
+							{{flowElement.lastModification | sdDateTimeFilter}}</span> <span
+						ng-show="{{flowElement.status.value != 2}}"
+						style="margin-left: 5px">End Time: NA</span></td>
 					<td colspan="5" ng-show="{{flowElement.type_=='Activity'}}">
 						<table width="100%">
 							<tbody>
@@ -100,8 +102,11 @@
 												</td>
 												<td width="60%"><span>Start Time:
 														{{flowElement.startTime | sdDateTimeFilter}}</span> <span
-													style="margin-left: 5px">Last Modified:
-														{{flowElement.lastModification | sdDateTimeFilter}}</span></td>
+													ng-show="{{flowElement.status.value == 2}}"
+													style="margin-left: 5px">End Time:
+														{{flowElement.lastModification | sdDateTimeFilter}}</span> <span
+													ng-show="{{flowElement.status.value != 2}}"
+													style="margin-left: 5px">End Time: NA</span></td>
 											</tr>
 											<tr
 												ng-show="flowElement.expanded_ && sdProcessSummaryCtrl.showNotes && flowElement.notes_">
@@ -110,7 +115,6 @@
 														<tr style="background-color: lightgray">
 															<th><span>Notes</span></th>
 															<th><span>Added By</span></th>
-															<th><span>Participant Performer</span></th>
 															<th><span>Date</span></th>
 														</tr>
 														<tr ng-repeat="note in flowElement.notes_"
@@ -121,7 +125,6 @@
 															<td><sd-user-image
 																	sda-path="{{note.avatarImageURI}}"></sd-user-image>
 																{{note.creatorName}}</td>
-															<td><span>Participant Performer</span></td>
 															<td><span>{{note.created | sdDateTimeFilter}}</span></td>
 														</tr>
 													</table>
@@ -148,7 +151,8 @@
 													</table>
 												</td>
 											</tr>
-											<tr ng-show="flowElement.expanded_">
+											<tr
+												ng-show="flowElement.expanded_ && flowElement.isChecklistActivity">
 												<td colspan="4">
 													<table width="95%" class="process-summary-notes">
 														<tr style="background-color: lightgray">

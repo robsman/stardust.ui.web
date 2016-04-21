@@ -6,7 +6,7 @@
  * CSA LLC - initial API and implementation and/or initial documentation
  ******************************************************************************/
 /**
- * Provides implementation of Process Summary 
+ * Provides implementation of Process Summary
  * -----------------------------------------------------------------------------------
  * 
  * @sdaProcessInstanceOid - Process Oid to request process notes for. If it is
@@ -55,8 +55,7 @@
 
     // fetch data from server, then call this method
     this.initProcessInstances();
-    
-    
+
   }
 
   ProcessSummaryController.prototype.isProcessExpanded = function(processOid) {
@@ -77,6 +76,10 @@
   }
 
   ProcessSummaryController.prototype.expandAll = function() {
+    this.expandedProcessOids = [];
+
+    this.expandedProcessOids.push(this.processInstance.oid);
+
     for ( var prop in this.flowElements) {
       if (this.flowElements[prop].type_ == 'Activity') {
         this.flowElements[prop].expanded_ = true;
@@ -92,6 +95,8 @@
   ProcessSummaryController.prototype.collapseAll = function() {
     this.allExpanded = false;
     this.expandedProcessOids = [];
+
+    this.expandedProcessOids.push(this.processInstance.oid);
 
     for ( var prop in this.flowElements) {
       if (this.flowElements[prop].type_ == 'Activity') {
@@ -109,38 +114,49 @@
     this.showDocuments = true;
     this.flowElements = [];
 
-    for ( var processInd in this.processInstances.list) {
-      var process = this.processInstances.list[processInd];
-      process.type_ = "Process";
-      process.processOid_ = process.oid;
-      this.flowElements.push(this.processInstances.list[processInd]);
+    // stratify documents
+    // this.documents = this.normalizeData(activityInstance.attachments);
+    this.documents = {};
+    this.processInstance.type_ = "Process";
+    this.processInstance.name_ = this.processInstance.processName;
+    this.processInstance.processOid_ = this.processInstance.oid;
+    this.expandedProcessOids.push(this.processInstance.oid);
+    // this.flowElements.push(this.processInstance);
+    this.addActivityInstances(this.processInstance);
+  }
 
-      // stratify documents
-      this.documents = this.normalizeData(this.processInstances.list[processInd].attachments);
+  ProcessSummaryController.prototype.addActivityInstances = function(processInstance) {
+    var activityInstances = processInstance.activityInstances;
+    delete processInstance.activityInstances;
 
-      // insert activities
-      var activityInstances = this.processInstances.list[processInd].activityInstances;
-      var processOid = this.processInstances.list[processInd].oid;
+    this.normalizeAttachments(processInstance.attachments);
 
-      if (activityInstances && activityInstances.list) {
-        for ( var ind in activityInstances.list) {
-          var activity = activityInstances.list[ind];
-          activity.type_ = "Activity";
-          activity.expanded_ = false;
-          activity.processOid_ = processOid;
+    for ( var index in activityInstances) {
+      var activityInstance = activityInstances[index];
 
-          // add notes
-          if (activity.notes && activity.notes.totalCount > 0) {
-            activity.notes_ = activity.notes.list;
-          }
+      if (activityInstance.startingProcessInstance) {
+        activityInstance.type_ = "Process";
+        activityInstance.processOid_ = activityInstance.startingProcessInstance.oid;
+        this.flowElements.push(activityInstance);
+        this.addActivityInstances(activityInstance.startingProcessInstance);
+      } else {
+        // insert activities
+        activityInstance.type_ = "Activity";
+        activityInstance.expanded_ = false;
+        activityInstance.processOid_ = processInstance.oid;
 
-          // add Documents
-          activity.documents = this.documents[activity.activityOID];
-
-          this.flowElements.push(activity);
+        // add notes
+        if (activityInstance.notes && activityInstance.notes.list.length > 0) {
+          activityInstance.notes_ = activityInstance.notes.list;
         }
+
+        // add Documents
+        activityInstance.documents = this.documents[activityInstance.activityOID];
+
+        this.flowElements.push(activityInstance);
       }
     }
+
   }
 
   /**
@@ -149,23 +165,23 @@
   ProcessSummaryController.prototype.initProcessInstances = function() {
     var self = this;
     this.sdProcessSummaryService.getProcessInstances(self.$scope.processInstanceOid).then(function(data) {
-      self.processInstances = data;
+      self.processInstance = data;
       self.refresh();
     });
   }
-  
+
   ProcessSummaryController.prototype.getGlyphiconClass = function(mimeType) {
     return this.sdMimeTypeService.getIcon(mimeType);
   };
-  
+
   /**
    * @param data
    * @returns
    */
-  ProcessSummaryController.prototype.normalizeData = function(data) {
-    var res = {}, tempDataPath, tempDoc, i, j;
-    if (!data) { return res; }
-    
+  ProcessSummaryController.prototype.normalizeAttachments = function(data) {
+    var res = this.documents, i;
+    if (!data) { return; }
+
     for (i = 0; i < data.length; i++) {
       if (data[i].attachmentType === "activity") {
         if (!res[data[i].oid]) {
@@ -174,7 +190,6 @@
         res[data[i].oid].push(data[i]);
       }
     }
-    return res;
   }
 
   // inject dependencies
@@ -196,7 +211,7 @@
    * @returns
    */
   ProcessSummaryService.prototype.getProcessInstances = function(processInstanceOid) {
-    var url = this.rootUrl + "services/rest/portal/process-instances/" + processInstanceOid + "?hierarchy=true";
+    var url = this.rootUrl + "services/rest/portal/process-instances/" + processInstanceOid + "/activity-instances";
     var deferred = this.$q.defer();
 
     this.$http.get(url).then(function(data) {

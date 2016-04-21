@@ -79,7 +79,7 @@ public class ProcessInstanceDTO extends AbstractDTO
    
    public String rootProcessName;
 
-   public QueryResultDTO activityInstances;
+   public List<ActivityInstanceDTO> activityInstances;
 
    public List<DocumentDTO> attachments;
 }

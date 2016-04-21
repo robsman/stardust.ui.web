@@ -54,7 +54,6 @@ import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.component.util.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
-import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceIntractionDTO;
@@ -452,11 +451,11 @@ public class ActivityInstanceService
    }
 
    /**
-    * @param oid
+    * @param processInstanceOid
     * @param withEvents
     * @return
     */
-   public AbstractDTO getAllActivityInstancesForProcess(Long processInstanceOid, boolean withEvents)
+   public List<ActivityInstanceDTO> getActivityInstancesForProcess(Long processInstanceOid, boolean withEvents)
    {
       ActivityInstanceQuery aiQuery = ActivityInstanceQuery.findAll();
       ProcessInstanceFilter processFilter = new ProcessInstanceFilter(processInstanceOid, false);
@@ -469,15 +468,22 @@ public class ActivityInstanceService
       }
 
       ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(aiQuery);
+
       QueryResultDTO activityQR = ActivityTableUtils.buildTableResult(activityInstances, MODE.ACTIVITY_TABLE);
-      
-      //Add Notes
+
+      // Add Notes
+
+      List<ActivityInstanceDTO> filteredAIs = new ArrayList<ActivityInstanceDTO>();
       for (Object aDTOB : activityQR.list)
       {
          ActivityInstanceDTO activityInstanceDTO = (ActivityInstanceDTO) aDTOB;
-         activityInstanceDTO.notes = notesService.getActivityNotes(activityInstanceDTO.activityOID, true);
+         if (!activityInstanceDTO.auxillary)
+         {
+            activityInstanceDTO.notes = notesService.getActivityNotes(activityInstanceDTO.activityOID, true);
+            filteredAIs.add(activityInstanceDTO);
+         }
       }
-      return activityQR;   
+      return filteredAIs;
    }
    
    /**

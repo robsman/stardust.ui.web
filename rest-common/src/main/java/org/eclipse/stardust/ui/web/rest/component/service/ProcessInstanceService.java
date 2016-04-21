@@ -56,7 +56,9 @@ import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ProcessDefinitionUtils;
+import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.AttachToCaseDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.CreateCaseDTO;
@@ -98,7 +100,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.CorrespondencePanelPreferen
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -128,8 +129,70 @@ public class ProcessInstanceService
    
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
+   
    @Resource
    private UserService userService;
+
+   @Resource
+   private ServiceFactoryUtils serviceFactoryUtils;
+   
+   /**
+    * @param processInstanceOid
+    * @return
+    */
+   public ProcessInstanceDTO getProcessSummary(Long processInstanceOid)
+   {
+      // Make sure it is root process oid
+      ProcessInstance rootProcessInstance = getProcessInstance(processInstanceOid);
+      if(rootProcessInstance.getRootProcessInstanceOID() != rootProcessInstance.getOID()){
+         rootProcessInstance = getProcessInstance(rootProcessInstance.getRootProcessInstanceOID());
+      }
+      ProcessInstanceDTO rootProcessInstanceDTO  = processInstanceUtilsREST.buildProcessInstanceDTO(rootProcessInstance);
+      traverseProcessInstanceHierarchy(rootProcessInstanceDTO, rootProcessInstance);
+      return rootProcessInstanceDTO;
+   }
+   
+   /**
+    * @param processInstanceDTO
+    * @param processInstance
+    * @return
+    */
+   public ProcessInstanceDTO traverseProcessInstanceHierarchy(ProcessInstanceDTO processInstanceDTO,
+         ProcessInstance processInstance)
+   {
+      List<DataPathValueDTO> dataPathV = getProcessInstanceDocuments(processInstance.getOID());
+      for (DataPathValueDTO dataPathValueDTO : dataPathV)
+      {
+         if(dataPathValueDTO.dataPath.id.equals("PROCESS_ATTACHMENTS")){
+            DetailLevelDTO detailLevelDTO = new DetailLevelDTO();
+            detailLevelDTO.userDetailsLevel = "true";
+            DocumentDTOBuilder.setOwnerDetails(dataPathValueDTO.documents, detailLevelDTO, userService);
+            processInstanceDTO.attachments = dataPathValueDTO.documents;  
+         }
+      }
+      
+      processInstanceDTO.activityInstances = activityInstanceService
+            .getActivityInstancesForProcess(processInstance.getOID(), false);
+      
+      for (ActivityInstanceDTO adto : processInstanceDTO.activityInstances)
+      {
+         if ("Subprocess".equals(adto.activity.implementationTypeId))
+         {
+            ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
+            processInstanceQuery.getFilter().add(
+                  ProcessInstanceQuery.STARTING_ACTIVITY_INSTANCE_OID.isEqual(adto.activityOID));
+            ProcessInstances processInstances = serviceFactoryUtils.getQueryService().getAllProcessInstances(
+                  processInstanceQuery);
+            for (ProcessInstance processInstance2 : processInstances)
+            {
+               adto.startingProcessInstance = processInstanceUtilsREST.buildProcessInstanceDTO(processInstance2);
+               traverseProcessInstanceHierarchy(adto.startingProcessInstance, processInstance2);
+            }
+         }
+      }
+      return processInstanceDTO;
+   }
+   
    
    
    public ProcessInstanceDTO startProcess(List<Attachment> attachments)
@@ -331,7 +394,7 @@ public class ProcessInstanceService
       }
       else
       {
-         ServiceFactoryUtils.getWorkflowService().setOutDataPath(processOid, dataPathId, null);
+         serviceFactoryUtils.getWorkflowService().setOutDataPath(processOid, dataPathId, null);
       }
    }
    
@@ -564,46 +627,14 @@ public class ProcessInstanceService
    }
 
    /**
-    * @return 
-    * 
-    */
-   public ProcessInstanceDTO getProcessByOid(Long oid, boolean fetchDescriptors, boolean withHierarchyInfo)
-   {
-      ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, fetchDescriptors, withHierarchyInfo);
-      ProcessInstanceDTO dto = processInstanceUtilsREST.buildProcessInstanceDTO(process);
-      return dto;
-   }
-
-   /**
     * @param oid
     * @param fetchDescriptors
-    * @param withEvents
     * @return
-    * @throws ResourceNotFoundException 
     */
-   public QueryResultDTO getAllProcessInstances(Long oid, boolean fetchDescriptors, boolean withEvents)
-         throws ResourceNotFoundException
+   public ProcessInstanceDTO getProcessByOid(Long oid, boolean fetchDescriptors)
    {
-      ProcessInstances process = processInstanceUtilsREST.getAllProcessInstances(oid, fetchDescriptors, withEvents);
-      QueryResultDTO dto = processInstanceUtilsREST.buildProcessListResult(process);
-
-      for (Object pidto : dto.list)
-      {
-         ProcessInstanceDTO processInsDTO = (ProcessInstanceDTO) pidto;
-         processInsDTO.activityInstances = (QueryResultDTO) activityInstanceService.getAllActivityInstancesForProcess(
-               processInsDTO.oid, withEvents);
-         List<DataPathValueDTO> df = getProcessInstanceDocuments(processInsDTO.oid);
-         for (DataPathValueDTO dataPathValueDTO : df)
-         {
-            if(dataPathValueDTO.dataPath.id.equals("PROCESS_ATTACHMENTS")){
-               DetailLevelDTO detailLevelDTO = new DetailLevelDTO();
-               detailLevelDTO.userDetailsLevel = "true";
-               DocumentDTOBuilder.setOwnerDetails(dataPathValueDTO.documents, detailLevelDTO, userService);
-               processInsDTO.attachments = dataPathValueDTO.documents;  
-            }
-         }
-      }
-
+      ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, fetchDescriptors, false);
+      ProcessInstanceDTO dto = processInstanceUtilsREST.buildProcessInstanceDTO(process);
       return dto;
    }
 

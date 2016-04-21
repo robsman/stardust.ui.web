@@ -155,6 +155,8 @@ public class ActivityTableUtils
    private static final String ALL = "all";
    
    public static double PORTAL_CRITICALITY_MUL_FACTOR = 1000;
+   
+   public static final String CHECKLIST_FACET = "checklist";
 
    public static enum MODE {
       ACTIVITY_TABLE, WORKLIST;
@@ -817,6 +819,13 @@ public class ActivityTableUtils
                   dto.activity.name = getCaseName(ai);
                }
                dto.rootProcessName = ai.getProcessInstance().getRootProcessInstanceName();;
+               
+               String facet = (String) ai.getActivity().getAttribute("stardust:model:manualActivityFacet");
+               dto.isChecklistActivity = false;
+               if (CHECKLIST_FACET.equals(facet))
+               {
+                  dto.isChecklistActivity = true;
+               }
                
                list.add(dto);
             }

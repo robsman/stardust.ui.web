@@ -91,6 +91,10 @@ public class ActivityInstanceDTO extends AbstractDTO
    public String rootProcessName;
 
    public NotesResultDTO notes;
+   
+   public ProcessInstanceDTO startingProcessInstance;
+   
+   public Boolean isChecklistActivity;
 
    public void setQualityAssuranceState(QualityAssuranceState state)
    {
