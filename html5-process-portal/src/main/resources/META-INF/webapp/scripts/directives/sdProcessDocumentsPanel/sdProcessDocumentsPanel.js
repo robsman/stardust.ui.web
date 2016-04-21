@@ -431,9 +431,14 @@
       for (j = 0; j < tempDataPath.documents.length; j++) {
 
         // activity attachment or process attachments
-        if (tempDataPath.documents[j].attachmentType == "activity") {
-          targetDocumentList = res.activityAttachments;
-        } else if (tempDataPath.documents[j].attachmentType == "process") {
+        if (tempDataPath.documents[j].contextKind == "AI") {
+          if (this.$scope.activityInstanceOid == tempDataPath.documents[j].contextOID) {
+            targetDocumentList = res.activityAttachments;
+          } else {
+            targetDocumentList = res.processAttachments; // TODO: add to process attachments is it
+                                                          // correct?
+          }
+        } else if (tempDataPath.documents[j].contextKind == "PI") {
           targetDocumentList = res.processAttachments;
         }
 

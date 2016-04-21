@@ -41,6 +41,7 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
 import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
+import org.eclipse.stardust.engine.api.query.EvaluationPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.HistoricalEventPolicy;
@@ -195,6 +196,35 @@ public class ProcessInstanceUtils
       return pi;
    }
 
+   /**
+    * @param oid
+    * @param policies
+    * @return
+    */
+   public ProcessInstance getProcessInstance(long oid, List<EvaluationPolicy> policies)
+   {
+      ProcessInstance pi = null;
+      ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
+      query.where(ProcessInstanceQuery.OID.isEqual(oid));
+
+      if (policies != null)
+      {
+         for (EvaluationPolicy evaluationPolicy : policies)
+         {
+            query.setPolicy(evaluationPolicy);
+         }
+      }
+
+      ProcessInstances pis = serviceFactoryUtils.getQueryService().getAllProcessInstances(query);
+
+      if (!pis.isEmpty())
+      {
+         pi = pis.get(0);
+      }
+      return pi;
+   }
+   
+   
    /**
     * @param oid
     * @param fetchDescriptors

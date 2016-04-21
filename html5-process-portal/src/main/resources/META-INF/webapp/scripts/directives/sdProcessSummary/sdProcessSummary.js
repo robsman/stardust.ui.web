@@ -183,7 +183,7 @@
     if (!data) { return; }
 
     for (i = 0; i < data.length; i++) {
-      if (data[i].attachmentType === "activity") {
+      if (data[i].contextKind === "activity") {
         if (!res[data[i].oid]) {
           res[data[i].oid] = [];
         }

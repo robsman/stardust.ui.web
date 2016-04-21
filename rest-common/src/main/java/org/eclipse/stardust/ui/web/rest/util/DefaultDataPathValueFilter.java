@@ -83,13 +83,13 @@ public class DefaultDataPathValueFilter implements IDataPathValueFilter
             Long processInstanceOid = DmsUtils.getProcessInstanceOid(document);
             if (activityInstanceOid != null)
             {
-               documentDTO.attachmentType = "activity";
-               documentDTO.oid = activityInstanceOid;
+               documentDTO.contextKind = "AI";
+               documentDTO.contextOID = activityInstanceOid;
             }
             else if (processInstanceOid != null)
             {
-               documentDTO.attachmentType = "process";
-               documentDTO.oid = processInstanceOid;
+               documentDTO.contextKind = "PI";
+               documentDTO.contextOID = processInstanceOid;
             }
             dataPathValueDTO.documents.add(documentDTO);
          }

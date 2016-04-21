@@ -31,9 +31,13 @@ import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
+import org.eclipse.stardust.engine.api.dto.HistoricalData;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.EvaluationPolicy;
+import org.eclipse.stardust.engine.api.query.HistoricalDataPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.query.QueryResult;
@@ -66,6 +70,7 @@ import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDataDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentTypeDTO;
+import org.eclipse.stardust.ui.web.rest.dto.HistoricalDataDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.JoinProcessDTO;
 import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
@@ -143,12 +148,15 @@ public class ProcessInstanceService
    public ProcessInstanceDTO getProcessSummary(Long processInstanceOid)
    {
       // Make sure it is root process oid
-      ProcessInstance rootProcessInstance = getProcessInstance(processInstanceOid);
+      List<EvaluationPolicy> policies = new ArrayList<EvaluationPolicy>();
+      policies.add(HistoricalDataPolicy.INCLUDE_HISTORICAL_DATA);
+      ProcessInstance rootProcessInstance = getProcessInstance(processInstanceOid, policies);
+      
       if(rootProcessInstance.getRootProcessInstanceOID() != rootProcessInstance.getOID()){
-         rootProcessInstance = getProcessInstance(rootProcessInstance.getRootProcessInstanceOID());
+         rootProcessInstance = getProcessInstance(rootProcessInstance.getRootProcessInstanceOID(), policies);
       }
       ProcessInstanceDTO rootProcessInstanceDTO  = processInstanceUtilsREST.buildProcessInstanceDTO(rootProcessInstance);
-      traverseProcessInstanceHierarchy(rootProcessInstanceDTO, rootProcessInstance);
+      traverseProcessInstanceHierarchy(rootProcessInstanceDTO, rootProcessInstance, policies);
       return rootProcessInstanceDTO;
    }
    
@@ -158,9 +166,27 @@ public class ProcessInstanceService
     * @return
     */
    public ProcessInstanceDTO traverseProcessInstanceHierarchy(ProcessInstanceDTO processInstanceDTO,
-         ProcessInstance processInstance)
+         ProcessInstance processInstance, List<EvaluationPolicy> policies)
    {
       List<DataPathValueDTO> dataPathV = getProcessInstanceDocuments(processInstance.getOID());
+      
+      //set historic data
+      List<HistoricalData> histDataList = ((ProcessInstanceDetails) processInstance).getHistoricalData();
+      if (CollectionUtils.isNotEmpty(histDataList))
+      {
+         List<HistoricalDataDTO> histDTOs = new ArrayList<HistoricalDataDTO>();
+         for (HistoricalData histData : histDataList)
+         {
+            HistoricalDataDTO dataDTO = new HistoricalDataDTO();
+            dataDTO.name = String.valueOf(histData.getDataType()); // convert to Data name
+            dataDTO.value = histData.getHistoricalDataValue().toString();
+            dataDTO.modificationTime = histData.getDataModificationTimestamp();
+            dataDTO.contextAIOID = histData.getModifyingActivityInstanceOID();
+            histDTOs.add(dataDTO);
+         }
+      }
+      
+      //set attachments 
       for (DataPathValueDTO dataPathValueDTO : dataPathV)
       {
          if(dataPathValueDTO.dataPath.id.equals("PROCESS_ATTACHMENTS")){
@@ -181,12 +207,18 @@ public class ProcessInstanceService
             ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
             processInstanceQuery.getFilter().add(
                   ProcessInstanceQuery.STARTING_ACTIVITY_INSTANCE_OID.isEqual(adto.activityOID));
+
+            for (EvaluationPolicy policy : policies)
+            {
+               processInstanceQuery.setPolicy(policy);
+            }
+
             ProcessInstances processInstances = serviceFactoryUtils.getQueryService().getAllProcessInstances(
                   processInstanceQuery);
             for (ProcessInstance processInstance2 : processInstances)
             {
                adto.startingProcessInstance = processInstanceUtilsREST.buildProcessInstanceDTO(processInstance2);
-               traverseProcessInstanceHierarchy(adto.startingProcessInstance, processInstance2);
+               traverseProcessInstanceHierarchy(adto.startingProcessInstance, processInstance2, policies);
             }
          }
       }
@@ -833,7 +865,17 @@ public class ProcessInstanceService
     */
    public ProcessInstance getProcessInstance(long processInstanceOid)
    {
-      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
+      return getProcessInstance(processInstanceOid, null);
+   }
+   
+   /**
+    * @param processInstanceOid
+    * @param policies
+    * @return
+    */
+   public ProcessInstance getProcessInstance(long processInstanceOid, List<EvaluationPolicy> policies)
+   {
+      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid, policies);
       if (processInstance == null)
       {
          throw new I18NException(restCommonClientMessages.getParamString("processInstance.notFound",

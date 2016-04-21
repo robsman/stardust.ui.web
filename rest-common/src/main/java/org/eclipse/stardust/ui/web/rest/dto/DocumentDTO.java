@@ -82,9 +82,9 @@ public class DocumentDTO extends AbstractDTO
 
    public List<Pair<String, String>> documentData;
    
-   public String attachmentType = "process"; // or activity
+   public String contextKind = "PI"; // or AI
 
-   public Long oid;
+   public Long contextOID;
    
    public DocumentDTO()
    {
