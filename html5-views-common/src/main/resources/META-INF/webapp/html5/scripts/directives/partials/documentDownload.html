@@ -1,7 +1,9 @@
 <button ng-click="documentDownloadCtrl.setShowDocumentDownload(rowData.documentId,rowData.documentName);"
 		title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-downloadFile')}}" class="button-link tbl-tool-link"
 		aid="{{autoIdPrefix}}-ShowDocDownload">
-		<i class="pi pi-download pi-lg"></i>
+		<i class="pi pi-download pi-lg">
+			<ng-transclude></ng-transclude>
+		</i>
 <div sd-dialog="documentDownloadCtrl.documentDownload" sda-modal="true"
 		 sda-show="documentDownloadCtrl.showDoumentDownload"
 		 sda-type="confirm"
@@ -15,4 +17,5 @@
 		 sda-height="50px"
 		 sda-aid-prefix="{{autoIdPrefix}}">
 </div>
+
 </button>
