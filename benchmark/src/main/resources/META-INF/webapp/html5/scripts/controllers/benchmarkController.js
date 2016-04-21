@@ -1173,7 +1173,7 @@
 				if(!angular.isDate(c.details.condition.offset.time)){
 					c.details.condition.offset.time = new Date("1/1/1970 " +  c.details.condition.offset.time);
 				}
-				c.details.condition.offset.time = new Date("1/1/1970 " +  c.details.condition.offset.time);
+				
 				if(c.details.condition.rhs.id===""){
 					c.details.condition.rhs.id=rhsDefault.qualifiedId;
 					c.details.condition.rhs.type="data";
