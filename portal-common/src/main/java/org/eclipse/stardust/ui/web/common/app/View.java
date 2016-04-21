@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.app;
 
-import static org.eclipse.stardust.ui.web.common.util.StringUtils.*;
+import static org.eclipse.stardust.ui.web.common.util.StringUtils.isEmpty;
+import static org.eclipse.stardust.ui.web.common.util.StringUtils.replace;
+import static org.eclipse.stardust.ui.web.common.util.StringUtils.split;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -31,8 +33,6 @@ import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-
-import com.google.gson.Gson;
 
 
 /**
@@ -294,8 +294,8 @@ public class View extends AbstractUiElement implements TabScopeManager
       {
          try
          {
-            Gson gson = new Gson();
-            return gson.toJson(viewParams2);
+            // Only consider primitives and primitives from Map and List
+            return GsonUtils.stringify(viewParams2);
          }
          catch (Exception e)
          {

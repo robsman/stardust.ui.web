@@ -169,7 +169,11 @@ public class GsonUtils
             JsonObject jsonObj = new JsonObject();
             for (Entry<Object, Object> entry : ((Map<Object, Object>)data).entrySet())
             {
-               jsonObj.add(entry.getKey().toString(), readJsonObject(entry.getValue()));
+               JsonElement jElem = readJsonObject(entry.getValue());
+               if (null != jElem)
+               {
+                  jsonObj.add(entry.getKey().toString(), jElem);
+               }
             }
             jsonElem = jsonObj;
          }
