@@ -20,6 +20,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
 import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
@@ -121,12 +122,11 @@ public class WorklistsTreeUserObject extends IceUserObject
 
       if (!leafNode)
       {
-         params.put("url", "services/rest/portal/worklist/unified/");
+         params.put("type", "unified");
          params.put("userId", userParticipantId);
          viewKey = viewKey + participantInfo.getQualifiedId();
          String unifiedLabel = MessagePropertiesBean.getInstance().getParamString(
                "views.worklistPanel.label.unifiedWorklist");
-         params.put("userId", userParticipantId);
          labelName = unifiedLabel + " - " + label.getLabel();
       }
       else
@@ -137,6 +137,7 @@ public class WorklistsTreeUserObject extends IceUserObject
             String personalLabel = MessagePropertiesBean.getInstance().getParamString(
                   "views.worklistPanel.label.personalWorklist");
             params.put("userId", userParticipantId);
+            params.put("type", "personal");
             labelName = personalLabel + " - " + label.getLabel();
          }
          else
@@ -144,7 +145,13 @@ public class WorklistsTreeUserObject extends IceUserObject
             if (participantInfo instanceof OrganizationInfo  && null != ((OrganizationInfo) participantInfo).getDepartment())
             {
                OrganizationInfo organization = (OrganizationInfo) participantInfo;
-               params.put("participantQId", participantInfo.getQualifiedId() + organization.getDepartment().getId());
+               params.put("participantQId", participantInfo.getQualifiedId());
+               params.put("departmentQId",  organization.getDepartment().toString());
+            }
+            else if (participantInfo instanceof RoleInfo && null != ((RoleInfo) participantInfo).getDepartment()) {
+               RoleInfo role = (RoleInfo) participantInfo;
+               params.put("participantQId", participantInfo.getQualifiedId());
+               params.put("departmentQId",  role.getDepartment().toString());
             }
             else
             {
