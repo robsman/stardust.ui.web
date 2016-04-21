@@ -28,18 +28,18 @@
     }});
 
    angular.module('workflow-ui.services').provider('sdWorklistService', function() {
-      this.$get = [ '$rootScope', '$resource','sdDataTableHelperService', 'sdUtilService','sdWorklistConstants',
-       function($rootScope, $resource, sdDataTableHelperService, sdUtilService, sdWorklistConstants) {
-         var service = new WorklistService($rootScope, $resource, sdDataTableHelperService, sdUtilService, sdWorklistConstants);
+      this.$get = [ '$rootScope', '$resource','sdDataTableHelperService', 'sdUtilService','sdWorklistConstants','sdLoggerService','$q',
+       function($rootScope, $resource, sdDataTableHelperService, sdUtilService, sdWorklistConstants, sdLoggerService, $q) {
+         var service = new WorklistService($rootScope, $resource, sdDataTableHelperService, sdUtilService, sdWorklistConstants, sdLoggerService, $q);
          return service;
       } ];
    });
    /*
     *
     */
-   function WorklistService($rootScope, $resource, sdDataTableHelperService, sdUtilService, sdWorklistConstants) {
+   function WorklistService($rootScope, $resource, sdDataTableHelperService, sdUtilService, sdWorklistConstants, sdLoggerService, $q) {
 	   var REST_BASE_URL = "services/rest/portal/worklist/";
-
+	   var trace = sdLoggerService.getLogger('workflow-ui.services.sdWorklistService')
 	   /*
 	    *
 	    */
@@ -123,7 +123,10 @@
 
 		   } else {
 			   if(!query.url){
-				   throw "Illegal type passed to getWorklist : "+query;
+				   trace.error("Illegeal Query attribute", query);
+				   var def = $q.defer();
+				   def.reject("Illegal query passed to getWorklist");
+				   return def.promise;
 			   }
 		   }
 
