@@ -54,10 +54,10 @@
 					<table>
 						<tbody>
 							<tr>
-								<td><img src="{{ctrl.getParticipantIcon(participant.participantFullId)}}"
+								<td><img ng-src="{{::ctrl.getParticipantIcon(participant.participantFullId)}}"
 									style="position: inherit;" /></td>
 								<td>
-									{{ctrl.getParticipantDisplayName(participant.participantFullId)}}
+									{{::ctrl.getParticipantDisplayName(participant.participantFullId)}}
 								</td>
 								<td><a href="#"
 									ng-click="ctrl.removeParticipant(permission.id, participant.participantFullId)"><i
