@@ -17,33 +17,27 @@
 	</div>
 
 	<div class="menu-container"  
-	     ng-click="processTableCtrl.openAbortDialog(rowData);"
 	     ng-disabled="!rowData.enableTerminate"  
 	     aid="PP-ProcessTable-AbortAction">
 
-		<i title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" 
-		   class="pi pi-process-abort pi-lg button-link tbl-tool-link tbl-tool-joined-link" >
+		<i	ng-click="processTableCtrl.openAbortDialog(rowData);"  
+			title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" 
+		   	class="pi pi-process-abort pi-lg button-link tbl-tool-link tbl-tool-joined-link" >
 		</i>
 
-		<span>
+		<i  sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
+		    sda-placement="auto bottom-right"
+			ng-click="processTableCtrl.openAbortPopover(rowData); "
+			title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}" 
+			style="position: relative;left: calc(100% - 25px);"
+			class="pi pi-menu-dropdown button-link tbl-tool-link">
+		</i>
+
+		<span ng-click="processTableCtrl.openAbortDialog(rowData);">
 			{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}
 		</span>
 
-	</div>
-
-	<!-- abort menu -->
-	<div class="menu-container"  
-	     ng-disabled="!rowData.enableTerminate"  
-	     aid="PP-ProcessTable-AbortPopoverAction"
-	     sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
-	     sda-placement="auto bottom-right"
-		 ng-click="processTableCtrl.openAbortPopover(rowData); ">
-
-		<i  title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}" 
-		    class="pi pi-menu-dropdown button-link tbl-tool-link"></i>
-		<span>
-			{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}
-		</span>
+		
 
 	</div>
 
