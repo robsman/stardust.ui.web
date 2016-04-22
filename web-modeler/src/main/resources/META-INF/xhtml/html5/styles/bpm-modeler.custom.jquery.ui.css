@@ -24,7 +24,7 @@
 }
 
 .minimalTabs .ui-tabs-nav .ui-state-active {
-	background: transparent url(../images/icons/tabs-arrow.png) no-repeat bottom
+	background: transparent url(../../images/icons/tabs-arrow.png) no-repeat bottom
 		center;
 	border: none;
 }

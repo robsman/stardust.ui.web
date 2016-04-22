@@ -392,7 +392,7 @@ a.configLink {
 }
 
 .selected-tool {
-	background: url(../images/icons/toolbarIconSelectHover.png) center repeat-x
+	background: url(../../images/icons/toolbarIconSelectHover.png) center repeat-x
 		#ffd700 ! important;
 	border: 1px solid #6699ff !important;
 }
@@ -409,7 +409,7 @@ a.configLink {
 }
 
 .lightdust input.toolbarButton:hover {
-	background: url(../images/icons/toolbarIconSelectHover.png) center repeat-x;
+	background: url(../../images/icons/toolbarIconSelectHover.png) center repeat-x;
 	cursor: pointer;
 }
 
