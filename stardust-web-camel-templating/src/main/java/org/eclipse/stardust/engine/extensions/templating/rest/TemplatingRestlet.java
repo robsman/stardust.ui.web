@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.extensions.camel.util.DmsFileArchiver;
+import org.eclipse.stardust.engine.extensions.json.GsonHandler;
 import org.eclipse.stardust.engine.extensions.templating.core.RequestHandler;
 import org.eclipse.stardust.engine.extensions.templating.core.ServiceException;
 import org.eclipse.stardust.engine.extensions.templating.core.TemplatingRequest;
@@ -22,6 +23,7 @@ import org.eclipse.stardust.engine.extensions.templating.core.ValidationExceptio
 @Path("/")
 public class TemplatingRestlet
 {
+   private final GsonHandler gson = new GsonHandler();
    private RequestHandler requestHadnler;
 
    public void setRequestHadnler(RequestHandler requestHadnler)
@@ -41,9 +43,9 @@ public class TemplatingRestlet
          Document createdDocument = storeDocument(request, content);
          if (createdDocument != null)
             return Response.ok(createdDocument.getId()).build();
-         else
-            return Response.ok(content).build();
-
+         else{
+            return Response.ok(gson.toJson(new String(content))).build();
+         }
       }
       catch (ValidationException ve)
       {

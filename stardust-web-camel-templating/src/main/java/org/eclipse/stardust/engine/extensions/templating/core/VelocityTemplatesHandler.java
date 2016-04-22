@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.camel.spi.ClassResolver;
 import org.apache.camel.util.IOHelper;
 import org.apache.camel.util.ResourceHelper;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.slf4j.Logger;
@@ -172,7 +173,7 @@ public class VelocityTemplatesHandler
       byte[] response;
 
       registerParametersinVelocityContext(parameters);
-      StringWriter buffer = engine.evaluate(appendCustomMacros(content).toString(),
+      StringWriter buffer = engine.evaluate(appendCustomMacros(StringEscapeUtils.unescapeHtml(content)).toString(),
             velocityContext);
       if (convertToPdf)
          response = StringToPdfConverter.convertToPdf(format,
