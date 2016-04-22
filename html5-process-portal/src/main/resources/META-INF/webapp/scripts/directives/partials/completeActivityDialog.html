@@ -1,27 +1,30 @@
-<div ng-show="activityTableCtrl.completeDialog.confirmationType == 'single'">
-	<div
-		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-singleActivity')">
+<div class="modal-body">
+	<div ng-show="activityTableCtrl.completeDialog.confirmationType == 'single'">
+		<div
+			ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-singleActivity')">
+		</div>
+		{{activityTableCtrl.selectedActivity[0].activity.name}}
+		(#{{activityTableCtrl.selectedActivity[0].oid}})
 	</div>
-	{{activityTableCtrl.selectedActivity[0].activity.name}}
-	(#{{activityTableCtrl.selectedActivity[0].oid}})
+	
+	<div ng-show="activityTableCtrl.completeDialog.confirmationType == 'generic'">
+		<div
+			ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-generic')"></div>
+	</div>
+	<div ng-show="activityTableCtrl.completeDialog.confirmationType == 'dataMapping'">
+		<div class="panel-validation-summary-bar" ng-show="!isTrivialDataValid">
+			<span class="fa fa-exclamation-triangle panel-validation-summary-bar-img"></span>
+			<span class="panel-validation-summary-bar-text">{{i18n('html5-common.form-invalid-error-message')}}</span>
+		</div>	
+		<div class="complete-activity-description"  ng-bind-html="activityTableCtrl.trustAsHtml(activityTableCtrl.completeDialog.description)"  ng-if="activityTableCtrl.completeDialog.description"></div>
+		<div sd-trivial-manual-activity-data
+					sda-data-mappings="activityTableCtrl.completeDialog.dataMappings"
+					sda-out-data="activityTableCtrl.completeDialog.outData"
+					style="min-width: 300px; margin-left: 10px;"></div>
+	
+	</div>
 </div>
 
-<div ng-show="activityTableCtrl.completeDialog.confirmationType == 'generic'">
-	<div
-		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-generic')"></div>
-</div>
-<div ng-show="activityTableCtrl.completeDialog.confirmationType == 'dataMapping'">
-	<div class="panel-validation-summary-bar" ng-show="!isTrivialDataValid">
-		<span class="fa fa-exclamation-triangle panel-validation-summary-bar-img"></span>
-		<span class="panel-validation-summary-bar-text">{{i18n('html5-common.form-invalid-error-message')}}</span>
-	</div>	
-	<div class="complete-activity-description"  ng-bind-html="activityTableCtrl.trustAsHtml(activityTableCtrl.completeDialog.description)"  ng-if="activityTableCtrl.completeDialog.description"></div>
-	<div sd-trivial-manual-activity-data
-				sda-data-mappings="activityTableCtrl.completeDialog.dataMappings"
-				sda-out-data="activityTableCtrl.completeDialog.outData"
-				style="min-width: 300px; margin-left: 10px;"></div>
-
-</div>
 <div class="modal-footer">
 	<div class="button-pane cf" >
 		<div class="button-alignment">
