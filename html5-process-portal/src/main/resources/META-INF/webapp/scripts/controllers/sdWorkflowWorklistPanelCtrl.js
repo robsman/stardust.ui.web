@@ -49,6 +49,8 @@
 		this.collapsePanelHandle = null;
 		var self = this;
 		
+		this.getUserAssignments(this.showEmptyWorklists, true);
+		
 		sgPubSubService.subscribe("sdActivePerspectiveChange", function(){
 			var activePerspective = sdSidebarService.getActivePerspectiveName();
 			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
@@ -68,9 +70,6 @@
 				self.syncPanel = true;
 			}				
 		});
-
-		this.getUserAssignments(this.showEmptyWorklists, false);
-
 	}
 
 	/**
