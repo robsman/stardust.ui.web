@@ -51,10 +51,8 @@
     this.rootUrl = sdUtilService.getBaseUrl();
     this.sdMimeTypeService = sdMimeTypeService;
 
-    this.expandedProcessOids = [];
-
     // fetch data from server, then call this method
-    this.initProcessInstances();
+    this.refresh();
 
   }
 
@@ -108,8 +106,8 @@
   /**
    * 
    */
-  ProcessSummaryController.prototype.refresh = function() {
-
+  ProcessSummaryController.prototype.initialize = function() {
+    this.expandedProcessOids = [];
     this.showNotes = true;
     this.showDocuments = true;
     this.flowElements = [];
@@ -117,6 +115,8 @@
     // stratify documents
     // this.documents = this.normalizeData(activityInstance.attachments);
     this.documents = {};
+    this.historicalData = {};
+
     this.processInstance.type_ = "Process";
     this.processInstance.name_ = this.processInstance.processName;
     this.processInstance.processOid_ = this.processInstance.oid;
@@ -130,6 +130,7 @@
     delete processInstance.activityInstances;
 
     this.normalizeAttachments(processInstance.attachments);
+    this.normalizeHistoricalData(processInstance.historicalData);
 
     for ( var index in activityInstances) {
       var activityInstance = activityInstances[index];
@@ -152,7 +153,11 @@
 
         // add Documents
         activityInstance.documents = this.documents[activityInstance.activityOID];
-
+        
+        //add historical data
+        if (activityInstance.isChecklistActivity) {
+          activityInstance.historicalData = this.historicalData[activityInstance.activityOID];
+        }
         this.flowElements.push(activityInstance);
       }
     }
@@ -162,11 +167,11 @@
   /**
    * 
    */
-  ProcessSummaryController.prototype.initProcessInstances = function() {
+  ProcessSummaryController.prototype.refresh = function() {
     var self = this;
     this.sdProcessSummaryService.getProcessInstances(self.$scope.processInstanceOid).then(function(data) {
       self.processInstance = data;
-      self.refresh();
+      self.initialize();
     });
   }
 
@@ -183,12 +188,27 @@
     if (!data) { return; }
 
     for (i = 0; i < data.length; i++) {
-      if (data[i].contextKind === "activity") {
-        if (!res[data[i].oid]) {
-          res[data[i].oid] = [];
+      if (data[i].contextKind === "AI") {
+        if (!res[data[i].contextOID]) {
+          res[data[i].contextOID] = [];
         }
-        res[data[i].oid].push(data[i]);
+        res[data[i].contextOID].push(data[i]);
       }
+    }
+  }
+
+  /**
+   * 
+   */
+  ProcessSummaryController.prototype.normalizeHistoricalData = function(data) {
+    var res = this.historicalData, i;
+    if (!data) { return; }
+
+    for (i = 0; i < data.length; i++) {
+      if (!res[data[i].contextAIOID]) {
+        res[data[i].contextAIOID] = [];
+      }
+      res[data[i].contextAIOID].push(data[i]);
     }
   }
 

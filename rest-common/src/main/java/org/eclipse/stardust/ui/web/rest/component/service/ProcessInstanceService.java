@@ -170,20 +170,26 @@ public class ProcessInstanceService
    {
       List<DataPathValueDTO> dataPathV = getProcessInstanceDocuments(processInstance.getOID());
       
-      //set historic data
+      // set historic data
       List<HistoricalData> histDataList = ((ProcessInstanceDetails) processInstance).getHistoricalData();
       if (CollectionUtils.isNotEmpty(histDataList))
       {
          List<HistoricalDataDTO> histDTOs = new ArrayList<HistoricalDataDTO>();
-         for (HistoricalData histData : histDataList)
+         for (HistoricalData historicalData : histDataList)
          {
             HistoricalDataDTO dataDTO = new HistoricalDataDTO();
-            dataDTO.name = String.valueOf(histData.getDataType()); // convert to Data name
-            dataDTO.value = histData.getHistoricalDataValue().toString();
-            dataDTO.modificationTime = histData.getDataModificationTimestamp();
-            dataDTO.contextAIOID = histData.getModifyingActivityInstanceOID();
+            dataDTO.name = String.valueOf(historicalData.getDataType()); // convert to
+                                                                         // Data name
+            if (historicalData.getHistoricalDataValue() != null)
+            {
+               dataDTO.value = historicalData.getHistoricalDataValue().toString();
+            }
+
+            dataDTO.modificationTime = historicalData.getDataModificationTimestamp();
+            dataDTO.contextAIOID = historicalData.getModifyingActivityInstanceOID();
             histDTOs.add(dataDTO);
          }
+         processInstanceDTO.historicalData = histDTOs;
       }
       
       //set attachments 

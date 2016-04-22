@@ -36,6 +36,8 @@
     return {
       link: function(scope, el, attrs) {
         var colors = scope.$eval(attrs['sdaStateDisplayColors'])
+        //var borderBottom = attrs['sdaStateDisplayBorderBottom'];
+        
         if (!colors) {
           colors = DEFAULT_COLORS;
         }
@@ -44,7 +46,9 @@
         scope.$watch(attrs['sdStateDisplay'], function(newVal) {
           var index = attrs['sdStateDisplay'] % totalN;
           el.css('background-color', colors[index]);
-          el.css('border-bottom', '1px solid ' + colors[index]);
+          /*if(borderBottom){
+            el.css('border-bottom', "'" + borderBottom + "'" + 'solid ' + colors[index]);  
+          }*/
         });
       }
     }

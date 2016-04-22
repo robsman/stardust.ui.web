@@ -435,8 +435,7 @@
           if (this.$scope.activityInstanceOid == tempDataPath.documents[j].contextOID) {
             targetDocumentList = res.activityAttachments;
           } else {
-            targetDocumentList = res.processAttachments; // TODO: add to process attachments is it
-                                                          // correct?
+            targetDocumentList = [];
           }
         } else if (tempDataPath.documents[j].contextKind == "PI") {
           targetDocumentList = res.processAttachments;

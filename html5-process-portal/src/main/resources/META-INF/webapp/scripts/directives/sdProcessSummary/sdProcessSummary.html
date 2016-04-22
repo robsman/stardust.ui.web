@@ -42,6 +42,12 @@
 				<i class="pi pi-download pi-1x"></i>
 			</button>
 		</div>
+		<div class="tbl-toolbar-section">
+			<button class="button-link tbl-toolbar-item tbl-tool-link"
+				ng-click="sdProcessSummaryCtrl.refresh()" title="Refresh">
+				<i class="pi pi-refresh pi-1x"></i>
+			</button>
+		</div>
 	</div>
 	<div>
 		<table class="process-summary-table">
@@ -139,7 +145,9 @@
 															<th><span>Uploaded By</span></th>
 															<th><span>Date</span></th>
 														</tr>
-														<tr ng-repeat="document in flowElement.documents">
+														<tr ng-repeat="document in flowElement.documents"
+															sd-state-display="{{$index}}"
+															sda-state-display-colors="['white', 'F5F5F5']">
 															<td><span><i
 																	class="{{sdProcessSummaryCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>{{document.name}}</span></td>
 															<td><sd-user-image
@@ -165,7 +173,12 @@
 															<td><span><sd-user-image
 																		sda-path="{{flowElement.userImageURI}}"></sd-user-image>
 																	{{flowElement.completedBy}}</span></td>
-															<td><span></span></td>
+															<td>
+																<div ng-repeat="data in flowElement.historicalData">
+																	<span>{{data.name}} :</span> <span>{{data.value}}</span>
+																</div>
+
+															</td>
 														</tr>
 													</table>
 												</td>
