@@ -254,6 +254,7 @@
     var self = this;
     self.mode = mode;
     self.submitted = false;
+
     _sdParticipantManagementService.openCreateCopyModifyUser(mode, oid).then(function(data) {
       self.user = data;
       if (mode == 'CREATE_USER') {
@@ -269,8 +270,13 @@
       }
       self.user.isPasswordEnabled = self.isPasswordEnabled(mode, self.user.isInternalAuthentication);
       self.initDisplayFormats();
-      self.showUserProfileDialog = true;
-      self.loadUserProfileDialog = true;
+
+      if(self.userDialogOpen != true){
+        self.userDialogOpen = true; 
+        self.showUserProfileDialog = true;
+        self.loadUserProfileDialog = true;
+      }
+      
     }, function(error) {
       trace.log(error);
     });
@@ -322,6 +328,7 @@
   ParticipantManagementCtrl.prototype.onConfirmFromCreateUser = function(res) {
     var self = this;
     self.submitted = true;
+    self.userDialogOpen = false;
     _sdUtilService.removeFormErrors(self.userProfileForm,['invalidDateRange', 
                                                           'passwordMismatch', 
                                                           'passwordValidationMsg', 
@@ -400,6 +407,7 @@
    */
   ParticipantManagementCtrl.prototype.onCloseFromCreateUser = function(res) {
     var self = this;
+    self.userDialogOpen = false;
     self.loadUserProfileDialog = false;
     self.submitted = false;
     delete self.user;
