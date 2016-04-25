@@ -370,7 +370,11 @@ if (!window.bpm.portal.Interaction) {
 		 * 
 		 */
 		function endsWith(str, subStr) {
-			return str.lastIndexOf(subStr) == str.length - subStr.length;
+			if (str.length >= subStr.length) {
+				return str.lastIndexOf(subStr) == str.length - subStr.length;
+			}
+
+			return false;
 		}
 
 		/*
