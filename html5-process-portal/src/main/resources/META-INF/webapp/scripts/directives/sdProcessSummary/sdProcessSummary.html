@@ -167,8 +167,10 @@
 														<tr ng-repeat="document in flowElement.documents"
 															sd-state-display="{{$index}}"
 															sda-state-display-colors="['white', 'F5F5F5']">
-															<td><span><i
-																	class="{{sdProcessSummaryCtrl.getGlyphiconClass(document.contentType)}} spacing-right"></i>{{document.name}}</span></td>
+															<td><span sd-open-document-link
+																sda-name="document.name"
+																sda-mime-type="document.contentType"
+																sda-document-id="document.uuid"></span></td>
 															<td><sd-user-image
 																	sda-path="{{document.ownerDetails.userImageURI}}"></sd-user-image>
 																{{document.ownerDetails.displayName}}</td>
