@@ -271,11 +271,8 @@
       self.user.isPasswordEnabled = self.isPasswordEnabled(mode, self.user.isInternalAuthentication);
       self.initDisplayFormats();
 
-      if(self.userDialogOpen != true){
-        self.userDialogOpen = true; 
-        self.showUserProfileDialog = true;
-        self.loadUserProfileDialog = true;
-      }
+      self.showUserProfileDialog = true;
+      self.loadUserProfileDialog = true;
       
     }, function(error) {
       trace.log(error);
@@ -328,7 +325,6 @@
   ParticipantManagementCtrl.prototype.onConfirmFromCreateUser = function(res) {
     var self = this;
     self.submitted = true;
-    self.userDialogOpen = false;
     _sdUtilService.removeFormErrors(self.userProfileForm,['invalidDateRange', 
                                                           'passwordMismatch', 
                                                           'passwordValidationMsg', 
@@ -407,7 +403,6 @@
    */
   ParticipantManagementCtrl.prototype.onCloseFromCreateUser = function(res) {
     var self = this;
-    self.userDialogOpen = false;
     self.loadUserProfileDialog = false;
     self.submitted = false;
     delete self.user;

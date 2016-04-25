@@ -174,7 +174,6 @@
         $scope.$watch('showDialog', function(showDialog) {
           if(showDialog === true){
             openDialog();
-            $scope.showDialog=false;
           }
           });
         
@@ -399,6 +398,8 @@
           self.dialogElem.modal('hide');
         }
         self.isOpen = false;
+        //set scope variable tied to sdaShow to false
+        $scope.showDialog=false;
       }
       
       // Confirm the dialog. Promise returned in on-open-dialog function will get Success function called.
