@@ -600,23 +600,64 @@
    * to nodes which test true.
    * @param comparatorFx
    */
-  ParticipantManagementCtrl.prototype.expandParticipantNodes = function(comparatorFx){
+  ParticipantManagementCtrl.prototype.expandParticipantNodes = function(comparatorFx, deferred){
 	  
 	  var allPaths = this.getAllPaths(this.models);
 	  var filteredPaths = this.filterPaths(allPaths,comparatorFx);
 	  var that = this;
-		 
-	  filteredPaths.forEach(function(path){
-		  path.forEach(function(node){
-			  var treeNode = that.treeApi.childNodes[node.uuid]
-			  console.log(treeNode.nodeItem.type);
-			  if(treeNode && treeNode.nodeItem.type != "USER"){
-					  treeNode.isVisible = true;
-					  try{_scope.$apply();}
-					  catch(ex){}
-			  }
-		  });
-	  });
+    var allPromises = [];
+		var fx;
+
+    //recursive function in which each recursive call is nested in a $timeout in order
+    //to allow the lazyloaded tree structure compile as the nodes expand, otherwise we
+    //start trying to expand paths from our model that don't actually exist in our tree
+    //due to the delay in angular compilation.
+    fx = function(obj){
+      var node = obj.path.shift();
+      var treeNode = that.treeApi.childNodes[node.uuid];
+      
+      //isVisible is actually forcing a compilation of the DOM structure
+      //immediately below this node. As this correspondes to the next level in
+      //our path expansion we need to synch our invocation.
+      if(treeNode && treeNode.nodeItem.type != "USER"){
+          treeNode.isVisible = true;
+      }
+
+      //execute a timeout of 0 in order to load the asynch digest queue with our 
+      //invocation of the next path to expand.
+      _timeout(function(){
+        if(obj.path.length>0){fx(obj);}
+        else{obj.deferred.resolve();}
+      },0);
+      
+    };
+
+    //convert each path to an object with a deferred object which we 
+    //can resolve in order to track completion of the full path expansion.
+    filteredPaths = filteredPaths.map(function(path){
+      var pathObj = {};
+      pathObj.path = path;
+      pathObj.deferred = _q.defer();
+      allPromises.push(pathObj.deferred.promise);
+      return pathObj
+    });
+
+    //once all promises resolve then resolve the deferred object passed in by the invoker so
+    //they can then filter their tree with confidence that all the paths actually exist.
+    _q.all(allPromises)
+    .then(function(){
+      deferred.resolve();
+    })
+    ["catch"](function(){
+      //even if we through an error resolve what we have to that point
+      deferred.resolve();
+    });
+
+    //kick off path expansion
+    filteredPaths.forEach(function(path){
+      fx(path);
+    });
+
   };
 
   
@@ -629,6 +670,8 @@
   ParticipantManagementCtrl.prototype.filterTree = function(filter){
 	  
 	  var comparatorFx, //filterFX for the filterTree invocation.
+        that = this,
+        deferred,
 	  	  matches; //match array returned from our filter function;
 	  
 	  //Simple string comparison
@@ -639,28 +682,36 @@
 	  //as our tree-nodes are set to lazy compile we need to 
 	  //expand all our matched nodes before we can leverage the
 	  //treeApi against them (they dont exist unless expanded).
-	  this.expandParticipantNodes(comparatorFx);
+    deferred = _q.defer();
+	  this.expandParticipantNodes(comparatorFx,deferred);
 	  
-	  //deselect all currently selected nodes
-	  this.selectedTreeNodes = [];
+    deferred.promise.then(function(){
+
+      //deselect all currently selected nodes
+      that.selectedTreeNodes = [];
+      
+      //If no filter passed then just reset the tree
+      if(filter===undefined || !filter){
+        //invocation with no parameters will reset the tree
+        that.treeApi.resetFilter();
+      }
+      //Otherwise invoke our treeAPI's filter function
+      else{
+        //filter tree forcing an internal elementMap update,
+        //ideally we should only pass true when we know that
+        //the tree is dirty to avoid needless overhead.
+        //TODO: maintain proper dirty state of tree.
+        matches = that.treeApi.filterTree(comparatorFx,true);
+        if(matches.length===0){
+          that.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.filter.noMatches"),"warn");
+          return;
+        }
+      }
+
+
+    });
+
 	  
-	  //If no filter passed then just reset the tree
-	  if(filter===undefined || !filter){
-		  //invocation with no parameters will reset the tree
-		  this.treeApi.resetFilter();
-	  }
-	  //Otherwise invoke our treeAPI's filter function
-	  else{
-		  //filter tree forcing an internal elementMap update,
-		  //ideally we should only pass true when we know that
-		  //the tree is dirty to avoid needless overhead.
-		  //TODO: maintain proper dirty state of tree.
-		  matches = this.treeApi.filterTree(comparatorFx,true);
-		  if(matches.length===0){
-	    	this.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.filter.noMatches"),"warn");
-	    	return;
-		  }
-	  }
   };
   
   /**
@@ -669,6 +720,7 @@
   ParticipantManagementCtrl.prototype.filterByTableSelection = function(){
 	  
 	  var comparatorFx, //filterFX for the filterTree invocation.
+        deferred,
 	  	  that = this;
 	  
 	  if(this.allUsersTable.getSelection().length ===0){
@@ -687,13 +739,18 @@
 	  //as our tree-nodes are set to lazy compile we need to 
 	  //expand all our matched nodes before we can leverage the
 	  //treeApi against them (they dont exist unless expanded).
-	  this.expandParticipantNodes(comparatorFx);
+    deferred = _q.defer();
+	  this.expandParticipantNodes(comparatorFx,deferred);
 	  
-	  this.treeApi.filterTree(comparatorFx,true);
+    deferred.resolve(function(){
+      this.treeApi.filterTree(comparatorFx,true);
+    });
+	  
   }
   
   ParticipantManagementCtrl.prototype.filterForEmptyUsers = function(){
 	  var comparatorFx, //filterFX for the filterTree invocation.
+        deferred,
 	  	  that = this;
 	  //deselect all currently selected nodes
 	  this.selectedTreeNodes = [];
@@ -703,8 +760,14 @@
 		         nodeItem.children && 
 		         nodeItem.children.length ===0;
 	  }
-	  this.expandParticipantNodes(comparatorFx);
-	  this.treeApi.filterTree(comparatorFx,true);
+
+    deferred = _q.defer();
+	  this.expandParticipantNodes(comparatorFx,deferred);
+
+    deferred.resolve(function(){
+      this.treeApi.filterTree(comparatorFx,true);
+    });
+	  
   };
   
   // Handle our tree callbacks inclduing lazy load on node expand
