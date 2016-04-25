@@ -742,8 +742,8 @@
     deferred = _q.defer();
 	  this.expandParticipantNodes(comparatorFx,deferred);
 	  
-    deferred.resolve(function(){
-      this.treeApi.filterTree(comparatorFx,true);
+    deferred.promise.then(function(){
+      that.treeApi.filterTree(comparatorFx,true);
     });
 	  
   }
@@ -764,8 +764,8 @@
     deferred = _q.defer();
 	  this.expandParticipantNodes(comparatorFx,deferred);
 
-    deferred.resolve(function(){
-      this.treeApi.filterTree(comparatorFx,true);
+    deferred.promise.then(function(){
+      that.treeApi.filterTree(comparatorFx,true);
     });
 	  
   };
