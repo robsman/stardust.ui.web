@@ -834,7 +834,7 @@ select[disabled="disabled"] {
 /******************************************************/
 /* Put your css in here */
 .process-summary-cell {
- padding: 2px !important;
+	padding: 3px;
 }
 
 .process-summary-table span {
@@ -842,12 +842,11 @@ select[disabled="disabled"] {
 }
 
 .process-summary-control {
-  padding: 0px !important;
   width: 15px;	
 }
 
 .process-summary-control td {
-  padding: 5px;	
+   padding: 3px 0px 3px 10px;	
 }
 
 .process-summary-control :hover {

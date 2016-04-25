@@ -50,6 +50,7 @@
     this.sdProcessSummaryService = sdProcessSummaryService;
     this.rootUrl = sdUtilService.getBaseUrl();
     this.sdMimeTypeService = sdMimeTypeService;
+    this.sdI18n = $scope.$root.sdI18n;
 
     // fetch data from server, then call this method
     this.refresh();
