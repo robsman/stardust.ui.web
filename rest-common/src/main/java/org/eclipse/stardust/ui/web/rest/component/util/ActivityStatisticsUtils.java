@@ -183,14 +183,21 @@ public class ActivityStatisticsUtils
    public List<CompletedActivitiesStatisticsDTO> getPerformanceStatsByTeamLead()
    {
       trace.debug("Getting statistics for completed activities by team leader");
-      List<CompletedActivitiesStatisticsDTO> resultList = new ArrayList<CompletedActivitiesStatisticsDTO>();
 
       UserQuery query = UserQuery.findActive();
+      query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Full));
       FilterTerm filter = query.getFilter().addOrTerm();
+
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      Collection<DeployedModel> deployedModels = ModelCache.findModelCache()
+            .getAllModels();
+      UserPerformanceStatistics userStatistics = getUserStatistics();
+      List<ProcessDefinition> processes = ProcessDefinitionUtils
+            .getAllBusinessRelevantProcesses();
+
       Map<String, List<Participant>> teamMap = CollectionUtils.newHashMap();
       Map<String, QualifiedRoleInfo> roleInfoMap = CollectionUtils.newHashMap();
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-
+      List<CompletedActivitiesStatisticsDTO> resultList = new ArrayList<CompletedActivitiesStatisticsDTO>();
       // Create team map Team
       for (Object leadRole : facade.getTeamleadRoles())
       {
@@ -207,7 +214,7 @@ public class ActivityStatisticsUtils
          }
          filter.add(ParticipantAssociationFilter.forParticipant(teamLeadRoleInfo));
 
-         Role teamLeadRole = getRole(teamLeadRoleInfo);
+         Role teamLeadRole = getRole(teamLeadRoleInfo, deployedModels);
 
          if (null != teamLeadRole)
          {
@@ -218,16 +225,15 @@ public class ActivityStatisticsUtils
             }
          }
       }
-      Set<TeamleaderDTO> teamleaders = CollectionUtils.newSet();
 
-      Users teamleader = null;
       if (teamMap.size() > 0)
       {
          if (query.getOrderCriteria().getCriteria().size() == 0)
          {
-            query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
+            query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME)
+                  .and(UserQuery.ACCOUNT);
          }
-         teamleader = facade.getAllUsers((UserQuery) query);
+         Users teamleader = facade.getAllUsers((UserQuery) query);
          List<UserItem> userItems = facade.getAllUsersAsUserItems(teamleader);
 
          // iterate team lead
@@ -237,9 +243,11 @@ public class ActivityStatisticsUtils
             for (Grant grant : user.getAllGrants())
             {
 
-               List<Participant> teams = teamMap.get(ParticipantUtils.getGrantUniqueKey(grant));
+               List<Participant> teams = teamMap.get(ParticipantUtils
+                     .getGrantUniqueKey(grant));
                // Grant key and Participant key is suppose to same
-               QualifiedRoleInfo roleInfo = roleInfoMap.get(ParticipantUtils.getGrantUniqueKey(grant));
+               QualifiedRoleInfo roleInfo = roleInfoMap.get(ParticipantUtils
+                     .getGrantUniqueKey(grant));
 
                // find role from model
                if (null == roleInfo)
@@ -253,46 +261,60 @@ public class ActivityStatisticsUtils
                   List<Organization> orgs = findOrganizations(teams);
                   for (Organization org : orgs)
                   {
-                     teamleaders.add(new TeamleaderDTO(userItem, roleInfo, org));
+                     TeamleaderDTO tl = new TeamleaderDTO(userItem, roleInfo, org);
+                     resultList.add(computeStatistics(tl, processes, userStatistics));
                   }
                }
             }
          }
       }
 
-      List<ProcessDefinition> processes = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
+      return resultList;
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   private CompletedActivitiesStatisticsDTO computeStatistics(TeamleaderDTO tl,
+         List<ProcessDefinition> processes, UserPerformanceStatistics userStatistics)
+   {
+      Map<String, CompletedActivityPerformanceDTO> statsByProcess = CollectionUtils
+            .newHashMap();
+      List<User> teamMembers = getTeamMembers(tl);
 
-      if (CollectionUtils.isNotEmpty(teamleaders))
+      for (User user : teamMembers)
       {
-         for (TeamleaderDTO tl : teamleaders)
+         setCompletedProcessStatisticsForUser(user, statsByProcess, processes,
+               userStatistics);
+      }
+
+      // In case of empty
+      if (CollectionUtils.isEmpty(statsByProcess.keySet()))
+      {
+         for (ProcessDefinition process : processes)
          {
-            Map<String, CompletedActivityPerformanceDTO> statsByProcess = CollectionUtils.newHashMap();
-            List<User> teamMembers = getTeamMembers(tl);
-
-            for (User user : teamMembers)
-            {
-               setCompletedProcessStatisticsForUser(user, statsByProcess, processes);
-            }
-
-            if (CollectionUtils.isEmpty(statsByProcess.keySet()))
-            {
-
-               for (ProcessDefinition process : processes)
-               {
-                  statsByProcess.put(I18nUtils.getProcessName(process), new CompletedActivityPerformanceDTO(0, 0, 0));
-               }
-
-            }
-            CompletedActivitiesStatisticsDTO resultDTO = new CompletedActivitiesStatisticsDTO();
-            UserDTO userDTO = DTOBuilder.build(tl.user.getUser(), UserDTO.class);
-            userDTO.displayName = I18nUtils.getUserLabel(tl.user.getUser()) + " (" + tl.teamName + ")";
-            resultDTO.teamMember = userDTO;
-            resultDTO.statisticsByProcess = statsByProcess;
-            resultDTO.displayName =  userDTO.displayName;
-            resultList.add(resultDTO);
+            statsByProcess.put(I18nUtils.getProcessName(process),
+                  new CompletedActivityPerformanceDTO(0, 0, 0));
          }
       }
-      return resultList;
+
+      return buildResult(tl, statsByProcess);
+   }
+
+   /**
+    * 
+    */
+   private CompletedActivitiesStatisticsDTO buildResult(TeamleaderDTO tl,
+         Map<String, CompletedActivityPerformanceDTO> statsByProcess)
+   {
+      CompletedActivitiesStatisticsDTO resultDTO = new CompletedActivitiesStatisticsDTO();
+      resultDTO.statisticsByProcess = statsByProcess;
+      UserDTO userDTO = DTOBuilder.build(tl.user.getUser(), UserDTO.class);
+      resultDTO.teamMember = userDTO;
+      resultDTO.displayName = I18nUtils.getUserLabel(tl.user.getUser()) + " ("
+            + tl.teamName + ")";
+      return resultDTO;
    }
 
    /**
@@ -376,7 +398,6 @@ public class ActivityStatisticsUtils
     */
    private UserPerformanceStatistics getUserStatistics()
    {
-      trace.debug("Getting user stats ");
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
 
       List<DateRange> dateRange = CollectionUtils.newArrayList();
@@ -398,7 +419,7 @@ public class ActivityStatisticsUtils
     * @param teamLeadRoleInfo
     * @return
     */
-   private Role getRole(QualifiedRoleInfo qRoleInfo)
+   private Role getRole(QualifiedRoleInfo qRoleInfo, Collection<DeployedModel> deployedModels)
    {
       if (qRoleInfo instanceof Role)
       {
@@ -407,8 +428,7 @@ public class ActivityStatisticsUtils
       else
       {
          RoleInfoDetails roleInfo = (RoleInfoDetails) qRoleInfo;
-         ModelCache modelCache = ModelCache.findModelCache();
-         for (DeployedModel model : modelCache.getAllModels())
+         for (DeployedModel model : deployedModels)
          {
             String modelId = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.extractModelId(roleInfo
                   .getQualifiedId());
@@ -434,9 +454,9 @@ public class ActivityStatisticsUtils
     * @param activityStatisticsList
     */
    private void setCompletedProcessStatisticsForUser(User user,
-         Map<String, CompletedActivityPerformanceDTO> statsByProcess, List<ProcessDefinition> processes)
+         Map<String, CompletedActivityPerformanceDTO> statsByProcess, List<ProcessDefinition> processes, UserPerformanceStatistics userStatistics)
    {
-      UserPerformanceStatistics userStatistics = getUserStatistics();
+    
       if (userStatistics != null && processes != null)
       {
          for (ProcessDefinition process : processes)

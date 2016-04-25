@@ -9,7 +9,7 @@
 		<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-performanceTeamleader-title')}}</div>
 		 <table sd-data-table="ctrl.dataTable" sda-no-pagination="true"  aid="BCC-PerformanceTeamLead-DataTbl"
 			sd-data="ctrl.getStatistics(params)" sda-ready="ctrl.ready"  sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
-			sda-sortable="true" sda-sort-by="{name : 'displayName', dir : 'desc'}"
+			sda-sortable="true" sda-sort-by="{name : 'displayName', dir : 'asc'}"
 			sda-mode="local" sda-no-pagination="true"
 			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}"  sda-column-selector="{{ctrl.columnSelector}}" >
 			<thead>

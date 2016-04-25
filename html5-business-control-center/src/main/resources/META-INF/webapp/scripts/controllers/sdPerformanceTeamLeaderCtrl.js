@@ -31,9 +31,9 @@
 	var _sdDataTableHelperService = null;
 
 	/**
-	 * 
+	 *
 	 */
-	function Controller( sdActivityInstanceService, sdCommonViewUtilService, $q, sdProcessInstanceService, 
+	function Controller( sdActivityInstanceService, sdCommonViewUtilService, $q, sdProcessInstanceService,
 			sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
 
 		_sdActivityInstanceService = sdActivityInstanceService;
@@ -41,7 +41,7 @@
 		_q = $q;
 		_sdProcessInstanceService = sdProcessInstanceService;
 		trace = sdLoggerService.getLogger('bcc-ui.sdController');
-		_filter = $filter; 
+		_filter = $filter;
 		_sgI18nService =sgI18nService;
 		_sdPreferenceService = sdPreferenceService;
 		_sdDataTableHelperService = sdDataTableHelperService
@@ -59,11 +59,10 @@
 
 		// Getting columns for the data table
 		this.getColumns( );
-		this.fetchStatistics();
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getColumns = function( ) {
 		var self = this;
@@ -73,40 +72,41 @@
 		});
 	};
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.fetchStatistics = function( ) {
-		var self = this;
-		_sdActivityInstanceService.getCompletedActivityStatsByTeamLead( ).then(function( result ){
-			self.statistics.list = result;
-			self.statistics.totalCount = result.length;
-			if(self.dataTable)
-				self.dataTable.refresh();
-		})
+
+		return _sdActivityInstanceService.getCompletedActivityStatsByTeamLead( );
+
 	};
 	/**
-	 * 
+	 *
 	 */
-	Controller.prototype.getStatistics = function( options ) {
-		var self = this;
-		var deferred = _q.defer();
-		var result = {
-				list : self.statistics.list,
-				totalCount : self.statistics.totalCount
-		}
-		
-		deferred.resolve(result);
-		return deferred.promise;
-	};
+	Controller.prototype.getStatistics = function(options) {
+    var self = this;
+    var deferred = _q.defer();
+    this.fetchStatistics().then(function(result) {
+        self.statistics.list = result;
+        self.statistics.totalCount = result.length;
+        var result = {
+            list: self.statistics.list,
+            totalCount: self.statistics.totalCount
+        }
+        deferred.resolve(result);
+    });
+    return deferred.promise;
+};
+
+
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.openUserManagerDetails = function(user) {
 		trace.debug('Opening user management details view');
 		_sdCommonViewUtilService.openUserManagerDetailView( user.oid, user.id, true);
 	};
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.getExportValue = function(data) {
 		return (	_sgI18nService.translate('business-control-center-messages.views-common-column-today')+": "+data.day+
@@ -114,14 +114,13 @@
 				" "+_sgI18nService.translate('business-control-center-messages.views-common-column-month')+": "+data.month );
 	};
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.refresh = function( ) {
-		this.fetchStatistics();
-
+		this.dataTable.refresh();
 	};
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.preferenceDelegate = function(prefInfo) {
 		var preferenceStore = _sdPreferenceService.getStore( prefInfo.scope, 'ipp-business-control-center',
