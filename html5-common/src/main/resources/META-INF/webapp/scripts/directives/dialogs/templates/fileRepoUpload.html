@@ -108,8 +108,8 @@
 					</tr>
 			</table>
 		</div>
-		
-		<div ng-show="repoUploadCtrl.curatedFiles.length > 0">
+
+		<div ng-show="repoUploadCtrl.curatedFiles.length > 0 && repoUploadCtrl.$scope.basicUI === false">
 			<hr style="margin:5px;">
 			
 			<div ng-show="repoUploadCtrl.mode === 'EXPLODE'">
@@ -170,7 +170,7 @@
     	</div>
 
 		<div class="modal-footer">
-			<div class="confirmation-buttonpane">
+			<div class="confirmation-buttonpane" style="position:relative;left: -20px;">
 				<div class="button-pane cf">
 					<div class="button-alignment">
 				  		<button ng-click="repoUploadCtrl.closeDialog()" 

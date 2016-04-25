@@ -294,7 +294,9 @@ public class BenchmarkDefinitionResource
 
 		} catch (Exception e) {
 			trace.error(e, e);
-			return Response.serverError().build();
+			String error = createBenchmarkUploadErrorJSON(e).toString();
+			return Response.serverError().entity(error).status(500).build();
+
 		}
 	}
    
@@ -318,6 +320,26 @@ public class BenchmarkDefinitionResource
          benchmarkDefinitionService.deleteBenchmarkDefinition(benchmarkId);
          return Response.ok("Benchmark " + benchmarkId + " deleted.", MediaType.TEXT_PLAIN).build();
 
+   }
+   
+   private JsonObject createBenchmarkUploadErrorJSON(Exception ex){
+	   
+	   Gson gson = new Gson();
+	   JsonObject errorObj = new JsonObject();
+	   JsonObject envelope = new JsonObject();
+	   
+	   String errorMessage = ex.getMessage();
+	   
+	   if(errorMessage == null)
+	   {
+		   errorMessage = "";
+	   }
+	   
+	   JsonArray failures = new JsonArray();
+	   envelope.addProperty("message", errorMessage);
+	   failures.add(envelope);
+	   errorObj.add("failures", failures);
+	   return errorObj;
    }
    
    /**

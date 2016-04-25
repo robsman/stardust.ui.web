@@ -94,11 +94,13 @@
         </div>
     </header>
     
-	<div sd-file-upload-dialog 
-	     sda-on-init="ctrl.onUploadDialogInit(api)"
-	     sda-file-key="file"
-	     sda-url="{{ctrl.fileUploadUrl}}">
-	 </div>
+	 <div sd-repository-upload-dialog
+		sda-synchronous
+		sda-basic-ui
+		sda-file-key="file"
+		sda-url="{{ctrl.fileUploadUrl}}"
+		sda-on-init="ctrl.onUploadDialogInit(api)">
+	</div>
 	 
 	<!-- Design Mode Data Table for Benchmarks -->
 	<div ng-show="ctrl.showBenchmarks">

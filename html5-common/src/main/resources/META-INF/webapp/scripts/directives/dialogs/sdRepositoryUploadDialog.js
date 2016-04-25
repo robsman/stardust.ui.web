@@ -482,7 +482,7 @@
 					deferred.resolve(result);
 				}
 				else{
-					that.$timeout(function(res){
+					that.$timeout(function(){
 						file.fileState = FileState.COMPLETE;
 						file.message="";
 					},0);
@@ -491,7 +491,10 @@
 			}
 			//reject everything else
 			else{
-				that.$timeout(function(res){file.fileState = FileState.ERROR;},0);
+				that.$timeout(function(res){
+					file.fileState = FileState.ERROR;
+					file.message = (result.failures)?result.failures[0].message:"";
+				},0);
 				deferred.resolve(result);
 			}
 			
@@ -540,6 +543,10 @@
 			//if attribute is present the we operate synchronously
 			scope.singleThreaded = (attrs.sdaSynchronous != undefined);
 
+			//if attribute is present the we hide our extended document properties UI
+			scope.basicUI = (attrs.sdaBasicUi != undefined);
+			
+
 			scope.$watch('parentPath', function(newValue, oldValue, scope) {
 				scope.repoUploadCtrl.parentPath = newValue;
 			});
@@ -557,7 +564,7 @@
 					
 					if(scope.repoUploadCtrl.doExplode===true){
 						scope.repoUploadCtrl.mode = "EXPLODE";
-						scope.repoUploadCtrl.title = "Upload Zip File"
+						scope.repoUploadCtrl.title = "Upload Zip File";
 					}
 					else{
 						scope.repoUploadCtrl.mode="UPDATE";
@@ -599,11 +606,12 @@
 			"controllerAs" : "repoUploadCtrl",
 			"link" : linkfx,
 			"scope": {
+				"basicUI" : "@sdaBasicUi", //no value required or evaluated, presence of attribute forces behavoir
 				"subTitle" : "@sdaSubTitle",
 				"initCallback" : "&sdaOnInit",
 				"targetDocument" : "=sdaTargetDocument", //only applicable for Uploading Zip expansions and new versions of existing docs
 				"doExplode" : "=sdaExplodeMode", //set to true and supply targetDocument in order to invoke folder expansion
-				"fileKey" : "@sdaFileKey",
+				"fileKey" : "@sdaFileKey", //key that the file data will be mapped to in the posted form data
 				"synchronous" : "@sdaSynchronous", //no value required or evaluated, presence of attribute will force behavior.
 				"parentPath" : "=sdaParentPath",
 				"documentTypes" : "=sdaDocumentTypes",
