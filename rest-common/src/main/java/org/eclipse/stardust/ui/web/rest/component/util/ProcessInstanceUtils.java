@@ -1424,7 +1424,8 @@ public class ProcessInstanceUtils
                      // here
                      trace.error(e);
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
-                           getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getParamString(
+                           org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                           .getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getParamString(
                                  "views.common.process.abortProcess.failureMsg2",
                                  ExceptionHandler.getExceptionMessage(e))));
                   }
@@ -1435,7 +1436,8 @@ public class ProcessInstanceUtils
                         || ProcessInstanceState.Completed.equals(processInstance.getState()))
                   {
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
-                           getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getParamString(
+                           org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                           .getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getParamString(
                                  "views.common.process.abortProcess.failureMsg3",
                                  org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
                                        .getProcessStateLabel(processInstance))));
@@ -1443,7 +1445,8 @@ public class ProcessInstanceUtils
                   else
                   {
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
-                           getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getString(
+                           org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                           .getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getString(
                                  "views.common.process.abortProcess.failureMsg1")));
                   }
                }

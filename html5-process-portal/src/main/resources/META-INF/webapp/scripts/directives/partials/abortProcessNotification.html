@@ -1,26 +1,26 @@
-<div class="confirmation-contents modal-body" style="padding-bottom: 20px">
+<div class="confirmation-contents modal-body">
 	<div ng-hide="processTableCtrl.notification.error">
 		<div
 			ng-show="processTableCtrl.notification.result.success.length > 0">
-			<div class="abort-process-notication-message"
+			<div class="abort-notication-message"
 				ng-bind="i18n('views-common-messages.views-common-process-abortProcess-success')"></div>
-			<table class="table-bordered">
+			<table class="table-bordered table">
 				<tr
 					ng-repeat="process in processTableCtrl.notification.result.success">
-					<td  class="abort-process-cell-message">{{process.name}} (#{{process.OID}})</td>
-					<td ng-bind="process.message" class="abort-process-cell-message"></td>
+					<td>{{process.name}}</td>
+					<td ng-bind="process.message"></td>
 				</tr>
 			</table>
 		</div>
 		<div
 			ng-show="processTableCtrl.notification.result.failure.length > 0">
-			<div class="abort-process-notication-message"
+			<div class="abort-notication-message"
 				ng-bind="i18n('views-common-messages.views-common-process-abortProcess-failure')"></div>
-			<table class="table-bordered">
-				<tr 
+			<table class="table table-bordered">
+				<tr
 					ng-repeat="process in processTableCtrl.notification.result.failure">
-						<td  class="abort-process-cell-message">{{process.name}} (#{{process.OID}})</td>
-					<td ng-bind="process.message" class="abort-process-cell-message"></td>
+					<td>{{process.name}}</td>
+					<td ng-bind="process.message"></td>
 				</tr>
 			</table>
 		</div>
