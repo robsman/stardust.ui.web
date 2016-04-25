@@ -441,6 +441,11 @@ to {
 	float: right;
 }
 
+.modal-body {
+	min-width: 275px;
+}
+
+
 .header {
 	line-height: 0px;
 }

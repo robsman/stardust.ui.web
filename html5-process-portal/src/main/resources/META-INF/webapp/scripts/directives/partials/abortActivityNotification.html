@@ -1,31 +1,31 @@
-<div class="confirmation-contents modal-body" style="padding-bottom: 20px">
+<div class="confirmation-contents modal-body">
 	<div ng-hide="activityTableCtrl.notification.error">
 		<div
 			ng-show="activityTableCtrl.notification.result.success.length > 0">
-			<div class="abort-activity-notication-message"
+			<div class="abort-notication-message"
 				ng-bind="i18n('views-common-messages.views-common-activity-abortActivity-success')"></div>
-			<table class="table-bordered">
+			<table class="table-bordered table">
 				<tr
 					ng-repeat="activity in activityTableCtrl.notification.result.success">
-					<td  class="abort-activity-cell-message">{{activity.name}} (#{{activity.OID}})</td>
-					<td ng-bind="activity.message" class="abort-activity-cell-message"></td>
+					<td >{{activity.name}} (#{{activity.OID}})</td>
+					<td ng-bind="activity.message"></td>
 				</tr>
 			</table>
 		</div>
 		<div
 			ng-show="activityTableCtrl.notification.result.failure.length > 0">
-			<div class="abort-activity-notication-message"
+			<div class="abort-notication-message"
 				ng-bind="i18n('views-common-messages.views-common-activity-abortActivity-failure')"></div>
-			<table class="table-bordered">
+			<table class="table-bordered table">
 				<tr 
 					ng-repeat="activity in activityTableCtrl.notification.result.failure">
-						<td  class="abort-activity-cell-message">{{activity.name}} (#{{activity.OID}})</td>
-					<td ng-bind="activity.message" class="abort-activity-cell-message"></td>
+						<td>{{activity.name}} (#{{activity.OID}})</td>
+					<td ng-bind="activity.message"></td>
 				</tr>
 			</table>
 		</div>
 	</div>
-	<div ng-show="activityTableCtrl.notification.error">
+	<div ng-show="activityTableCtrl.notification.error" class="abort-notication-message">
 		<span>An error occurred while aborting activities</span>
 	</div>
 </div>

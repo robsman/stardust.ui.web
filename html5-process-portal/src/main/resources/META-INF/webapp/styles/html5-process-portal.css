@@ -44,17 +44,17 @@
 	padding: 7px;
 }
 /* ********** Abort Activity Dialog ********** */
-.abort-activity-form-content{
-padding-bottom : 10px;
-margin-left : 10px;
+.abort-activity-form-content {
+	margin-left: 10px;
 }
 
-.abort-activity-notication-message{
-padding-bottom : 10px;
+.abort-notication-message {
+	padding-bottom: 5px;
 }
 
-.abort-activity-cell-message{
-padding : 5px;;
+.abort-header-message {
+	padding-bottom: 10px;
+	margin-left: 10px;
 }
 
 /* ********** Activity Criticality flags ********** */
@@ -98,7 +98,7 @@ padding : 5px;;
   color:#CFCFCF !important;
 }
 
-/* ********** Process Priority flags ********** */
+/* ********** a Priority flags ********** */
 
 .priority-flag-high{
   color :#FC3838 !important;
