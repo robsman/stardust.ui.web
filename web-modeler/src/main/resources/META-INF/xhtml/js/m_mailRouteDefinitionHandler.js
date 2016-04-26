@@ -61,7 +61,7 @@ define(
                   // set content type
                   route += "<setHeader headerName=\"contentType\">\n";
                   route += "   <constant>" + attributes["stardust:emailOverlay::mailFormat"]
-                           + "</constant>\n";
+                           + "; charset=\"utf-8\"</constant>\n";
                   route += "</setHeader>\n";
                   
                   // add attachment document
