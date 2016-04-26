@@ -10,8 +10,11 @@
 	<head>
 		<title>#{externalDocumentViewerBean.portalHeader}</title>
 		<ui:include src="/plugins/common/portalHead.xhtml" />
+		<ui:include src="/plugins/common/portalStyleSheets.xhtml" />
+		
 		<script type="text/javascript">
 			window.onbeforeunload = parent.DocumentUtils.onWindowUnload;
+			window.addEventListener("beforeunload", parent.DocumentUtils.onWindowUnload);
 		</script>
 	</head>
 	<body>
@@ -37,7 +40,7 @@
 						title="#{views_common_msgPropsBean['views.documentView.popIn.title']}"
 						onclick="window.close();"
 						styleClass="toolbar-button">
-						<i class="pi pi-pop-out pi-lg" />
+						<i class="pi pi-pop-out pi-rotate-180 pi-lg" />
 					</ice:commandLink>
 					<ice:panelGroup id="documentContentViewer"
 						hoverclass="dropTargetHover" styleClass="documentviewer-subpanel">
