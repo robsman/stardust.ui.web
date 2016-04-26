@@ -28,4 +28,6 @@ public class InstanceCountsDTO extends AbstractDTO {
 	public long aborted;
 	
 	public long interrupted;
+	
+   public long halted;
 }

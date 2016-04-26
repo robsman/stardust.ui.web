@@ -1,13 +1,13 @@
 <div class="view-panel" ng-controller="sdProcessOverviewCtrl as ctrl" sg-stretch-to-bottom>
 
-	<span class="view-panel-toolbar heading" 
+	<span class="view-panel-toolbar heading"
 		  ng-bind="i18n('admin-portal-messages.views-common-processes-label')">
 	</span>
-	
-	<button ng-click="ctrl.refresh()" 
+
+	<button ng-click="ctrl.refresh()"
 	        class="pi pi-lg pi-refresh right">
 	</button>
-	
+
 	<div class="ng-hide" ng-show="true">
 		<table>
 			<tr>
@@ -30,10 +30,15 @@
 				</span></td>
 				<td><span class="value-item" ng-bind="ctrl.count.completed" aid="ADM-ProcView-CompProcCnt">
 				</span></td>
-				
+
 				<td><span class="label-item" ng-bind="i18n('admin-portal-messages.views-common-aborted-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
 				<td><span class="value-item" ng-bind="ctrl.count.aborted" aid="ADM-ProcView-AbortProcCnt">
+				</span></td>
+
+				<td><span class="label-item" ng-bind="i18n('admin-portal-messages.views-common-halted-label')+i18n('admin-portal-messages.common-colon')">
+				</span></td>
+				<td><span class="value-item" ng-bind="ctrl.count.halted" aid="ADM-ProcView-HaltedProcCnt">
 				</span></td>
 
 			</tr>

@@ -19,17 +19,17 @@
 			['$scope', '$q', '$filter', 'sdActivityInstanceService','sdViewUtilService', Controller]);
 
 	/*
-	 * 
+	 *
 	 */
 	function Controller($scope, $q, $filter, sdActivityInstanceService, sdViewUtilService) {
 
 		// Register for View Events
 		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents, this);
-		
+
 		this.initialize(sdActivityInstanceService);
 
 		/*
-		 * 
+		 *
 		 */
 		Controller.prototype.getData = function(params) {
 
@@ -52,25 +52,25 @@
 		}
 
 		/*
-		 * 
+		 *
 		 */
 		Controller.prototype.refresh = function() {
 			this.dataTable.refresh(true);
 		};
-		
+
 		this.refreshRequired = false;
 
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.registerRefreshRequired = function() {
 		this.refreshRequired = true;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	Controller.prototype.handleViewEvents = function(event) {
 		if (event.type == "ACTIVATED") {
@@ -82,7 +82,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.fetchActivityInstanceCounts = function(
 			sdActivityInstanceService) {
@@ -94,7 +94,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	Controller.prototype.initialize = function(sdActivityInstanceService) {
 
@@ -103,7 +103,8 @@
 			waiting : '',
 			aborted : '',
 			completed : '',
-			total : ''
+			total : '',
+			halted : ''
 		};
 
 		this.activities = {

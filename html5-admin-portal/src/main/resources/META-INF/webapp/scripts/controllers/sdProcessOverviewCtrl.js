@@ -19,14 +19,14 @@
 			['$q', '$filter', 'sdProcessInstanceService', Controller]);
 
 	/*
-	 * 
+	 *
 	 */
 	function Controller($q, $filter, sdProcessInstanceService) {
 
 		this.initialize(sdProcessInstanceService);
 
 		/*
-		 * 
+		 *
 		 */
 		Controller.prototype.getData = function(params) {
 
@@ -49,7 +49,7 @@
 		}
 
 		/*
-		 * 
+		 *
 		 */
 		Controller.prototype.refresh = function() {
 			this.dataTable.refresh(true);
@@ -58,7 +58,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	Controller.prototype.fetchProcessInstanceCounts = function(
 			sdProcessInstanceService) {
@@ -70,7 +70,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	Controller.prototype.initialize = function(sdProcessInstanceService) {
 
@@ -79,7 +79,8 @@
 			interrupted : '',
 			aborted : '',
 			completed : '',
-			total : ''
+			total : '',
+			halted : ''
 		};
 
 		this.processList = {
@@ -88,7 +89,7 @@
 		};
 
 		this.dataTable = null; // This will be set to underline data
-		
+
 		this.fetchProcessInstanceCounts(sdProcessInstanceService);
 	};
 

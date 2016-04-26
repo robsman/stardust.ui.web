@@ -705,6 +705,7 @@ public class ProcessInstanceUtils
          countDTO.total = getTotalProcessInstancesCount();
          countDTO.interrupted = getInterruptedProcessInstancesCount();
          countDTO.completed = getCompletedProcessInstancesCount();
+         countDTO.halted = getHaltedProcessInstancesCount();
       }
       catch (PortalException e)
       {
@@ -1533,6 +1534,11 @@ public class ProcessInstanceUtils
    private long getAbortedProcessInstancesCount() throws PortalException
    {
       return getProcessInstancesCount(ProcessInstanceQuery.findInState(ProcessInstanceState.Aborted));
+   }
+
+   private long getHaltedProcessInstancesCount() throws PortalException
+   {
+      return getProcessInstancesCount(ProcessInstanceQuery.findInState(ProcessInstanceState.Halted));
    }
 
    /**

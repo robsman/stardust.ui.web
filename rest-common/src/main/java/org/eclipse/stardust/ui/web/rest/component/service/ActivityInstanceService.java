@@ -374,7 +374,7 @@ public class ActivityInstanceService
       countDTO.total = getTotalActivityInstanceCount();
       countDTO.waiting = getWaitingAcitivityInstanceCount();
       countDTO.completed = getCompletedActivityInstanceCount();
-
+      countDTO.halted = getHaltedActivityInstanceCount();
       return countDTO;
 
    }
@@ -410,6 +410,16 @@ public class ActivityInstanceService
       QueryService service = serviceFactoryUtils.getQueryService();
       return new Long(service.getActivityInstancesCount(ActivityInstanceQuery.findCompleted()));
    }
+   
+   /**
+   *
+   * @return
+   */
+  public long getHaltedActivityInstanceCount()
+  {
+     QueryService service = serviceFactoryUtils.getQueryService();
+     return new Long(service.getActivityInstancesCount(ActivityInstanceQuery.findInState(ActivityInstanceState.Halted)));
+  }
 
    /**
     *

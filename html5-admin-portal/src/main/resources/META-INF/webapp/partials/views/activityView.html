@@ -3,40 +3,46 @@
 
 
 	<span class="view-panel-toolbar heading" ng-bind="i18n('admin-portal-messages.views-common-activities-label')"></span>
-	<button ng-click="ctrl.refresh()" 
+	<button ng-click="ctrl.refresh()"
 	        class="pi pi-refresh right pi-lg"></button>
 	<div>
 		<table>
 			<tr>
-				<td><span class="label-item" 
+				<td><span class="label-item"
 					ng-bind="i18n('admin-portal-messages.views-common-total-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
 				<td><span class="value-item"
 					ng-bind="ctrl.count.total" aid="ADM-ActivityView-TotalActCnt"> </span></td>
 
-				<td><span class="label-item" 
+				<td><span class="label-item"
 					ng-bind="i18n('admin-portal-messages.views-common-active-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
 				<td><span class="value-item"
 					ng-bind="ctrl.count.active" aid="ADM-ActivityView-ActiveActCnt"> </span></td>
 
-				<td><span class="label-item" 
+				<td><span class="label-item"
 					ng-bind="i18n('admin-portal-messages.views-common-waiting-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
 				<td><span class="value-item"
 					ng-bind="ctrl.count.waiting" aid="ADM-ActivityView-WaitActCnt"> </span></td>
 
-				<td><span class="label-item" 
+				<td><span class="label-item"
 					ng-bind="i18n('admin-portal-messages.views-common-aborted-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
 				<td><span class="value-item"
 					ng-bind="ctrl.count.aborted" aid="ADM-ActivityView-AbortActCnt"> </span></td>
 
-				<td><span class="label-item" 
+				<td><span class="label-item"
 					ng-bind="i18n('admin-portal-messages.views-common-completed-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
 				<td><span class="value-item"
 					ng-bind="ctrl.count.completed" aid="ADM-ActivityView-CompActCnt"> </span></td>
+
+				<td><span class="label-item"
+					ng-bind="i18n('admin-portal-messages.views-common-halted-label')+i18n('admin-portal-messages.common-colon')">
+				</span></td>
+				<td><span class="value-item"
+					ng-bind="ctrl.count.halted" aid="ADM-ActivityView-CompActCnt"> </span></td>
 
 			</tr>
 		</table>
