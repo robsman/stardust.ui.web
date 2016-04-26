@@ -29,7 +29,7 @@
 	var trace;
 
 	/*
-	 * 
+	 *
 	 */
 	function ProcessSearchViewCtrl($scope, sdUtilService, sdViewUtilService,
 			sdProcessSearchService, $q, $filter, sdLoggerService) {
@@ -46,7 +46,7 @@
 		trace = sdLoggerService.getLogger('bpm-processportal.ProcessSearchViewCtrl');
 
 		this.initialize(_sdViewUtilService.getViewParams($scope));
-		
+
 		/*
 		 * This needs to be defined here as it requires access to $scope
 		 */
@@ -56,18 +56,18 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.handleViewEvents = function(event) {
 		if (event.type == "ACTIVATED") {
 			this.refresh();
 		} else if (event.type == "DEACTIVATED") {
 			// TODO
-		} 
+		}
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.initialize = function(params) {
 
@@ -88,7 +88,7 @@
 					.getI18MessageString('business-control-center-messages.messages-common-allProcesses'),
 			order : 0,
 		};
-		
+
 		OPTIONS.AM = _sdProcessSearchService.getI18MessageString('html5-common.date-picker-meridian-am', 'am');
 		OPTIONS.PM = _sdProcessSearchService.getI18MessageString('html5-common.date-picker-meridian-pm', 'pm');
 
@@ -105,7 +105,7 @@
 		this.procSrchActivities = [];
 		this.procSrchAuxActivities = [];
 		this.defineData();
-		
+
 		this.activitiesQIDMap = [];
 		this.activitiesQIDProcessMap = [];
 
@@ -119,7 +119,7 @@
 		this.selected = {};
 		this.archiveAuditTrailURL = '';
 		this.oldestAuditTrailEntry = '';
-		
+
 		this.SEARCH_OPT = "searchOption";
 		this.SEARCH_OPT_PROCESS = "PROC";
 		this.SEARCH_OPT_ACTIVITY = "ACT";
@@ -142,12 +142,12 @@
 		this.ACTIVITIES = "activities";
 		this.PERFORMER = "performer";
 		this.CRITICALITY = "criticality";
-		
+
 		this.INTERACTIVE_ACTIVITIES = "InteractiveActivities";
 		this.NONINTERACT_ACTIVITIES = "NonInteractiveActivities";
 		this.AUXILIARY_ACTIVITIES = "AuxiliaryActivities";
 		this.AUXILIARY_PROCESSES = "AuxiliaryProcesses";
-		
+
 		this.dateFormat = "mm/dd/y";
 
 		var self = this;
@@ -155,11 +155,11 @@
 
 		var busProcDeferred = _q.defer();
 		promises.push(busProcDeferred.promise);
-		 
+
 		_sdProcessSearchService
 				.getAllBusinessProcesses(false)
 				.then(
-						function(processes) {	
+						function(processes) {
 							setOrder(processes);
 							self.allBusinessProcesses
 									.push(self.defaultProcess);
@@ -175,7 +175,7 @@
 							}
 							// Remove Case process as defualt Hiearchy is excluding Case Process
 							self.filterCaseProcess();
-							
+
 							//Create Processes and Activities lookup map Object
 							self.createProcessesActivitiesMap();
 							busProcDeferred.resolve();
@@ -183,7 +183,7 @@
 
 		var procPriorityDeferred = _q.defer();
 		promises.push(procPriorityDeferred.promise);
-		
+
 		_sdProcessSearchService
 				.getAllPriorities()
 				.then(
@@ -202,7 +202,7 @@
 							self.query.processSearchCriteria.processSrchPrioritySelected = self.priorities[0].value;
 							procPriorityDeferred.resolve();
 						});
-		
+
 		var procStatesDeferred = _q.defer();
 		promises.push(procStatesDeferred.promise);
 		_sdProcessSearchService
@@ -293,7 +293,7 @@
 					self.descBoolOptions = descBoolOptions;
 					descBoolOptionsDeferred.resolve();
 				});
-		
+
 		var archiveURLDeferred = _q.defer();
 		promises.push(archiveURLDeferred.promise);
 		_sdProcessSearchService.getArchiveAuditTrailURL().then(
@@ -301,7 +301,7 @@
 					self.archiveAuditTrailURL = archiveAuditTrail.archiveAuditTrailURL;
 					archiveURLDeferred.resolve();
 				});
-		
+
 		var oldestAuditTrailDeferred = _q.defer();
 		promises.push(oldestAuditTrailDeferred.promise);
 		_sdProcessSearchService.getOldestAuditTrailEntry().then(
@@ -309,9 +309,9 @@
 					self.oldestAuditTrailEntry = oldestAuditTrail.oldestAuditTrailEntry;
 					oldestAuditTrailDeferred.resolve();
 				});
-		
+
 		this.showProcSearchResult = false;
-		
+
 		_q.all(promises).then(function() {
 			if (Object.keys(params).length != 0) {
 				self.prePopulateCriteria(params).then(function() {
@@ -319,14 +319,14 @@
 				});
 			}
 		});
-		
 
-		
+
+
 
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.defineData = function() {
 		var self = this;
@@ -363,11 +363,11 @@
 		};
 
 		self.partialAuthor = "";
-		
+
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.performSearch = function(options) {
 		var self = this;
@@ -390,15 +390,15 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.processChange = function() {
 		var deferred = _q.defer();
-		
+
 		this.descritorCols = [];
 		if (this.query.processSearchCriteria.filterObject == 1) {
 			this.procSrchActivities = this.calculateSelectedProcessActivities();
-			
+
 			this.applyActivityFilters();
 
 			this.procSrchActivities.splice(0, 0, this.defaultActivity);
@@ -428,8 +428,7 @@
 																		+ "'].value",
 																title : descriptor.title,
 																dataType : descriptor.type,
-																sortable : descriptor.sortable,
-																filterable : descriptor.filterable
+																detailedType : descriptor.detailedType
 															});
 												});
 								deferred.resolve();
@@ -441,7 +440,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.refresh = function() {
 		if (this.query.processSearchCriteria.filterObject == 0) {
@@ -456,13 +455,13 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.search = function() {
 		if(!this.validateData()) {
 			return;
 		}
-			
+
 		this.processSearchData();
 		this.showSearchCriteria = false;
 		this.showProcSearchResult = true;
@@ -470,12 +469,12 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.processSearchData = function() {
 
 		this.processSelectedProcesses();
-		
+
 		if (this.query.processSearchCriteria.filterObject == 1) {
 			var selectedActivities = this.activitySrchSelected;
 			var selectedActRuntimeElementOids = '';
@@ -497,20 +496,28 @@
 			}
 		}
 
-		
+
 		if (this.selected) {
 			for ( var item in this.selected) {
 				for ( var index in this.descritorCols) {
 					if (this.descritorCols[index].id == item) {
 						var obj = {};
 						if (this.descritorCols[index].dataType == "STRING") {
-							obj['textSearch'] = this.selected[this.descritorCols[index].id];
+							if(!_sdUtilService.isEmpty(this.selected[this.descritorCols[index].id])) {
+								obj['textSearch'] = this.selected[this.descritorCols[index].id];
+							}
 						} else if (this.descritorCols[index].dataType == "BOOLEAN") {
 							obj['equals'] = (this.selected[this.descritorCols[index].id] == 0)? 'true' : 'false';
-						} else if (this.descritorCols[index].dataType == "NUMBER" || this.descritorCols[index].dataType == "DATE") {
-							obj['from'] = this.selected[this.descritorCols[index].id];
-							obj['to'] = this.selected[this.descritorCols[index].title];
+						} else if (this.descritorCols[index].dataType == "NUMBER" ) {
+							if(!_sdUtilService.isEmpty(this.selected[this.descritorCols[index].id])) {
+								obj['from'] = this.selected[this.descritorCols[index].id];
+								obj['to'] = this.selected[this.descritorCols[index].id];
+							}
+						}else if (this.descritorCols[index].dataType == "DATE") {
+							obj['from'] = this.selected[this.descritorCols[index].id].from;
+							obj['to'] = this.selected[this.descritorCols[index].id].to;
 						}
+
 						this.query.processSearchCriteria.descriptors.formatted[item] = obj;
 						break;
 					}
@@ -520,7 +527,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.reset = function() {
 		this.removeFormErrors();
@@ -542,7 +549,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.toggleAuxiliaryProcess = function() {
 		var deferred = _q.defer();
@@ -572,10 +579,10 @@
 		this.initializeCriteria();
 		return deferred.promise;
 	}
-	
-	
+
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.initializeCriteria = function() {
 		this.procSrchProcessSelected = [ this.procSrchProcess[0] ];
@@ -584,7 +591,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.toggleInteractiveActivities = function() {
 		if (this.query.processSearchCriteria.showInteractiveActivities) {
@@ -596,7 +603,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.toggleNonInteractiveActivities = function() {
 		if (this.query.processSearchCriteria.showNonInteractiveActivities) {
@@ -608,7 +615,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.toggleAuxiliaryActivities = function() {
 		if (this.query.processSearchCriteria.showAuxiliaryActivities) {
@@ -620,7 +627,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.processHierarchyChange = function() {
 		this.procSrchProcessSelected = [ this.procSrchProcess[0] ];
@@ -630,7 +637,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.filterProcessDefinitionList = function() {
 		if (this.query.processSearchCriteria.procSearchHierarchySelected == this.HIERARCHY_PROCESS
@@ -647,7 +654,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.searchCaseProcess = function() {
 		var casePresentPos = -1;
@@ -662,7 +669,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.filterCaseProcess = function() {
 		var casePresentPos = this.searchCaseProcess();
@@ -672,7 +679,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.addCaseProcess = function() {
 		var casePresentPos = this.searchCaseProcess();
@@ -682,7 +689,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.getAllUniqueProcesses = function() {
 		var self = this;
@@ -711,7 +718,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.applyActivityFilters = function() {
 		// For Interactive Activities
@@ -741,16 +748,16 @@
 			}
 		}
 	}
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.performArchiveSearch = function(options) {
 		var criteria = this.buildSearchCriteria();
-		
+
 	    openArchiveSearch(this.archiveAuditTrailURL, criteria);
 	};
-	
+
 	function openArchiveSearch(url, criteria) {
 		var message = '{"type": "OpenView", "data": {"viewId": "processSearchView", "params": ' + JSON.stringify(criteria) + '}}';
 
@@ -759,13 +766,13 @@
 		if (window.console) {
 			console.log('Archive Search URL: ', url);
 		}
-		
+
 		parent.BridgeUtils.openWindow(url, 'ArchivePortal');
 	}
-	
-	
+
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.buildSearchCriteria = function() {
 		var criteria = {};
@@ -782,14 +789,14 @@
          }
 		 return criteria;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.buildProcessSearchCriteria = function(criteria) {
 
 	      if (this.query.processSearchCriteria.procStartFrom) {
-	         criteria[this.STARTED_FROM] = this.processDate(this.query.processSearchCriteria.procStartFrom); 
+	         criteria[this.STARTED_FROM] = this.processDate(this.query.processSearchCriteria.procStartFrom);
 	      }
 
 	      if (this.query.processSearchCriteria.procStartTo) {
@@ -803,11 +810,11 @@
 	      if (this.query.processSearchCriteria.procEndTo) {
 	    	  criteria[this.END_TIME_TO] = this.processDate(this.query.processSearchCriteria.procEndTo);
 	      }
-	           
+
 	      criteria[this.STATE] = findValueById(this.procSrchState, this.query.processSearchCriteria.procSrchStateSelected);
-	      
+
 	      criteria[this.PRIORITY] = findValueById(this.priorities, this.query.processSearchCriteria.processSrchPrioritySelected);
-	      
+
 	      if ('' != this.query.processSearchCriteria.processSrchRootProcessOID) {
 		         criteria[this.ROOT_OID] = this.query.processSearchCriteria.processSrchRootProcessOID;
 	      }
@@ -815,7 +822,7 @@
 	      if ('' != this.query.processSearchCriteria.processSrchProcessOID) {
 	         criteria[this.OID] = this.query.processSearchCriteria.processSrchProcessOID;
 	      }
-	      
+
 	      if ('' != this.query.processSearchCriteria.procSearchHierarchySelected) {
 	         criteria[this.HIERARCHY] = this.query.processSearchCriteria.procSearchHierarchySelected;
 	      }
@@ -827,18 +834,18 @@
 
 	      if (this.query.processSearchCriteria.showAuxiliaryProcess) {
 	    	  criteria[this.PROCESS_FILTERS] = [this.AUXILIARY_PROCESSES];
-	      } 
-	      
+	      }
+
 	      criteria[this.PROCESSES] = this.processSelectedProcesses(this.query.processSearchCriteria.procSrchProcessSelected);
-	      
+
 	      var descObject = this.processDescriptors();
 	      if (Object.keys(descObject).length !== 0) {
-	    	  criteria[this.DESCRIPTORS] = descObject; 
+	    	  criteria[this.DESCRIPTORS] = descObject;
 	      }
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.processCaseOwner = function() {
 		if (this.processSrchCaseOwner != undefined
@@ -849,9 +856,9 @@
 		}
 		return this.query.processSearchCriteria.processSrchCaseOwner;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.processDescriptors = function() {
 		var descObject = {};
@@ -876,9 +883,9 @@
 		}
 		return descObject;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.processSelectedProcesses = function() {
 		var selectedProcDefIdsArr = getSelectedProcDefIds(this.procSrchProcessSelected, true);
@@ -890,9 +897,9 @@
 		}
 		return this.query.processSearchCriteria.procSrchProcessSelected;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.prePopulateCriteria = function(params) {
 		var deferred = _q.defer();
@@ -910,9 +917,9 @@
 		}
 		return deferred.promise;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.prePopulateProcessCriteria = function(params) {
 		var deferred = _q.defer();
@@ -931,11 +938,11 @@
 	      if (params[this.END_TIME_TO]) {
 	    	  this.query.processSearchCriteria.procEndTo = this.prePopulateDate(params[this.END_TIME_TO]);
 	      }
-	           
+
 	      this.query.processSearchCriteria.procSrchStateSelected = findIdByValue(this.procSrchState, params[this.STATE]);
-	      
+
 	      this.query.processSearchCriteria.processSrchPrioritySelected = findIdByValue(this.priorities, params[this.PRIORITY]);
-	      
+
 	      if ('' != params[this.ROOT_OID]) {
 	    	  this.query.processSearchCriteria.processSrchRootProcessOID = params[this.ROOT_OID];
 	      }
@@ -943,7 +950,7 @@
 	      if ('' != params[this.OID]) {
 	    	  this.query.processSearchCriteria.processSrchProcessOID = params[this.OID];
 	      }
-	      
+
 	      if ('' != params[this.HIERARCHY]) {
 	    	  this.query.processSearchCriteria.procSearchHierarchySelected = params[this.HIERARCHY];
 	    	  this.filterProcessDefinitionList();
@@ -955,12 +962,12 @@
 	      }
 
 	      var self = this;
-	      
+
 	      if (params[this.PROCESS_FILTERS] && params[this.PROCESS_FILTERS][0] && params[this.PROCESS_FILTERS][0] === this.AUXILIARY_PROCESSES) {
 	    	  this.toggleAuxiliaryProcess().then(function() {
 	    		  self.prePopulateSelectedProcess(params[self.PROCESSES]).then(function() {
 	    	    	  self.query.processSearchCriteria.procSrchProcessSelected = params[self.PROCESSES];
-	    		      
+
 	    	    	  //For Descriptors
 	    		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
 	    		      deferred.resolve();
@@ -969,22 +976,22 @@
 	      } else {
 	    	  self.prePopulateSelectedProcess(params[self.PROCESSES]).then(function() {
     	    	  self.query.processSearchCriteria.procSrchProcessSelected = params[self.PROCESSES];
-    		      
+
     	    	  //For Descriptors
     		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
     		      deferred.resolve();
     	      });
 	      }
-	      
-	      return deferred.promise; 
+
+	      return deferred.promise;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.prePopulateSelectedProcess = function(selectedProcesses) {
 		var deferred = _q.defer();
-		
+
 		if (selectedProcesses.length == 1 && selectedProcesses[0] == this.defaultProcess.value) {
 			this.query.processSearchCriteria.procSrchProcessSelected.push(this.defaultProcess);
 		} else {
@@ -999,16 +1006,16 @@
 				}
 			}
 		}
-		
+
 		this.procSrchProcessSelected = this.query.processSearchCriteria.procSrchProcessSelected;
 		this.processChange().then(function() {
 			deferred.resolve();
 		});
 		return deferred.promise;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.buildActivitySearchCriteria = function(criteria) {
 
@@ -1027,40 +1034,40 @@
 	      if (this.query.processSearchCriteria.actModifyTo) {
 	    	  criteria[this.MODIFY_TIME_TO] = this.processDate(this.query.processSearchCriteria.actModifyTo);
 	      }
-	           
+
 	      criteria[this.STATE] = findValueById(this.activitySrchState, this.query.processSearchCriteria.activitySrchStateSelected);
-	      
+
 	      criteria[this.PRIORITY] = findValueById(this.priorities, this.query.processSearchCriteria.processSrchPrioritySelected);
-	      
+
 	      criteria[this.CRITICALITY] = this.query.processSearchCriteria.activitySrchCriticalitySelected;
-	      
+
 	      if ('' != this.query.processSearchCriteria.activitySrchActivityOID) {
 	         criteria[this.OID] = this.query.processSearchCriteria.activitySrchActivityOID;
 	      }
-	      
+
 	      var actPerformer = this.processActPerformer();
 	      if ('' != actPerformer) {
 	    	  criteria[this.PERFORMER] = actPerformer;
 	      }
-	      
+
 	      if (this.query.processSearchCriteria.showAuxiliaryProcess) {
 	    	  criteria[this.PROCESS_FILTERS] = [this.AUXILIARY_PROCESSES];
 	      }
-	      
+
 	      criteria[this.PROCESSES] = this.processSelectedProcesses(this.query.processSearchCriteria.procSrchProcessSelected);
-	      
+
 	      criteria[this.ACTIVITY_FILTERS] = this.getActivityFilters();
-	      
-	      criteria[this.ACTIVITIES] = this.processSelectedActivities(this.query.processSearchCriteria.activitySrchSelected);	      
+
+	      criteria[this.ACTIVITIES] = this.processSelectedActivities(this.query.processSearchCriteria.activitySrchSelected);
 
 	      var descObject = this.processDescriptors();
 	      if (Object.keys(descObject).length !== 0) {
-	    	  criteria[this.DESCRIPTORS] = descObject; 
+	    	  criteria[this.DESCRIPTORS] = descObject;
 	      }
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.processActPerformer = function() {
 		if (this.activitySrchPerformer != undefined
@@ -1071,14 +1078,14 @@
 		}
 		return this.query.processSearchCriteria.activitySrchPerformer;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.getActivityFilters = function() {
 		var activityFilters = [];
 		if (this.query.processSearchCriteria.showInteractiveActivities) {
-			activityFilters.push(this.INTERACTIVE_ACTIVITIES);	
+			activityFilters.push(this.INTERACTIVE_ACTIVITIES);
 		}
 		if (this.query.processSearchCriteria.showNonInteractiveActivities) {
 			activityFilters.push(this.NONINTERACT_ACTIVITIES);
@@ -1088,13 +1095,13 @@
 		}
 		return activityFilters;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.processSelectedActivities = function() {
 		var processedSelectedActivities = [];
-		
+
 		var selectedActivities = this.activitySrchSelected;
 		for (var index = 0; index < selectedActivities.length; index++) {
 			if (selectedActivities[index].value == this.defaultActivity.value) {
@@ -1107,14 +1114,14 @@
 		}
 		return processedSelectedActivities;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.prePopulateActivityCriteria = function(params) {
 		var deferred = _q.defer();
 		if (params[this.STARTED_FROM]) {
-			this.query.processSearchCriteria.actStartFrom = this.prePopulateDate(params[this.STARTED_FROM]); 
+			this.query.processSearchCriteria.actStartFrom = this.prePopulateDate(params[this.STARTED_FROM]);
 	      }
 
 	      if (params[this.STARTED_TO]) {
@@ -1128,71 +1135,71 @@
 	      if (params[this.END_TIME_TO]) {
 	    	  this.query.processSearchCriteria.actModifyTo = this.prePopulateDate(params[this.END_TIME_TO]);
 	      }
-	           
+
 	      this.query.processSearchCriteria.processSrchPrioritySelected = findIdByValue(this.priorities, params[this.PRIORITY]);
-	      
+
 	      if (params[this.OID]) {
 	    	  this.query.processSearchCriteria.activitySrchActivityOID = params[this.OID];
 	      }
-	      
+
 	      //TODO
 	      if (params[this.PERFORMER]) {
 //	    	  this.query.processSearchCriteria.activitySrchPerformer = params[this.PERFORMER];
 			  this.activitySrchPerformer = [{ "id" : params[this.PERFORMER] }];
 	      }
-	      
-	      
+
+
 	      var self = this;
 	      if (params[this.PROCESS_FILTERS] && params[this.PROCESS_FILTERS][0] && params[this.PROCESS_FILTERS][0] === this.AUXILIARY_PROCESSES) {
 	    	  this.toggleAuxiliaryProcess().then(function() {
 	    		  self.prePopulateSelectedProcess(params[self.PROCESSES]).then(function() {
 	    	    	  self.query.processSearchCriteria.procSrchProcessSelected = params[self.PROCESSES];
-	    	    	  
+
 	    	    	  this.preSelectFilters(params);
-	    	    	  
+
 	    	    	  //For Descriptors
 	    		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
-	    		      
-	    		      
+
+
 	    		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function() {
 	    			      //Set Activity State and Criticality after processChange as it resets it.
 	    			      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
 	    		    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
 	    		    	  deferred.resolve();
 	    		      });
-	    		      
+
 	    		      deferred.resolve();
 	    	      });
 	    	  });
 	      } else {
 	    	  self.prePopulateSelectedProcess(params[self.PROCESSES]).then(function() {
     	    	  self.query.processSearchCriteria.procSrchProcessSelected = params[self.PROCESSES];
-    	    	  
+
     	    	  self.preSelectFilters(params);
-    	    	  
+
     	    	  //For Descriptors
     		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
-    		      
+
     		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function() {
     			      //Set Activity State and Criticality after processChange as it resets it.
     			      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
     		    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
     		    	  deferred.resolve();
     		      });
-    		      
+
     		      deferred.resolve();
     	      });
 	      }
-	      
+
 	      return deferred.promise;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.preSelectFilters = function(params) {
 		var isInteractiveActivitiesFilterSet = false;
-		
+
 		var activityFilters = params[this.ACTIVITY_FILTERS];
 		if (activityFilters != null) {
 			for (var int = 0; int < activityFilters.length; int++) {
@@ -1202,14 +1209,14 @@
 				}
 			}
 		}
-		
+
 		if (isInteractiveActivitiesFilterSet) {
 			this.query.processSearchCriteria.showInteractiveActivities = false;
 			this.toggleInteractiveActivities();
 		} else {
 			this.toggleInteractiveActivities();
 		}
-		
+
 		if (activityFilters != null) {
 			for (var int = 0; int < activityFilters.length; int++) {
 				if (params[this.ACTIVITY_FILTERS][int] == this.NONINTERACT_ACTIVITIES) {
@@ -1220,13 +1227,13 @@
 			}
 		}
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.prePopulateSelectedActivities = function(selectedActivities) {
 		var deferred = _q.defer();
-		
+
 		this.activitySrchSelected = [];
 		var tempSelectedActivities = [];
 		for (var index = 0; index < selectedActivities.length; index++) {
@@ -1244,12 +1251,12 @@
 			self.activitySrchSelected = tempSelectedActivities;
 			deferred.resolve();
 		});
-		
+
 		return deferred.promise;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.createProcessesActivitiesMap = function() {
 		for ( var procDefIndex in this.procSrchProcess) {
@@ -1268,9 +1275,9 @@
 			}
 		}
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.prePopulateDescriptors = function(paramDescripters) {
 		this.selected = {};
@@ -1292,18 +1299,18 @@
 			}
 			return this.selected;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.processDate = function(dateInMilleseconds) {
 		var date = new Date(dateInMilleseconds);
 		var TimeInfo = getDateTimeObj(date, true, false);
 		return jQuery.datepicker.formatDate(this.dateFormat, date) + " " + TimeInfo.hours + ":" + TimeInfo.mins + " " + TimeInfo.meridian;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.prePopulateDate = function(dateStr) {
 		var datePartSeperator = dateStr.indexOf(" ");
@@ -1316,9 +1323,9 @@
 		dateObj["meridian"] = dateStr.substr(datePartSeperator + 7, 3);
 		return getDate(dateObj, false);
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.calculateSelectedProcessActivities = function() {
 		this.procSrchActivities = [];
@@ -1337,9 +1344,9 @@
 		}
 		return this.procSrchActivities;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.postToggleActivities = function() {
 		this.filterProcessDefinitionList();
@@ -1348,32 +1355,32 @@
 		this.procSrchActivities.splice(0, 0, this.defaultActivity);
 		this.activitySrchSelected = [ this.procSrchActivities[0] ];
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.processDefaults = function(params) {
 		//Activity Search Defaults
 		if (params[this.SEARCH_OPT] == null) {
 			params[this.SEARCH_OPT] = this.SEARCH_OPT_PROCESS;
-			
+
 		}
 		if (params[this.STATE] == null && params[this.SEARCH_OPT] === this.SEARCH_OPT_PROCESS) {
-			params[this.STATE] = this.procSrchState[0].value; 
+			params[this.STATE] = this.procSrchState[0].value;
 		}
 		if (params[this.PRIORITY] == null) {
-			params[this.PRIORITY] = this.priorities[0].value; 
+			params[this.PRIORITY] = this.priorities[0].value;
 		}
 		if (params[this.HIERARCHY] == null) {
-			params[this.HIERARCHY] = this.HIERARCHY_PROCESS; 
+			params[this.HIERARCHY] = this.HIERARCHY_PROCESS;
 		}
 		if (params[this.PROCESSES] == null) {
-			params[this.PROCESSES] = [ this.procSrchProcess[0].value ]; 
+			params[this.PROCESSES] = [ this.procSrchProcess[0].value ];
 		}
-		
+
 		//Activity Search Defaults
 		if (params[this.CRITICALITY] == null) {
-			params[this.CRITICALITY] = this.activitySrchCriticality[0].name; 
+			params[this.CRITICALITY] = this.activitySrchCriticality[0].name;
 		}
 		if (this.SEARCH_OPT_ACTIVITY === params[this.SEARCH_OPT]) {
 			if (params[this.STATE] == null) {
@@ -1381,33 +1388,34 @@
 			}
 		}
 		if (params[this.ACTIVITIES] == null) {
-			params[this.ACTIVITIES] = [ this.defaultActivity.value ]; 
+			params[this.ACTIVITIES] = [ this.defaultActivity.value ];
 		}
-		
+
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.setShowSearchCriteria = function() {
 		this.showSearchCriteria = !this.showSearchCriteria;
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.validateData = function() {
 		this.removeFormErrors();
-		
+
 		if (!(this.processSearchForm.$valid)) {
 			return false;
 		}
+
 		if (this.query.processSearchCriteria.filterObject == 0) {
-			if (!_sdUtilService.validateDateRange(this.query.processSearchCriteria.procStartFrom, this.query.processSearchCriteria.procStartTo)) {
+			if (!this.checkDateRangeValidity(this.query.processSearchCriteria.procStartFrom, this.query.processSearchCriteria.procStartTo)) {
 				this.processSearchForm.$error.procStartTimeRange = true;
 				return false;
 			}
-			if (!_sdUtilService.validateDateRange(this.query.processSearchCriteria.procEndFrom, this.query.processSearchCriteria.procEndTo)) {
+			if (!this.checkDateRangeValidity(this.query.processSearchCriteria.procEndFrom, this.query.processSearchCriteria.procEndTo)) {
 				this.processSearchForm.$error.procEndTimeRange = true;
 				return false;
 			}
@@ -1420,11 +1428,11 @@
 				return false;
 			}
 		} else {
-			if (!_sdUtilService.validateDateRange(this.query.processSearchCriteria.actStartFrom, this.query.processSearchCriteria.actStartTo)) {
+			if (!this.checkDateRangeValidity(this.query.processSearchCriteria.actStartFrom, this.query.processSearchCriteria.actStartTo)) {
 				this.processSearchForm.$error.actStartTimeRange = true;
 				return false;
 			}
-			if (!_sdUtilService.validateDateRange(this.query.processSearchCriteria.actModifyFrom, this.query.processSearchCriteria.actModifyTo)) {
+			if (!this.checkDateRangeValidity(this.query.processSearchCriteria.actModifyFrom, this.query.processSearchCriteria.actModifyTo)) {
 				this.processSearchForm.$error.actModifyTimeRange = true;
 				return false;
 			}
@@ -1433,11 +1441,51 @@
 				return false;
 			}
 		}
+
+		if(!this.descriptorsValid()) {
+			return false;
+		}
+
 		return true;
 	};
-	
+
+/**
+ *
+ */
+ProcessSearchViewCtrl.prototype.checkDateRangeValidity = function(from, to) {
+	return _sdUtilService.validateDateRange(from, to);
+}
+
+
+/**
+	*
+	 */
+	ProcessSearchViewCtrl.prototype.descriptorsValid = function() {
+				//Descriptor date
+			if (this.selected) {
+			    for (var item in this.selected) {
+			        for (var index in this.descritorCols) {
+			            if (this.descritorCols[index].id == item) {
+			                if (this.descritorCols[index].dataType == "DATE") {
+			                    if (this.selected[this.descritorCols[index].id].from && this.selected[this.descritorCols[index].id].to) {
+			                        if (this.selected[this.descritorCols[index].id].from > this.selected[this.descritorCols[index].id].to) {
+			                           	trace.debug("To Date is less than from Date. Date Validation failed for descriptor - ",this.descritorCols[index].id);
+			                            return false;
+			                        }
+			                    }
+			                }
+
+			            }
+			        }
+			    }
+			}
+
+			return true;
+	}
+
+
 	/**
-	 * 
+	 *
 	 */
 	ProcessSearchViewCtrl.prototype.removeFormErrors = function() {
 		_sdUtilService.removeFormErrors(this.processSearchForm, [
@@ -1445,9 +1493,9 @@
 				'actModifyTimeRange', 'invalidRootProcessOID',
 				'invalidProcessOID', 'invalidActivityOID' ]);
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	function getSelectedProcDefIds(procSrchProcessSelected, getArray) {
 		var selectedProcDefs = procSrchProcessSelected;
@@ -1464,7 +1512,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	function addAllActivites(allProcesses) {
 		var allActivities = [];
@@ -1477,22 +1525,22 @@
 		}
 		return allActivities;
 	}
-	
+
 	/*
-	 * 
+	 *
 	 */
 	function setOrder(processes) {
 		angular.forEach(processes, function(proc) {
 			proc['order'] = 1;
-			var activities = proc.activities;  
+			var activities = proc.activities;
 			angular.forEach(activities, function(activity) {
 				activity['order'] = 1;
 			});
 		});
 	}
-	
+
 	/*
-	 * 
+	 *
 	 */
 	function findValueById(procSrchStates, processStateId) {
 		for (var i = 0; i < procSrchStates.length; i++) {
@@ -1505,9 +1553,9 @@
 			}
 		}
 	}
-	
+
 	/*
-	 * 
+	 *
 	 */
 	function findIdByValue(procSrchStates, processStateValue) {
 		for (var i = 0; i < procSrchStates.length; i++) {
@@ -1521,33 +1569,33 @@
 			}
 		}
 	}
-	
+
 	/*
-	 * 
+	 *
 	 */
 	function filterModelIdFromQID(entityQID) {
-		// Logic to handle special characters like '{' in QID 
+		// Logic to handle special characters like '{' in QID
 		// e.g. {ReportingModel}AbortProcess, So Getting the last word i.e. AbortProcess
 		var lastIndex = entityQID.lastIndexOf("}");
 		if (lastIndex != -1) {
 			return entityQID.substr(lastIndex + 1, entityQID.length);
 		}
 	}
-	
+
 	/*
-	 * 
+	 *
 	 */
 	function unmarshalActivityID(activityId) {
-		// 
+		//
 		var index = activityId.indexOf("{");
 		if (index != -1) {
 			var activityQID = activityId.substr(index, activityId.length);
 			return activityQID;
 		}
 	}
-	
-	
-	
+
+
+
 	//Date Time Helper Funciotns
 	var OPTIONS = {
 			clock24 : {
@@ -1560,7 +1608,7 @@
 			AM : '',
 			PM : ''
 		}
-	
+
   /**
    *
    */

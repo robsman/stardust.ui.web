@@ -28,13 +28,15 @@ public class DescriptorColumnDTO extends AbstractDTO
 
    @DTOAttribute("columnDataType.name()")
    public String type;
+   
+   public String detailedType;
 
    @DTOAttribute("sortable")
    public Boolean sortable;
 
    public Boolean filterable;
 
-   public DescriptorColumnDTO(String id, String title, String type, Boolean sortable,
+   public DescriptorColumnDTO(String id, String title, String type, String detailedType, Boolean sortable,
          Boolean filterable)
    {
       super();
@@ -43,6 +45,6 @@ public class DescriptorColumnDTO extends AbstractDTO
       this.type = type;
       this.sortable = sortable;
       this.filterable = filterable;
+      this.detailedType = detailedType;
    }
-
 }

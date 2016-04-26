@@ -135,13 +135,21 @@ public class ProcessDefinitionService
 	         Class<?> mappedType = dataPath.getMappedType();
 
 	         ColumnDataType columnType = DescriptorColumnUtils.determineColumnType(mappedType);
-
+	         String type = columnType.toString();
+	         
+	         String detailedType = type;
+	         if(columnType == ColumnDataType.NUMBER ) 
+            {
+	            detailedType = DescriptorColumnUtils.determineNumberDataType(mappedType) != null ? 
+	                  DescriptorColumnUtils.determineNumberDataType(mappedType).toString() : null;
+            }
+	         
 	         // double and float are not sortable
 	         boolean sortable = DescriptorFilterUtils.isDataSortable(dataPath);
 	         boolean filterable = DescriptorFilterUtils.isDataFilterable(dataPath);
-
+	            
 	         DescriptorColumnDTO descriptorColumn = new DescriptorColumnDTO(descriptorId,
-	               I18nUtils.getDataPathName(dataPath), columnType.toString(), sortable, filterable);
+	               I18nUtils.getDataPathName(dataPath), type, detailedType, sortable, filterable);
 	         descriptorColumns.add(descriptorColumn);
 	      }
 	      return descriptorColumns;

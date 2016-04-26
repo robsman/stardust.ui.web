@@ -53,7 +53,7 @@ public class DescriptorColumnUtils
     * @param mappedType
     * @return
     */
-   private static DataType determineNumberDataType(Class< ? > mappedType)
+   public static DataType determineNumberDataType(Class< ? > mappedType)
    {
       if (Byte.class.equals(mappedType))
       {
