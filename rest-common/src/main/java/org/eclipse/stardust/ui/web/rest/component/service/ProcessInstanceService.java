@@ -178,11 +178,13 @@ public class ProcessInstanceService
          for (HistoricalData historicalData : histDataList)
          {
             HistoricalDataDTO dataDTO = new HistoricalDataDTO();
-            dataDTO.name = String.valueOf(historicalData.getDataType()); // convert to
-                                                                         // Data name
+            
+            dataDTO.name = I18nUtils.getLabel(historicalData.getData(), historicalData.getData().getName());
+            
             if (historicalData.getHistoricalDataValue() != null)
             {
                dataDTO.value = historicalData.getHistoricalDataValue().toString();
+               dataDTO.uiType = historicalData.getHistoricalDataValue().getClass().toString();
             }
 
             dataDTO.modificationTime = historicalData.getDataModificationTimestamp();

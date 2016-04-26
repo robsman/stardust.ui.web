@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest.dto;
 
 
+
 /**
  * @author Yogesh.Manware
  * @version $Revision: $
@@ -22,4 +23,5 @@ public class HistoricalDataDTO
    public long modificationTime;
    public UserDTO modifiedBy;
    public long contextAIOID;
+   public String uiType;
 }
