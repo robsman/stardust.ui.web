@@ -14,7 +14,7 @@
 		 sda-drop="repoUploadCtrl.onFileDrop($data,$event)">
 		
 		<div style="display:inline-flex;width:60px">
-			<div ng-show="repoUploadCtrl.state ==='initial' || repoUploadCtrl.state ==='fileSelected'">
+			<div ng-show="repoUploadCtrl.state ==='initial' || repoUploadCtrl.state ==='fileSelected' || repoUploadCtrl.state ==='success'">
 		        <label style="display:inline-block;" for="{{repoUploadCtrl.id}}">
 
 					<i style="cursor:pointer"
@@ -45,25 +45,15 @@
 		        </label>
 			</div>
 
-			<div style="display:inline-flex" 
-			     ng-show="false && repoUploadCtrl.state==='fileSelected'">
-				<i ng-click="repoUploadCtrl.uploadFile(repoUploadCtrl.files)" 
-		           class="glyphicon sc-3x glyphicon-cloud-upload"></i>
-		    </div>
-
 			<div style="display:inline-flex" ng-show="repoUploadCtrl.state==='progress'">
 				<i class="pi pi-fw pi-3x pi-spin pi-spinner"></i>
-		    </div>
-			
-			<div style="display:inline-flex" ng-click="repoUploadCtrl.closeDialog()" 
-		         ng-show="repoUploadCtrl.state==='success'">
-				<i class="pi pi-fw pi-3x pi-upload-success"></i>
 		    </div>
 			
 			<div style="display:inline-flex" ng-click="repoUploadCtrl.closeDialog()" 
 		         ng-show="repoUploadCtrl.state==='error'">
 				<i class="pi pi-fw pi-3x pi-upload-failure"></i>
 		    </div>
+
 	    </div>
 
 	    <span ng-show="repoUploadCtrl.state==='initial' && repoUploadCtrl.mode==='CREATE'" 
@@ -91,7 +81,7 @@
 						ng-repeat="file in repoUploadCtrl.curatedFiles | orderBy : '-name'">
 						<td style="width:335px;">
 							<button ng-show="file.fileState==1" 
-							        ng-click="file.send=!file.send" 
+							        ng-click="file.send=!file.send;repoUploadCtrl.synchState(file.send)" 
 							        ng-class="{'pi-add' : file.send, 'pi-delete' : !file.send}" 	
 							        class="pi pi-1x">
 							</button>

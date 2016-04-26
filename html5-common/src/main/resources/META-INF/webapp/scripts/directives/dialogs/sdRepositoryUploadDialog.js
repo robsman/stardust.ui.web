@@ -92,6 +92,8 @@
 					while(that.curatedFiles.pop());
 				};
 
+				that.purgeCompletedFiles(that.curatedFiles);
+
 				for (var i = 0;i<that.files.length;i++) {
 					file=that.files[i];
 					that.totalSize += file.size;
@@ -193,6 +195,35 @@
 		var result =(file.type || file.size%4096 != 0);
 		return result;
 	};
+
+	/**
+	 * Remove any file with a fileState marked as completed. This should
+	 * Basically a tidy-up function for our table between successive operations.
+	 * @param  {[type]} files [description]
+	 * @return {[type]}       [description]
+	 */
+	fileRepoUploadController.prototype.purgeCompletedFiles = function(files){
+		files.forEach(function(v,i,a){
+			if(v.fileState === FileState.COMPLETE){
+				a.splice(i,1);
+			}
+		});
+	};
+
+	/**
+	 * Helper function to update our state to the fileSelected when we toggle a file
+	 * back on from an off (dont upload state). This can be considered logically
+	 * as the same operation as dropping a file on our folder.
+	 * @param  {Boolean} isInitial [description]
+	 * @return {[type]}            [description]
+	 */
+	fileRepoUploadController.prototype.synchState = function(isInitial){
+		if(isInitial===true){
+			this.state	= "fileSelected";
+			this.purgeCompletedFiles(this.curatedFiles);
+		}
+	};
+
 
 	fileRepoUploadController.prototype.isZip = function(file){
 		return file.type == "application/x-compressed" ||
