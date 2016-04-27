@@ -761,7 +761,7 @@ public class ActivityTableUtils
                }
                else
                {
-                  dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
+                  dto.lastPerformer = getLastPerformer(ai);
                   if (!dto.defaultCaseActivity)
                   {
                      dto.abortActivity = isAbortable(ai);

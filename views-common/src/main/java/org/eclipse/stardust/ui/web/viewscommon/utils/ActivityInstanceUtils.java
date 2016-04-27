@@ -337,28 +337,6 @@ public class ActivityInstanceUtils
     * Gets the last performer for the ActivityInstance
     * 
     * @param ai
-    * @param defaultDisplayFormat
-    * @return
-    *
-    * TODO: This method should be deleted in favor of the overloaded version accepting a single parameter  
-    */
-   public static String getLastPerformer(ActivityInstance ai, String defaultDisplayFormat)
-   {
-      for (HistoricalState hs : ai.getHistoricalStates())
-      {
-         Participant performer = ParticipantUtils.getParticipant(hs.getParticipant());
-         if (performer instanceof User && hs.getState() == ActivityInstanceState.Application)
-         {
-            return I18nUtils.getUserLabel((User) performer, defaultDisplayFormat);
-         }
-      }
-      return null;
-   }
-   
-   /**
-    * Gets the last performer for the ActivityInstance
-    * 
-    * @param ai
     * @return
     */
    public static String getLastPerformer(ActivityInstance ai)
