@@ -18,7 +18,7 @@
 	angular.module("bcc-ui")
 			.controller(
 					'sdBCCPanelCtrl',
-					[ 'sdLoggerService', 'sdViewUtilService', 'sdFavoriteViewService', 'sdFavoriteReportsService', 'sdCommonViewUtilService',
+					[ 'sdLoggerService', 'sdViewUtilService', 'sdFavoriteViewService', 'sdFavoriteReportsService', 'sdCommonViewUtilService','eventBus','$scope',
 							BCCPanelCtrl ]);
 
 	var trace;
@@ -26,17 +26,58 @@
 	var _sdFavoriteViewService;
 	var _sdFavoriteReportsService;
 	var _sdCommonViewUtilService;
-
+	var _eventBus;
+	var _self;
 	/**
 	 * 
 	 */
-	function BCCPanelCtrl(sdLoggerService, sdViewUtilService, sdFavoriteViewService, sdFavoriteReportsService, sdCommonViewUtilService) {
+	function BCCPanelCtrl(sdLoggerService, sdViewUtilService, sdFavoriteViewService, sdFavoriteReportsService, sdCommonViewUtilService, eventBus, $scope) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdBCCPanelCtrl');
 		_sdViewUtilService = sdViewUtilService;
 		_sdFavoriteViewService = sdFavoriteViewService;
 		_sdFavoriteReportsService = sdFavoriteReportsService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
+		_eventBus	= eventBus;
+
+		//Only add the eventBus listener for our fav reports ctrl alias instance
+		if($scope.myFavRptsCtrl){
+			_eventBus.onMsg("myReportsView.file.delete",this.removeFavoriteReport,$scope);
+		}
+
+
 	}
+
+
+	/**
+	 * Handle emitted report file deletion events from other views.
+	 * Be aware that even though this fx is on a prototpye, this will not
+	 * refer to our controller, in fact it will be null when invoked by the
+	 * eventBus. FOr this reason self references must be obtained globally from
+	 * our _self variable. 
+	 * @param  {[type]} e [description]
+	 * @param  {[type]} m [description]
+	 * @return {[type]}   [description]
+	 */
+	BCCPanelCtrl.prototype.removeFavoriteReport = function(e, m, originScope){
+
+		var isPresent = originScope.myFavRptsCtrl.favoriteReports.some(function(rpt){
+			return rpt.documentId === m.id; 
+		});
+
+		if(!isPresent){
+			return;
+		}
+
+		_sdFavoriteReportsService.removeFromFavoriteReports(m.id)
+		.then(function(){
+			return originScope.myFavRptsCtrl.refreshMyReportsPanel();
+		})
+		["catch"](function(err){
+			trace.log(err);
+		});
+
+	};
+
     /**
      * 
      * @param viewId

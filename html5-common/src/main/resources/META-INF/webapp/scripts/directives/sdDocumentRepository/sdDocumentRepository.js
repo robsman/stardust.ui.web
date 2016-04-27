@@ -949,9 +949,18 @@
       if(res===true){
         that.documentService.deleteDocument(treeNode.valueItem.id)
         .then(function(name){
+
           var parentItem = that.treeApi.getParentItem(treeNode.valueItem.id);
           var index = parentItem.children.indexOf(treeNode.valueItem);
+          var data = {};
+
           parentItem.children.splice(index,1);
+
+          //signal any listeners that a file was deleted.
+          data.treeEvent = "node-delete-confirmation";
+          data.valueItem = treeNode.valueItem;
+          that.$scope.eventHook({"data" : data, "e" : {}});
+
         })
         ["catch"](function(err){
           //TODO: err handling 

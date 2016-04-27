@@ -21,7 +21,7 @@ angular.module('bpm-common.services')
     $window.$starDust.eventBus =
     {
       rootScopes:[],
-      test : "hello from global"
+      test : "hello from global eventBus"
     };
   }
   
@@ -56,7 +56,11 @@ angular.module('bpm-common.services')
     },
     
     onMsg: function(msg, func, scope){
-      var unbind = $rs.$on(msg, func);
+      var fx =function(e,m){
+          e.timeStamp= (new Date()).getTime();
+          func(e,m,scope);
+      };
+      var unbind = $rs.$on(msg, fx);
       if (scope) {
           scope.$on('$destroy', unbind);
       }

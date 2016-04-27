@@ -1,23 +1,23 @@
 <sd-collapsible-panel sda-aid="auto-BCC-LP-MyFavReportsPnl"
 	sda-title="{{i18n('business-control-center-messages.launchPanels-myReportsViewPanel-title')}}">
-	<div ng-controller="sdBCCPanelCtrl as ctrl"
-		ng-init="ctrl.getAllFavoriteReports()">
-		<a href="#" ng-click="ctrl.refreshMyReportsPanel()" style="float: right;" aid="auto-BCC-LP-MyFavReportsPnl-refresh">
+	<div ng-controller="sdBCCPanelCtrl as myFavRptsCtrl"
+		ng-init="myFavRptsCtrl.getAllFavoriteReports()">
+		<a href="#" ng-click="myFavRptsCtrl.refreshMyReportsPanel()" style="float: right;" aid="auto-BCC-LP-MyFavReportsPnl-refresh">
 		      <i class="pi pi-refresh pi-lg"></i>
 		</a>
-		<div ng-if="ctrl.favoriteReports.length == 0">
+		<div ng-if="myFavRptsCtrl.favoriteReports.length == 0">
 			<span>{{i18n('views-common-messages.common-notification-message-title')}}</span>
 		</div>
-		<div ng-if="ctrl.favoriteReports.length > 0"
-			ng-repeat="report in ctrl.favoriteReports">
+		<div ng-if="myFavRptsCtrl.favoriteReports.length > 0"
+			ng-repeat="report in myFavRptsCtrl.favoriteReports">
 	
-			<button ng-click="ctrl.removeFromFavoriteReports(report.documentId);"
+			<button ng-click="myFavRptsCtrl.removeFromFavoriteReports(report.documentId);"
 				title="{{i18n('views-common-messages.views-myReportsView-removeFromFavorite-title')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link"
 				aid="auto-BCC-LP-RemFavReportView">
 				<i class=" pi pi-favorite-not pi-lg"></i>
 			</button>
-			<a href="#" ng-click="ctrl.openReportView(report.documentId);"
+			<a href="#" ng-click="myFavRptsCtrl.openReportView(report.documentId);"
 				data-placement="right" aid="auto-BCC-LP-OpenFavReportView">
 				{{report.documentName}} </a>
 		</div>

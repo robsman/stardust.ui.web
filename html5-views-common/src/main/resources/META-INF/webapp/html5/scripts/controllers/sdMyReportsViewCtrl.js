@@ -56,7 +56,7 @@
 				grantMap[grant.qualifiedId] = grant;
 			});
 
-			//Loop through all designs and add then to the reportDefinition hash map
+			//Loop through all designs and add them to the reportDefinition hash map
 			that.participantPaths["designs"].forEach(function(item){
 
 				var grant;
@@ -102,6 +102,12 @@
 
 	}
 	
+	/**
+	 * TODO: implement on repository directive
+	 * @param  {[type]} a [description]
+	 * @param  {[type]} b [description]
+	 * @return {[type]}   [description]
+	 */
 	sdMyReportsViewCtrl.prototype.customSort = function(a,b){
 
 		var name1 = (a.name)?a.name.toUpperCase():a.path,
@@ -124,8 +130,15 @@
 	    else{return 1;}
 	}
 
+	/**
+	 * Hook into the underlying file repository directive where we will watch for
+	 * node deletion events in order to broadcast that information to any listeners.
+	 * @param  {[type]} data [description]
+	 * @param  {[type]} e    [description]
+	 * @return {[type]}      [description]
+	 */
 	sdMyReportsViewCtrl.prototype.eventHook = function(data,e){
-		if(data.treeEvent==="node-delete" && data.valueItem.nodeType==="document"){
+		if(data.treeEvent==="node-delete-confirmation" && data.valueItem.nodeType==="document"){
 			this.eventBus.emitMsg("myReportsView.file.delete",data.valueItem);
 		};
 	};
