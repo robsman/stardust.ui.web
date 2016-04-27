@@ -23,9 +23,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -45,6 +47,7 @@ import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager.ParticipantInfoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonArray;
@@ -78,30 +81,32 @@ public class ProcessActivityResource
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
          @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
    {
-      JsonMarshaller jsonIo = new JsonMarshaller();
-      JsonObject postJSON = jsonIo.readJsonObject(postData);
-
-      JsonObject processSearchCriteriaJson = postJSON.getAsJsonObject("processSearchCriteria");
-
-      ProcessSearchCriteriaDTO processSearchCriteria = null;
-
       try
       {
+         JsonMarshaller jsonIo = new JsonMarshaller();
+         JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+         JsonObject processSearchCriteriaJson = postJSON.getAsJsonObject("processSearchCriteria");
+
+         ProcessSearchCriteriaDTO processSearchCriteria = null;
+
          processSearchCriteria = getProcessSearchCriteria(processSearchCriteriaJson);
+
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+
+         List<DescriptorColumnDTO> availableDescriptors = processDefinitionService.getDescriptorColumns(true);
+
+         QueryResultDTO queryResultDTO = getProcessActivityService().performSearch(options, postData,
+               processSearchCriteria, availableDescriptors);
+
+         return Response.ok(queryResultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
-
-      DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
-
-      List<DescriptorColumnDTO> availableDescriptors = processDefinitionService.getDescriptorColumns(true);
-
-      QueryResultDTO queryResultDTO = getProcessActivityService().performSearch(options, postData,
-            processSearchCriteria, availableDescriptors);
-
-      return Response.ok(queryResultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+     
    }
    
    @GET
@@ -216,7 +221,10 @@ public class ProcessActivityResource
       }
 
       filterActivityList(processSearchCriteriaJson, activites);
-      processDTOList.get(0).activities = activites;
+     
+      if(CollectionUtils.isNotEmpty(processDTOList)) {
+         processDTOList.get(0).activities = activites;
+      }
 
       ProcessSearchCriteriaDTO processSearchCriteria = null;
       String processSearchCriteriaJsonStr = processSearchCriteriaJson.toString();

@@ -236,10 +236,14 @@ public class ProcessActivityUtils
       Query query = activityFilterAttributesDTO.buildQuery();
 
       FilterTerm filter = query.getFilter().addOrTerm();
-
-      ProcessDefinitionDTO processDefinitionDTO = processSearchAttributes.procSrchProcessSelected.get(0);
-      List<ActivityDTO> activityDTOs = processDefinitionDTO.activities;
-
+      List<ActivityDTO> activityDTOs = CollectionUtils.newArrayList();
+      
+      
+      if(CollectionUtils.isNotEmpty( processSearchAttributes.procSrchProcessSelected)) {
+         ProcessDefinitionDTO processDefinitionDTO = processSearchAttributes.procSrchProcessSelected.get(0);
+         activityDTOs = processDefinitionDTO.activities;
+      }
+     
       if (CollectionUtils.isNotEmpty(activityDTOs))
       {
          for (ActivityDTO activity : activityDTOs)

@@ -394,7 +394,7 @@
 	 */
 	ProcessSearchViewCtrl.prototype.processChange = function() {
 		var deferred = _q.defer();
-
+		this.showProcSearchResult = false;
 		this.descritorCols = [];
 		if (this.query.processSearchCriteria.filterObject == 1) {
 			this.procSrchActivities = this.calculateSelectedProcessActivities();

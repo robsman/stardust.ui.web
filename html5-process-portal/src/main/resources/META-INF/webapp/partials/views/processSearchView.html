@@ -507,12 +507,10 @@
 			</table>
 		</div>
 		</form>
-		<div
-			ng-show="procSearchViewCtrl.showProcSearchResult && procSearchViewCtrl.query.processSearchCriteria.filterObject == '0'"
+		<div ng-if="procSearchViewCtrl.showProcSearchResult && procSearchViewCtrl.query.processSearchCriteria.filterObject == '0'"
 			ng-include="'plugins/html5-process-portal/partials/views/processSearchResult.html'">
 		</div>
-		<div
-			ng-show="procSearchViewCtrl.showProcSearchResult && procSearchViewCtrl.query.processSearchCriteria.filterObject == '1'"
+		<div ng-if="procSearchViewCtrl.showProcSearchResult && procSearchViewCtrl.query.processSearchCriteria.filterObject == '1'"
 			ng-include="'plugins/html5-process-portal/partials/views/processSearchActivityResult.html'">
 		</div>
 	</div>
