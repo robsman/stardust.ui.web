@@ -83,17 +83,18 @@ public class TIFFDocumentHolder
    /**
     * @param docId
     */
-   public TIFFDocumentHolder(IDocumentContentInfo docInfo)
+   public TIFFDocumentHolder(IDocumentContentInfo docInfo, ProcessInstance processInstance)
    {
-      initialize(docInfo);
+      initialize(docInfo, processInstance);
    }
 
    /**
     * @param docId
     */
-   public void initialize(IDocumentContentInfo docInfo)
+   public void initialize(IDocumentContentInfo docInfo, ProcessInstance processInstance)
    {
       this.docInfo = docInfo;
+      this.processInstance = processInstance;
       pageIndex = 1;
 
       try
