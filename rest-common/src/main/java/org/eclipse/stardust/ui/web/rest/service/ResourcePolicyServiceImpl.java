@@ -40,6 +40,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePolicyDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ResourcePolicyContainerDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
+import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -135,6 +136,15 @@ public class ResourcePolicyServiceImpl implements ResourcePolicyService
          }
 
          DmsPrincipal dmsPrincipal = allDmsPrincipals.get(resourcePolicyDTO.participantQualifiedId);
+         
+         if (dmsPrincipal == null)
+         {
+            // check if it is 'everyone'
+            if (CommonProperties.EVERYONE.equals(resourcePolicyDTO.participantQualifiedId))
+            {
+               dmsPrincipal = new DmsPrincipal(CommonProperties.EVERYONE);
+            }
+         }
          
          if (dmsPrincipal == null)
          {
