@@ -40,6 +40,7 @@
 	function BusinessObjectFilterDialogCtrl($scope,
 			sdBusinessObjectManagementService) {
 		this.bomService = sdBusinessObjectManagementService;
+		this.i18n = $scope.$parent.i18n;
 		this.open = false;
 		this.parentScope = $scope.$parent;
 		setBOMaxDisplayLenght.call(this, $scope);

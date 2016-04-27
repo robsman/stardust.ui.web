@@ -2,13 +2,13 @@
 	<tr>
 		<td>
 			<button ng-click="boDialog.toggleDialogOpenState()" aid="worklist-tools-boFilter-open"
-				title="{{i18n('processportal.toolbars-workflowActions-tooltip-boFilter')}}"
+				title="{{boDialog.i18n('processportal.toolbars-workflowActions-tooltip-boFilter')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link"
 				ng-show="!boDialog.selectedBOInstances || boDialog.selectedBOInstances.length < 1">
 				<i class="pi pi-filter pi-lg"></i>
 			</button>
 			<button ng-click="boDialog.resetFilter()" aid="worklist-tools-boFilter-reset"
-				title="{{i18n('processportal.toolbars-workflowActions-tooltip-boFilter')}}"
+				title="{{boDialog.i18n('portal-common-messages.common-filterPopup-resetFilter-tooltip')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link"
 				ng-show="boDialog.selectedBOInstances && boDialog.selectedBOInstances.length > 0">
 				<i class="pi pi-filter pi-lg"></i>
@@ -16,6 +16,7 @@
 		</td>
 		<td>
 			<button ng-click="boDialog.toggleDialogOpenState()" ng-show="boDialog.selectedBOInstancesString"
+				title="{{boDialog.i18n('portal-common-messages.common-filterPopup-showFilter-tooltip')}}"
 				aid="worklist-tools-boFilter-selected-list" class="button-link">
 				{{boDialog.selectedBOInstancesString}}
 			</button>
