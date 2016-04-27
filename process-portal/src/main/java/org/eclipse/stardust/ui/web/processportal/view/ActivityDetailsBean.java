@@ -1950,6 +1950,8 @@ public class ActivityDetailsBean extends UIComponentBean
          else
          {
             PortalApplication.getInstance().closeView(thisView, true);
+            // This is required so that already added scripts would execute at browser
+            PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncLaunchPanels();");
             if(null == nextActivityObject)
             {
                PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");               
