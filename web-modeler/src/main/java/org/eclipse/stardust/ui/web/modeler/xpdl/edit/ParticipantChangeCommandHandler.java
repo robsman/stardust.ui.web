@@ -231,25 +231,6 @@ public class ParticipantChangeCommandHandler
             model.getRole().remove(participant.getParticipant());
          }
       }
-
-      List<OrganizationType> parentOrgs = ModelBuilderFacade.getParentOrganizations(model, org);
-      for (OrganizationType organization : parentOrgs)
-      {
-         ParticipantType removeMember = null;
-         for(ParticipantType child : organization.getParticipant())
-         {
-            if(org.equals(child.getParticipant()))
-            {
-               removeMember = child;
-               break;
-            }
-         }
-
-         if(removeMember != null)
-         {
-            organization.getParticipant().remove(removeMember);
-         }
-      }
       model.getOrganization().remove(org);
    }
 
