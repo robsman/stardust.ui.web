@@ -14,9 +14,8 @@
 package org.eclipse.stardust.ui.web.rest.dto;
 
 import org.eclipse.stardust.engine.api.dto.Note;
+import org.eclipse.stardust.ui.web.rest.component.cachemanager.UserAttributesCacheManager;
 import org.eclipse.stardust.ui.web.rest.dto.core.DTOClass;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 @DTOClass
 public class NoteDTO extends AbstractDTO
@@ -33,22 +32,23 @@ public class NoteDTO extends AbstractDTO
    public String scopeType;
 
    public long userOID;
-   
+
    public long contextOID;
-   
+
    public String contextKind;
 
    public String avatarImageURI;
 
-   public NoteDTO(Note note)
+   public NoteDTO(Note note, UserAttributesCacheManager userCache)
    {
-      creatorName = UserUtils.getUserDisplayLabel(note.getUser());
+      UserAttributesDTO userDto = userCache.getUserAttributes(note.getUser());
+      creatorName = userDto.displayName;
       created = note.getTimestamp().getTime();
       this.note = note.getText();
       userOID = note.getUser().getOID();
       contextOID = note.getContextOid();
       contextKind = note.getContextKind().getName();
-      avatarImageURI = MyPicturePreferenceUtils.getUsersImageURI(note.getUser());
+      avatarImageURI = userDto.userImageURI;
    }
 
 }

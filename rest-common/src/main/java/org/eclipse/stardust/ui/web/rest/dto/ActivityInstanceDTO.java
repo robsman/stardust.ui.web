@@ -77,6 +77,8 @@ public class ActivityInstanceDTO extends AbstractDTO
    public Map<String, DescriptorDTO> descriptorValues;
    
    public String completedBy;
+   public long completedByOid;
+   public UserAttributesDTO completedByDetails;
    
    public String participantPerformer;
 
@@ -95,7 +97,7 @@ public class ActivityInstanceDTO extends AbstractDTO
    public ProcessInstanceDTO startingProcessInstance;
    
    public Boolean isChecklistActivity;
-
+   
    public void setQualityAssuranceState(QualityAssuranceState state)
    {
       if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(state) || QualityAssuranceState.IS_REVISED.equals(state))

@@ -27,6 +27,7 @@ import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.ui.web.rest.component.cachemanager.UserAttributesCacheManager;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
@@ -55,7 +56,10 @@ public class NotesServiceImpl implements NotesService
 
    @Resource(name = "ProcessInstanceUtilsREST")
    private ProcessInstanceUtils processInstanceUtils;
-
+   
+   @Resource
+   UserAttributesCacheManager userAttributesCacheManager;
+   
    @Override
    public NotesResultDTO getAllNotes(long processInstanceOid, boolean asc)
    {
@@ -103,7 +107,7 @@ public class NotesServiceImpl implements NotesService
          if (ContextKind.ProcessInstance.equals(note.getContextKind()))
          {
             // Process level notes
-            NoteDTO noteDTO = new NoteDTO(note);
+            NoteDTO noteDTO = new NoteDTO(note, userAttributesCacheManager);
             noteDTO.noteNumber = noteList.indexOf(note) + 1;
             noteDTO.scopeType = processInstanceUtils.getProcessLabel(processInstance);
 
@@ -112,7 +116,7 @@ public class NotesServiceImpl implements NotesService
          else if (!onlyProcesLevelNotes)
          {
             // activity level notes
-            NoteDTO noteDTO = new NoteDTO(note);
+            NoteDTO noteDTO = new NoteDTO(note, userAttributesCacheManager);
             noteDTO.noteNumber = noteList.indexOf(note) + 1;
 
             long activityInstanceOid = note.getContextOid();
@@ -211,7 +215,7 @@ public class NotesServiceImpl implements NotesService
       List<NoteDTO> noteDTOList = new ArrayList<NoteDTO>();
       for (Note note : noteList)
       {
-         NoteDTO noteDTO = new NoteDTO(note);
+         NoteDTO noteDTO = new NoteDTO(note, userAttributesCacheManager);
          noteDTO.noteNumber = noteList.indexOf(note) + 1;
          noteDTOList.add(noteDTO);
       }

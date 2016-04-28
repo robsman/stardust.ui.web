@@ -13,17 +13,15 @@ package org.eclipse.stardust.ui.web.rest.dto.builder;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.ui.web.rest.component.service.UserService;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.rest.component.cachemanager.UserAttributesCacheManager;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentTypeDTO;
-import org.eclipse.stardust.ui.web.rest.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.dto.request.DetailLevelDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 
@@ -41,7 +39,7 @@ public class DocumentDTOBuilder
     */
    public static DocumentDTO build(Document document, DocumentManagementService dms)
    {
-      return build(document, dms, null, null);
+      return build(document, dms, null);
    }
 
    /**
@@ -52,7 +50,7 @@ public class DocumentDTOBuilder
     * @return
     */
    public static DocumentDTO build(Document document, DocumentManagementService dms,
-         DetailLevelDTO detailLevelDTO, UserService userService)
+         DetailLevelDTO detailLevelDTO)
    {
       if (document != null)
       {
@@ -113,7 +111,7 @@ public class DocumentDTOBuilder
     * @return
     */
    public static List<DocumentDTO> build(List<Document> documents, DocumentManagementService dms,
-         DetailLevelDTO detailLevelDTO, UserService userService)
+         DetailLevelDTO detailLevelDTO, UserAttributesCacheManager userCache)
    {
       return build(documents, new Comparator<DocumentDTO>()
       {
@@ -122,7 +120,7 @@ public class DocumentDTOBuilder
          {
             return documentDTO1.name.compareTo(documentDTO2.name);
          }
-      }, dms, detailLevelDTO, userService);
+      }, dms, detailLevelDTO, userCache);
    }
    
    /**
@@ -148,13 +146,13 @@ public class DocumentDTOBuilder
     * @return
     */
    public static List<DocumentDTO> build(List<Document> documents, Comparator<DocumentDTO> comparator,
-         DocumentManagementService dms, DetailLevelDTO detailLevelDTO, UserService userService)
+         DocumentManagementService dms, DetailLevelDTO detailLevelDTO, UserAttributesCacheManager userCache)
    {
       List<DocumentDTO> documentDTOs = CollectionUtils.newArrayList();
 
       for (Document document : documents)
       {
-         documentDTOs.add(build(document, dms, detailLevelDTO, userService));
+         documentDTOs.add(build(document, dms, detailLevelDTO));
       }
 
       if (comparator != null)
@@ -164,42 +162,25 @@ public class DocumentDTOBuilder
 
       // Optional Details
       // set user details
-      setOwnerDetails(documentDTOs, detailLevelDTO, userService);
-
+      if (StringUtils.isNotEmpty(detailLevelDTO.userDetailsLevel))
+      {
+         setModifierDetails(documentDTOs, userCache);
+      }
       return documentDTOs;
    }
 
    /**
     * @param documentDTOs
-    * @param detailLevelDTO
-    * @param userService
+    * @param userCache
     */
-   public static void setOwnerDetails(List<DocumentDTO> documentDTOs, DetailLevelDTO detailLevelDTO,
-         UserService userService)
+   public static void setModifierDetails(List<DocumentDTO> documentDTOs,
+         UserAttributesCacheManager userCache)
    {
       // set Owner details
-      if (detailLevelDTO != null && detailLevelDTO.userDetailsLevel != null)
       {
-         Set<String> userIds = new HashSet<String>();
-
          for (DocumentDTO documentDTO : documentDTOs)
          {
-            if(documentDTO.owner != null){
-               userIds.add(documentDTO.owner);
-            }
-            
-         }
-         List<UserDTO> userDTOs = userService.getUserDetails(userIds, detailLevelDTO.userDetailsLevel);
-
-         for (DocumentDTO documentDTO : documentDTOs)
-         {
-            for (UserDTO userDTO : userDTOs)
-            {
-               if (documentDTO.owner != null && documentDTO.owner.equals(userDTO.account))
-               {
-                  documentDTO.ownerDetails = userDTO;
-               }
-            }
+            documentDTO.ownerDetails = userCache.getUserAttributes(documentDTO.owner, false);
          }
       }
    }

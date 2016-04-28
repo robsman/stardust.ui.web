@@ -721,10 +721,6 @@ button.close {
 	resize: vertical;
 }
 
-.properties-panel img {
-	margin-top: 3px;
-}
-
 .properties-panel table {
 	border-collapse: collapse;
 }

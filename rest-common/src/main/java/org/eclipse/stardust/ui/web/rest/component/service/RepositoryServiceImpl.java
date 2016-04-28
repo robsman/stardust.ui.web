@@ -36,6 +36,7 @@ import org.eclipse.stardust.engine.core.spi.dms.IRepositoryConfiguration;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryProviderInfo;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.rest.component.cachemanager.UserAttributesCacheManager;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
@@ -85,6 +86,10 @@ public class RepositoryServiceImpl implements RepositoryService
 
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
+   
+   @Resource
+   UserAttributesCacheManager userAttributesCacheManager;
+   
 
    // *******************************
    // Folder specific
@@ -663,7 +668,8 @@ public class RepositoryServiceImpl implements RepositoryService
          RepositorySearchRequestDTO searchRequestDTO)
    {
       QueryResultDTO resultDTO = new QueryResultDTO();
-      resultDTO.list = DocumentDTOBuilder.build(docs, getDMS(), searchRequestDTO.documentDetailLevelDTO, userService);
+      resultDTO.list = DocumentDTOBuilder.build(docs, getDMS(), searchRequestDTO.documentDetailLevelDTO,
+            userAttributesCacheManager);
       resultDTO.totalCount = docs.getTotalCount();
       return resultDTO;
    }

@@ -21,7 +21,8 @@ public class HistoricalDataDTO
    public String value;
    public String name;
    public long modificationTime;
-   public UserDTO modifiedBy;
+   public UserAttributesDTO modifiedBy;
    public long contextAIOID;
-   public String uiType;
+   public String javaType;
+   public Boolean bValue;
 }

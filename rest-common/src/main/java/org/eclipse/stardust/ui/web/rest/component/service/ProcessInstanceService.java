@@ -57,6 +57,7 @@ import org.eclipse.stardust.engine.ws.WsApiStartProcessUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.component.cachemanager.UserAttributesCacheManager;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ProcessDefinitionUtils;
@@ -82,7 +83,6 @@ import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DocumentDTOBuilder;
-import org.eclipse.stardust.ui.web.rest.dto.request.DetailLevelDTO;
 import org.eclipse.stardust.ui.web.rest.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.AddressBookDataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO;
@@ -141,6 +141,9 @@ public class ProcessInstanceService
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
    
+   @Resource
+   UserAttributesCacheManager userAttributesCacheManager;
+   
    /**
     * @param processInstanceOid
     * @return
@@ -183,12 +186,28 @@ public class ProcessInstanceService
             
             if (historicalData.getHistoricalDataValue() != null)
             {
-               dataDTO.value = historicalData.getHistoricalDataValue().toString();
-               dataDTO.uiType = historicalData.getHistoricalDataValue().getClass().toString();
+               if (Date.class.equals(historicalData.getHistoricalDataValue().getClass()))
+               {
+                  Long date = ((Date)historicalData.getHistoricalDataValue()).getTime();
+                  dataDTO.value = String.valueOf(date);
+               }
+               else if (Boolean.class.equals(historicalData.getHistoricalDataValue().getClass()))
+               {
+                  dataDTO.bValue = Boolean.valueOf(historicalData.getHistoricalDataValue().toString());
+               }
+               else
+               {
+                  dataDTO.value = historicalData.getHistoricalDataValue().toString();
+               }
+               
+               dataDTO.javaType = historicalData.getHistoricalDataValue().getClass().getName();
             }
 
             dataDTO.modificationTime = historicalData.getDataModificationTimestamp();
             dataDTO.contextAIOID = historicalData.getModifyingActivityInstanceOID();
+            dataDTO.modifiedBy = userAttributesCacheManager.getUserAttributes(historicalData.getModifyingUserOID(),
+                  false);
+            
             histDTOs.add(dataDTO);
          }
          processInstanceDTO.historicalData = histDTOs;
@@ -197,11 +216,10 @@ public class ProcessInstanceService
       //set attachments 
       for (DataPathValueDTO dataPathValueDTO : dataPathV)
       {
-         if(dataPathValueDTO.dataPath.id.equals("PROCESS_ATTACHMENTS")){
-            DetailLevelDTO detailLevelDTO = new DetailLevelDTO();
-            detailLevelDTO.userDetailsLevel = "true";
-            DocumentDTOBuilder.setOwnerDetails(dataPathValueDTO.documents, detailLevelDTO, userService);
-            processInstanceDTO.attachments = dataPathValueDTO.documents;  
+         if (dataPathValueDTO.dataPath.id.equals("PROCESS_ATTACHMENTS"))
+         {
+            DocumentDTOBuilder.setModifierDetails(dataPathValueDTO.documents, userAttributesCacheManager);
+            processInstanceDTO.attachments = dataPathValueDTO.documents;
          }
       }
       
@@ -210,6 +228,9 @@ public class ProcessInstanceService
       
       for (ActivityInstanceDTO adto : processInstanceDTO.activityInstances)
       {
+         //set activity completed by details
+         adto.completedByDetails = userAttributesCacheManager.getUserAttributes(adto.completedByOid, false);
+         
          if ("Subprocess".equals(adto.activity.implementationTypeId))
          {
             ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();

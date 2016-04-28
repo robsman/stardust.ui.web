@@ -192,11 +192,20 @@
 														<tr>
 															<td><span>{{flowElement.activity.description}}</span></td>
 															<td><span><sd-user-image
-																		sda-path="{{flowElement.userImageURI}}"></sd-user-image>
+																		sda-path="{{flowElement.completedByDetails.userImageURI}}"></sd-user-image>
 																	{{flowElement.completedBy}}</span></td>
 															<td>
-																<div ng-repeat="data in flowElement.historicalData">
-																	<span>{{data.name}} :</span> <span>{{data.value}}</span>
+																<div ng-repeat="data in flowElement.historicalData"
+																	sd-state-display="{{$index}}"
+																	sda-state-display-colors="['white', 'F5F5F5']">
+																	<div style="float: left">{{data.name}}:</div>
+																	<div ng-switch on="data.javaType">
+																		<span ng-switch-when="java.lang.Boolean"> <input
+																			type="checkbox" ng-model="data.bValue"
+																			ng-disabled="true" />
+																		</span> <span ng-switch-when="java.util.Date">{{data.value
+																			| sdDateTimeFilter}}</span> <span ng-switch-default>{{data.value}}</span>
+																	</div>
 																</div>
 
 															</td>

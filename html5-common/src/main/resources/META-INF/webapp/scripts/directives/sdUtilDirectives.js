@@ -57,7 +57,7 @@
   app.directive('sdUserImage', function() {
     return {
       template: "<img" + " ng-if='isImagePathAvailable()'" + " ng-src='{{getImage()}}'"
-              + " width='24px' height='24px' /> <i" + " class='{{getImage()}} pi-1x'"
+              + " width='24px' height='24px' style='padding:3px'/> <i" + " class='{{getImage()}} pi-1x'"
               + " ng-if='!isImagePathAvailable()'" + " style='margin-top: 3px; margin-left: 3px;'></i>",
       scope: {
 
@@ -69,12 +69,13 @@
       controller: ['$scope', 'sdUtilService', function($scope, sdUtilService) {
         $scope.rootUrl = sdUtilService.getBaseUrl();
         $scope.isImagePathAvailable = function() {
+          if (!$scope.imagePath) { return false; }
           return ($scope.imagePath.indexOf('/') > -1)
         }
         $scope.getImage = function() {
           if (!$scope.imagePath) { return "fa fa-user-avatar"; }
           var rootUrl = $scope.rootUrl.slice(0, this.rootUrl.length - 1);
-          return ($scope.imagePath.indexOf("/") > -1) ? "rootUrl" + $scope.imagePath : $scope.imagePath;
+          return ($scope.imagePath.indexOf("/") > -1) ? rootUrl + $scope.imagePath : $scope.imagePath;
         }
       }]
     }
