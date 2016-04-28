@@ -263,23 +263,6 @@
 
 			}
 
-/*			*//**
-			 *
-			 *//*
-			ProcessTableCompiler.prototype.preferenceDelegate = function(prefInfo) {
-				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, this.processTablePrefModule,
-						this.processTablePrefId);
-
-				// Override
-				preferenceStore.marshalName = function(scope) {
-					if (scope == 'PARTITION') {
-						return 'Default';
-					}
-					return this.processTablePrefName;
-				}
-				return preferenceStore;
-			}*/
-
 			/**
 			 *
 			 */
