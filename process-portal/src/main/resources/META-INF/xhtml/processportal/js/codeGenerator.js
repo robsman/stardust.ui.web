@@ -269,8 +269,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			}
 			
 			var isMandatory = false;
-			if (path.properties["InputPreferences_mandatory"] != undefined && 
-					path.properties["InputPreferences_mandatory"] == "true") {
+			if ((path.properties["InputPreferences_mandatory"] != undefined && 
+					path.properties["InputPreferences_mandatory"] == "true")
+					|| (path.isMandatory && path.isPrimitive)) {
 				isMandatory = true;
 			}
 

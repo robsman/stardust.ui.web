@@ -56,6 +56,7 @@
       if (!this.element) { return; }
 
       this.modelElement = this.element.modelElement;
+      this.isDataPrimitive = this.modelElement.data.dataType === 'primitive';
       this.unifiedDataMappings = transformDMs(this.modelElement.dataMappings);
       this.unifiedDataMappings = sdUtilService.convertToSortedArray(
               this.unifiedDataMappings, "id", true);
@@ -394,6 +395,20 @@
     /**
      * 
      */
+    DataFlowPropertiesPageCtrl.prototype.mandatoryAttributeModified = function() {
+      this.resetMessages();
+      this.dataMappingIndex = undefined;
+
+      if (this.selectedDataMapping.outMapping) {
+          this.updateDataMapping(this.selectedDataMapping.outMapping.uuid, {
+         	 'carnot:engine:mandatoryDataMapping': this.selectedDataMapping.outMapping['carnot:engine:mandatoryDataMapping']
+           });
+      }
+    }
+
+    /**
+     * 
+     */
     DataFlowPropertiesPageCtrl.prototype.getUuid = function() {
       var uuid = undefined;
       if (this.selectedDataMapping.inMapping) {
@@ -528,6 +543,7 @@
           self.selectedDataMapping.outMapping = dm;
           self.selectedDataMapping.outMappingExist = true;
           self.selectedDataMapping.outMapping.uuid = dm.uuid;
+          self.selectedDataMapping.outMapping['carnot:engine:mandatoryDataMapping'] = dm['carnot:engine:mandatoryDataMapping'];
         }
       });
 
@@ -754,12 +770,14 @@
       if (nDataMappingsSet[dm.id]) {
         nDataMappingsSet[dm.id].direction = "INOUT";
         nDataMappingsSet[dm.id].uuid = dm.uuid;
+        nDataMappingsSet[dm.id]['carnot:engine:mandatoryDataMapping'] = dm['carnot:engine:mandatoryDataMapping'];
       } else {
         nDataMappingsSet[dm.id] = {};
         nDataMappingsSet[dm.id].id = dm.id;
         nDataMappingsSet[dm.id].name = dm.name;
         nDataMappingsSet[dm.id].direction = dm.direction;
         nDataMappingsSet[dm.id].uuid = dm.uuid;
+        nDataMappingsSet[dm.id]['carnot:engine:mandatoryDataMapping'] = dm['carnot:engine:mandatoryDataMapping'];
         nDataMappings.push(nDataMappingsSet[dm.id])
       }
     });

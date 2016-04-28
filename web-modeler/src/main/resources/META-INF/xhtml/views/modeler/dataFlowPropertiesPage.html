@@ -166,6 +166,18 @@
 					</td>
 				</tr>
 			</table>
+			<table ng-show="ctrl.isDataPrimitive && ctrl.selectedDataMapping.outMapping">
+				<tr>
+					<td>
+						<input type="checkbox" aid="mandatoryInput"
+							ng-model="ctrl.selectedDataMapping.outMapping['carnot:engine:mandatoryDataMapping']"
+							ng-change="ctrl.mandatoryAttributeModified()" style="margin-top: 4px !important;"/>
+					</td>
+					<td>
+						<label>{{sdI18nModeler('modeler.dataFlow.propertiesPanel.label.input')}}</label>
+					</td>
+				</tr>
+			</table>
 		</div>
 	</div>
 </div>
