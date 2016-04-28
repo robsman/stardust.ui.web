@@ -16,6 +16,8 @@ package org.eclipse.stardust.ui.web.viewscommon.common.configuration;
  */
 public interface UserPreferencesEntries
 {
+   public static final String PREFERENCE = "preference";
+   
    public static final String M_VIEWS_COMMON = "ipp-views-common";
    
    public static final String M_ADMIN_PORTAL = "ipp-admin-portal";
