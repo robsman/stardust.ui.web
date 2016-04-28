@@ -103,20 +103,19 @@ public class PortalConfigurationPanel extends UIComponentBean
       {
          availableSkins.add(new SelectItem(theme.getThemeId(), theme.getThemeName()));
       }
-      //Checking if the scope is partition
-      if(PortalConfiguration.getInstance().getPrefScopesHelper()
-      .getSelectedPreferenceScope().equals(PreferenceScope.PARTITION)){
 
-         UserPreferencesHelper userPrefsHelper1 = UserPreferencesHelper.getInstance(M_PUBLIC,
-               PortalConfiguration.getInstance().getPrefScopesHelper()
-                     .getSelectedPreferenceScope());
-         selectedSkin = userPrefsHelper1.getSingleString(V_PORTAL_CONFIG, F_SKIN);
-      }else{
+      // Checking if the scope is Partition
+      // And get Skin Preference from Public instead of from Partition
+      if(PortalConfiguration.getInstance().getPrefScopesHelper().getSelectedPreferenceScope().equals(PreferenceScope.PARTITION))
+      {
+         UserPreferencesHelper userPrefsHelperPublic = UserPreferencesHelper.getInstance(M_PUBLIC,
+               PreferenceScope.PARTITION);
+         selectedSkin = userPrefsHelperPublic.getSingleString(V_PORTAL_CONFIG, F_SKIN);
+      }
+      else
+      {
          selectedSkin = userPrefsHelper.getSingleString(V_PORTAL_CONFIG, F_SKIN);
       }
-
-      
-      
 
       // OTHERS OPTIONS
       maxTabsDisplay = getIntUserPreferencesValue(userPrefsHelper,
