@@ -59,7 +59,9 @@
 				<table sd-data-table="ctrl.allLogEntriesTable"
 					sd-data="ctrl.getAllLogEntries(params)" sda-mode="remote"
 					sda-selectable="multiple"
-					sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+					sda-preference-module="ipp-administration-perspective"
+					sda-preference-id="preference"
+					sda-preference-name="ipp-administration-perspective.overview.selectedColumns"
 					sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 					sda-sort-by="{name : 'timeStamp', dir : 'desc'}" sda-exports="true"
 					sda-exports-file-name="{{ctrl.exportFileNameForAllLogEntries}}">

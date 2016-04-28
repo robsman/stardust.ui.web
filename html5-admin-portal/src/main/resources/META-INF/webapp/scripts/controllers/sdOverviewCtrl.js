@@ -119,16 +119,4 @@
 		self.allLogEntriesTable.refresh();
 	};
 
-	/**
-	 * 
-	 */
-
-	OverviewCtrl.prototype.preferenceDelegate = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'ipp-administration-perspective', 'preference'); // Override
-		preferenceStore.marshalName = function(scope) {
-			return "ipp-administration-perspective.overview.selectedColumns";
-		}
-		return preferenceStore;
-	};
-
 })();

@@ -60,7 +60,9 @@
 			<table sd-data-table="ctrl.allUsersTable"
 				sd-data="ctrl.getAllUsers(params)" sda-mode="remote"
 				sda-selectable="multiple" sda-page-size="{{ctrl.pageSize}}"
-				sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+				sda-preference-module="ipp-administration-perspective"
+				sda-preference-id="preference"
+				sda-preference-name="ipp-administration-perspective.userMgmt.selectedColumns"
 				sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 				sda-sort-by="{name : 'oid', dir : 'desc'}" sda-exports="true"
 				sda-exports-file-name="{{ctrl.exportFileNameForAllUsers}}">
@@ -100,8 +102,7 @@
 						<td sda-exporter="rowData.displayName"><a href="#"
 							ng-click="ctrl.openCreateCopyModifyUser('MODIFY_USER',rowData.oid);"
 							title="{{i18n('admin-portal-messages.views-userTable-columnLink-title')}}"
-							class="tbl-tool-link"
-							sd-data-drag ng-model="rowData" 
+							class="tbl-tool-link" sd-data-drag ng-model="rowData"
 							sda-dragstart="ctrl.userDragStart($data, $event)"
 							sda-drag-elem-fx="ctrl.getDragElement(item)"
 							aid="ADM-PartMgmt-DataTable-DisplayName">{{rowData.displayName}}</a></td>

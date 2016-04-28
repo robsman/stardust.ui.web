@@ -26,7 +26,9 @@
 	<div class="view-panel-content" ng-if="ctrl.ready">
 		<table sd-data-table="ctrl.dataTable"
 			sd-data="ctrl.getResourcePerformanceData(params)"
-			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sda-preference-module="ipp-business-control-center" 
+			sda-preference-id="preference" 
+			sda-preference-name="ipp-business-control-center.ResourcePerformance.selectedColumns"
 			sda-sortable="true"
 			sda-ready="ctrl.ready"
 			sda-sort-by="{name : 'processDefinitionId', dir : 'desc'}"

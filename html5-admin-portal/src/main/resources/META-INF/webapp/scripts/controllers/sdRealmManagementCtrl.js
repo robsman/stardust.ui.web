@@ -34,10 +34,7 @@
 		RealmManagementController.prototype.initialize = function() {
 			this.resetValues();
 			this.dataTable = null; // This will be set to underline data
-
-			this.realmPrefModule = 'ipp-administration-perspective';
-			this.realmPrefId = 'preference';
-			this.realmPrefName = 'ipp-administration-perspective.realm.selectedColumns';
+			
 			this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 			this.exportFileNameForRealmManagement = "RealmManagement"
 
@@ -169,22 +166,6 @@
 			this.submitted = false;
 			this.showCreateDlg = true;
 		};
-
-		RealmManagementController.prototype.preferenceDelegate = function(prefInfo) {
-			var self = this;
-
-			var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.realmPrefModule, self.realmPrefId);
-
-			// Override
-			preferenceStore.marshalName = function(scope) {
-				if (scope == 'PARTITION') {
-					return 'Default';
-				}
-				return self.realmPrefName;
-			}
-
-			return preferenceStore;
-		}
 
 		this.initialize();
 	}

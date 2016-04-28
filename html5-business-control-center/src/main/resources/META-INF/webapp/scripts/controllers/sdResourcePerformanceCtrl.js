@@ -180,22 +180,10 @@
 		self.getResourcePerformance(self.selectedRole);
 	};
 
+
 	/**
 	 * 
 	 */
-
-	ResourcePerformanceCtrl.prototype.preferenceDelegate = function(prefInfo) {
-		var self = this;
-		self.prefScope = prefInfo.scope;
-		var preferenceStore = _sdPreferenceService
-				.getStore(prefInfo.scope, "ipp-business-control-center", 'preference');
-		preferenceStore.marshalName = function(scope) {
-			return "ipp-business-control-center.ResourcePerformance.selectedColumns";
-		}
-		return preferenceStore;
-	};
-
-
 	ResourcePerformanceCtrl.prototype.openAddCustomColumnDlg = function() {
 		var self = this;
 		self.startNumOfDaysRange = 31;

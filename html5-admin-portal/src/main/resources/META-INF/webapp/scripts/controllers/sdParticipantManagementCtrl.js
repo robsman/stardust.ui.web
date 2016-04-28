@@ -486,16 +486,6 @@
     return oids;
   };
 
-  /*
-   * 
-   */
-  ParticipantManagementCtrl.prototype.preferenceDelegate = function(prefInfo) {
-    var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'ipp-administration-perspective', 'preference'); // Override
-    preferenceStore.marshalName = function(scope) {
-      return "ipp-administration-perspective.userMgmt.selectedColumns";
-    }
-    return preferenceStore;
-  };
 
   // ********************************
   // Participant Tree related Code

@@ -36,10 +36,14 @@
 		<!-- Data table -->
 		<table sd-data-table="ctrl.dataTable" sd-data="ctrl.realms"
 			sda-mode="local" sda-selectable="multiple" sda-no-pagination="true"
-			sda-sortable="true" sda-exports="true" sda-column-selector="{{ctrl.columnSelector}}"
-			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sda-sortable="true" sda-exports="true"
+			sda-column-selector="{{ctrl.columnSelector}}"
+			sda-preference-module="ipp-administration-perspective"
+			sda-preference-id="preference"
+			sda-preference-name="ipp-administration-perspective.realm.selectedColumns"
 			sda-exports-file-name="{{ctrl.exportFileNameForRealmManagement}}">
-			<thead sda-i18n-scope="admin-portal-messages.views-realmMgmt-userRealmsTable-column">
+			<thead
+				sda-i18n-scope="admin-portal-messages.views-realmMgmt-userRealmsTable-column">
 				<tr>
 					<th sda-name="name" sda-sortable="true"></th>
 					<th sda-name="id" sda-sortable="false"></th>

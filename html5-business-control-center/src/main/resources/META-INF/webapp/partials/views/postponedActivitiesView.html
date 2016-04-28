@@ -12,7 +12,9 @@
 
 		<table sd-data-table="ctrl.dataTable" sda-no-pagination="true" aid="BCC-PostponedActvities-DataTbl"
 			sd-data="ctrl.fetchData(params)" sda-ready="ctrl.ready"
-			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sda-preference-module="ipp-business-control-center" 
+			sda-preference-id="preference" 
+			sda-preference-name="ipp-business-control-center.postponedActivities.selectedColumns"
 			sda-sortable="true" sda-sort-by="{name : 'teamMember', dir : 'desc'}"
 			sda-mode="local" sda-no-pagination="true"
 			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}"
