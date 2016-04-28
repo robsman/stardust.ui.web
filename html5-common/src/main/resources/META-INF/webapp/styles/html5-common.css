@@ -672,7 +672,7 @@ button.close {
 	display:none;
 }
 
-/*Section for Properties page*/
+/*Section for Properties page - start*/
 /******************************************************/
 .properties-panel table {
 	width: 100%
@@ -795,7 +795,12 @@ tr.properties-panel-documentRow>td {
 	color:#999;
 }
 
+.properties-panel button:focus {
+	outline: 1px solid #D6BBCA
+}
 
+/*Section for Properties page - end*/
+/******************************************************/
 
 .popover-content .menu-list{
 	min-width: 150px;
