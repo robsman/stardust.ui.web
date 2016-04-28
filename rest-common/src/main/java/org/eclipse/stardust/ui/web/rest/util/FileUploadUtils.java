@@ -62,7 +62,16 @@ public class FileUploadUtils
          if (isFile(attachment.getHeaders()))
          {
             documentInfoDTO = new DocumentContentRequestDTO();
-            documentInfoDTO.name = new String(dataHandler.getName().getBytes("ISO-8859-1"), "UTF-8");
+            String fileName = new String(dataHandler.getName().getBytes("ISO-8859-1"), "UTF-8");
+            if (fileName.lastIndexOf("\\") > 0)
+            {
+               documentInfoDTO.name = fileName.substring(fileName.lastIndexOf("\\") + 1, fileName.length());
+            }
+            else
+            {
+               documentInfoDTO.name = fileName;
+            }
+            
             documentInfoDTO.contentType = dataHandler.getContentType();
             documentInfoDTO.contentBytes = readEntryData(inputStream);
             documents.add(documentInfoDTO);
