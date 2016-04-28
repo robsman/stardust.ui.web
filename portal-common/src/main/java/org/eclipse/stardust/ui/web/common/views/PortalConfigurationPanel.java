@@ -106,7 +106,7 @@ public class PortalConfigurationPanel extends UIComponentBean
       //Checking if the scope is partition
       if(PortalConfiguration.getInstance().getPrefScopesHelper()
       .getSelectedPreferenceScope().equals(PreferenceScope.PARTITION)){
-         
+
          UserPreferencesHelper userPrefsHelper1 = UserPreferencesHelper.getInstance(M_PUBLIC,
                PortalConfiguration.getInstance().getPrefScopesHelper()
                      .getSelectedPreferenceScope());
@@ -114,7 +114,7 @@ public class PortalConfigurationPanel extends UIComponentBean
       }else{
          selectedSkin = userPrefsHelper.getSingleString(V_PORTAL_CONFIG, F_SKIN);
       }
-      
+
       
       
 
@@ -189,26 +189,39 @@ public class PortalConfigurationPanel extends UIComponentBean
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_PAGE_SIZE, String.valueOf(pageSize));
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_MAX_PAGES, String.valueOf(paginatorMaxPages));
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_FAST_STEP, String.valueOf(paginatorFastStep));
-      
-      if (userProvider.getUser().isAdministrator())
+
+      // Save Skin Preference in Current Scope
+      if (!StringUtils.isEmpty(selectedSkin))
       {
-         if(PortalConfiguration.getInstance().getPrefScopesHelper()
-                     .getSelectedPreferenceScope().equals(PreferenceScope.PARTITION)){
-            userPrefsHelper = UserPreferencesHelper.getInstance(M_PUBLIC,
-                  PortalConfiguration.getInstance().getPrefScopesHelper()
-                        .getSelectedPreferenceScope());
-         }                
+         userPrefsHelper.setString(V_PORTAL_CONFIG, F_SKIN, selectedSkin);
+      }
+      else
+      {
+         userPrefsHelper.resetValue(V_PORTAL_CONFIG, F_SKIN);
+      }
+
+      // Additionally save Skin Preference into Public Scope
+      // These values are duplicated into Public Scope for Public access
+      // And maintain in Partition Scope so that value inheritance works correctly between Partition and User Scopes 
+      if (userProvider.getUser().isAdministrator()
+            && PortalConfiguration.getInstance().getPrefScopesHelper().getSelectedPreferenceScope()
+                  .equals(PreferenceScope.PARTITION))
+      {
+         UserPreferencesHelper userPrefsHelperPublic = UserPreferencesHelper.getInstance(M_PUBLIC,
+               PreferenceScope.PARTITION);
+
          if (!StringUtils.isEmpty(selectedSkin))
          {
-            userPrefsHelper.setString(V_PORTAL_CONFIG, F_SKIN, selectedSkin);
+            userPrefsHelperPublic.setString(V_PORTAL_CONFIG, F_SKIN, selectedSkin);
          }
          else
          {
-            userPrefsHelper.resetValue(V_PORTAL_CONFIG, F_SKIN);
+            userPrefsHelperPublic.resetValue(V_PORTAL_CONFIG, F_SKIN);
          }
       }      
+
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_ENABLE_USER_AVATARS, String.valueOf(enableUserAvatars));
-           
+
       PortalApplication.getInstance().refreshSkin();
       
       MessageDialog.addInfoMessage(MessagePropertiesBean.getInstance().getString(
@@ -227,6 +240,15 @@ public class PortalConfigurationPanel extends UIComponentBean
       if (userProvider.getUser().isAdministrator())
       {
          userPrefsHelper.resetValue(V_PORTAL_CONFIG, F_SKIN);
+
+         // Additionally reset Skin Preference from Public Scope
+         if (PortalConfiguration.getInstance().getPrefScopesHelper().getSelectedPreferenceScope()
+                     .equals(PreferenceScope.PARTITION))
+         {
+            UserPreferencesHelper userPrefsHelperPublic = UserPreferencesHelper.getInstance(M_PUBLIC,
+                  PreferenceScope.PARTITION);
+            userPrefsHelperPublic.resetValue(V_PORTAL_CONFIG, F_SKIN);
+         }
       }
       userPrefsHelper.resetValue(V_PORTAL_CONFIG, F_DEFAULT_PERSPECTIVE);
       userPrefsHelper.resetValue(V_PORTAL_CONFIG, F_TABS_MAX_TABS_DISPLAY);
