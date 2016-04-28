@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.modeler.xpdl.edit;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -206,7 +207,41 @@ public class ParticipantChangeCommandHandler
       {
          synchronized (model)
          {
-            removeOrganization(model, (OrganizationType) modelParticipantInfo);
+            List<OrganizationType> removedOrgs = new ArrayList<OrganizationType>();
+            removeOrganization(model, (OrganizationType) modelParticipantInfo, removedOrgs);            
+            removeOrganizationReferences(model, removedOrgs);            
+         }
+      }
+   }
+
+   /**
+    * @param model
+    * @param orgs
+    */
+   private void removeOrganizationReferences(ModelType model,
+         List<OrganizationType> orgs)
+   {
+      for (Iterator<OrganizationType> i = orgs.iterator(); i.hasNext();)
+      {
+         OrganizationType org = i.next();
+         List<OrganizationType> parentOrgs = ModelBuilderFacade
+               .getParentOrganizations(model, org);
+         for (OrganizationType organization : parentOrgs)
+         {
+            ParticipantType removeMember = null;
+            for (ParticipantType child : organization.getParticipant())
+            {
+               if (org.equals(child.getParticipant()))
+               {
+                  removeMember = child;
+                  break;
+               }
+            }
+
+            if (removeMember != null)
+            {
+               organization.getParticipant().remove(removeMember);
+            }
          }
       }
    }
@@ -215,7 +250,7 @@ public class ParticipantChangeCommandHandler
     * @param model
     * @param org
     */
-   private void removeOrganization(ModelType model, OrganizationType org)
+   private void removeOrganization(ModelType model, OrganizationType org, List<OrganizationType> removedOrgs)
    {
       Iterator<ParticipantType> iter = ((OrganizationType) org).getParticipant()
             .iterator();
@@ -224,7 +259,7 @@ public class ParticipantChangeCommandHandler
          ParticipantType participant = iter.next();
          if (participant.getParticipant() instanceof OrganizationType)
          {
-            removeOrganization(model, (OrganizationType) participant.getParticipant());
+            removeOrganization(model, (OrganizationType) participant.getParticipant(), removedOrgs);
          }
          else
          {
@@ -232,6 +267,7 @@ public class ParticipantChangeCommandHandler
          }
       }
       model.getOrganization().remove(org);
+      removedOrgs.add(org);        
    }
 
    private ModelService modelService()
