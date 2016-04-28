@@ -139,25 +139,4 @@
 		_sdCommonViewUtilService.openUserManagerDetailView(userOid, userId, true);
 	};
 
-	/**
-	 * 
-	 */
-
-	ProcessResourceMgmtCtrl.prototype.preferenceDelegateForRolesTable = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService
-				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
-		preferenceStore.marshalName = function(scope) {
-			return "ipp-business-control-center.ProcessResourceRoleMgmt.selectedColumns";
-		}
-		return preferenceStore;
-	};
-
-	ProcessResourceMgmtCtrl.prototype.preferenceDelegateForUsersTable = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService
-				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
-		preferenceStore.marshalName = function(scope) {
-			return "ipp-business-control-center.ProcessResourceUserMgmt.selectedColumns";
-		}
-		return preferenceStore;
-	};
 })();
