@@ -559,21 +559,6 @@
 		return metadataToExport.join(',');
 	};
 
-	DocumentSearchViewCtrl.prototype.preferenceDelegate = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'workflow-perspective', 'preference'); // Override
-		preferenceStore.marshalName = function(scope) {
-			return "workflow-perspective.documentSearch.selectedColumns";
-		}
-		return preferenceStore;
-	};
-
-	DocumentSearchViewCtrl.prototype.preferenceDelegateForVersionHistory = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'contextPortal', 'preference'); // Override
-		preferenceStore.marshalName = function(scope) {
-			return "contextPortal.VersionHistory.selectedColumns";
-		}
-		return preferenceStore;
-	};
 
 	/**
 	 * This function appears to do nothing but actually is quite important.

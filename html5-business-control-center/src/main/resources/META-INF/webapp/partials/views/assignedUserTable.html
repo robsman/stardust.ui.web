@@ -22,7 +22,9 @@
 	<table sd-data-table="ctrl.assignedUsersTable"
 		sd-data="ctrl.getAssignedUsers(params)" sda-mode="local" sda-ready="ctrl.table1"
 		sda-selectable="multiple"
-		sda-preference-delegate="ctrl.preferenceForAssignedUserTable(prefInfo)"
+		sda-preference-module="ipp-business-control-center"
+		sda-preference-id="preference"
+		sda-preference-name="ipp-business-control-center.userAssigned.selectedColumns"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
 		sda-exports-file-name="{{ctrl.exportFileNameForAssignedUsers}}">

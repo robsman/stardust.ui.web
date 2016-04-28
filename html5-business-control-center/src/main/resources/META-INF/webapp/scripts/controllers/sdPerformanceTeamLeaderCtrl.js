@@ -119,17 +119,5 @@
 	Controller.prototype.refresh = function( ) {
 		this.dataTable.refresh();
 	};
-	/**
-	 *
-	 */
-	Controller.prototype.preferenceDelegate = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore( prefInfo.scope, 'ipp-business-control-center',
-		'preference');
-		// Override
-		preferenceStore.marshalName = function(scope) {
-			return 'ipp-business-control-center.performanceTeamLeader.selectedColumns';
-		}
-		return preferenceStore;
-	};
 
 })();

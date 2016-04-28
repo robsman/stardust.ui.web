@@ -13,9 +13,11 @@
 		</div>
 	</div>
 	<table sd-data-table="ctrl.assignedRolesTable"
-		sd-data="ctrl.getAssignedRoles(params)" sda-mode="local" sda-ready="ctrl.showAssignedRolesTable"
-	    sda-selectable="multiple"
-		sda-preference-delegate="ctrl.preferenceForAssignedRoleTable(prefInfo)"
+		sd-data="ctrl.getAssignedRoles(params)" sda-mode="local"
+		sda-ready="ctrl.showAssignedRolesTable" sda-selectable="multiple"
+		sda-preference-module="ipp-business-control-center"
+		sda-preference-id="preference"
+		sda-preference-name="ipp-business-control-center.roleAssigned.selectedColumns"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
 		sda-exports-file-name="{{ctrl.exportFileNameForAssignedRoles}}">
@@ -25,10 +27,8 @@
 				<th sda-name="name"
 					sda-label="{{i18n('business-control-center-messages.views-common-column-name')}}"
 					sda-sortable="true"></th>
-				<th sda-name="items" sda-sortable="true">
-				</th>
-				<th sda-name="account" 
-					sda-sortable="true"></th>
+				<th sda-name="items" sda-sortable="true"></th>
+				<th sda-name="account" sda-sortable="true"></th>
 				<th sda-name="itemsPerUser" sda-label-key="itemsperUser"
 					sda-sortable="true"></th>
 			</tr>

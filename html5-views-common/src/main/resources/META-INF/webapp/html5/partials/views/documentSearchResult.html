@@ -14,10 +14,12 @@
 		sda-ready="docSearchViewCtrl.showTableData"
 		sd-data="docSearchViewCtrl.performSearch(params)" sda-mode="remote"
 		sda-selectable="mutiple"
-		sda-preference-delegate="docSearchViewCtrl.preferenceDelegate(prefInfo)"
+		sda-preference-module="workflow-perspective"
+		sda-preference-id="preference"
+		sda-preference-name="workflow-perspective.documentSearch.selectedColumns"
 		sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
-		sda-sortable="true"
-		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
+		sda-sortable="true" sda-sort-by="{name : 'name', dir : 'desc'}"
+		sda-exports="true"
 		sda-exports-file-name="{{docSearchViewCtrl.exportFileNameForDocumentSearchResult}}">
 		<thead
 			sda-i18n-scope="views-common-messages.views-documentSearchView-documentSearchTable-column">
@@ -67,23 +69,23 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td sda-exporter="rowData.name">
-				 <i class="{{docSearchViewCtrl.getGlyphiconClass(rowData.contentType)}} spacing-right"></i>
-				 <span sd-popover sda-placement="right auto"
-						sda-trigger="mouseenter" sda-template="'plugins/html5-views-common/html5/partials/views/documentDetailToolTip.html'">
-						<a href="#" ng-click="docSearchViewCtrl.openDocumentView(rowData.uuid);" aid="COM-SrchDoc-DocSrchTbl-DocName">
-							{{rowData.name}} 
-						</a>
-				</span>
-				</td>
+				<td sda-exporter="rowData.name"><i
+					class="{{docSearchViewCtrl.getGlyphiconClass(rowData.contentType)}} spacing-right"></i>
+					<span sd-popover sda-placement="right auto"
+					sda-trigger="mouseenter"
+					sda-template="'plugins/html5-views-common/html5/partials/views/documentDetailToolTip.html'">
+						<a href="#"
+						ng-click="docSearchViewCtrl.openDocumentView(rowData.uuid);"
+						aid="COM-SrchDoc-DocSrchTbl-DocName"> {{rowData.name}} </a>
+				</span></td>
 				<td sda-data-type="dateTime"></td>
 				<td sda-data-type="dateTime"></td>
 				<td></td>
 				<td>{{rowData.documentType.name}}</td>
-				<td sda-exporter="rowData.size | sdFileSize">{{rowData.size
-					| sdFileSize}}</td>
+				<td sda-exporter="rowData.size | sdFileSize">{{rowData.size |
+					sdFileSize}}</td>
 				<td sda-exporter="docSearchViewCtrl.getMetaData(rowData.metadata)">
-				    <table>
+					<table>
 						<tr ng-repeat="item in rowData.metadata">
 							<td style="white-space: nowrap;">{{item.first}}:</td>
 							<td style="white-space: nowrap;">{{item.second}}</td>
@@ -101,17 +103,20 @@
 				<td sda-exporter="rowData.repositoryId"><div
 						ng-bind="rowData.repositoryId"></div></td>
 				<td>{{rowData.uuid}}</td>
-				<td sda-exporter="rowData.ownerDetails.displayName"><sd-user-details sda-user-oid="rowData.ownerDetails.oid" sda-account="rowData.ownerDetails.displayName" sda-aid-prefix="COM-SrchDoc-DocSrchTbl-Author"></sd-user-details>
+				<td sda-exporter="rowData.ownerDetails.displayName"><sd-user-details
+						sda-user-oid="rowData.ownerDetails.oid"
+						sda-account="rowData.ownerDetails.displayName"
+						sda-aid-prefix="COM-SrchDoc-DocSrchTbl-Author"></sd-user-details>
 				</td>
 				<td>
-					<div ng-click="docSearchViewCtrl.foo()" style="text-align: right; white-space: nowrap;">
-						
-						<button sd-popover  
-								sda-placement="auto left-top"
-								title="{{i18n('processportal.toolbars-workflowActions-tooltip-actions')}}"
-						        sda-template="docSearchViewCtrl.actionsPopoverTemplateUrl"
-						        class="button-link tbl-tool-link">
-						        <i class="pi pi-actions pi-lg"></i>
+					<div ng-click="docSearchViewCtrl.foo()"
+						style="text-align: right; white-space: nowrap;">
+
+						<button sd-popover sda-placement="auto left-top"
+							title="{{i18n('processportal.toolbars-workflowActions-tooltip-actions')}}"
+							sda-template="docSearchViewCtrl.actionsPopoverTemplateUrl"
+							class="button-link tbl-tool-link">
+							<i class="pi pi-actions pi-lg"></i>
 						</button>
 
 					</div>

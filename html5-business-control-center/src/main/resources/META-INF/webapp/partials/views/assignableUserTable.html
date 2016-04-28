@@ -18,9 +18,11 @@
 		</div>
 	</div>
 	<table sd-data-table="ctrl.assignableUsersTable"
-		sd-data="ctrl.getAssignableUsers(params)" sda-mode="local" sda-ready="ctrl.table2"
-		sda-selectable="multiple"
-		sda-preference-delegate="ctrl.preferenceForAssignableUserTable(prefInfo)"
+		sd-data="ctrl.getAssignableUsers(params)" sda-mode="local"
+		sda-ready="ctrl.table2" sda-selectable="multiple"
+		sda-preference-module="ipp-business-control-center"
+		sda-preference-id="preference"
+		sda-preference-name="ipp-business-control-center.userAssignable.selectedColumns"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
 		sda-exports-file-name="{{ctrl.exportFileNameForAssignableUsers}}">
@@ -29,8 +31,7 @@
 			<tr>
 				<th sda-name="name"
 					sda-label="{{i18n('business-control-center-messages.views-common-column-name')}}"
-					sda-sortable="true">
-				</th>
+					sda-sortable="true"></th>
 				<th sda-name="roleCount" sda-label-key="rolesCount"
 					sda-sortable="true"></th>
 				<th sda-name="directItemCount" sda-label-key="directItems"

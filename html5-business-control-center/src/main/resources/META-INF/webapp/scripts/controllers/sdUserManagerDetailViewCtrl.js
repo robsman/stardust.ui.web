@@ -244,27 +244,4 @@
 		self.activeTab = 1;
 
 	};
-
-	/**
-	 * 
-	 */
-
-	UserManagerDetailViewCtrl.prototype.preferenceForAssignedRoleTable = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService
-				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
-		preferenceStore.marshalName = function(scope) {
-			return "ipp-business-control-center.roleAssigned.selectedColumns";
-		}
-		return preferenceStore;
-	};
-
-	UserManagerDetailViewCtrl.prototype.preferenceForAssignableRoleTable = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService
-				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
-		preferenceStore.marshalName = function(scope) {
-			return "ipp-business-control-center.roleAssignable.selectedColumns";
-		}
-		return preferenceStore;
-	};
-
 })();
