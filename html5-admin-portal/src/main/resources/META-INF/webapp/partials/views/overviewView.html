@@ -1,24 +1,38 @@
 <div sg-stretch-to-bottom class="view-panel">
-<div class="ng-hide" ng-show="true" ng-controller="sdOverviewCtrl as ctrl">
+<div class="ng-hide" ng-show="true"  ng-controller="sdOverviewCtrl as ctrl" >
 
 		<div class="overview-wrapper">
 			<div>
 				<div class="view-panel-toolbar heading">
 					{{i18n('admin-portal-messages.views-common-processes-label')}}</div>
-				<table>
-					<tr>
-						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-total-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="value-item" aid="ADM-Overview-TotalProcCnt">{{ctrl.processInstanceCounts.total}}</span></td>
-						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-active-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="value-item" aid="ADM-Overview-ActiveProcCnt">{{ctrl.processInstanceCounts.active}}</span></td>
-						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-interrupted-label') +  i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="value-item" aid="ADM-Overview-IntProcCnt">{{ctrl.processInstanceCounts.waiting}}</span></td>
-						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-aborted-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="value-item" aid="abortedProcessInstancesCount">{{ctrl.processInstanceCounts.aborted}}</span></td>
-						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-completed-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="value-item" aid="ADM-Overview-CompProcCnt">{{ctrl.processInstanceCounts.completed}}</span></td>
-					</tr>
-				</table>
+                <table>
+                    <tr>
+                        <td><span class="label-item">{{i18n('admin-portal-messages.views-common-total-label') + i18n('admin-portal-messages.common-colon')}}</span>
+                        </td>
+                        <td><span class="value-item" aid="ADM-Overview-TotalProcCnt">{{ctrl.processInstanceCounts.total}}</span>
+                        </td>
+                        <td><span class="label-item">{{i18n('admin-portal-messages.views-common-active-label') + i18n('admin-portal-messages.common-colon')}}</span>
+                        </td>
+                        <td><span class="value-item" aid="ADM-Overview-ActiveProcCnt">{{ctrl.processInstanceCounts.active}}</span>
+                        </td>
+                        <td><span class="label-item">{{i18n('admin-portal-messages.views-common-interrupted-label') +  i18n('admin-portal-messages.common-colon')}}</span>
+                        </td>
+                        <td><span class="value-item" aid="ADM-Overview-IntProcCnt">{{ctrl.processInstanceCounts.waiting}}</span>
+                        </td>
+                        <td><span class="label-item">{{i18n('admin-portal-messages.views-common-aborted-label') + i18n('admin-portal-messages.common-colon')}}</span>
+                        </td>
+                        <td><span class="value-item" aid="abortedProcessInstancesCount">{{ctrl.processInstanceCounts.aborted}}</span>
+                        </td>
+                        <td><span class="label-item">{{i18n('admin-portal-messages.views-common-completed-label') + i18n('admin-portal-messages.common-colon')}}</span>
+                        </td>
+                        <td><span class="value-item" aid="ADM-Overview-CompProcCnt">{{ctrl.processInstanceCounts.completed}}</span>
+                        </td>
+                        <td><span class="label-item">{{i18n('admin-portal-messages.views-common-halted-label') + i18n('admin-portal-messages.common-colon')}}</span>
+                        </td>
+                        <td><span class="value-item" aid="ADM-Overview-CompProcCnt">{{ctrl.processInstanceCounts.halted}}</span>
+                        </td>
+                    </tr>
+                </table>
 			</div>
 			<div>
 				<div class="view-panel-toolbar heading">
@@ -35,6 +49,8 @@
 						<td><span class="value-item" aid="ADM-Overview-AbortActCnt">{{ctrl.activityInstanceCounts.aborted}}</span></td>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-completed-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
 						<td><span class="value-item" aid="ADM-Overview-CompActCnt">{{ctrl.activityInstanceCounts.completed}}</span></td>
+						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-halted-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
+						<td><span class="value-item" aid="ADM-Overview-CompProcCnt">{{ctrl.activityInstanceCounts.halted}}</span></td>
 					</tr>
 				</table>
 			</div>

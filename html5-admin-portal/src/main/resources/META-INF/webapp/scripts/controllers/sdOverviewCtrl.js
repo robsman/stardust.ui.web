@@ -22,7 +22,7 @@
 					'sdPreferenceService', OverviewCtrl ]);
 
 	var _q;
-	var _sdOverviewService
+	var _sdOverviewService;
 	var trace;
 	var _sdUtilService;
 	var _sdUserService;
