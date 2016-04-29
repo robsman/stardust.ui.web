@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +34,7 @@ import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.HistoricalData;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
@@ -175,6 +177,9 @@ public class ProcessInstanceService
       
       // set historic data
       List<HistoricalData> histDataList = ((ProcessInstanceDetails) processInstance).getHistoricalData();
+      // filter to get most recent instances only
+      histDataList = new ArrayList<HistoricalData>(getMostRecentDataValues(histDataList)); 
+      
       if (CollectionUtils.isNotEmpty(histDataList))
       {
          List<HistoricalDataDTO> histDTOs = new ArrayList<HistoricalDataDTO>();
@@ -228,9 +233,6 @@ public class ProcessInstanceService
       
       for (ActivityInstanceDTO adto : processInstanceDTO.activityInstances)
       {
-         //set activity completed by details
-         adto.completedByDetails = userAttributesCacheManager.getUserAttributes(adto.completedByOid, false);
-         
          if ("Subprocess".equals(adto.activity.implementationTypeId))
          {
             ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
@@ -254,8 +256,33 @@ public class ProcessInstanceService
       return processInstanceDTO;
    }
    
-   
-   
+   /**
+    * @param histDataList
+    * @return
+    */
+   private Collection<HistoricalData> getMostRecentDataValues(List<HistoricalData> histDataList)
+   {
+      Map<DataContext, HistoricalData> dataMap = new HashMap<DataContext, HistoricalData>();
+
+      for (HistoricalData historicalData : histDataList)
+      {
+         DataContext dc = new DataContext(historicalData.getData(), historicalData.getModifyingActivityInstanceOID());
+
+         if (dataMap.containsKey(dc))
+         {
+            if (dataMap.get(dc).getDataModificationTimestamp() < historicalData.getDataModificationTimestamp())
+            {
+               dataMap.put(dc, historicalData);
+            }
+         }
+         else
+         {
+            dataMap.put(dc, historicalData);
+         }
+      }
+      return dataMap.values();
+   }
+
    public ProcessInstanceDTO startProcess(List<Attachment> attachments)
    {
       String processDefinitionId = null;
@@ -911,5 +938,49 @@ public class ProcessInstanceService
                String.valueOf(processInstanceOid)));
       }
       return processInstance;
+   }
+   
+   private class DataContext
+   {
+      private Data data;
+      private long activityOid;
+
+      public DataContext(Data data2, long modifyingActivityInstanceOID)
+      {
+         data = data2;
+         activityOid = modifyingActivityInstanceOID;
+      }
+
+      @Override
+      public int hashCode()
+      {
+         final int prime = 31;
+         int result = 1;
+         result = prime * result + (int) (activityOid ^ (activityOid >>> 32));
+         result = prime * result + ((data == null) ? 0 : data.getQualifiedId().hashCode());
+         return result;
+      }
+
+      @Override
+      public boolean equals(Object obj)
+      {
+         if (this == obj)
+            return true;
+         if (obj == null)
+            return false;
+         if (getClass() != obj.getClass())
+            return false;
+         DataContext other = (DataContext) obj;
+         if (activityOid != other.activityOid)
+            return false;
+         if (data == null)
+         {
+            if (other.data != null)
+               return false;
+         }
+         else if (!data.getQualifiedId().equals(other.data.getQualifiedId()))
+            return false;
+         return true;
+      }
    }
 }

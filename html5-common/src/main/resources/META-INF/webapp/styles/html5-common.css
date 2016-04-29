@@ -836,7 +836,7 @@ select[disabled="disabled"] {
     background: #EEEEEE;
 }
 
-/*Section for Process Summary page*/
+/*Section for Process Summary page - start*/
 /******************************************************/
 /* Put your css in here */
 .process-summary-cell {
@@ -879,3 +879,10 @@ select[disabled="disabled"] {
 .process-summary-border-bottom {
   border-bottom: 1px lightgray solid;
 }
+
+.process-summary-table .highlightActivity {
+  font-weight: bolder;
+}
+
+/*Section for Process Summary page - end*/
+/******************************************************/

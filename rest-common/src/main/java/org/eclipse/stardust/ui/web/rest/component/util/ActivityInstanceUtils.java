@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
+import org.eclipse.stardust.engine.api.dto.HistoricalState;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
@@ -1009,5 +1010,23 @@ public class ActivityInstanceUtils
 
       return dtos;
    }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static User getLastPerformerUser(ActivityInstance ai)
+   {
+      for (HistoricalState hs : ai.getHistoricalStates())
+      {
+         Participant performer = ParticipantUtils.getParticipant(hs.getParticipant());
+         if (performer instanceof User && hs.getState() == ActivityInstanceState.Application)
+         {
+            return (User) performer;
+         }
+      }
+      return null;
+   }
+
 
 }

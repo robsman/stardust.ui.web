@@ -797,8 +797,6 @@ public class ActivityTableUtils
                
                if (mode.equals(MODE.ACTIVITY_TABLE))
                {
-                  dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
-                  dto.completedByOid = ai.getPerformedByOID();
                   dto.participantPerformer = getParticipantPerformer(ai);
                   dto.abortActivity = !dto.isCaseInstance && isAbortable(ai);
                   dto.delegable = isDelegable(ai);

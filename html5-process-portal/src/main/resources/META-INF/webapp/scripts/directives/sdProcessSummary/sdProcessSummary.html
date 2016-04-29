@@ -114,6 +114,7 @@
 									<td class="">
 										<table width="100%" class="process-summary-border-bottom">
 											<tr
+												ng-class="{highlightActivity: sdProcessSummaryCtrl.currentActivityInstanceOid == flowElement.activityOID}"
 												title="{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.showActivityHistory')}}"
 												ng-click="flowElement.expanded_=!flowElement.expanded_"
 												aid="PP-processSummary-showHideActivityHistory"
@@ -137,20 +138,21 @@
 												ng-show="flowElement.expanded_ && sdProcessSummaryCtrl.showNotes && flowElement.notes_">
 												<td colspan="6">
 													<table width="95%" class="process-summary-notes">
-														<tr style="background-color: lightgray">
+														<tr style="background-color: #e5e5e5">
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.notes.label')}}</span></th>
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.notes.addedBy')}}</span></th>
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-common.common.date')}}</span></th>
 														</tr>
 														<tr ng-repeat="note in flowElement.notes_"
 															sd-state-display="{{$index}}"
-															sda-state-display-colors="['white', 'F5F5F5']">
+															sda-state-display-colors="['white', '#F5F5F5']">
 															<td><span><i class="pi pi-notes-empty pi-1x"></i>
 																	{{note.note}}</span></td>
-															<td><sd-user-image
+															<td style="width: 30%"><sd-user-image
 																	sda-path="{{note.avatarImageURI}}"></sd-user-image>
 																{{note.creatorName}}</td>
-															<td><span>{{note.created | sdDateTimeFilter}}</span></td>
+															<td style="width: 20%"><span>{{note.created |
+																	sdDateTimeFilter}}</span></td>
 														</tr>
 													</table>
 												</td>
@@ -159,23 +161,23 @@
 												ng-show="flowElement.expanded_ && sdProcessSummaryCtrl.showDocuments && flowElement.documents">
 												<td colspan="6">
 													<table width="95%" class="process-summary-notes">
-														<tr style="background-color: lightgray">
+														<tr style="background-color: #e5e5e5">
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.documents.label')}}</span></th>
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.documents.uploadedBy')}}</span></th>
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-common.common.date')}}</span></th>
 														</tr>
 														<tr ng-repeat="document in flowElement.documents"
 															sd-state-display="{{$index}}"
-															sda-state-display-colors="['white', 'F5F5F5']">
+															sda-state-display-colors="['white', '#F5F5F5']">
 															<td><span sd-open-document-link
 																sda-name="document.name"
 																sda-mime-type="document.contentType"
 																sda-document-id="document.uuid"></span></td>
-															<td><sd-user-image
+															<td style="width: 30%"><sd-user-image
 																	sda-path="{{document.ownerDetails.userImageURI}}"></sd-user-image>
 																{{document.ownerDetails.displayName}}</td>
-															<td><span>{{document.dateLastModified |
-																	sdDateTimeFilter}}</span></td>
+															<td style="width: 20%"><span>{{document.dateLastModified
+																	| sdDateTimeFilter}}</span></td>
 														</tr>
 													</table>
 												</td>
@@ -184,25 +186,26 @@
 												ng-show="flowElement.expanded_ && flowElement.isChecklistActivity">
 												<td colspan="4">
 													<table width="95%" class="process-summary-notes">
-														<tr style="background-color: lightgray">
+														<tr style="background-color: #e5e5e5">
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.checklist.label')}}</span></th>
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.checklist.performedBy')}}</span></th>
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.checklist.maker')}}</span></th>
 														</tr>
 														<tr>
-															<td><span>{{flowElement.activity.description}}</span></td>
-															<td><span><sd-user-image
-																		sda-path="{{flowElement.completedByDetails.userImageURI}}"></sd-user-image>
-																	{{flowElement.completedBy}}</span></td>
+															<td style="width: 20%"><span>{{flowElement.activity.description}}</span></td>
+															<td style="width: 30%"><span
+																ng-show="!!flowElement.dataModifiedBy"><sd-user-image
+																		sda-path="{{flowElement.dataModifiedBy.userImageURI}}"></sd-user-image>
+																	{{flowElement.dataModifiedBy.displayName}}</span></td>
 															<td>
 																<div ng-repeat="data in flowElement.historicalData"
 																	sd-state-display="{{$index}}"
-																	sda-state-display-colors="['white', 'F5F5F5']">
+																	sda-state-display-colors="['white', '#F5F5F5']">
 																	<div style="float: left">{{data.name}}:</div>
 																	<div ng-switch on="data.javaType">
 																		<span ng-switch-when="java.lang.Boolean"> <input
-																			type="checkbox" ng-model="data.bValue"
-																			ng-disabled="true" />
+																			style="margin-top: 2px" type="checkbox"
+																			ng-model="data.bValue" ng-disabled="true" />
 																		</span> <span ng-switch-when="java.util.Date">{{data.value
 																			| sdDateTimeFilter}}</span> <span ng-switch-default>{{data.value}}</span>
 																	</div>

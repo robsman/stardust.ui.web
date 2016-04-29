@@ -12,6 +12,7 @@
  * @sdaProcessInstanceOid - Process Oid to request process notes for. If it is
  *                        not provided then Process Notes section will not
  *                        appear
+ *  @sdaActivityInstanceOid - it is optional and used to highlight the given activity 
  */
 
 /**
@@ -29,7 +30,8 @@
         return {
           restrict: 'E',
           scope: {
-            processInstanceOid: "@sdaProcessInstanceOid"
+            processInstanceOid: "@sdaProcessInstanceOid",
+            activityInstanceOid: "@sdaActivityInstanceOid"
           },
           controller: "sdProcessSummaryCtrl",
           controllerAs: "sdProcessSummaryCtrl",
@@ -51,6 +53,7 @@
     this.rootUrl = sdUtilService.getBaseUrl();
     this.sdMimeTypeService = sdMimeTypeService;
     this.sdI18n = $scope.$root.sdI18n;
+    this.currentActivityInstanceOid = $scope.activityInstanceOid; //to highlight the background
 
     // fetch data from server, then call this method
     this.refresh();
@@ -158,6 +161,9 @@
         //add historical data
         if (activityInstance.isChecklistActivity) {
           activityInstance.historicalData = this.historicalData[activityInstance.activityOID];
+          if (activityInstance.historicalData && activityInstance.historicalData.length > 0) {
+            activityInstance.dataModifiedBy = activityInstance.historicalData[0].modifiedBy;
+          }
         }
         this.flowElements.push(activityInstance);
       }

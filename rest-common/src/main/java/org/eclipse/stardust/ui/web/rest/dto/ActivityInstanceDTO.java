@@ -76,10 +76,6 @@ public class ActivityInstanceDTO extends AbstractDTO
 
    public Map<String, DescriptorDTO> descriptorValues;
    
-   public String completedBy;
-   public long completedByOid;
-   public UserAttributesDTO completedByDetails;
-   
    public String participantPerformer;
 
    public int notesCount;
