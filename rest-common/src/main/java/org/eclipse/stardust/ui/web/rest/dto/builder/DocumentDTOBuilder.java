@@ -162,7 +162,7 @@ public class DocumentDTOBuilder
 
       // Optional Details
       // set user details
-      if (StringUtils.isNotEmpty(detailLevelDTO.userDetailsLevel))
+      if (detailLevelDTO != null && StringUtils.isNotEmpty(detailLevelDTO.userDetailsLevel))
       {
          setModifierDetails(documentDTOs, userCache);
       }
