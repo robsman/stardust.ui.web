@@ -215,12 +215,22 @@
   // register controller
   app.controller('notesPanelCtrl', NotesController);
 
+  //create link function so we can observe our attributes of interest
+  var linkFx = function(elem,scope,attrs,ctrl){
+	  attrs.$observe("sdaRefresh",function(v){
+		  if(v==="true"){
+			  ctrl.initialize();
+		  }
+	  })
+  };
+  
   // register directive
   app.directive("sdNotesPanel", [
       "sdUtilService",
       function(sdUtilService) {
         return {
           restrict: 'EA',
+          link: linkFx,
           scope: {
             activityInstanceOid: "@sdaActivityInstanceOid",
             processInstanceOid: "@sdaProcessInstanceOid"

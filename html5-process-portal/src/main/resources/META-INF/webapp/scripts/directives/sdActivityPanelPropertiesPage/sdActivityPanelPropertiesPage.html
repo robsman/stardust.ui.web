@@ -10,7 +10,7 @@
 			class='pi pi-trigger-expanded pi-lg pi-rotate-90'></i> </a>
 	</div>
 
-	<div ng-show="propertiesPageController.propertiesPageVisible"
+	<div
 		class="properties-panel">
 		<table class="properties-panel-table">
 			<tbody>
@@ -21,6 +21,7 @@
 								<tr>
 									<td><a href='#' class='heading'
 										style='cursor: pointer; text-decoration: none;'
+										ng-hide='!propertiesPageController.propertiesPageVisible'
 										ng-click="propertiesPageController.collapse()"> <i
 											title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.collapse.title')}}"
 											class='pi pi-trigger-collapsed pi-lg'
@@ -69,14 +70,16 @@
 							</tbody>
 						</table>
 					</td>
-					<td>
+					<td ng-show="propertiesPageController.propertiesPageVisible">
 						<div sd-notes-panel
 							ng-show="propertiesPageController.selectedPropertiesPage == 'notes'"
+							sda-refresh="{{propertiesPageController.propertiesPageVisible}}"
 							sda-activity-instance-oid="{{propertiesPageController.activityInstanceOid}}"
 							sda-process-instance-oid="{{propertiesPageController.processInstanceOid}}">
 						</div>
 						<div sd-process-documents-panel
 							ng-show="propertiesPageController.selectedPropertiesPage == 'documents'"
+							sda-refresh="{{propertiesPageController.propertiesPageVisible}}"
 							sda-process-instance-oid="{{propertiesPageController.processInstanceOid}}"
 							sda-activity-instance-oid="{{propertiesPageController.activityInstanceOid}}">
 						</div>
