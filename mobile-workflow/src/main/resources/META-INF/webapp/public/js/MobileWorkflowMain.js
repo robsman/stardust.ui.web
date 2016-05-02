@@ -21,7 +21,7 @@ require
 				'jquery-mobile'   : [ 'js/libs/jquery/plugins/jquery.mobile-1.4.0.min',
 				                      '//code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0'],
 				'jquery-iscroll'  : [ 'js/libs/jquery/plugins/jquery.mobile.iscrollview.min'],
-				'angularjs' 	  : [ '../portal-shell/js/libs/angular/1.2.11/angular.min',
+				'angularjs' 	  : [ 'js/libs/angular/1.2.11/angular.min',
 				            	      '//ajax.googleapis.com/ajax/libs/angularjs/1.2.11/angular.min' ]
 			},
 			shim : {
