@@ -203,11 +203,12 @@
 	 * @return {[type]}       [description]
 	 */
 	fileRepoUploadController.prototype.purgeCompletedFiles = function(files){
-		files.forEach(function(v,i,a){
-			if(v.fileState === FileState.COMPLETE){
-				a.splice(i,1);
+		var length = files.length;
+		while(length--){
+			if(files[length].fileState === FileState.COMPLETE){
+				files.splice(length,1);
 			}
-		});
+		}
 	};
 
 	/**
