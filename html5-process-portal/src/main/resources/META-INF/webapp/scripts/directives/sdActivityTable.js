@@ -97,7 +97,7 @@
 		}
 
 		/**
-		 *
+		 * 
 		 */
 		function processCustomTemplate(elem, attr, transclude) {
 
@@ -251,7 +251,7 @@
 		};
 
 
-
+	
 
 		/*
 		 *
@@ -280,7 +280,7 @@
 
 			this.registerMethods(attr, scope, $filter, element);
 
-			this.actionsPopoverTemplateUrl =
+			this.actionsPopoverTemplateUrl = 
 				this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/activityActionsPopover.html');
 
 			this.openDocumentTemplateUrl =
@@ -349,7 +349,7 @@
 				this.initialSelection = attr.sdaInitialSelection;
 			}
 
-			this.fetchIntialTableRequirements(element, attr);
+			this.fetchDescriptorCols(element, attr);
 			this.fetchAvailableStates();
 			this.fetchAvailablePriorities();
 
@@ -387,13 +387,13 @@
 				if (newVal != undefined && newVal != null && newVal != oldVal) {
 					if (attr.sdActivityTable) {
 						var assignable = $parse(attr.sdActivityTable).assign;
-
+						
 						if (assignable) {
 							//For Extanal Usage
 							var exposedApi = {
 									activate : self.activate
-							}
-
+							} 
+							
 							exposedApi =  angular.merge( exposedApi, self.dataTable)
 							assignable(scopeToUse, exposedApi);
 						}
@@ -416,20 +416,20 @@
 				});
 			}
 		};
-
-
+		
+		
 		/**
 		 */
-		ActivityTableCompiler.prototype.registerMethods = function(attr, scope, $filter, element) {
-
+		ActivityTableCompiler.prototype.registerMethods = function(attr, scope, $filter, element) { 
+			
 			var self = this;
 
 			this.preferenceDelegate = function(prefInfo) {
 				trace.log('Fetching column preference for scope :',prefInfo.scope ,",preferenceId :",self.preferenceId,", preferenceName:",self.preferenceName);
 
-				var preferenceStore = self.preferenceStores[prefInfo.scope];
+				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.preferenceModule,
+						self.preferenceId);
 				preferenceStore.super_getValue = preferenceStore.getValue;
-
 				// Override
 				preferenceStore.getValue = function(name, fromParent) {
 					var value = this.super_getValue(name, fromParent);
@@ -449,7 +449,7 @@
 						return name;
 					}
 
-					 name = self.preferenceName;
+					var name = self.preferenceName;
 					if (scope == 'PARTITION') {
 						if (self.isWorklistMode() && this.parentStore && !this.parentStore[name]) {
 							name = 'Default';
@@ -458,8 +458,7 @@
 						}
 					}
 					return name;
-				};
-
+				}
 				return preferenceStore;
 			};
 
@@ -606,7 +605,7 @@
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			self.getQuery = function() {
 				var queryGetter = $parse(attr.sdaQuery);
@@ -639,11 +638,11 @@
 							sdDialogService.error(scope, message, options);
 						}
 				);
-
+				
 			};
-
+			
 		};
-
+		
 		/**
 		 *
 		 */
@@ -785,14 +784,14 @@
 			if (attr.sdaToolbar) {
 				this.toolBarConfig =  $parse(attr.sdaToolbar)();
 			}
-
+			
 			if (angular.isDefined(attr.sdaActions)) {
 				this.actionsConfig =  $parse(attr.sdaActions)();
 			}
 		};
 
-
-
+		
+		
 		/*
 		 *
 		 */
@@ -821,7 +820,7 @@
 		ActivityTableCompiler.prototype.cleanLocals = function() {
 			this.dirtyDataForms = [];
 		};
-
+		
 		/*
 		 *
 		 */
@@ -841,7 +840,7 @@
 			}
 
 			self.cachedQuery.options = options;
-
+			
 			// Adds BO filter to query if present
 			addBOFilterToQuery.call(this);
 
@@ -898,89 +897,51 @@
 		};
 
 		/**
-		 *
+		 * 
 		 */
 		function addBOFilterToQuery() {
 			if (this.boFilter) {
 				if (!this.cachedQuery.options.filters) {
 					this.cachedQuery.options.filters = {};
 				}
-
+				
 				this.cachedQuery.options.filters.businessObject = this.boFilter;
 			}
 		}
 
-		/**
-		 *  The following method makes sure descriptor columns and preference store  is loaded before initiaizing table.
+		/*
+		 *
 		 */
-		ActivityTableCompiler.prototype.fetchIntialTableRequirements = function(elem, attr) {
+		ActivityTableCompiler.prototype.fetchDescriptorCols = function(elem, attr) {
 			var self = this;
-			var preferencePromise = this.populateRequiredPreferenceStores(attr);
-			var descriptorPromise = this.fetchDescriptorCols(attr);
 
-			var promises = [preferencePromise, descriptorPromise];
+			sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
+				self.descriptorCols = [];
+				angular.forEach(descriptors, function(descriptor) {
+					self.descriptorCols.push({
+						id : descriptor.id,
+						field : "descriptorValues['" + descriptor.id + "'].value",
+						title : descriptor.title,
+						dataType : descriptor.type,
+						sortable : descriptor.sortable,
+						filterable : descriptor.filterable
+					});
+				});
 
-			$q.all(promises).then(function() {
 				if (attr.sdaReady) {
 					self.descriptorsReady = true;
 				} else {
-					$timeout(function() {
+					$timeout(function(){
 						//Handle Columns
 						try {
 							self.processTableColumns(elem, attr);
 							self.ready = true;
-						} catch (e) {
+						}catch(e) {
 							showError(e, elem);
 						}
 					});
 				}
 				self.safeApply();
-			});
-		};
-
-	/**
-	*
-	*/
-		ActivityTableCompiler.prototype.populateRequiredPreferenceStores = function() {
-			var self = this;
-			var promises = [];
-
-			var userPreferenceStore = sdPreferenceService.getStore("USER", self.preferenceModule,
-				self.preferenceId);
-			promises.push(userPreferenceStore.init());
-
-			var partitionPreferenceStore = sdPreferenceService.getStore("PARTITION", self.preferenceModule,
-			self.preferenceId);
-			promises.push(partitionPreferenceStore.init());
-
-			return 	$q.all(promises).then(function(){
-				self.preferenceStores =  {
-					USER :  userPreferenceStore ,
-					PARTITION :  partitionPreferenceStore
-				};
-				return self.preferenceStores;
-			});
-		};
-
-/*
-
-		 *
-		 */
-		ActivityTableCompiler.prototype.fetchDescriptorCols = function() {
-			var self = this;
-
-			return sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
-				self.descriptorCols = [];
-				angular.forEach(descriptors, function(descriptor) {
-					self.descriptorCols.push({
-						id: descriptor.id,
-						field: "descriptorValues['" + descriptor.id + "'].value",
-						title: descriptor.title,
-						dataType: descriptor.type,
-						sortable: descriptor.sortable,
-						filterable: descriptor.filterable
-					});
-				});
 			});
 		};
 
@@ -1140,7 +1101,7 @@
 						rowItem.correspondences = [];
 					});
 
-			$q.all([promise1, promise2]).then(function() {
+			$q.all([promise1, promise2]).finally(function() {
 				rowItem.contentLoaded = true;
 				self.processPopover.data = rowItem;
 				self.processPopover.showDocumentPopover = true;
@@ -1269,7 +1230,7 @@
 
 			return false;
 		}
-
+		
 		ActivityTableCompiler.prototype.completeAll = function() {
 			var self = this;
 			var STATUS_PARTIAL_SUCCESS = 'partialSuccess';
@@ -1283,7 +1244,7 @@
 			};
 
 			var selectedItems = self.selectedActivity;
-
+			
 			angular.forEach(selectedItems, function(item) {
 				self.completeActivityResult.nameIdMap[item.activityOID] = item.activity.name;
 			});
@@ -1660,14 +1621,14 @@
 				trace.error("Error in performing default delegate :",error);
 			});
 		};
-
-
+		
+		
 		/*
 		 *
 		 */
 		ActivityTableCompiler.prototype.isActionButtonVisible = function(columnName) {
 			var actions = this.actionsConfig;
-
+			
 			if ( actions === false ) {
 				return false;
 			} else if( actions === true ) {
@@ -1813,7 +1774,7 @@
 			}
 			return defaultValue;
 		};
-
+		
 		/**
 		 *
 		 */
