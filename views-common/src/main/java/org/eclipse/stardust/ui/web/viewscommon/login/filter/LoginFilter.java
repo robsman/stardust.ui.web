@@ -252,7 +252,7 @@ public class LoginFilter implements Filter
      
       SessionContext sessionContext = SessionContext.findSessionContext(facesContext);
 
-      if (! (requestUri.endsWith(".js") || requestUri.endsWith(".html")))
+      if (requestUri.endsWith(".iface") || requestUri.endsWith(".xhtml") || requestUri.endsWith(".jspx"))
       {
          includeCustomJS(facesContext, requestUri);
       }
