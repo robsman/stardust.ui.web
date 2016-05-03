@@ -70,24 +70,31 @@
 					error : false
 				};
 		    
-		    sdWorkflowPerspectiveConfigService.loadConfig().then(function(){
-		    	var abortScope =  sdWorkflowPerspectiveConfigService.getAbortProcessScope();
+
+		    var abortScope = null;
+		    var isPromptRequired = false;
+		    self.abortProcess = {
+		    		scope : abortScope,
+		    		processes : [],
+		    		isPromptRequired : isPromptRequired
+		    };
+
+		    sdWorkflowPerspectiveConfigService.loadConfig().then(function () {
+		    	abortScope = sdWorkflowPerspectiveConfigService.getAbortProcessScope();
 		    	if (abortScope == '') {
 		    		isPromptRequired = true;
 		    		self.configuredScope = ABORT_SCOPE.SUB;
 		    	} else {
 		    		self.configuredScope = abortScope;
 		    	}
+
+		    	self.abortProcess = {
+		    			scope : abortScope,
+		    			processes : [],
+		    			isPromptRequired : isPromptRequired
+		    	};
 		    });	
 
-		    var isPromptRequired = false;
-
-			self.abortProcess = {
-					scope : abortScope,
-					processes : [],
-					isPromptRequired : isPromptRequired
-			};
-		    
 		    self.onOpenDialog = onOpenDialog;
 		    self.closeThisDialog = closeThisDialog;
 		    self.resetValues = resetValues;
