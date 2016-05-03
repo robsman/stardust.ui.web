@@ -815,7 +815,7 @@
 	            //Monitor our template input field for the enter key and blur that element when detected
 	            scope.keyMonitor= function(e){
 	                if(e.which===13 && e.target.blur){
-	                	
+
 	                	e.stopImmediatePropagation();
 	                	e.preventDefault();
 	                	e.stopPropagation();
@@ -960,7 +960,7 @@
 	                case 'menu-rename':
 	                  op="node-rename";
 	                  deferred.promise.then(function(){
-	                    that.allowEdit = true;
+	                    scope.allowEdit = true;
 	                    $timeout(function(){inputElem.focus();},0);
 	                  });
 	                  break;
@@ -987,7 +987,7 @@
 	                  }).
 	                  finally(function(){
 	                    //always toggle edit mode off regardless.
-	                    that.allowEdit=false;
+	                    scope.allowEdit=false;
 	                  });
 	                  break;
 	                
