@@ -92,8 +92,9 @@
    * 
    */
   function ProcessDocumentsController(processDocumentsService, sdViewUtilService, sdUtilService, sgI18nService,
-          sdMimeTypeService, $scope, sdDialogService, documentRepositoryService) {
+          sdMimeTypeService, $scope, sdDialogService, documentRepositoryService, $q) {
     this.$scope = $scope;
+    this.$q = $q;
     this.processDocumentsService = processDocumentsService;
     this.sdViewUtilService = sdViewUtilService;
     this.rootUrl = sdUtilService.getBaseUrl();
@@ -117,6 +118,9 @@
       nameCollisionOption: "none"
     }
 
+    this.processDocsPosition = "TOP";
+    this.activityDocsPosition = "TOP";
+
     this.initialize();
   }
 
@@ -124,7 +128,7 @@
    * 
    */
   ProcessDocumentsController.prototype.initialize = function() {
-    this.initializeDocuments();
+    this.initializeDocuments("TOP");
 
     console.log("ProcessDocuments controller initialized...");
   }
@@ -134,6 +138,8 @@
    */
   ProcessDocumentsController.prototype.initializeDocuments = function() {
     var self = this;
+    var deferred = this.$q.defer();
+
     if (self.$scope.processInstanceOid) {
       self.showProcessAttachments = true;
       self.processAttachmentUrl = this.processAttachmentUrl_.replace("{{OID}}", self.$scope.processInstanceOid);
@@ -172,8 +178,15 @@
         }
 
         self.publishTotalCount();
+        deferred.resolve();
+
       });
     }
+    else{
+      deferred.reject();
+    }
+
+    return deferred.promise;
   }
 
   /**
@@ -190,7 +203,10 @@
     var self = this;
     this.uploadActivityAttDialogApi.open().then(function(files) {
       if (files.length > 0) {
-        self.initializeDocuments();
+        self.initializeDocuments()
+        .then(function(){
+          self.activityDocsPosition = "BOTTOM";
+        });
       }
     });
   };
@@ -209,7 +225,10 @@
     var self = this;
     this.uploadProcessAttDialogApi.open().then(function(files) {
       if (files.length > 0) {
-        self.initializeDocuments();
+        self.initializeDocuments()
+        .then(function(){
+          self.processDocsPosition = "BOTTOM";
+        });
       }
     });
   };
@@ -452,7 +471,7 @@
 
   // inject dependencies
   ProcessDocumentsController.$inject = ["processDocumentsService", "sdViewUtilService", "sdUtilService",
-      "sgI18nService", 'sdMimeTypeService', "$scope", "sdDialogService", "documentRepositoryService"];
+      "sgI18nService", 'sdMimeTypeService', "$scope", "sdDialogService", "documentRepositoryService", "$q"];
 
   // register a controller
   app.controller('processDocumentsPanelCtrl', ProcessDocumentsController);
