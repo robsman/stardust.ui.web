@@ -367,7 +367,7 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                               {
                                  if(data.getModelOID() != model.getModelOID())
                                  {
-                                    refModel = ModelCache.findModelCache().getModel(ref.getModelOid());
+                                    refModel = ModelCache.findModelCache().getModel(data.getModelOID());
                                  }
                               }
                               Class dataClass = dataPathDetails.getMappedType();
