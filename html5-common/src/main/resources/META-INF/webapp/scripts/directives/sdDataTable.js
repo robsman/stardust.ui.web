@@ -1930,7 +1930,7 @@
 					if (preferenceDelegate.store) {
 						var preferenceName = preferenceDelegate.store.marshalName(pScope, preferenceDelegate.name) + stateSuffixForPreference;
 						preferenceDelegate.store.setValue(preferenceName, tableStateValue);
-						preferenceDelegate.store.save().then(loadPreferenceStores());
+						preferenceDelegate.store.save();
 					}
 				}
 
@@ -2901,7 +2901,7 @@
 							selectedColumns: selectedCols,
 							lock: self.lock
 						};
-
+						
 						setColumnSelectionFromPreference(self.applyTo, prefValue).then(function(){
 							reorderColumns(self.applyTo);
 							self.toggleColumnSelector();
@@ -2965,7 +2965,7 @@
 						defer.then(function() {
 							setColumnSelectionFromPreference(self.applyTo, null).then(function(){
 								reorderColumns(self.applyTo);
-								self.toggleColumnSelector();
+								self.showSelectColumns = false;
 							});
 						});
 					};
