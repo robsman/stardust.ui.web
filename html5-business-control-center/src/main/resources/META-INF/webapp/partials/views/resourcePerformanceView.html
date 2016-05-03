@@ -38,7 +38,7 @@
 			<thead>
 				<tr>
 					<th sda-name="processDefinitionId" sda-sortable="true"
-						sda-visible="true" sda-fixed="true"
+						sda-visible="true" sda-fixed="true" sda-
 						sda-label="{{i18n('business-control-center-messages.views-resourcePerformance-column-processDefinition')}}">
 					</th>
 					<th ng-repeat="col in ctrl.columns" sda-name="{{col}}"
@@ -47,7 +47,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td sda-exporter="rowData.processDefinitionId">{{rowData.processDefinitionId}}
+					<td sda-data-type="string" sda-exporter="rowData.processDefinitionId">{{rowData.processDefinitionId}} 
 					</td>
 					<td ng-repeat="col in ctrl.columns"
 						sda-exporter="ctrl.getExportValue(rowData.statisticsByColumns[colData.title])">

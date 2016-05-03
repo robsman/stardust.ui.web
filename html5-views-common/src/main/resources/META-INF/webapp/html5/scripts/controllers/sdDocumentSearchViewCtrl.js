@@ -18,7 +18,7 @@
 	angular.module("viewscommon-ui").controller(
 			'sdDocumentSearchViewCtrl',
 			['$q', 'sdDocumentSearchService', 'sdViewUtilService', 'sdUtilService', 'sdMimeTypeService',
-					'sdLoggerService', 'sdCommonViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService',
+					'sdLoggerService', 'sdCommonViewUtilService', 'sdLoggedInUserService',
 					DocumentSearchViewCtrl]);
 	var _q;
 	var _sdDocumentSearchService;
@@ -28,13 +28,12 @@
 	var trace;
 	var _sdCommonViewUtilService;
 	var _sdLoggedInUserService;
-	var _sdPreferenceService;
 
 	/*
 	 * 
 	 */
 	function DocumentSearchViewCtrl($q, sdDocumentSearchService, sdViewUtilService, sdUtilService, sdMimeTypeService,
-			sdLoggerService, sdCommonViewUtilService, sdLoggedInUserService, sdPreferenceService) {
+			sdLoggerService, sdCommonViewUtilService, sdLoggedInUserService) {
 		// variable initialization for various services
 		trace = sdLoggerService.getLogger('viewscommon-ui.sdDocumentSearchViewCtrl');
 		_q = $q;
@@ -44,7 +43,6 @@
 		_sdMimeTypeService = sdMimeTypeService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_sdLoggedInUserService = sdLoggedInUserService;
-		_sdPreferenceService = sdPreferenceService;
 
 		//Base URL to prepend to our actions popover templateUrl
 		this.actionsPopoverTemplateUrl = sdUtilService.getBaseUrl() + 'plugins/html5-views-common/html5/partials/views/documentSearchResultActionsPopover.html';

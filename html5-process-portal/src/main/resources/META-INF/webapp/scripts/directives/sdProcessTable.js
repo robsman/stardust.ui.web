@@ -19,7 +19,7 @@
 	angular.module('bpm-common').directive(
 			'sdProcessTable',
 			[ '$parse', '$q', '$timeout', '$filter', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService',
-					'sgI18nService', 'sdPreferenceService', 'sdProcessInstanceService', 'sdProcessDefinitionService',
+					'sgI18nService','sdProcessInstanceService', 'sdProcessDefinitionService',
 					'sdStatusService', 'sdPriorityService', 'sdDialogService', 'sdCommonViewUtilService','sdLoggedInUserService',
 					ProcessTableDirective ]);
 
@@ -27,7 +27,7 @@
 	 *
 	 */
 	function ProcessTableDirective($parse, $q, $timeout, $filter, sdUtilService, sdViewUtilService, sdLoggerService,
-			sgI18nService, sdPreferenceService, sdProcessInstanceService, sdProcessDefinitionService, sdStatusService,
+			sgI18nService, sdProcessInstanceService, sdProcessDefinitionService, sdStatusService,
 			sdPriorityService, sdDialogService, sdCommonViewUtilService, sdLoggedInUserService) {
 
 		//Defaults

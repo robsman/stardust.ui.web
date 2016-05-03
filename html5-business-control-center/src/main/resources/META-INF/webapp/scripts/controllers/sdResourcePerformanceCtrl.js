@@ -30,6 +30,9 @@
 	var _sdPreferenceService = null;
 	var _sdResourcePerformanceService;
 	var _sdUtilService;
+	var moduleId = 'ipp-business-control-center';
+	var preferenceId = 'preference';
+	
 
 	/**
 	 * 
@@ -46,6 +49,7 @@
 		_sdPreferenceService = sdPreferenceService;
 		_sdResourcePerformanceService = sdResourcePerformanceService;
 		_sdUtilService = sdUtilService;
+		var self = this;
 
 		this.resourcePerformance = {
 			totalCount : 0,
@@ -70,21 +74,42 @@
 			'label' : 'Years',
 			'value' : 4
 		} ];
-		this.getRoles();
+		this.preferenceStores = {
+			USER : null,
+			PARTITION : null,
+			init : loadPreferenceStores
+		};
+		this.preferenceStores.init().then(function(){
+			self.getRoles();
+		});
 	}
-	;
+	
+	
+	/**
+	 * 
+	 */
+	function loadPreferenceStores() {
+		var self = this;
+		var userStore = _sdPreferenceService.getStore("USER", moduleId, preferenceId);
+		var userPromise = userStore.init();
+		
+		var partitionStore = _sdPreferenceService.getStore("PARTITION", moduleId, preferenceId);
+		var partitionPromise = partitionStore.init();
+		
+		var promises = [userPromise, partitionPromise];
+		
+		return _q.all(promises).then(function() {
+			self.USER = userStore;
+			self.PARTITION = partitionStore;
+		});
+	}
 
 	/**
 	 * 
 	 */
 	ResourcePerformanceCtrl.prototype.getConfig = function(prefScope) {
-		var moduleId = 'ipp-business-control-center';
-		var preferenceId = 'preference';
-		var config = _sdPreferenceService.getStore(prefScope, moduleId, preferenceId);
-		config.fetch();
-		return config;
+		return this.preferenceStores[prefScope]
 	}
-
 	/**
 	 * 
 	 */
@@ -193,6 +218,9 @@
 		var allColumns = [];
 		var allColumnsUser = [];
 		var allColumnsPartition = [];
+		
+		
+		//TODO check this again
 		var preferenceStore = this.getConfig("USER");
 		if(preferenceStore.getValue('ipp-business-control-center.ResourcePerformance.allColumns', false) != undefined){
 			allColumnsUser = JSON.parse(preferenceStore.getValue('ipp-business-control-center.ResourcePerformance.allColumns', false));
@@ -366,8 +394,9 @@
 				self.allColumns.push(self.columnDefinition);
 				var preferenceStore = this.getConfig(self.prefScope);
 				preferenceStore.setValue('ipp-business-control-center.ResourcePerformance.allColumns', self.allColumns);
-				preferenceStore.save();
-				self.refresh();
+				preferenceStore.save().then(function(){
+					self.refresh();
+				});
 				return true;
 			}
 		} else {

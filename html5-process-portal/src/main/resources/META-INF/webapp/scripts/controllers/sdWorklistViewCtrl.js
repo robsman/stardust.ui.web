@@ -69,14 +69,17 @@
 	 */
 	WorklistViewCtrl.prototype.registerForAutoRefresh = function() {
 	    var self = this;
-	    var refreshInterval = _sdWorklistViewConfigService.getRefreshIntervalInMillis();
-	    if (refreshInterval > 0) {
-		this.timer = _$interval(function() {
-		    if (self.dataTable) {
-			self.dataTable.refresh(true);
-		    }
-		}, refreshInterval);
-	    }
+	    
+	    _sdWorklistViewConfigService.loadConfig().then(function(){
+	    	 var refreshInterval = _sdWorklistViewConfigService.getRefreshIntervalInMillis();
+	 	    if (refreshInterval > 0) {
+	 	    	this.timer = _$interval(function() {
+	 	    		if (self.dataTable) {
+	 	    			self.dataTable.refresh(true);
+	 	    		}
+	 	    	}, refreshInterval);
+	 	    }
+	    })
 	};
 
 

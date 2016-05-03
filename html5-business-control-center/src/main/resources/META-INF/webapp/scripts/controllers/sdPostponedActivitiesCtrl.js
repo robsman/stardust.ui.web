@@ -17,7 +17,7 @@
 
 	angular.module("bcc-ui").controller('sdPostponedActivitiesCtrl',
 			['sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdLoggerService', '$filter', 
-			 'sgI18nService', 'sdLoggedInUserService','sdPreferenceService', 'sdDataTableHelperService', PostponedActivitiesCtrl ]);
+			 'sgI18nService', 'sdLoggedInUserService', 'sdDataTableHelperService', PostponedActivitiesCtrl ]);
 
 
 	var _sdActivityInstanceService = null;
@@ -26,14 +26,13 @@
 	var trace = null;
 	var _filter = null;
 	var _sgI18nService = null;
-	var _sdPreferenceService = null;
 	var _sdDataTableHelperService = null;
 	
 	/**
 	 * 
 	 */
 	function PostponedActivitiesCtrl( sdActivityInstanceService, sdCommonViewUtilService, $q, 
-									  sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
+									  sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdDataTableHelperService) {
 	
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
@@ -41,7 +40,6 @@
 		trace = sdLoggerService.getLogger('bcc-ui.sdPostponedActivitiesCtrl');
 		_filter = $filter; 
 		_sgI18nService =sgI18nService;
-		_sdPreferenceService = sdPreferenceService;
 		_sdDataTableHelperService= sdDataTableHelperService;
 		this.statistics = {
 				totalCount : 0,

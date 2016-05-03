@@ -12,92 +12,104 @@
  * @author Johnson.Quadras
  */
 
-(function(){
-    'use strict';
-    
+(function () {
+	'use strict';
 
-    angular.module('bpm-common.services').provider('sdPortalConfigurationService', function() {
-	this.$get = [ 'sdPreferenceService', function( sdPreferenceService) {
-	    var service = new ConfigurationService( sdPreferenceService);
-	    return service;
-	} ];
-    });
+	angular.module('bpm-common.services').provider('sdPortalConfigurationService', function () {
+		this.$get = ['sdPreferenceService','$q', function (sdPreferenceService, $q) {
+			var service = new ConfigurationService(sdPreferenceService, $q);
+			return service;
+		}];
+	});
 
-    var DEFAULTS = {
-	pageSize : 8,
-	maxPages : 4,
-	fastStep : 3
-    }
-    /*
-     * 
-     */
-    function ConfigurationService( sdPreferenceService) {
-	 var configCache = null;
-	/**
+	var DEFAULTS = {
+			pageSize : 8,
+			maxPages : 4,
+			fastStep : 3
+	}
+
+	var moduleId = 'ipp-portal-common';
+	var preferenceId = 'preference';
+	var scope = 'USER';
+	/*
 	 * 
 	 */
-	this.getConfig = function() {
-	    
-	    if (configCache != null) {
-		return configCache;
-	    }
-	    
-	    var moduleId = 'ipp-portal-common';
-	    var preferenceId = 'preference';
-	    var scope = 'USER';
-	    var config =  sdPreferenceService.getStore(scope, moduleId, preferenceId);
-	    config.fetch();
-	    return config;
+	function ConfigurationService (sdPreferenceService, $q) {
+		var configCache = null;
+
+		/**
+		 * 
+		 */
+		this.loadConfig = function () {
+			var deferred = $q.defer();
+			if (configCache != null) {
+				deferred.resolve(configCache);
+			}
+			var config = sdPreferenceService.getStore(scope, moduleId, preferenceId);
+			config.init().then(function(){
+				configCache = config;
+				deferred.resolve(configCache);
+			});
+			return deferred.promise;
+		};
+
+		/**
+		 * 
+		 */
+		this.getCache = function () {
+			if (configCache != null) {
+				return configCache;
+			} else {
+				throw "sdPortalConfigurationService not initialized yet."
+			}
+		}
 	}
-	
-	configCache = this.getConfig();
 
 	/**
 	 * Gets the page size
 	 */
-	this.getPageSize = function( scope ) {
-	    var fromParent = false;
-	    if(scope && scope == 'PARTITION'){
-		fromParent = true;
-	    }
-	    var config = this.getConfig();
-	    var pageSize = config.getValue('ipp-portal-common.configuration.prefs.pageSize', fromParent);
-	    if (!pageSize) {
-		pageSize = DEFAULTS.pageSize;
-	    }
-	    return pageSize;
+	ConfigurationService.prototype.getPageSize = function (scope) {
+		var fromParent = false;
+		if (scope && scope == 'PARTITION') {
+			fromParent = true;
+		}
+		var config = this.getCache();
+		var pageSize = config.getValue('ipp-portal-common.configuration.prefs.pageSize', fromParent);
+		if (!pageSize) {
+			pageSize = DEFAULTS.pageSize;
+		}
+		return pageSize;
 	};
 	/**
 	 * Gets the Max Pages
 	 */
-	this.getMaxPages = function(scope) {
-	    var fromParent = false;
-	    if(scope && scope == 'PARTITION'){
-		fromParent = true;
-	    }
-	    var config = this.getConfig();
-	    var maxPages = config.getValue('ipp-portal-common.configuration.prefs.paginatorMaxPages', fromParent);
-	    if (!pageSize) {
-		maxPages = DEFAULTS.maxPages;
-	    }
-	    return maxPages;
+	ConfigurationService.prototype.getMaxPages = function (scope) {
+		var fromParent = false;
+		if (scope && scope == 'PARTITION') {
+			fromParent = true;
+		}
+		var config = this.getCache();
+		var maxPages = config.getValue('ipp-portal-common.configuration.prefs.paginatorMaxPages', fromParent);
+		if (!pageSize) {
+			maxPages = DEFAULTS.maxPages;
+		}
+		return maxPages;
 	};
-	
+
 	/**
 	 * Gets the fast step size
 	 */
-	this.getFastStepSize = function(scope) {
-	    var fromParent = false;
-	    if(scope && scope == 'PARTITION'){
-		fromParent = true;
-	    }
-	    var config = this.getConfig();
-	    var fastStep = config.getValue('ipp-portal-common.configuration.prefs.paginatorFastStep', fromParent);
-	    if (!fastStep) {
-		fastStep = DEFAULTS.fastStep;
-	    }
-	    return fastStep;
+	ConfigurationService.prototype.getFastStepSize = function (scope) {
+		var fromParent = false;
+		if (scope && scope == 'PARTITION') {
+			fromParent = true;
+		}
+		var config = this.getCache();
+		var fastStep = config.getValue('ipp-portal-common.configuration.prefs.paginatorFastStep', fromParent);
+		if (!fastStep) {
+			fastStep = DEFAULTS.fastStep;
+		}
+		return fastStep;
 	};
-    }
 
 })();

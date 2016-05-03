@@ -17,14 +17,14 @@
 
 	angular.module('admin-ui').controller(
 			'sdRealmManagementCtrl',
-			[ 'sdLoggerService', 'sdRealmManagementService', 'sdDialogService', 'sgI18nService', 'sdPreferenceService',
+			[ 'sdLoggerService', 'sdRealmManagementService', 'sdDialogService', 'sgI18nService',
 					'$scope', '$q', 'sdMessageService', 'sdLoggedInUserService', RealmManagementController ]);
 
 	/*
 	 * 
 	 */
 	function RealmManagementController(sdLoggerService, sdRealmManagementService, sdDialogService, sgI18nService,
-			sdPreferenceService, $scope, $q, sdMessageService, sdLoggedInUserService) {
+			$scope, $q, sdMessageService, sdLoggedInUserService) {
 
 		var trace = sdLoggerService.getLogger('admin-ui.sdRealmManagementCtrl');
 
@@ -74,7 +74,7 @@
 		 * 
 		 */
 		RealmManagementController.prototype.refresh = function() {
-			if (angular.isDefined(this.dataTable)) {
+			if (angular.isDefined(this.dataTable) && this.dataTable != null) {
 				this.dataTable.refresh(true);
 			}
 		};

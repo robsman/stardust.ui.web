@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdRoleAssignmentCtrl',
 			['$q', '$filter', '$timeout', 'sdRoleAssignmentService', 'sdLoggerService', 'sdCommonViewUtilService',
-					'sdLoggedInUserService', 'sdPreferenceService', 'sdDataTableHelperService', RoleAssignmentCtrl]);
+					'sdLoggedInUserService', 'sdDataTableHelperService', RoleAssignmentCtrl]);
 
 	var _q;
 	var _sdRoleAssignmentService;
@@ -26,7 +26,6 @@
 	var trace;
 	var _timeout;
 	var _sdLoggedInUserService;
-	var _sdPreferenceService;
 	var _sdDataTableHelperService;
 	var _filter;
 
@@ -34,14 +33,13 @@
 	 * 
 	 */
 	function RoleAssignmentCtrl($q, $filter, $timeout, sdRoleAssignmentService, sdLoggerService,
-			sdCommonViewUtilService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
+			sdCommonViewUtilService, sdLoggedInUserService,sdDataTableHelperService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleAssignmentCtrl');
 		_q = $q;
 		_sdRoleAssignmentService = sdRoleAssignmentService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_timeout = $timeout;
 		_sdLoggedInUserService = sdLoggedInUserService;
-		_sdPreferenceService = sdPreferenceService;
 		_sdDataTableHelperService = sdDataTableHelperService;
 		_filter = $filter;
 

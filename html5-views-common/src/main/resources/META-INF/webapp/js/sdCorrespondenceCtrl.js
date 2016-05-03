@@ -109,9 +109,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				convertToPdf : false
 		};
 		
-		this.fetchPreference();
-		this.selected.type  = this.getDefaultCorrespondenceType();
-		this.geFaxNumberFormat();
+		this.getDefaultCorrespondenceType();
+		
 
 		this.dialog ={
 				selectedAddresses : [],
@@ -204,24 +203,28 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		    var preferenceId = 'preference';
 		    var scope = 'PARTITION';
 		    config =  _sdPreferenceService.getStore(scope, moduleId, preferenceId);
-		    config.fetch();
+		    return config.init();
 	};
 	
 	/**
 	 * 
 	 */
-	CorrespondenceCtrl.prototype.getDefaultCorrespondenceType = function (){
-		   var fromParent = false;
-		   var type = config.getValue('ipp-views-common.correspondencePanel.prefs.correspondence.defaultType', fromParent);
-		  
-		   if (type) {
+	CorrespondenceCtrl.prototype.getDefaultCorrespondenceType = function () {
+		var fromParent = false;
+		var self = this;
+		debugger;
+		this.fetchPreference().then(function() {
+			var type = config.getValue('ipp-views-common.correspondencePanel.prefs.correspondence.defaultType', fromParent);
+			if (type) {
 				if (type == 'Print') {
-					return 'print'
+					self.selected.type =  'print'
 				} else {
-					return 'email';
+					self.selected.type =  'email';
 				}
 			}
-		   return this.selected.type;
+
+			self.geFaxNumberFormat();
+		});
 	};
 	
 	/**

@@ -18,8 +18,7 @@
 	angular.module("admin-ui").controller(
 			'sdOverviewCtrl',
 			[ '$q', 'sdOverviewService', 'sdLoggerService', 'sdUtilService', 'sdUserService',
-					'sdProcessInstanceService', 'sdActivityInstanceService', 'sdLoggedInUserService',
-					'sdPreferenceService', OverviewCtrl ]);
+					'sdProcessInstanceService', 'sdActivityInstanceService', 'sdLoggedInUserService', OverviewCtrl ]);
 
 	var _q;
 	var _sdOverviewService;
@@ -29,12 +28,11 @@
 	var _sdProcessInstanceService;
 	var _sdActivityInstanceService;
 	var _sdLoggedInUserService;
-	var _sdPreferenceService;
 	/**
 	 * 
 	 */
 	function OverviewCtrl($q, sdOverviewService, sdLoggerService, sdUtilService, sdUserService,
-			sdProcessInstanceService, sdActivityInstanceService, sdLoggedInUserService, sdPreferenceService) {
+			sdProcessInstanceService, sdActivityInstanceService, sdLoggedInUserService) {
 		trace = sdLoggerService.getLogger('admin-ui.sdOverviewCtrl');
 		_q = $q;
 		_sdOverviewService = sdOverviewService;
@@ -43,7 +41,6 @@
 		_sdProcessInstanceService = sdProcessInstanceService;
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdLoggedInUserService = sdLoggedInUserService;
-		_sdPreferenceService = sdPreferenceService;
 
 		this.allLogEntriesTable = null;
 		this.showAllLogEntriesTable = true;

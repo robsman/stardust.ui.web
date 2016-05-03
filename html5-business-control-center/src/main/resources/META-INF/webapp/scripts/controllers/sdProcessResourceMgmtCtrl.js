@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdProcessResourceMgmtCtrl',
 			['$q','sdProcessResourceMgmtService', 'sdLoggerService', 'sdViewUtilService',
-					'sdCommonViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService', ProcessResourceMgmtCtrl]);
+					'sdCommonViewUtilService', 'sdLoggedInUserService', ProcessResourceMgmtCtrl]);
 
 	var _q;
 	var _sdProcessResourceMgmtService;
@@ -26,20 +26,18 @@
 	var trace;
 	var _sdCommonViewUtilService
 	var _sdLoggedInUserService;
-	var _sdPreferenceService;
 
 	/**
 	 * 
 	 */
 	function ProcessResourceMgmtCtrl($q, sdProcessResourceMgmtService, sdLoggerService, sdViewUtilService,
-			sdCommonViewUtilService, sdLoggedInUserService, sdPreferenceService) {
+			sdCommonViewUtilService, sdLoggedInUserService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdProcessResourceMgmtCtrl');
 		_q = $q;
 		_sdProcessResourceMgmtService = sdProcessResourceMgmtService;
 		_sdViewUtilService = sdViewUtilService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_sdLoggedInUserService = sdLoggedInUserService;
-		_sdPreferenceService = sdPreferenceService;
 
 		this.rolesTable = null;
 		this.usersTable = null;

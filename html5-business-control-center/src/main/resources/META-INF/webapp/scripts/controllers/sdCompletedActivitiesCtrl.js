@@ -17,7 +17,7 @@
 
 	angular.module("bcc-ui").controller('sdCompletedActivitiesCtrl',
 			['sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdProcessInstanceService', 
-			 'sdLoggerService', '$filter', 'sgI18nService', 'sdLoggedInUserService','sdPreferenceService', 'sdDataTableHelperService',CompletedActivitiesCtrl ]);
+			 'sdLoggerService', '$filter', 'sgI18nService', 'sdLoggedInUserService','sdDataTableHelperService',CompletedActivitiesCtrl ]);
 
 
 	var _sdActivityInstanceService = null;
@@ -27,14 +27,13 @@
 	var trace = null;
 	var _filter = null;
 	var _sgI18nService = null;
-	var _sdPreferenceService = null;
 	var _sdDataTableHelperService = null;
 	
 	/**
 	 * 
 	 */
 	function CompletedActivitiesCtrl( sdActivityInstanceService, sdCommonViewUtilService, $q, sdProcessInstanceService, 
-									  sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
+									  sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdDataTableHelperService) {
 	
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
@@ -43,7 +42,6 @@
 		trace = sdLoggerService.getLogger('bcc-ui.sdCompletedActivitiesCtrl');
 		_filter = $filter; 
 		_sgI18nService =sgI18nService;
-		_sdPreferenceService = sdPreferenceService;
 		_sdDataTableHelperService   = sdDataTableHelperService
 		
 		this.completedActivities = {

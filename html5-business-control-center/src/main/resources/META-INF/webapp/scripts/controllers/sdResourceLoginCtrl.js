@@ -17,29 +17,26 @@
 
 	angular.module("bcc-ui").controller(
 			'sdResourceLoginCtrl',
-			[ 'sdResourceLoginService', 'sdCommonViewUtilService', '$q', 'sdLoggerService', '$filter', 'sgI18nService',
-					'sdPreferenceService', ResourceLoginCtrl ]);
+			[ 'sdResourceLoginService', 'sdCommonViewUtilService', '$q', 'sdLoggerService', '$filter', 'sgI18nService', ResourceLoginCtrl ]);
 
 	var _sdResourceLoginService = null;
 	var _q = null;
 	var trace = null;
 	var _filter = null;
 	var _sgI18nService = null;
-	var _sdPreferenceService = null;
 	var _sdCommonViewUtilService = null;
 
 	/**
 	 * 
 	 */
 	function ResourceLoginCtrl(sdResourceLoginService, sdCommonViewUtilService, $q, sdLoggerService, $filter,
-			sgI18nService, sdPreferenceService) {
+			sgI18nService) {
 
 		_sdResourceLoginService = sdResourceLoginService;
 		_q = $q;
 		trace = sdLoggerService.getLogger('bcc-ui.sdResourceLoginCtrl');
 		_filter = $filter;
 		_sgI18nService = sgI18nService;
-		_sdPreferenceService = sdPreferenceService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 
 		this.exportFileName = "Resource Login";

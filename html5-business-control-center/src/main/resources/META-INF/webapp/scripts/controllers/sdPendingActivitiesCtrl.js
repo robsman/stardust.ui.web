@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdPendingActivitiesCtrl',
 			[ 'sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdProcessInstanceService',
-					'sdLoggerService', '$filter', 'sgI18nService', 'sdLoggedInUserService', 'sdPreferenceService', 'sdDataTableHelperService',
+					'sdLoggerService', '$filter', 'sgI18nService', 'sdLoggedInUserService','sdDataTableHelperService',
 					PendingActivitiesCtrl ]);
 
 	var _sdActivityInstanceService = null;
@@ -28,14 +28,13 @@
 	var trace = null;
 	var _filter = null;
 	var _sgI18nService = null;
-	var _sdPreferenceService = null;
 	var _sdDataTableHelperService = null;
 
 	/**
 	 * 
 	 */
 	function PendingActivitiesCtrl(sdActivityInstanceService, sdCommonViewUtilService, $q, sdProcessInstanceService,
-			sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService,sdDataTableHelperService) {
+			sdLoggerService, $filter, sgI18nService, sdLoggedInUserService,sdDataTableHelperService) {
 
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
@@ -44,7 +43,6 @@
 		trace = sdLoggerService.getLogger('bcc-ui.sdPendingActivitiesCtrl');
 		_filter = $filter;
 		_sgI18nService = sgI18nService;
-		_sdPreferenceService = sdPreferenceService;
 		_sdDataTableHelperService = sdDataTableHelperService;
 
 		this.pendingActivities = {

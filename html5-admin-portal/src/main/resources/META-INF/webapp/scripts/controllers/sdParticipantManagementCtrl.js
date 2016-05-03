@@ -17,7 +17,7 @@
   angular.module("admin-ui").controller(
           'sdParticipantManagementCtrl',
           ['$q', 'sdParticipantManagementService', 'sdLoggerService', 'sdUtilService', 'sdUserService',
-              'sdLoggedInUserService', 'sdPreferenceService', 'sdI18nService', '$scope', 'sdMessageService',
+              'sdLoggedInUserService','sdI18nService', '$scope', 'sdMessageService',
               'sdPortalConfigurationService', '$timeout',
               ParticipantManagementCtrl]);
 
@@ -29,7 +29,7 @@
   var i18n, _sdI18nService;
   var _sdUserService;
   var _sdLoggedInUserService;
-  var _sdPreferenceService, _sdMessageService;
+  var _sdMessageService;
   var  lazyLoad = false;
   var _scope;
   
@@ -39,14 +39,13 @@
    * 
    */
   function ParticipantManagementCtrl($q, sdParticipantManagementService, sdLoggerService, sdUtilService, sdUserService,
-          sdLoggedInUserService, sdPreferenceService, sdI18nService, $scope, sdMessageService, sdPortalConfigurationService,$timeout) {
+          sdLoggedInUserService, sdI18nService, $scope, sdMessageService, sdPortalConfigurationService, $timeout) {
     trace = sdLoggerService.getLogger('admin-ui.sdParticipantManagementCtrl');
     _q = $q;
     _sdParticipantManagementService = sdParticipantManagementService;
     _sdUtilService = sdUtilService;
     _sdUserService = sdUserService;
     _sdLoggedInUserService = sdLoggedInUserService;
-    _sdPreferenceService = sdPreferenceService;
     _sdMessageService = sdMessageService;
     _sdI18nService = sdI18nService;
     _timeout = $timeout;

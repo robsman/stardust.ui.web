@@ -16,8 +16,7 @@
 	'use strict';
 
 	angular.module("bcc-ui").controller('sdTrafficLightViewCtrl',
-			['$q','sdActivityInstanceService','sdTafficLightService', 'sdLoggerService', '$filter','sgI18nService', 'sdLoggedInUserService',
-			 'sdPreferenceService', Controller]);
+			['$q','sdActivityInstanceService','sdTafficLightService', 'sdLoggerService', '$filter','sgI18nService', 'sdLoggedInUserService', Controller]);
 
 	var _sdActivityInstanceService = null;
 	var _sdCommonViewUtilService = null;
@@ -26,19 +25,17 @@
 	var trace = null;
 	var _filter = null;
 	var _sgI18nService = null;
-	var _sdPreferenceService = null;
 
 	/**
 	 * 
 	 */
 	function Controller($q, sdActivityInstanceService, sdTafficLightService, sdLoggerService, $filter,
-			sgI18nService, sdLoggedInUserService, sdPreferenceService) {
+			sgI18nService, sdLoggedInUserService) {
 
 		_sdTafficLightService = sdTafficLightService;
 		trace = sdLoggerService.getLogger('bcc-ui.sdTrafficLightViewCtrl');
 		_filter = $filter;
 		_sgI18nService = sgI18nService;
-		_sdPreferenceService = sdPreferenceService;
 		_q = $q;
 		_sdActivityInstanceService = sdActivityInstanceService;
 
