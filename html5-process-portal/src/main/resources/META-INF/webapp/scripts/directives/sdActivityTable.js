@@ -1081,8 +1081,7 @@
 						angular.forEach(self.completeDialog.dataMappings, function(mapping) {
 							dataMappings[mapping.id] = mapping.typeName;
 							if (mapping.typeName === 'date') {
-								var dt = new Date(self.completeDialog.outData[mapping.id]);
-								outData[mapping.id] = jQuery.datepicker.formatDate(SERVER_DATE_FORMAT, dt) + "T00:00:00";
+								outData[mapping.id] = self.completeDialog.outData[mapping.id] + "T00:00:00";
 							} else {
 								outData[mapping.id] = self.completeDialog.outData[mapping.id];
 							}
@@ -1106,8 +1105,7 @@
 									mapping) {
 								dataMappings[mapping.id] = mapping.typeName;
 								if (mapping.typeName === 'date') {
-									var dt = new Date(item.inOutData[mapping.id]);
-									outData[mapping.id] = jQuery.datepicker.formatDate(SERVER_DATE_FORMAT, dt) + "T00:00:00";
+									outData[mapping.id] = item.inOutData[mapping.id] + "T00:00:00";
 								} else {
 									outData[mapping.id] = item.inOutData[mapping.id];
 								}

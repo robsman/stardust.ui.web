@@ -58,7 +58,10 @@ angular.module('bpm-common.directives')
 		            		return value;
 		            	}
 		            	try{
-		            	var date = jQuery.datepicker.parseDate(dateFormat, value);
+			            	var date = jQuery.datepicker.parseDate(dateFormat, value);
+			            	if (serverDateFormat) {
+			            		value = jQuery.datepicker.formatDate(serverDateFormat, date);
+			            	}
 		            	}catch (e) {
 		            	   ngModelCtrl.$setValidity('validate', false);
 	                     return undefined;
