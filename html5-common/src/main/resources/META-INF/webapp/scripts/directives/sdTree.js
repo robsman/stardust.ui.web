@@ -815,6 +815,10 @@
 	            //Monitor our template input field for the enter key and blur that element when detected
 	            scope.keyMonitor= function(e){
 	                if(e.which===13 && e.target.blur){
+	                	
+	                	e.stopImmediatePropagation();
+	                	e.preventDefault();
+	                	e.stopPropagation();
 	                	e.target.blur();
 	                }
 	                else{scope.md = false;}
