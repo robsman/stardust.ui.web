@@ -46,6 +46,21 @@
 				throw "sdWorklistViewConfigService not initialized yet."
 			}
 		};
+		
+		/**
+		 * 
+		 */
+		this.getConfig = function () {
+			var deferred = $q.defer();
+			if (configCache != null) {
+				deferred.resolve(configCache);
+			} else {
+				this.loadConfig().then(function () {
+					deferred.resolve(configCache);
+				});
+			}
+			return deferred.promise;
+		};
 
 		/**
 		 * 

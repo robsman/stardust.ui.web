@@ -70,7 +70,7 @@
 	WorklistViewCtrl.prototype.registerForAutoRefresh = function() {
 	    var self = this;
 	    
-	    _sdWorklistViewConfigService.loadConfig().then(function(){
+	    _sdWorklistViewConfigService.getConfig().then(function(){
 	    	 var refreshInterval = _sdWorklistViewConfigService.getRefreshIntervalInMillis();
 	 	    if (refreshInterval > 0) {
 	 	    	this.timer = _$interval(function() {
