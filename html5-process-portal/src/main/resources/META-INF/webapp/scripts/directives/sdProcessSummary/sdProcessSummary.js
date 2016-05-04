@@ -199,7 +199,16 @@
         if (!res[data[i].contextOID]) {
           res[data[i].contextOID] = [];
         }
-        res[data[i].contextOID].push(data[i]);
+        var doc_exist = false;
+        for ( var docInd in res[data[i].contextOID]) {
+          if (data[i].uuid == res[data[i].contextOID][docInd].uuid) {
+            doc_exist = true;
+            break;
+          }
+        }
+        if (!doc_exist) {
+          res[data[i].contextOID].push(data[i]);
+        }
       }
     }
   }
