@@ -66,25 +66,29 @@
 			    error : false
 		    };
 		    var abortScope = null;
-		    
-		    sdWorkflowPerspectiveConfigService.loadConfig().then(function(){
-		        var abortScope =  sdWorkflowPerspectiveConfigService.getAbortActivityScope();
-		    		if(abortScope == ''){
-		    			isPromptRequired = true;
-		    			self.configuredScope = 'SubHierarchy'; 
-		    		}else{
-		    			self.configuredScope = abortScope;
-		    		} 	 
-		    });
-		
 		    var isPromptRequired = false;
-		    
 		    self.abortActivity = {
-			    scope : abortScope,
-			    activities : [],
-			    isPromptRequired : isPromptRequired
+		    		scope : abortScope,
+		    		activities : [],
+		    		isPromptRequired : isPromptRequired
 		    };
-		    
+
+		    sdWorkflowPerspectiveConfigService.loadConfig().then(function () {
+		    	var abortScope = sdWorkflowPerspectiveConfigService.getAbortActivityScope();
+		    	if (abortScope == '') {
+		    		isPromptRequired = true;
+		    		self.configuredScope = 'SubHierarchy';
+		    	} else {
+		    		self.configuredScope = abortScope;
+		    	}
+		    	self.abortActivity = {
+		    			scope : abortScope,
+		    			activities : [],
+		    			isPromptRequired : isPromptRequired
+		    	};
+		    });
+
+		
 		    
 		    self.onOpenDialog = onOpenDialog;
 		    self.closeThisDialog = closeThisDialog;

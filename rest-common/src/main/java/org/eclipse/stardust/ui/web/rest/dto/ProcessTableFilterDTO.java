@@ -23,6 +23,8 @@ public class ProcessTableFilterDTO implements FilterDTO
    
    public ProcessActivityDTO processName;
    
+   public ProcessActivityDTO rootProcessName;
+   
    public EqualsDTO status;
 
    public EqualsDTO priority;

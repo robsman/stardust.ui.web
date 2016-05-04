@@ -93,12 +93,15 @@
   /**
    * 
    */
-  function NotesController(notesService, sdViewUtilService, sdUtilService, sdI18nService, $scope) {
+  function NotesController(notesService, sdViewUtilService, sdUtilService, sdI18nService, $scope, $timeout) {
     this.$scope = $scope;
     this.notesService = notesService;
     this.sdViewUtilService = sdViewUtilService;
+    this.$timeout = $timeout;
     this.rootUrl = sdUtilService.getBaseUrl();
     this.sdI18n = $scope.$root.sdI18n;
+    this.processNotesPosition = "TOP";
+    this.activityNotesPosition = "TOP";
     this.initialize();
   }
 
@@ -114,7 +117,8 @@
   /**
    * 
    */
-  NotesController.prototype.initializeProcessNotes = function() {
+  NotesController.prototype.initializeProcessNotes = function(scrollPosition) {
+
     var self = this;
     if (self.$scope.processInstanceOid) {
       self.showProcessNotes = true;
@@ -126,6 +130,15 @@
       self.notesService.getProcessNotes(self.$scope.processInstanceOid).then(function(data) {
         self.processNotes = data.data;
         self.publishTotalCount();
+
+        if(scrollPosition==="TOP" || scrollPosition==="BOTTOM"){
+          //set value in a timeout otherwise ngrepeat for the notes panel
+          //wont have finished rendering content and our scroll could be off.
+          self.$timeout(function(){
+            self.processNotesPosition=scrollPosition;
+          },0);
+        }
+
       });
     }
   }
@@ -133,7 +146,7 @@
   /**
    * 
    */
-  NotesController.prototype.initializeActivityNotes = function() {
+  NotesController.prototype.initializeActivityNotes = function(scrollPosition) {
     var self = this;
     if (self.$scope.activityInstanceOid) {
       self.showActivityNotes = true;
@@ -145,6 +158,15 @@
       self.notesService.getActivityNotes(self.$scope.activityInstanceOid).then(function(data) {
         self.activityNotes = data.data;
         self.publishTotalCount();
+
+        if(scrollPosition==="TOP" || scrollPosition==="BOTTOM"){
+          //set value in a timeout otherwise ngrepeat for the notes panel
+          //wont have finished rendering content and our scroll could be off.
+          self.$timeout(function(){
+            self.activityNotesPosition=scrollPosition;
+          },0);
+        }
+
       });
     }
   }
@@ -160,7 +182,7 @@
         noteText: this.processNote
       }).then(function() {
         self.processNote = undefined;
-        self.initializeProcessNotes();
+        self.initializeProcessNotes("BOTTOM");
       });
     }
   }
@@ -175,7 +197,7 @@
       noteText: this.activityNote
     }).then(function() {
       self.activityNote = undefined;
-      self.initializeActivityNotes();
+      self.initializeActivityNotes("BOTTOM");
     });
   }
 
@@ -210,7 +232,7 @@
   };
 
   // inject dependencies
-  NotesController.$inject = ["notesService", "sdViewUtilService", "sdUtilService", "sdI18nService", "$scope"];
+  NotesController.$inject = ["notesService", "sdViewUtilService", "sdUtilService", "sdI18nService", "$scope", "$timeout"];
 
   // register controller
   app.controller('notesPanelCtrl', NotesController);

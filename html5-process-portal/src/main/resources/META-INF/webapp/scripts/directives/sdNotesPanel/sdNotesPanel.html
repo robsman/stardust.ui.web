@@ -1,36 +1,46 @@
 <div>
 	<div class="properties-container">
-		<div class="propertiesContent">
-			<table>
-				<tr ng-show="notesCtrl.showProcessNotes">
-					<td colspan="2"><h2>{{notesCtrl.processNotes.label}}</h2></td>
-				</tr>
-				<tr ng-show="notesCtrl.processNotes.list.length==0">
-					<td class="properties-panel-content">
-						{{notesCtrl.sdI18n('views-common-messages.propertiesPage.noNotes')}}</td>
-				</tr>
-				<tr class="properties-panel-notesRow"
-					ng-show="notesCtrl.showProcessNotes"
-					ng-repeat="note in notesCtrl.processNotes.list">
-					<td class="properties-panel-content"><sd-user-image
-							sda-path="{{note.avatarImageURI}}"></sd-user-image></td>
-					<td>
-						<table>
-							<tr>
-								<td><span class="properties-panel-noteUser">{{note.creatorName}}</span></td>
-							</tr>
-							<tr>
-								<td><span class="properties-panel-noteDate">{{note.created
-										| sdDateTimeFilter}}</span></td>
-							</tr>
-							<tr>
-								<td><span class="noteText">{{note.note}}</span></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
+
+		<h1 ng-show="notesCtrl.showProcessNotes">
+			{{notesCtrl.processNotes.label}}
+		</h1>
+
+		<div sd-scroll-to="notesCtrl.processNotesPosition" class="propertiesContent">
+
+			<div class="properties-panel-content" 
+				 ng-show="notesCtrl.processNotes.list.length==0">
+				{{notesCtrl.sdI18n('views-common-messages.propertiesPage.noNotes')}}
+			</div>
+			
+			<div class="properties-panel-notesRow"
+				 style="position:relative;"
+				 ng-show="notesCtrl.showProcessNotes"
+				 ng-repeat="note in notesCtrl.processNotes.list">
+
+				<div class="properties-panel-content" style="width:30px;display:inline-block;vertical-align:top;">
+					<sd-user-image sda-path="{{note.avatarImageURI}}"></sd-user-image>
+				</div>			
+
+				<div style="display:inline-block;width:calc(100% - 34px)">
+
+					<div class="properties-panel-noteUser">
+						{{note.creatorName}}
+					</div>
+
+					<div class="properties-panel-noteDate">
+						{{note.created| sdDateTimeFilter}}
+					</div>
+
+					<div class="noteText">
+						{{note.note}}
+					</div>
+
+				</div>	
+
+			</div>
+
 		</div>
+
 		<div class="properties-panel-border" style="overflow: auto">
 
 			<textarea type="text" ng-model="notesCtrl.processNote" rows="3"
@@ -47,36 +57,47 @@
 	</div>
 
 	<div class="properties-container">
-		<div class="propertiesContent">
-			<table>
-				<tr ng-show="notesCtrl.showActivityNotes">
-					<td colspan="2"><h2>{{notesCtrl.activityNotes.label}}</h2></td>
-				</tr>
-				<tr ng-show="notesCtrl.activityNotes.list.length==0">
-					<td class="properties-panel-content">
-						{{notesCtrl.sdI18n('views-common-messages.propertiesPage.noNotes')}}</td>
-				</tr>
-				<tr class="notesRow" ng-show="notesCtrl.showActivityNotes"
-					ng-repeat="note in notesCtrl.activityNotes.list">
-					<td class="properties-panel-content"><sd-user-image
-							sda-path="{{note.avatarImageURI}}"></sd-user-image></td>
-					<td>
-						<table>
-							<tr>
-								<td><span class="properties-panel-noteUser">{{note.creatorName}}</span></td>
-							</tr>
-							<tr>
-								<td><span class="properties-panel-noteDate">{{note.created
-										| sdDateTimeFilter}}</span></td>
-							</tr>
-							<tr>
-								<td><span class="noteText">{{note.note}}</span></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
+
+		<h1  ng-show="notesCtrl.showActivityNotes">
+			{{notesCtrl.activityNotes.label}}
+		</h1>
+
+		<div sd-scroll-to="notesCtrl.activityNotesPosition" class="propertiesContent">
+
+			<div class="properties-panel-content" 
+				 ng-show="notesCtrl.activityNotes.list.length==0">
+				{{notesCtrl.sdI18n('views-common-messages.propertiesPage.noNotes')}}
+			</div>
+
+			<div class="properties-panel-notesRow"
+				 style="position:relative;"
+				 ng-show="notesCtrl.showActivityNotes"
+				 ng-repeat="note in notesCtrl.activityNotes.list">
+
+				<div class="properties-panel-content" style="width:30px;display:inline-block;vertical-align:top;">
+					<sd-user-image sda-path="{{note.avatarImageURI}}"></sd-user-image>
+				</div>			
+
+				<div style="display:inline-block;width:calc(100% - 34px)">
+
+					<div class="properties-panel-noteUser">
+						{{note.creatorName}}
+					</div>
+
+					<div class="properties-panel-noteDate">
+						{{note.created| sdDateTimeFilter}}
+					</div>
+
+					<div class="noteText">
+						{{note.note}}
+					</div>
+
+				</div>	
+
+			</div>
+			
 		</div>
+
 		<div class="properties-panel-border" style="overflow: auto">
 			<textarea type="text" ng-model="notesCtrl.activityNote" rows="3"
 				sd-auto-tab-to="addActivityNoteId"
@@ -89,5 +110,6 @@
 				ng-click="notesCtrl.addActivityNotes()"></button>
 
 		</div>
+		
 	</div>
 </div>
