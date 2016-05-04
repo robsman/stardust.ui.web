@@ -86,8 +86,11 @@
     this.labels.removeAllParticipants = i18n("views.authorizationManagerViewHtml5.permissionTree.removeAll");
     this.labels.restore = i18n("views.authorizationManagerViewHtml5.permissionTree.restore");
 
-    var pageSizePreference = sdPortalConfigurationService.getPageSize();
-    this.pageSize = pageSizePreference > DEFAULT_PAGE_SIZE ? pageSizePreference: DEFAULT_PAGE_SIZE;
+    sdPortalConfigurationService.getConfig().then(function() {
+    	var pageSizePreference = sdPortalConfigurationService.getPageSize();
+    	self.pageSize = pageSizePreference > DEFAULT_PAGE_SIZE ? pageSizePreference: DEFAULT_PAGE_SIZE;
+    	self.showTable = true;
+    });
     
     AMCtrl.prototype.safeApply = function() {
       sdUtilService.safeApply($scope);

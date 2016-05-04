@@ -51,14 +51,20 @@
     _timeout = $timeout;
     _scope = $scope;
     i18n = $scope.sdI18nHtml5Admin = sdI18nService.getInstance('html5-admin-portal').translate;
+    var self = this;
 
     this.allUsersTable = null;
     this.hideInvalidatedUsers = false;
     this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
     this.exportFileNameForAllUsers = "AllUsers";
+	this.showTable = false;
     
-    var pageSizePreference = sdPortalConfigurationService.getPageSize();
-    this.pageSize = pageSizePreference > DEFAULT_PAGE_SIZE ? pageSizePreference: DEFAULT_PAGE_SIZE;
+	sdPortalConfigurationService.getConfig().then(function() {
+    	var pageSizePreference = sdPortalConfigurationService.getPageSize();
+    	self.pageSize = pageSizePreference > DEFAULT_PAGE_SIZE ? pageSizePreference: DEFAULT_PAGE_SIZE;
+    	self.showTable = true;
+    });
+
     this.getAllCounts();
     this.treeInit();
 
