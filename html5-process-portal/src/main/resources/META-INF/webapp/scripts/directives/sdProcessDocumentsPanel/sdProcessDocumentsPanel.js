@@ -92,7 +92,7 @@
    * 
    */
   function ProcessDocumentsController(processDocumentsService, sdViewUtilService, sdUtilService, sgI18nService,
-          sdMimeTypeService, $scope, sdDialogService, documentRepositoryService, $q) {
+          sdMimeTypeService, $scope, sdDialogService, documentRepositoryService, $q, eventBus) {
     this.$scope = $scope;
     this.$q = $q;
     this.processDocumentsService = processDocumentsService;
@@ -121,8 +121,11 @@
     this.processDocsPosition = "TOP";
     this.activityDocsPosition = "TOP";
 
+    eventBus.onMsg("checklistPanel.click",this.externalClickHandler,$scope);
+
     this.initialize();
   }
+
 
   /**
    * 
@@ -133,6 +136,12 @@
     console.log("ProcessDocuments controller initialized...");
   }
 
+  ProcessDocumentsController.prototype.externalClickHandler = function(e,m,originScope){
+    var that = originScope.processDocumentsCtrl;
+      for ( var uuid in that.documentActionControl) {
+          that.documentActionControl[uuid].popover = false;
+      }
+  }
   /**
    * 
    */
@@ -314,8 +323,9 @@
   /**
    * 
    */
-  ProcessDocumentsController.prototype.showDocumentMenuPopover = function(selectedDocument) {
+  ProcessDocumentsController.prototype.showDocumentMenuPopover = function(selectedDocument,e) {
     this.selectedDocument = selectedDocument;
+    e = e || event;
     if (!this.documentActionControl[selectedDocument.uuid].popover) {
       this.documentActionControl[selectedDocument.uuid].popover = true;
     } else {
@@ -326,7 +336,8 @@
         this.documentActionControl[uuid].popover = false;
       }
     }
-    event.preventDefault();
+    e.stopPropagation();
+    e.preventDefault();
   }
 
   /**
@@ -471,7 +482,7 @@
 
   // inject dependencies
   ProcessDocumentsController.$inject = ["processDocumentsService", "sdViewUtilService", "sdUtilService",
-      "sgI18nService", 'sdMimeTypeService', "$scope", "sdDialogService", "documentRepositoryService", "$q"];
+      "sgI18nService", 'sdMimeTypeService', "$scope", "sdDialogService", "documentRepositoryService", "$q", "eventBus"];
 
   // register a controller
   app.controller('processDocumentsPanelCtrl', ProcessDocumentsController);
