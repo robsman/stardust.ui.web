@@ -150,24 +150,24 @@ define(
                   panel : this
                }, function(event) {
                   event.data.panel.parameterDefinitionsPanel.deleteParameterDefinition();
+                  var submitElements = {};
+                  var attributes = event.data.panel.getApplication().attributes;
+                  
                   if(event.data.panel.parameterDefinitionsPanel.currentParameterDefinition.direction=="IN"){
-                     if(event.data.panel.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]!=null && event.data.panel.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]==event.data.panel.parameterDefinitionsPanel.currentParameterDefinition.id)
+                     if(attributes["carnot:engine:camel::inBodyAccessPoint"]!=null && attributes["carnot:engine:camel::inBodyAccessPoint"]==event.data.panel.parameterDefinitionsPanel.currentParameterDefinition.id)
                         {
-                        
-                     event.data.panel.view
-                     .submitModelElementAttributeChange(
-                           "carnot:engine:camel::inBodyAccessPoint",
-                           null);
+                        attributes["carnot:engine:camel::inBodyAccessPoint"] = null;
                         }
                   }
                   else{
-                     if(event.data.panel.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]!=null && event.data.panel.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]==event.data.panel.parameterDefinitionsPanel.currentParameterDefinition.id)
+                     if(attributes["carnot:engine:camel::outBodyAccessPoint"]!=null && attributes["carnot:engine:camel::outBodyAccessPoint"]==event.data.panel.parameterDefinitionsPanel.currentParameterDefinition.id)
                      {
-                     event.data.panel.view
-                     .submitModelElementAttributeChange(
-                           "carnot:engine:camel::outBodyAccessPoint",
-                           null);
+                        attributes["carnot:engine:camel::outBodyAccessPoint"] = null;
                      }
+                  }
+                  if (Object.keys(attributes).length > 0){
+                     submitElements.attributes = attributes;
+                     self.view.submitChanges(submitElements, true);
                   }
                });
                
@@ -175,11 +175,9 @@ define(
                this.parameterDefinitionNameInput = jQuery("#parametersTab #parameterDefinitionNameInput");
           
                this.camelContextInput.change(function() {
-               
                   if (!self.view.validate()) {
                      return;
                   }
-
                   self.view.submitModelElementAttributeChange(
                         "carnot:engine:camel::camelContextId",
                            self.camelContextInput.val());
@@ -204,11 +202,7 @@ define(
                });
 
                this.producerRouteTextarea.change(function() {
-                  if (!self.view.validate()) {
-                     return;
-                  }
-                  
-                  if (!self.validateProducerRoute()) {
+                  if (!self.view.validate() || !self.validateProducerRoute()) {
                      return;
                   }
                   
@@ -249,13 +243,12 @@ define(
                   if (!self.view.validate()) {
                      return;
                   }
-                  
+                  var submitElements = {};
+                  var attributes = self.getApplication().attributes;
                   if (self.producerBpmTypeConverter.prop("checked")) {
                      self.producerOutboundConversion.prop('disabled', false);
                      self.producerInboundConversion.prop('disabled', false);
-                     self.view.submitModelElementAttributeChange(
-                           "carnot:engine:camel::producerBpmTypeConverter",
-                           self.producerBpmTypeConverter.prop("checked"));
+                     attributes["carnot:engine:camel::producerBpmTypeConverter"] = self.producerBpmTypeConverter.prop("checked");
                   }
                   else {
                      self.producerRouteTextarea.removeClass("error");
@@ -263,18 +256,15 @@ define(
                      self.producerInboundConversion.prop('disabled', true);
                      self.hideProducerOutboundConverterOption();
                      self.hideProducerInboundConverterOption();
-                     
-                     self.view.submitModelElementAttributeChange(
-                           "carnot:engine:camel::producerBpmTypeConverter",
-                           false);
-                     self.view.submitModelElementAttributeChange(
-                           "carnot:engine:camel::producerOutboundConversion",
-                           null);
-                     self.view.submitModelElementAttributeChange(
-                           "carnot:engine:camel::producerInboundConversion",
-                           null);
+                     attributes["carnot:engine:camel::producerBpmTypeConverter"] = false;
+                     attributes["carnot:engine:camel::producerOutboundConversion"] = null;
+                     attributes["carnot:engine:camel::producerInboundConversion"] = null;
                      self.producerOutboundConversion.val(m_constants.TO_BE_DEFINED);
                      self.producerInboundConversion.val(m_constants.TO_BE_DEFINED);
+                  }
+                  if (Object.keys(attributes).length > 0){
+                     submitElements.attributes = attributes;
+                     self.view.submitChanges(submitElements, true);
                   }
                });
                
@@ -286,44 +276,31 @@ define(
                            "carnot:engine:camel::producerOutboundConversion",
                            null);
                   }
-                  
-                  if (!self.view.validate()) {
+                  if (!self.view.validate() || !self.validateProducerRoute()) {
                      return;
                   }
-                  
-                  if (!self.validateProducerRoute()) {
-                     return;
-                  }
-                     
-                  if (value === "toCSV")
-                  {
-                     self.showProducerOutboundConverterOption();
-                     self.view
-                              .submitModelElementAttributeChange(
-                                       "carnot:engine:camel::producerOutboundConversion",
-                                       value+ self.getProducerOutboundConverterOption());
-                  }
-
                   if(value != "None" && value !=  m_constants.TO_BE_DEFINED){
-                     self.hideProducerOutboundConverterOption();
-                     self.view.submitModelElementAttributeChange("carnot:engine:camel::producerOutboundConversion",value);
+                     var submitElements = {};
+                     var attributes = self.getApplication().attributes;
+                     if (value === "toCSV")
+                     {
+                        self.showProducerOutboundConverterOption();
+                        attributes["carnot:engine:camel::producerOutboundConversion"] = value+ self.getProducerOutboundConverterOption();
+                     }else{
+                        self.hideProducerOutboundConverterOption();
+                        attributes["carnot:engine:camel::producerOutboundConversion"] = value;
+                     }
+                     if (Object.keys(attributes).length > 0){
+                        submitElements.attributes = attributes;
+                        self.view.submitChanges(submitElements, true);
+                     }
                   }
-                  
                });
                
                this.producerOutboundConverterDelimiterInput.change(function() {
-                    if (!self.view.validate()) {
+                    if (!self.view.validate() || !self.validateProducerRoute() || !self.validateCsvDelimiter(self.producerOutboundConverterDelimiterInput)) {
                         return;
                     }
-
-                    if (!self.validateProducerRoute()) {
-                        return;
-                    }
-                    
-                    if(!self.validateCsvDelimiter(self.producerOutboundConverterDelimiterInput)) {
-                       return;
-                    }
-
                     self.view.submitModelElementAttributeChange(
                              "carnot:engine:camel::producerOutboundConversion",
                              self.producerOutboundConversion.val()
@@ -331,14 +308,9 @@ define(
                });
                
                this.autogenHeadersInput.change(function() {
-                 if (!self.view.validate()) {
+                 if (!self.view.validate() || !self.validateProducerRoute()) {
                     return;
                  }
-
-                 if (!self.validateProducerRoute()) {
-                    return;
-                 }
-
                  self.view.submitModelElementAttributeChange(
                            "carnot:engine:camel::producerOutboundConversion",
                             self.producerOutboundConversion.val()
@@ -354,40 +326,31 @@ define(
                            null);
                   }
                   
-                  if (!self.view.validate()) {
+                  if (!self.view.validate() || !self.validateProducerRoute()) {
                      return;
-                  }
-                  
-                  if (!self.validateProducerRoute()) {
-                     return;
-                  }
-                  if (value === "fromCSV") {
-                     self.showProducerInboundConverterOption();
-                     self.view.submitModelElementAttributeChange(
-                              "carnot:engine:camel::producerInboundConversion",
-                              value+ self.getProducerInboundConverterOption());
                   }
                   if( value != "None" && value !=  m_constants.TO_BE_DEFINED ) {
-                     self.hideProducerInboundConverterOption();
-                     self.view.submitModelElementAttributeChange(
-                              "carnot:engine:camel::producerInboundConversion",
-                              value);
+                     var submitElements = {};
+                     var attributes = self.getApplication().attributes;
+                     if (value === "fromCSV") {
+                        self.showProducerInboundConverterOption();
+                        attributes["carnot:engine:camel::producerInboundConversion"] = value+ self.getProducerInboundConverterOption();
+                     }else{
+                    
+                        self.hideProducerInboundConverterOption();
+                        attributes["carnot:engine:camel::producerInboundConversion"] = value;
+                     }
+                     if (Object.keys(attributes).length > 0){
+                        submitElements.attributes = attributes;
+                        self.view.submitChanges(submitElements, true);
+                     }
                   }
                });
                
                this.producerInboundConverterDelimiterInput.change(function() {
-                    if (!self.view.validate()) {
+                    if (!self.view.validate() || !self.validateProducerRoute() || !self.validateCsvDelimiter(self.producerInboundConverterDelimiterInput)) {
                        return;
                     }
-
-                   if (!self.validateProducerRoute()) {
-                      return;
-                   }
-                   
-                   if(!self.validateCsvDelimiter(self.producerInboundConverterDelimiterInput)) {
-                      return;
-                   }
-                   
                    self.view.submitModelElementAttributeChange(
                             "carnot:engine:camel::producerInboundConversion",
                             self.producerInboundConversion.val()
@@ -395,14 +358,9 @@ define(
                });
                
                this.consumerRouteTextarea.change(function() {
-                  if (!self.view.validate()) {
+                  if (!self.view.validate() || !self.validateConsumerRoute()) {
                      return;
                   }
-                  
-                  if (!self.validateConsumerRoute()) {
-                     return;
-                  }
-
                   self.view.submitModelElementAttributeChange(
                         "carnot:engine:camel::consumerRoute",
                         self.consumerRouteTextarea.val());
@@ -413,73 +371,63 @@ define(
                      return;
                   }
                   var checked=self.consumerBpmTypeConverter.prop("checked");
+                  var submitElements = {};
+                  var attributes = self.getApplication().attributes;
                   
                   if (checked) {
                      self.consumerInboundConversion.prop('disabled', false);
-                     self.view.submitModelElementAttributeChange(
-                           "carnot:engine:camel::consumerBpmTypeConverter",
-                           checked);
+                     attributes["carnot:engine:camel::consumerBpmTypeConverter"] = checked;
                   }
                   else {
                      self.consumerRouteTextarea.removeClass("error");
                      self.consumerInboundConversion.prop('disabled', true);
                      self.hideConsumerInboundConverterOption();
-                     self.view.submitModelElementAttributeChange(
-                           "carnot:engine:camel::consumerBpmTypeConverter",
-                           false);
-                     self.view.submitModelElementAttributeChange(
-                           "carnot:engine:camel::consumerInboundConversion",
-                           null);
+                     
+                     attributes["carnot:engine:camel::consumerBpmTypeConverter"] = false;
+                     attributes["carnot:engine:camel::consumerInboundConversion"] = null;
                      self.consumerInboundConversion.val(m_constants.TO_BE_DEFINED);
+                  }
+                  
+                  if (Object.keys(attributes).length > 0){
+                     submitElements.attributes = attributes;
+                     self.view.submitChanges(submitElements, true);
                   }
                });
                
                this.consumerInboundConversion.change(function() {
                   var value=self.consumerInboundConversion.val();
-                  if (!self.view.validate()) {
+                  if (!self.view.validate() || !self.validateConsumerRoute()) {
                      return;
                   }
-                  
-                  if (!self.validateConsumerRoute()) {
-                     return;
-                  }
+                  var submitElements = {};
+                  var attributes = self.getApplication().attributes;
                   
                   if(value != "None" && value !=  m_constants.TO_BE_DEFINED) {
                      
                      if (value === "fromCSV") {
                         self.showConsumerInboundConverterOption();
-                        self.view.submitModelElementAttributeChange(
-                                 "carnot:engine:camel::consumerInboundConversion",
-                                 value
-                                          + self.getConsumerInboundConverterOption());
+                        attributes["carnot:engine:camel::consumerInboundConversion"] = value+ self.getConsumerInboundConverterOption();
                      }
                      else {
                         self.hideConsumerInboundConverterOption();
-                        self.view.submitModelElementAttributeChange(
-                              "carnot:engine:camel::consumerInboundConversion",
-                              value);
+                        attributes["carnot:engine:camel::consumerInboundConversion"] = value;
                      }
                   }
                   else {
                      self.hideConsumerInboundConverterOption();
-                     self.view.submitModelElementAttributeChange(
-                           "carnot:engine:camel::consumerInboundConversion",
-                           null);
+                     attributes["carnot:engine:camel::consumerInboundConversion"] = null;
+                  }
+                  
+                  if (Object.keys(attributes).length > 0){
+                     submitElements.attributes = attributes;
+                     self.view.submitChanges(submitElements, true);
                   }
                });
                
                this.consumerInboundConverterDelimiterInput.change(function() {
-                  if (!self.view.validate()) {
+                  if (!self.view.validate() || !self.validateConsumerRoute() || !self.validateCsvDelimiter(self.consumerInboundConverterDelimiterInput)) {
                      return;
                   }
-
-                 if (!self.validateConsumerRoute()) {
-                    return;
-                 }
-                 
-                 if(!self.validateCsvDelimiter(self.consumerInboundConverterDelimiterInput)) {
-                    return;
-                 }
                  
                  self.view.submitModelElementAttributeChange(
                           "carnot:engine:camel::consumerInboundConversion",
@@ -492,7 +440,6 @@ define(
                         if (!self.view.validate()) {
                            return;
                         }
-
                         self.view
                               .submitModelElementAttributeChange(
                                     "carnot:engine:camel::additionalSpringBeanDefinitions",
@@ -504,18 +451,17 @@ define(
                         if (!self.view.validate()) {
                            return;
                         }
-
+                        var submitElements = {};
+                        var attributes = self.getApplication().attributes;
+                        
                         if (self.inputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
-                           self.view
-                                 .submitModelElementAttributeChange(
-                                       "carnot:engine:camel::inBodyAccessPoint",
-                                       null);
+                           attributes["carnot:engine:camel::inBodyAccessPoint"] = null;
                         } else {
-                           self.view
-                                 .submitModelElementAttributeChange(
-                                       "carnot:engine:camel::inBodyAccessPoint",
-                                       self.inputBodyAccessPointInput
-                                             .val());
+                           attributes["carnot:engine:camel::inBodyAccessPoint"] = self.inputBodyAccessPointInput.val();
+                        }
+                        if (Object.keys(attributes).length > 0){
+                           submitElements.attributes = attributes;
+                           self.view.submitChanges(submitElements, true);
                         }
                      });
                this.outputBodyAccessPointInput
@@ -523,18 +469,17 @@ define(
                         if (!self.view.validate()) {
                            return;
                         }
-
+                        var submitElements = {};
+                        var attributes = self.getApplication().attributes;
+                        
                         if (self.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
-                           self.view
-                                 .submitModelElementAttributeChange(
-                                       "carnot:engine:camel::outBodyAccessPoint",
-                                       null);
+                           attributes["carnot:engine:camel::outBodyAccessPoint"] = null;
                         } else {
-                           self.view
-                                 .submitModelElementAttributeChange(
-                                       "carnot:engine:camel::outBodyAccessPoint",
-                                       self.outputBodyAccessPointInput
-                                             .val());
+                           attributes["carnot:engine:camel::outBodyAccessPoint"] = self.outputBodyAccessPointInput.val();
+                        }
+                        if (Object.keys(attributes).length > 0){
+                           submitElements.attributes = attributes;
+                           self.view.submitChanges(submitElements, true);
                         }
                      });
                 
@@ -553,18 +498,19 @@ define(
                }
                else
                {
-                  this.camelContextInput.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);                             
+                  this.camelContextInput.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);
                }
                
-               if(!this.getApplication().attributes["carnot:engine:camel::invocationPattern"])
+               var submitElements = {};
+               var attributes = this.getApplication().attributes;
+               
+               if(!attributes["carnot:engine:camel::invocationPattern"])
                {
                   this.invocationPatternInput.val('send');
                   this.invocationTypeInput.val('synchronous');
-                   
-                  self.view.submitModelElementAttributeChange("carnot:engine:camel::invocationPattern", self.invocationPatternInput.val());
-                   self.view.submitModelElementAttributeChange("carnot:engine:camel::invocationType", self.invocationTypeInput.val());
-                   
-                   this.invocationTypeInput.prop('disabled', true);
+                  attributes["carnot:engine:camel::invocationPattern"] = self.invocationPatternInput.val();
+                  attributes["carnot:engine:camel::invocationType"] = self.invocationTypeInput.val();
+                  this.invocationTypeInput.prop('disabled', true);
                   this.producerRouteTextarea.prop('disabled', false);
                   this.producerBpmTypeConverter.prop('disabled', false);
                   this.consumerRouteTextarea.prop('disabled', true);
@@ -573,24 +519,27 @@ define(
                }
                else
                {
-                  this.invocationPatternInput.val(this.getApplication().attributes["carnot:engine:camel::invocationPattern"]);      
-                  this.invocationTypeInput.val(this.getApplication().attributes["carnot:engine:camel::invocationType"]);      
-                   
+                  this.invocationPatternInput.val(attributes["carnot:engine:camel::invocationPattern"]);      
+                  this.invocationTypeInput.val(attributes["carnot:engine:camel::invocationType"]);      
                }
                
                // set default to true if absent but invocation pattern is send or sendReveive
-               if (this.getApplication().attributes["carnot:engine:camel::processContextHeaders"] && 
-                     this.getApplication().attributes["carnot:engine:camel::invocationPattern"] && (
-                     this.getApplication().attributes["carnot:engine:camel::invocationPattern"].indexOf("send") > -1 ||
-                     this.getApplication().attributes["carnot:engine:camel::invocationPattern"].indexOf("sendReceive") > -1))
+               if (attributes["carnot:engine:camel::processContextHeaders"] && 
+                     attributes["carnot:engine:camel::invocationPattern"] && (
+                     attributes["carnot:engine:camel::invocationPattern"].indexOf("send") > -1 ||
+                     attributes["carnot:engine:camel::invocationPattern"].indexOf("sendReceive") > -1))
                {
                   this.processContextHeadersInput.prop("checked", true);
-                  self.view.submitModelElementAttributeChange("carnot:engine:camel::processContextHeaders", true);
+                  attributes["carnot:engine:camel::processContextHeaders"] = true;
                }
                else
                {
                   this.processContextHeadersInput.prop("checked",
-                        this.getApplication().attributes["carnot:engine:camel::processContextHeaders"]);
+                        attributes["carnot:engine:camel::processContextHeaders"]);
+               }
+               if (Object.keys(attributes).length > 0){
+                  submitElements.attributes = attributes;
+                  this.view.submitChanges(submitElements, true);
                }
             };
 
@@ -636,6 +585,9 @@ define(
                
                this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
                this.parameterDefinitionsPanel.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
+               var accessPoints=this.getApplication().contexts.application.accessPoints;
+               var attributes=this.getApplication().attributes;
+               
                this.autoStartupRow.hide();
                this.transactedRouteRow.hide();
                if(this.isIntegrator()){
@@ -645,11 +597,11 @@ define(
                this.inputBodyAccessPointInput.empty();
                this.inputBodyAccessPointInput.append("<option value='"
                      + m_constants.TO_BE_DEFINED + "'>"
-                     + m_i18nUtils.getProperty("None") // TODO I18N
+                     + m_i18nUtils.getProperty("None")
                      + "</option>");
 
-               for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
-                  var accessPoint = this.getApplication().contexts.application.accessPoints[n];
+               for ( var n = 0; n < accessPoints.length; ++n) {
+                  var accessPoint = accessPoints[n];
 
                   if (accessPoint.direction != m_constants.IN_ACCESS_POINT) {
                      continue;
@@ -663,14 +615,14 @@ define(
                this.outputBodyAccessPointInput.empty();
                this.outputBodyAccessPointInput.append("<option value='"
                      + m_constants.TO_BE_DEFINED + "' selected>"
-                     + m_i18nUtils.getProperty("None") // TODO I18N
+                     + m_i18nUtils.getProperty("None")
                      + "</option>");
 
                
                
-               for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) 
+               for ( var n = 0; n < accessPoints.length; ++n) 
                {
-                  var accessPoint = this.getApplication().contexts.application.accessPoints[n];
+                  var accessPoint = accessPoints[n];
 
                   if (accessPoint.direction != m_constants.OUT_ACCESS_POINT) {
                      continue;
@@ -682,52 +634,48 @@ define(
                }
 
                this.inputBodyAccessPointInput
-                     .val(this.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]);
+                     .val(attributes["carnot:engine:camel::inBodyAccessPoint"]);
                this.outputBodyAccessPointInput
-                     .val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
+                     .val(attributes["carnot:engine:camel::outBodyAccessPoint"]);
                
                // configuration tab
                this.camelContextInput
-                     .val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);
+                     .val(attributes["carnot:engine:camel::camelContextId"]);
                
                this.additionalBeanSpecificationTextarea
-                  .val(this.getApplication().attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
+                  .val(attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
                
                this.invocationPatternInput
-                     .val(this.getApplication().attributes["carnot:engine:camel::invocationPattern"]);
+                     .val(attributes["carnot:engine:camel::invocationPattern"]);
                
                this.invocationTypeInput
-                     .val(this.getApplication().attributes["carnot:engine:camel::invocationType"]);
+                     .val(attributes["carnot:engine:camel::invocationType"]);
                
                // camel producer tab
-               this.processContextHeadersInput.prop("checked",
-                     this.getApplication().attributes["carnot:engine:camel::processContextHeaders"]);
+               this.processContextHeadersInput.prop("checked",attributes["carnot:engine:camel::processContextHeaders"]);
                
-               
-                if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
-                     this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
-                  }
-                
-                if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+               if(attributes["carnot:engine:camel::autoStartup"]==null||attributes["carnot:engine:camel::autoStartup"]===undefined){
                    this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
-                  }
-                
-               this.transactedRouteInput.prop("checked",
-                        this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
+               }else{
+                  this.autoStartupInput.prop("checked",attributes["carnot:engine:camel::autoStartup"]);
+               }
                
-               this.autoStartupInput.prop("checked",
-                        this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
+               if(attributes["carnot:engine:camel::transactedRoute"]==null||attributes["carnot:engine:camel::transactedRoute"]===undefined){
+                  this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
+               }else{
+                  this.transactedRouteInput.prop("checked",attributes["carnot:engine:camel::transactedRoute"]);
+               }
+               
                               
-               this.producerBpmTypeConverter.prop("checked",
-                     this.getApplication().attributes["carnot:engine:camel::producerBpmTypeConverter"]);
+               this.producerBpmTypeConverter.prop("checked",attributes["carnot:engine:camel::producerBpmTypeConverter"]);
                
-               if (this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"] != undefined)
+               if (attributes["carnot:engine:camel::producerOutboundConversion"] != undefined)
                {
-                  var csvOutboundIndex = this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"]
+                  var csvOutboundIndex = attributes["carnot:engine:camel::producerOutboundConversion"]
                            .indexOf("toCSV");
                   if (csvOutboundIndex != -1)
                   {
-                     var option = this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"];
+                     var option = attributes["carnot:engine:camel::producerOutboundConversion"];
                      var options = option.split("&amp;");
                      if (options.length == 2)
                      {
@@ -755,24 +703,24 @@ define(
                   else
                   {
                      this.producerOutboundConversion
-                              .val(this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"]);
+                              .val(attributes["carnot:engine:camel::producerOutboundConversion"]);
                   }
 
                }
                else
                {
                   this.producerOutboundConversion
-                           .val(this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"]);
+                           .val(attributes["carnot:engine:camel::producerOutboundConversion"]);
                }
                
-               if (this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"] != undefined)
+               if (attributes["carnot:engine:camel::producerInboundConversion"] != undefined)
                {
-                  var csvInboundIndex = this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"]
+                  var csvInboundIndex = attributes["carnot:engine:camel::producerInboundConversion"]
                            .indexOf("fromCSV");
 
                   if (csvInboundIndex != -1)
                   {
-                     var option = this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"];
+                     var option = attributes["carnot:engine:camel::producerInboundConversion"];
                      var options = option.split("delimiter=");
                      if (options.length == 2)
                      {
@@ -783,13 +731,13 @@ define(
                   else
                   {
                      this.producerInboundConversion
-                              .val(this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"]);
+                              .val(attributes["carnot:engine:camel::producerInboundConversion"]);
                   }
                }
                else
                {
                   this.producerInboundConversion
-                           .val(this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"]);
+                           .val(attributes["carnot:engine:camel::producerInboundConversion"]);
                }
                
                if (this.producerBpmTypeConverter.prop("checked"))
@@ -814,7 +762,7 @@ define(
                }
                
                this.producerRouteTextarea
-                  .val(this.getApplication().attributes["carnot:engine:camel::routeEntries"]);
+                  .val(attributes["carnot:engine:camel::routeEntries"]);
                
                if (this.invocationPatternInput.val() == 'receive'){
                   this.invocationTypeInput.prop('disabled', true);
@@ -826,19 +774,18 @@ define(
                }
                // camel consumer tab
                this.consumerRouteTextarea
-                  .val(this.getApplication().attributes["carnot:engine:camel::consumerRoute"]);
+                  .val(attributes["carnot:engine:camel::consumerRoute"]);
                
-               this.consumerBpmTypeConverter.prop("checked",
-                        this.getApplication().attributes["carnot:engine:camel::consumerBpmTypeConverter"]);
+               this.consumerBpmTypeConverter.prop("checked", attributes["carnot:engine:camel::consumerBpmTypeConverter"]);
                
-               if (this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"] != undefined)
+               if (attributes["carnot:engine:camel::consumerInboundConversion"] != undefined)
                {
-                  var csvInboundIndex = this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"]
+                  var csvInboundIndex = attributes["carnot:engine:camel::consumerInboundConversion"]
                            .indexOf("fromCSV");
 
                   if (csvInboundIndex != -1)
                   {
-                     var option = this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"];
+                     var option = attributes["carnot:engine:camel::consumerInboundConversion"];
                      var options = option.split("delimiter=");
                      if (options.length == 2)
                      {
@@ -849,13 +796,13 @@ define(
                   else
                   {
                      this.consumerInboundConversion
-                              .val(this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"]);
+                              .val(attributes["carnot:engine:camel::consumerInboundConversion"]);
                   }
                }
                else
                {
                   this.consumerInboundConversion
-                           .val(this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"]);
+                           .val(attributes["carnot:engine:camel::consumerInboundConversion"]);
                }
                
                if (this.invocationPatternInput.val() == 'send'){
@@ -886,16 +833,17 @@ define(
                } 
                
                // legacy
-               if (this.getApplication().attributes["carnot:engine:camel::producerMethodName"]
-                     && this.getApplication().attributes["carnot:engine:camel::producerMethodName"]
+               if (attributes["carnot:engine:camel::producerMethodName"]
+                     && attributes["carnot:engine:camel::producerMethodName"]
                            .indexOf("sendBodyInOut") > -1) {
                   
                   this.sendReceiveSynchronous();
                   this.view.submitModelElementAttributeChange(
                         "carnot:engine:camel::producerMethodName", null);
                   
-               } if (this.getApplication().attributes["carnot:engine:camel::producerMethodName"]
-                     && this.getApplication().attributes["carnot:engine:camel::producerMethodName"]
+               }
+               if (attributes["carnot:engine:camel::producerMethodName"]
+                     && attributes["carnot:engine:camel::producerMethodName"]
                         .indexOf("executeMessage") > -1) {
                   
                   this.sendSynchronous();
@@ -908,44 +856,44 @@ define(
              * 
              */
             GenericEndpointOverlay.prototype.validate = function() {
-            var valid = true;
-            this.camelContextInput.removeClass("error");
-            this.parameterDefinitionNameInput.removeClass("error");
-            this.producerOutboundConversion.removeClass("error");
-            this.producerInboundConversion.removeClass("error");
-            var parameterDefinitionNameInput=this.parameterDefinitionNameInput.val();
-            if(!parameterDefinitionNameInput)
-               parameterDefinitionNameInput="";
-            
-            var parameterDefinitionNameInputWhithoutSpaces =  parameterDefinitionNameInput.replace(/ /g, "");
-            if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
-               this.view.errorMessages
-                             .push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
-               this.parameterDefinitionNameInput.addClass("error");
-               valid = false;
-               }
-            
-            for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
-            {
-               var ap = this.getApplication().contexts.application.accessPoints[n];
-               if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
-               {
-                  if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
-                     this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
-                     }
+               var valid = true;
+               this.camelContextInput.removeClass("error");
+               this.parameterDefinitionNameInput.removeClass("error");
+               this.producerOutboundConversion.removeClass("error");
+               this.producerInboundConversion.removeClass("error");
+               var parameterDefinitionNameInput=this.parameterDefinitionNameInput.val();
+               if(!parameterDefinitionNameInput)
+                  parameterDefinitionNameInput="";
+               
+               var parameterDefinitionNameInputWhithoutSpaces =  parameterDefinitionNameInput.replace(/ /g, "");
+               if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
+                  this.view.errorMessages
+                                .push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
                   this.parameterDefinitionNameInput.addClass("error");
                   valid = false;
                   }
-               }
-            if (m_utils.isEmptyString(this.camelContextInput.val())) {
-               this.view.errorMessages.push("Camel Context must not be empty.");
-               this.camelContextInput.addClass("error");
-               }
-            
-            if (this.view.errorMessages.length != 0){
-               valid = false;
-               }
-            return valid;
+               
+               for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
+               {
+                  var ap = this.getApplication().contexts.application.accessPoints[n];
+                  if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+                  {
+                     if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
+                        this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+                        }
+                     this.parameterDefinitionNameInput.addClass("error");
+                     valid = false;
+                     }
+                  }
+               if (m_utils.isEmptyString(this.camelContextInput.val())) {
+                  this.view.errorMessages.push("Camel Context must not be empty.");
+                  this.camelContextInput.addClass("error");
+                  }
+               
+               if (this.view.errorMessages.length != 0){
+                  valid = false;
+                  }
+               return valid;
             };
             
             /**
