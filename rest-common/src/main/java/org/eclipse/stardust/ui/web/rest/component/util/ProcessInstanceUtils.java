@@ -53,6 +53,7 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.query.RootProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
@@ -135,6 +136,8 @@ public class ProcessInstanceUtils
    private static final Logger trace = LogManager.getLogger(ProcessInstanceUtils.class);
 
    private static final String COL_PROCESS_NAME = "processName";
+   
+   private static final String COL_ROOT_PROCESS_NAME = "rootProcessName";
 
    private static final String COL_PROCESS_INSTANCE_OID = "processOID";
 
@@ -1647,6 +1650,19 @@ public class ProcessInstanceUtils
             }
          }
       }
+      
+      // Root process name Filter
+      else if (null != filterDTO.rootProcessName)
+      {
+         FilterOrTerm or = filter.addOrTerm();
+         if (!filterDTO.rootProcessName.processes.contains("-1"))
+         {
+            for (String processName : filterDTO.rootProcessName.processes)
+            {
+               or.add(new RootProcessInstanceFilter(processName, null));
+            }
+         }
+      }
 
       // Priority Filter
       if (null != filterDTO.priority)
@@ -1801,6 +1817,10 @@ public class ProcessInstanceUtils
       else if (COL_PROCESS_NAME.equals(options.orderBy))
       {
          query.orderBy(ProcessInstanceQuery.PROC_DEF_NAME.ascendig(options.asc));
+      }
+      else if (COL_ROOT_PROCESS_NAME.equals(options.orderBy))
+      {
+         query.orderBy(ProcessInstanceQuery.ROOT_PROC_DEF_NAME.ascendig(options.asc));
       }
       else if (PROCESS_INSTANCE_ROOT_OID.equals(options.orderBy))
       {

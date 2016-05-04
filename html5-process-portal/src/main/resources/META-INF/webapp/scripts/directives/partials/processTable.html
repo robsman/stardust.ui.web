@@ -52,7 +52,7 @@
 		>
 		<thead sda-i18n-scope="views-common-messages.views-processTable-column">
 			<tr>
-				<th sda-name="processName" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('processName')}}">
+				<th sda-name="processName" sda-field="processName" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('processName')}}">
 					<div sda-filter-template>
 						<div sd-process-activity-table-filter sda-filter-type='process' sda-processes="processTableCtrl.fetchAllProcesses()"></div>
 					</div>
@@ -89,8 +89,11 @@
 				<th sda-name="caseOwner" sda-label="{{i18n('views-common-messages.overview-CaseOwner')}}" sda-sortable="false"
 					sda-visible="{{processTableCtrl.isColumnVisible('caseOwner')}}">
 				</th>
-				<th sda-name="rootProcessName" sda-field="rootProcessName" sda-label="{{i18n('views-common-messages.views-activityTable-column-rootProcess')}}" sda-sortable="false" sda-filterable="false"
+				<th sda-name="rootProcessName" sda-field="rootProcessName" sda-label="{{i18n('views-common-messages.views-activityTable-column-rootProcess')}}" sda-sortable="true" sda-filterable="true"
 					sda-visible="{{processTableCtrl.isColumnVisible('rootProcessName')}}">
+					<div sda-filter-template>
+					    <div sd-process-activity-table-filter sda-filter-type='process' sda-processes="processTableCtrl.fetchAllProcesses()"></div>
+					</div>
 				</th>
 				<th ng-repeat="descCol in processTableCtrl.descritorCols"
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"  sda-filterable="{{descCol.filterable}}"
@@ -166,7 +169,7 @@
 
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
-						
+
 						<button ng-click=" processTableCtrl.openNotes(rowData);"
 						    	aid="PP-ProcessTable-OpenNotes"
 								title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
@@ -180,7 +183,7 @@
 								<i class="pi pi-process-documents pi-lg"></i>
 						</button>
 
-						<button sd-popover  
+						<button sd-popover
 								ng-click="processTableCtrl.openActionsPopover()"
 								sda-placement="auto left-top"
 								title="{{i18n('processportal.toolbars-workflowActions-tooltip-actions')}}"
@@ -188,7 +191,7 @@
 						        class="button-link tbl-tool-link">
 						        <i class="pi pi-actions pi-lg"></i>
 						</button>
-						
+
 					</div>
 				</td>
 			</tr>
