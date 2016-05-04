@@ -90,7 +90,7 @@ if (!window["BridgeUtils"]) {
 					func(scope);
 				}
 			} else {
-				BridgeUtils.log("scope is not available, probably angular is not yet initialized, ignoring...", "w");
+				//BridgeUtils.log("scope is not available, probably angular is not yet initialized, ignoring...", "w");
 			}
 		}
 
@@ -509,7 +509,10 @@ if (!window["BridgeUtils"].View) {
 		function init(hiddenCounter) {
 			var initialized = false;
 			try {
-				BridgeUtils.log("BridgeUtils.View Initializing");
+				// Log less number of times
+				if (hiddenCounter == undefined || hiddenCounter % 50 == 0) {
+					BridgeUtils.log("BridgeUtils.View Initializing...");
+				}
 	
 				var sgPubSubService;
 				var timeoutSrv;
@@ -552,7 +555,10 @@ if (!window["BridgeUtils"].View) {
 				}
 
 				if (hiddenCounter > 0) {
-					BridgeUtils.log("BridgeUtils.View Initialization Delaying. Count = " + hiddenCounter);
+					// Log less number of times
+					if (hiddenCounter % 50 == 0 || hiddenCounter == 3000) {
+						BridgeUtils.log("BridgeUtils.View Initialization Delaying. Count = " + Math.floor(hiddenCounter / 50));						
+					}
 					window.setTimeout(function(){
 						init(--hiddenCounter);
 					}, 200);
