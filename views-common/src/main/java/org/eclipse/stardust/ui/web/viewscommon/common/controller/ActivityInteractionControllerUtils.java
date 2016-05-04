@@ -23,7 +23,10 @@ public class ActivityInteractionControllerUtils
     */
    public static boolean isExternalWebAppInterventionRequired(ClosePanelScenario scenario)
    {
-      if ((ClosePanelScenario.COMPLETE == scenario) || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
+      if ((ClosePanelScenario.COMPLETE == scenario) || ClosePanelScenario.COMPLETE_AND_NEXT_IN_WORKLIST == scenario
+            || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
+            || ClosePanelScenario.SUSPEND_AND_SAVE_TO_DEFAULT_PERFORMER == scenario
+            || ClosePanelScenario.SUSPEND_AND_SAVE_TO_USER_WORKLIST == scenario
             || (ClosePanelScenario.QA_PASS == scenario) || (ClosePanelScenario.QA_FAIL == scenario))
       {
          return true;
