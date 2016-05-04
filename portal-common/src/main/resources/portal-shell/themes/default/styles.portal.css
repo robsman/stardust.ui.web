@@ -1,0 +1,17 @@
+.popover {
+    position: absolute;
+    background-color: #fff;
+    background-clip: padding-box;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.sidebar-content-inner {
+	margin-top: 35px;
+}
+
+.perspective-series-wrapper {
+    left: 2px !important;
+    top: 138px !important;
+    width: 345px !important;
+    border-top: none !important;
+}

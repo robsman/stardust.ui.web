@@ -17,22 +17,18 @@ angular.module('shell.services').provider('sgConfigService', function() {
 		return localCfg;
 	};
 
-	self.$get = ['$resource', '$q', '$log', function($resource, $q, $log) {
+	self.$get = ['$injector', '$resource', '$q', '$log', function($injector, $resource, $q, $log) {
 		var deferred = $q.defer();
 		if( localCfg ) {
 			deferred.resolve(localCfg);
 		} else {
-			$resource(stardust.initParams().configEndpoint).get({},
-				function(conf) {
-					$log.log('- Shell config loaded');
-					localCfg = conf;
-					deferred.resolve(conf);
-				},
-				function() {
-					deferred.reject('Framework config required!');
-					$log.error('Framework config required!');
-				}
-			);
+			if ($injector.has('sgConfig')) {
+				localCfg = $injector.get('sgConfig');
+				deferred.resolve(localCfg);
+			} else {
+				$log.error('sgConfig required, but not defined.');
+				deferred.reject('Framework config required!');
+			}
 		}
 		return deferred.promise;
 	}];
