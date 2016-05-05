@@ -124,8 +124,10 @@
     this.processInstance.type_ = "Process";
     this.processInstance.name_ = this.processInstance.processName;
     this.processInstance.processOid_ = this.processInstance.oid;
+    this.processInstance.oid_ = this.processInstance.oid;
+    
     this.expandedProcessOids.push(this.processInstance.oid);
-    // this.flowElements.push(this.processInstance);
+    this.flowElements.push(this.processInstance);
     this.addActivityInstances(this.processInstance);
   }
 
@@ -142,6 +144,8 @@
       if (activityInstance.startingProcessInstance) {
         activityInstance.type_ = "Process";
         activityInstance.processOid_ = activityInstance.startingProcessInstance.oid;
+        activityInstance.name_ = activityInstance.activity.name;
+        activityInstance.oid_ = activityInstance.activityOID;
         this.flowElements.push(activityInstance);
         this.addActivityInstances(activityInstance.startingProcessInstance);
       } else {
@@ -149,7 +153,9 @@
         activityInstance.type_ = "Activity";
         activityInstance.expanded_ = false;
         activityInstance.processOid_ = processInstance.oid;
-
+        activityInstance.name_ = activityInstance.activity.name;
+        activityInstance.oid_ = activityInstance.activityOID;
+        
         // add notes
         if (activityInstance.notes && activityInstance.notes.list.length > 0) {
           activityInstance.notes_ = activityInstance.notes.list;
