@@ -123,7 +123,31 @@
 			</ice:panelGroup>
 		</ice:panelGroup>
 		<ice:panelGroup
-			rendered="#{(ippActivityPanelController.linkedProcess.fromLinkedProcess eq null) and (ippActivityPanelController.linkedProcess.joinLinkedProcess eq null) and (ippActivityPanelController.linkedProcess.relatedLinkedProcess eq null)}">
+			rendered="#{ippActivityPanelController.linkedProcess.insertedLinkedProcess!=null}">
+			<ice:panelGroup style="text-align: center;" styleClass="iframePopover">
+				<ice:outputText
+					value="#{views_common_msgPropsBean['view.linkedProcess.label.insertedInto']}"
+					style="text-align: center;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:panelGrid columns="1">
+					<ice:commandLink styleClass="action-link"
+						action="#{ippActivityPanelController.openProcessDetail}"
+						onclick="closeLinkedProcessIframe();">
+						<pc:automationTag value="auto-PP-LinkedProcDlg-InsterIntoProcess" />
+						<ice:panelGrid columns="2">
+							<ice:outputText styClass="pi pi-process pi-lg" />
+							<ice:outputText
+								value="#{ippActivityPanelController.linkedProcess.insertedProcessName}"
+								style="white-space: nowrap;" />
+						</ice:panelGrid>
+					</ice:commandLink>
+				</ice:panelGrid>
+			</ice:panelGroup>
+		</ice:panelGroup>
+		<ice:panelGroup
+			rendered="#{(ippActivityPanelController.linkedProcess.fromLinkedProcess eq null) and (ippActivityPanelController.linkedProcess.joinLinkedProcess eq null) 
+			and (ippActivityPanelController.linkedProcess.relatedLinkedProcess eq null)  and (ippActivityPanelController.linkedProcess.insertedLinkedProcess eq null)}">
 			<ice:panelGroup style="text-align: center;" styleClass="iframePopover">
 				<ice:outputText
 					value="#{views_common_msgPropsBean['view.linkedProcess.label.norecord']}"
