@@ -344,8 +344,8 @@
 
 				<td sda-column-type="ACTIONS">
 					<div style="text-align: right; white-space: nowrap;">
-						
-						<button ng-click="activityTableCtrl.$openNotes(rowData);" aid="PP-ActivityTable-OpenNotesAction"  ng-if="::activityTableCtrl.isActionButtonVisible('notes')" 
+
+						<button ng-click="activityTableCtrl.$openNotes(rowData);" aid="PP-ActivityTable-OpenNotesAction"  ng-if="::activityTableCtrl.isActionButtonVisible('notes')"
 						   	    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
 								title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
 								<i class="pi pi-notes-empty pi-lg" ng-if ="rowData.notesCount === 0"></i>
@@ -354,19 +354,19 @@
 
 						<button ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"  ng-if="::activityTableCtrl.isActionButtonVisible('processDocuments')"
 						        title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}"
-						        sd-popover  
-						        sda-trigger="none" 
+						        sd-popover
+						        sda-trigger="none"
 						        aid="PP-ActivityTable-OpenProcessDocuments"
-						        sda-is-open="activityTableCtrl.processPopover.showDocumentPopover && rowData.activityOID == activityTableCtrl.processPopover.data.activityOID" 
-						        sda-template="activityTableCtrl.openDocumentTemplateUrl"  
-						        sda-action-type="processDocuments" 
-						        sda-placement ="left auto" 	
-						        ng-click="activityTableCtrl.openProcessDocumentsPopover(rowData)" 
+						        sda-is-open="activityTableCtrl.processPopover.showDocumentPopover && rowData.activityOID == activityTableCtrl.processPopover.data.activityOID"
+						        sda-template="activityTableCtrl.openDocumentTemplateUrl"
+						        sda-action-type="processDocuments"
+						        sda-placement ="left auto"
+						        ng-click="activityTableCtrl.openProcessDocumentsPopover(rowData)"
 						        class="button-link tbl-tool-link">
 	  		  					<i class="pi pi-process-documents pi-lg"></i>
 						</button>
 
-						<button sd-popover  
+						<button sd-popover
 								sda-placement="auto left-top"
 								aid="PP-ActivityTable-OpenActionsPopover"
 								title="{{i18n('processportal.toolbars-workflowActions-tooltip-actions')}}"
@@ -421,4 +421,30 @@
 	<div sd-switch-process-dialog sda-show-dialog="activityTableCtrl.showSwitchProcessDialog" sda-on-confirm="activityTableCtrl.switchCompleted"
 	     sda-process-instances="activityTableCtrl.processesToAbort" sda-pause-parent-process="{{activityTableCtrl.pauseParentProcess}}">
 	</div>
+
+	<div sd-dialog sda-modal="true"
+			sda-show="activityTableCtrl.showRelocationDialog"
+			sda-type="confirm"
+			sda-title="{{i18n('processportal.toolbars-workflowActions-relocation-dialog-title')}}"
+			sda-scope="this"
+			sda-template="{{activityTableCtrl.prependBaseUrl('plugins/html5-process-portal/partials/views/activityRelocationDialog.html')}}"
+			sda-on-confirm="activityTableCtrl.relocateActivity()"
+			sda-confirm-action-label="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}"
+			sda-width="400px"
+			sda-height="70px"
+			sda-aid-prefix="RelocationDialog-confirm">
+		</div>
+
+		<div sd-dialog sda-modal="true"
+			sda-show="activityTableCtrl.showNoRelocationTargetsDialog"
+			sda-type="alert"
+			sda-title="{{i18n('processportal.toolbars-workflowActions-relocation-dialog-title')}}"
+			sda-scope="this"
+			sda-template="{{activityTableCtrl.prependBaseUrl('plugins/html5-process-portal/partials/views/activityRelocationDialog.html')}}"
+			sda-cancel-action-label="{{i18n('html5-common.common-ok')}}"
+			sda-width="400px"
+			sda-height="70px"
+			sda-aid-prefix="RelocationDialog-confirm">
+		</div>
+
 </div>

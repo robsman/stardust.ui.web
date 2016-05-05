@@ -1071,20 +1071,27 @@
 		 */
 		ActivityTableCompiler.prototype.openRelocationDialog = function(rowItem) {
 			var self = this;
+
 			sdActivityInstanceService.getRelocationTargets(rowItem.activityOID).then(function(targets) {
-				rowItem.relocationTargets = [];
+				self.relocation = {
+					rowItem : rowItem,
+					targets : []
+				};
 				if (targets) {
 					jQuery.each(targets, function(_, target) {
-						rowItem.relocationTargets.push({
+						self.relocation.targets.push({
 							name: target.activity.name,
 							id: target.activity.id
 						})
 					});
+					if(self.relocation.targets.length > 0) {
+						self.relocation.selectedTarget = self.relocation.targets[0].id;
+					}
 				}
-				if (rowItem.relocationTargets.length > 0) {
-					rowItem.showRelocationDialog = true;
+				if (self.relocation.targets.length > 0) {
+					self.showRelocationDialog = true;
 				} else {
-					rowItem.showNoRelocationTargetsDialog = true;
+					self.showNoRelocationTargetsDialog = true;
 				}
 			});
 
@@ -1094,9 +1101,10 @@
 		 *
 		 * @param rowItem
 		 */
-		ActivityTableCompiler.prototype.relocateActivity = function(rowItem) {
+		ActivityTableCompiler.prototype.relocateActivity = function() {
 			var self = this;
-			sdActivityInstanceService.relocate(rowItem.activityOID, rowItem.selectedTarget).then(function() {
+			var rowItem = self.relocation.rowItem;
+			sdActivityInstanceService.relocate(rowItem.activityOID, self.relocation.selectedTarget).then(function() {
 				self.refresh();
 			}, function(errorMessage) {
 				trace.error("Error in relocating worklist item : " , rowItem.activityOID , ".Error : " , errorMessage);
@@ -1106,7 +1114,8 @@
 				var message = errorMessage ? sgI18nService.translate(errorMessage) : sgI18nService.translate('processportal.toolbars-workflowActions-relocation-dialog-notAuthorized');
 				sdDialogService.error(self.scope, message, options)
 			});
-			rowItem.showRelocationDialog = false;
+			self.showNoRelocationTargetsDialog = false;
+			self.showRelocationDialog = false;
 		};
 
 		/*
