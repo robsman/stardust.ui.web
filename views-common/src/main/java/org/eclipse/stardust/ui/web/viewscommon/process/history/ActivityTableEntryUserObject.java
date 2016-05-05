@@ -129,7 +129,8 @@ public class ActivityTableEntryUserObject extends NodeUserObject
       String orgType = type;
 
       if ("ActivityActive".equals(type) || "Resubmission".equals(type) || "ActivitySuspended".equals(type)
-            || "ActivityInterrupted".equals(type) || "ActivityAborted".equals(type) || "AbortingActivity".equals(type))
+            || "ActivityInterrupted".equals(type) || "ActivityAborted".equals(type) || "AbortingActivity".equals(type)
+            || "ActivityHalted".equals(type) || "HaltingActivity".equals(type))
       {
          type = "StateChange";
       }

@@ -42,6 +42,8 @@ public class LocalizerKey implements Serializable
    public static final LocalizerKey PH_ABORTING_TYPE = new LocalizerKey("processHistoryAbortingType");
    public static final LocalizerKey PH_COMPLETED_TYPE = new LocalizerKey("processHistoryCompletedType");
    public static final LocalizerKey PH_INTERRUPTED_TYPE = new LocalizerKey("processHistoryInterruptedType");
+   public static final LocalizerKey PH_HALTED_TYPE = new LocalizerKey("processHistoryHaltedType");
+   public static final LocalizerKey PH_HALTING_TYPE = new LocalizerKey("processHistoryHaltingType");
 
    
    private final String bundleName;
