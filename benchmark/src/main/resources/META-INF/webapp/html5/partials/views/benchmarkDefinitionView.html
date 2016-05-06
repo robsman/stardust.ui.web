@@ -308,6 +308,30 @@
 				<div ng-show="ctrl.selectedBenchmark" 
 				     style="width:225px;overflow:auto;">
 					
+					<div>
+						<span ng-show="!hasFocus && (!myFilter || myFilter.length===0)" class="pi pi-search search-box-icon"></span>
+						<input  type="text"  
+						        ng-keypress="($event.which === 13)?ctrl.filterModelTreeByName(myFilter):0" 
+						        ng-init="myFilter=''"
+						        ng-focus="hasFocus=true"
+						        ng-blur="hasFocus=false"
+						        required="required"
+						        ng-model="myFilter" 
+						        class="search"
+						        aid="COM-PartMgr-ApplyFilter" />
+						<button ng-disabled="!myFilter || myFilter.length==0" 
+								title="{{ctrl.textMap.filter}}"
+						        class="pi pi-filter pi-1x" 
+						        ng-click="ctrl.filterModelTreeByName(myFilter)"></button>
+						<button class="pi pi-clear pi-1x" 
+								title="{{ctrl.textMap.resetFilter}}"
+						        ng-click="ctrl.resetFilter();myFilter=''"></button>
+						<button class="pi pi-refresh pi-1x" 
+								title="{{ctrl.textMap.refreshTree}}"
+						        ng-click="ctrl.loadModels()">
+						</button>
+					</div>
+
 					<!-- sdTree Implementation of Model Tree -->
 				    <ul sd-tree="ctrl.onTreeInit(api)"
 				       	sda-event-callback="ctrl.treeCallback(data,e)"

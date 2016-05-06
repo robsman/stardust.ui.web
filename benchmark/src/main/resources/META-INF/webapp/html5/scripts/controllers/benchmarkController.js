@@ -120,7 +120,13 @@
 		
 		//retrieve all deployed models, add additional data to help
 		//in building a tree structure.
-		benchmarkService.getModels()
+		this.loadModels();
+	}
+	
+	benchmarkController.prototype.loadModels = function(){
+		var that = this;
+
+		this.benchmarkService.getModels()
 		.then(function(res){
 			
 			var predefinedModelIndex = -1,
@@ -148,7 +154,34 @@
 			//TODO: handle error
 		});
 	}
-	
+
+	benchmarkController.prototype.filterModelTreeByName = function(v){
+
+		var comparatorFx; 
+		var matches;
+
+		if(!v){
+			this.resetFilter();
+			return;
+		}
+
+		comparatorFx = function(nodeItem){
+			return nodeItem.name.indexOf(v) > -1;
+		}
+
+		matches = this.filterModelTree(comparatorFx);
+	};
+
+	benchmarkController.prototype.resetFilter = function(){
+		this.treeApi.resetFilter();
+	}
+
+	benchmarkController.prototype.filterModelTree = function(comparatorFx){
+
+		var matches = this.treeApi.filterTree(comparatorFx,true);
+
+	};
+
 	/**
 	 * More of a subroutine than a function in that all this does is compartmentalize
 	 * the initialization of our i18N textmap.
@@ -217,6 +250,9 @@
 		this.textMap.categoryDeleteDeny = this.i18N("views.main.dialog.category.delete.deny");
 		this.textMap.emptyBenchmarkName = this.i18N("views.main.validation.error.emptyBenchmarkName");
 		this.textMap.emptyCategoryName = this.i18N("views.main.validation.error.emptyCategoryName");
+		this.textMap.filter = this.i18N("views.main.modelTree.filter");
+		this.textMap.resetFilter = this.i18N("views.main.modelTree.filter.reset");
+		this.textMap.refreshTree = this.i18N("views.main.modelTree.filter.refresh");
 	};
 	
 	/**
@@ -328,7 +364,6 @@
 		if(!benchmark) return;
 		benchmark.isDirty = true;
 		if(refresh===true){
-			//this.dataTableApi.refresh(true);
 			this.refreshDataTable(this.dataTableApi,true,benchmark.id);
 		}
 	}
