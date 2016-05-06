@@ -12,4 +12,8 @@ var shellAMod = angular.module('shell', ['shell.services', 'ngResource', 'ngRout
 	angular.module('shell.init', []).
 		run(['$log', '$window', function($log, $window){
 			$log.log('Initializing shell.');
-	}]);
+}]);
+
+// Dummy modules just to bridge the gap! 
+angular.module('sg.widgets', []);
+angular.module('sg.megamenu', []);

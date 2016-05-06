@@ -743,7 +743,7 @@ public class ActivityPanelController extends UIComponentBean
                  PredefinedProcessInstanceLinkTypes.JOIN);
          ProcessInstance relatedProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO_FROM,
                PredefinedProcessInstanceLinkTypes.RELATED);
-         ProcessInstance insertedProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.FROM,
+         ProcessInstance insertedProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO,
                PredefinedProcessInstanceLinkTypes.INSERT);
          linkedProcess = LinkedProcessBean.getCurrent();
          linkedProcess.setFromLinkedProcess(fromProcessLink);
@@ -775,7 +775,7 @@ public class ActivityPanelController extends UIComponentBean
          {
             ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
                   insertedProcessLink.getModelOID(), insertedProcessLink.getProcessID());
-            linkedProcess.setJoinProcessName(propsBean.getParamString("views.linkedProcess.processname",
+            linkedProcess.setInsertedProcessName(propsBean.getParamString("views.linkedProcess.processname",
                   I18nUtils.getProcessName(processDefinition), Long.valueOf(insertedProcessLink.getOID()).toString()));
          }
       }

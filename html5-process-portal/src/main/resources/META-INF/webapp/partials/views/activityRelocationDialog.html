@@ -1,17 +1,17 @@
 <div>
 	<div style="clear: both; margin-top: 10px;">
-		<div ng-if="rowData.relocationTargets.length > 0">			
+		<div ng-if="activityTableCtrl.relocation.targets.length > 0">
 			<table>
 				<tr>
 					<td><label class="label-item">{{i18n('processportal.toolbars-workflowActions-relocation-dialog-newActivity')}}</label></td>
-					<td><select ng-model="rowData.selectedTarget"
-						ng-options="target.id as target.name for target in rowData.relocationTargets">
+					<td><select ng-model="activityTableCtrl.relocation.selectedTarget"
+						ng-options="target.id as target.name for target in activityTableCtrl.relocation.targets">
 						</select>
 					</td>
 				</tr>
 			</table>
 		</div>
-		<div ng-if="rowData.relocationTargets.length == 0">
+		<div ng-if="activityTableCtrl.relocation.targets.length == 0">
 			<label class="label-item">{{i18n('processportal.toolbars-workflowActions-relocation-dialog-noTargetsFound')}}</label>
 		</div>
 	</div>

@@ -862,51 +862,6 @@ public class ParticipantManagementUtils
    }
 
    /**
-    * @param organization
-    * @param departmentId
-    * @return
-    */
-   public DepartmentInfo getDepartment(QualifiedOrganizationInfo organization, String departmentId)
-   {
-      DepartmentInfo departmentInfo = null;
-      List<Department> deptList = serviceFactoryUtils.getQueryService().findAllDepartments(
-            organization.getDepartment(), organization);
-
-      for (Department department2 : deptList)
-      {
-         String deps = getDepartmentsHierarchy(department2, "");
-         if (deps.equals(departmentId.trim()))
-         {
-            departmentInfo = department2;
-            break;
-         }
-      }
-      return departmentInfo;
-   }
-
-   /**
-    * @param department2
-    * @param departmentName
-    * @return
-    */
-   public static String getDepartmentsHierarchy(Department department2, String departmentName)
-   {
-      if (department2 == null)
-      {
-         return departmentName;
-      }
-
-      departmentName = department2.getId() + "/" + departmentName;
-
-      if (department2.getParentDepartment() != null)
-      {
-         return getDepartmentsHierarchy(department2.getParentDepartment(), departmentName);
-      }
-
-      return departmentName.substring(0, departmentName.length() - 1);
-   }
-
-   /**
     * @param input
     * @return
     */

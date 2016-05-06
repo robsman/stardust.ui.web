@@ -57,64 +57,66 @@
 					</table>
 				</div>
 			</div>
-			<table sd-data-table="ctrl.allUsersTable"
-				sd-data="ctrl.getAllUsers(params)" sda-mode="remote"
-				sda-selectable="multiple" sda-page-size="{{ctrl.pageSize}}"
-				sda-preference-module="ipp-administration-perspective"
-				sda-preference-id="preference"
-				sda-preference-name="ipp-administration-perspective.userMgmt.selectedColumns"
-				sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
-				sda-sort-by="{name : 'oid', dir : 'desc'}" sda-exports="true"
-				sda-exports-file-name="{{ctrl.exportFileNameForAllUsers}}">
-				<thead
-					sda-i18n-scope="admin-portal-messages.views-participantMgmt-column">
-					<tr>
-						<th sda-name="name">
-							<div sda-filter-template>
-								<div sd-name-table-filter></div>
-							</div>
-						</th>
-						<th sda-name="oid" sda-sortable="true"></th>
-						<th sda-name="account" sda-sortable="true">
-							<div sda-filter-template>
-								<div sd-text-search-table-filter></div>
-							</div>
-						</th>
-						<th sda-name="realm">
-							<div sda-filter-template>
-								<div sd-text-search-table-filter></div>
-							</div>
-						</th>
-						<th sda-name="validFrom">
-							<div sda-filter-template>
-								<div sd-date-table-filter></div>
-							</div>
-						</th>
-						<th sda-name="validTo">
-							<div sda-filter-template>
-								<div sd-date-table-filter></div>
-							</div>
-						</th>
-						<th sda-name="eMail" sda-label-key="email"></th>
-				</thead>
-				<tbody>
-					<tr>
-						<td sda-exporter="rowData.displayName"><a href="#"
-							ng-click="ctrl.openCreateCopyModifyUser('MODIFY_USER',rowData.oid);"
-							title="{{i18n('admin-portal-messages.views-userTable-columnLink-title')}}"
-							class="tbl-tool-link" sd-data-drag ng-model="rowData"
-							sda-dragstart="ctrl.userDragStart($data, $event)"
-							sda-drag-elem-fx="ctrl.getDragElement(item)"
-							aid="ADM-PartMgmt-DataTable-DisplayName">{{rowData.displayName}}</a></td>
-						<td sda-data-type="int"></td>
-						<td style="text-align: center;"></td>
-						<td style="text-align: center;" sda-exporter="rowData.realmId">{{rowData.realmId}}</td>
-						<td sda-data-type="dateTime"></td>
-						<td sda-data-type="dateTime"></td>
-						<td style="text-align: center;"></td>
-					</tr>
-				</tbody>
-			</table>
+			<div ng-if="ctrl.showTable">
+				<table sd-data-table="ctrl.allUsersTable"
+					sd-data="ctrl.getAllUsers(params)" sda-mode="remote"
+					sda-selectable="multiple" sda-page-size="{{ctrl.pageSize}}"
+					sda-preference-module="ipp-administration-perspective"
+					sda-preference-id="preference"
+					sda-preference-name="ipp-administration-perspective.userMgmt.selectedColumns"
+					sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
+					sda-sort-by="{name : 'oid', dir : 'desc'}" sda-exports="true"
+					sda-exports-file-name="{{ctrl.exportFileNameForAllUsers}}">
+					<thead
+						sda-i18n-scope="admin-portal-messages.views-participantMgmt-column">
+						<tr>
+							<th sda-name="name">
+								<div sda-filter-template>
+									<div sd-name-table-filter></div>
+								</div>
+							</th>
+							<th sda-name="oid" sda-sortable="true"></th>
+							<th sda-name="account" sda-sortable="true">
+								<div sda-filter-template>
+									<div sd-text-search-table-filter></div>
+								</div>
+							</th>
+							<th sda-name="realm">
+								<div sda-filter-template>
+									<div sd-text-search-table-filter></div>
+								</div>
+							</th>
+							<th sda-name="validFrom">
+								<div sda-filter-template>
+									<div sd-date-table-filter></div>
+								</div>
+							</th>
+							<th sda-name="validTo">
+								<div sda-filter-template>
+									<div sd-date-table-filter></div>
+								</div>
+							</th>
+							<th sda-name="eMail" sda-label-key="email"></th>
+					</thead>
+					<tbody>
+						<tr>
+							<td sda-exporter="rowData.displayName"><a href="#"
+								ng-click="ctrl.openCreateCopyModifyUser('MODIFY_USER',rowData.oid);"
+								title="{{i18n('admin-portal-messages.views-userTable-columnLink-title')}}"
+								class="tbl-tool-link" sd-data-drag ng-model="rowData"
+								sda-dragstart="ctrl.userDragStart($data, $event)"
+								sda-drag-elem-fx="ctrl.getDragElement(item)"
+								aid="ADM-PartMgmt-DataTable-DisplayName">{{rowData.displayName}}</a></td>
+							<td sda-data-type="int"></td>
+							<td style="text-align: center;"></td>
+							<td style="text-align: center;" sda-exporter="rowData.realmId">{{rowData.realmId}}</td>
+							<td sda-data-type="dateTime"></td>
+							<td sda-data-type="dateTime"></td>
+							<td style="text-align: center;"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 </div>

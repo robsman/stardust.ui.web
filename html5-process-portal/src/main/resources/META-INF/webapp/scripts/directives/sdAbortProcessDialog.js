@@ -79,7 +79,7 @@
 		    		isPromptRequired : isPromptRequired
 		    };
 
-		    sdWorkflowPerspectiveConfigService.loadConfig().then(function () {
+		    sdWorkflowPerspectiveConfigService.getConfig().then(function () {
 		    	abortScope = sdWorkflowPerspectiveConfigService.getAbortProcessScope();
 		    	if (abortScope == '') {
 		    		isPromptRequired = true;

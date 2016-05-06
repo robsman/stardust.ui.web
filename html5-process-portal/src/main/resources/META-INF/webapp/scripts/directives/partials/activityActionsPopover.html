@@ -1,11 +1,11 @@
 <div class="menu-list">
 
-	<div class="menu-container" 
+	<div class="menu-container"
 	     ng-click="activityTableCtrl.$openProcessDetails(rowData);"
-		 aid="PP-ActivityTable-OpenProcessDetailsAction" 
+		 aid="PP-ActivityTable-OpenProcessDetailsAction"
 		 ng-if="::activityTableCtrl.isActionButtonVisible('processDetails')">
 
-		<i title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" 
+		<i title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}"
 		   class="pi pi-process pi-lg button-link tbl-tool-link">
 		</i>
 
@@ -15,13 +15,13 @@
 
 	</div>
 
-	<div class="menu-container" 
-	     ng-if="::(activityTableCtrl.isActivityTableMode() && activityTableCtrl.isActionButtonVisible('activate'))" 
+	<div class="menu-container"
+	     ng-if="::(activityTableCtrl.isActivityTableMode() && activityTableCtrl.isActionButtonVisible('activate'))"
 	     ng-click="activityTableCtrl.$activateItem(rowData);"
-		 aid="PP-ActivityTable-ActivateAction" 
+		 aid="PP-ActivityTable-ActivateAction"
 		 ng-disabled="!rowData.activatable || rowData.isCaseInstance">
 
-		<i title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" 
+		<i title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}"
 		   class="pi pi-activate pi-lg button-link tbl-tool-link">
 		</i>
 
@@ -31,12 +31,12 @@
 
 	</div>
 
-	<div class="menu-container" 
+	<div class="menu-container"
 	     ng-if="::(activityTableCtrl.defaultDelegateEnabled && activityTableCtrl.isActionButtonVisible('delegate'))"
 	     aid="PP-ActivityTable-DefaultDelegateAction"
 		 href="#" ng-click="activityTableCtrl.$openDefaultDelegationDialog([rowData]);">
 
-		<i title="{{i18n('views-common-messages.common-toolTip-delegateToDefaultPerformer')}}" 
+		<i title="{{i18n('views-common-messages.common-toolTip-delegateToDefaultPerformer')}}"
 		   class="pi pi-user pi-lg button-link tbl-toolbar-item tbl-tool-link">
 		</i>
 
@@ -46,14 +46,14 @@
 
 	</div>
 
-	<div class="menu-container" 
-	     sda-column-type="TRIVIAL_DATA" 
-	     ng-if="::(activityTableCtrl.isWorklistMode() && activityTableCtrl.isActionButtonVisible('complete'))"  
-	     aid="PP-ActivityTable-CompleteAction" 
+	<div class="menu-container"
+	     sda-column-type="TRIVIAL_DATA"
+	     ng-if="::(activityTableCtrl.isWorklistMode() && activityTableCtrl.isActionButtonVisible('complete'))"
+	     aid="PP-ActivityTable-CompleteAction"
 		 ng-disabled="(rowData.dataMappings == undefined) || !rowData.activatable || !rowData.isTrivialDataValid"
 		 ng-click="activityTableCtrl.$openCompleteDialog(rowData);">
 
-		<i title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}" 
+		<i title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}"
 		   class="pi pi-activity-complete pi-lg button-link tbl-tool-link">
 		</i>
 
@@ -63,13 +63,13 @@
 
 	</div>
 
-	<div class="menu-container" 
-	     ng-click="activityTableCtrl.$openDelegateDialog(rowData);"  
-	     aid="PP-ActivityTable-DelegateAction" 
+	<div class="menu-container"
+	     ng-click="activityTableCtrl.$openDelegateDialog(rowData);"
+	     aid="PP-ActivityTable-DelegateAction"
 	     ng-if="::activityTableCtrl.isActionButtonVisible('delegate')"
 		 ng-disabled="!rowData.delegable || rowData.defaultCaseActivity">
 
-		<i title="{{i18n('processportal.toolbars-workflowActions-tooltip-delegate')}}" 
+		<i title="{{i18n('processportal.toolbars-workflowActions-tooltip-delegate')}}"
 		   class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
 	     	<i class="pi pi-badge-icon pi-badge-icon-arrow-r button-link tbl-tool-link"></i>
 	   	</i>
@@ -80,12 +80,12 @@
 
 	</div>
 
-	<div class="menu-container" 
-	     ng-click="activityTableCtrl.$openAbortDialog(rowData);"  
-	     aid="PP-ActivityTable-AbortAction" 
+	<div class="menu-container"
+	     ng-click="activityTableCtrl.$openAbortDialog(rowData);"
+	     aid="PP-ActivityTable-AbortAction"
 	     ng-if="::activityTableCtrl.isActionButtonVisible('abort')"
 		 ng-disabled="!rowData.abortActivity || rowData.defaultCaseActivity"
-		 title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" 
+		 title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}"
 		 class="button-link tbl-tool-link"
 		 ng-class="{'tbl-tool-joined-link' : activityTableCtrl.isActivityTableMode()}">
 
@@ -98,12 +98,12 @@
 
 	</div>
 
-	<div class="menu-container" 
-	     ng-if="::(activityTableCtrl.isActivityTableMode() && activityTableCtrl.isActionButtonVisible('abort'))" 
-	     aid="PP-ActivityTable-AbortPopoverAction" 
+	<div class="menu-container"
+	     ng-if="::(activityTableCtrl.isActivityTableMode() && activityTableCtrl.isActionButtonVisible('abort'))"
+	     aid="PP-ActivityTable-AbortPopoverAction"
 		 ng-disabled="!rowData.abortProcess || rowData.isCaseInstance"
-		 sd-popover 
-		 sda-template="activityTableCtrl.abortMenuTemplateUrl" 
+		 sd-popover
+		 sda-template="activityTableCtrl.abortMenuTemplateUrl"
 		 sda-placement ="bottom-right auto"
 		 ng-click="activityTableCtrl.openAbortPopover(rowData);" >
 
@@ -116,46 +116,20 @@
 		</span>
 
 	</div>
-	
-	<div class="menu-container" 
+
+	<div class="menu-container"
 	     ng-click="activityTableCtrl.openRelocationDialog(rowData);"
-		 aid="PP-ActivityTable-OpenRelocationDialogAction" 
+		 aid="PP-ActivityTable-OpenRelocationDialogAction"
 		 ng-if="::activityTableCtrl.isActionButtonVisible('relocate')"
 	 	 ng-disabled="!(rowData.relocationEligible)">
 
-		<i title="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}" 
+		<i title="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}"
 		   class="pi pi-rotate-right pi-lg button-link tbl-tool-link">
 		</i>
 
 		<span>
 			{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}
 		</span>
-
-		<div sd-dialog sda-modal="true"
-			sda-show="rowData.showRelocationDialog" 
-			sda-type="confirm"
-			sda-title="{{i18n('processportal.toolbars-workflowActions-relocation-dialog-title')}}"
-			sda-scope="this"
-			sda-template="{{activityTableCtrl.prependBaseUrl('plugins/html5-process-portal/partials/views/activityRelocationDialog.html')}}"
-			sda-on-confirm="activityTableCtrl.relocateActivity(rowData)"
-			sda-confirm-action-label="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}"
-			sda-width="400px" 
-			sda-height="70px"
-			sda-aid-prefix="RelocationDialog-confirm">
-		</div>
-
-		<div sd-dialog sda-modal="true"
-			sda-show="rowData.showNoRelocationTargetsDialog" 
-			sda-type="alert"
-			sda-title="{{i18n('processportal.toolbars-workflowActions-relocation-dialog-title')}}"
-			sda-scope="this"
-			sda-template="{{activityTableCtrl.prependBaseUrl('plugins/html5-process-portal/partials/views/activityRelocationDialog.html')}}"
-			sda-confirm-action-label="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}"
-			sda-cancel-action-label="OK"
-			sda-width="400px" 
-			sda-height="70px"
-			sda-aid-prefix="RelocationDialog-confirm">
-		</div>
 
 	</div>
 

@@ -320,7 +320,7 @@
 				 */
 				function initialize() {
 					var preferenceStorePromise = loadPreferenceStores();
-					var portalConfigPromise = sdPortalConfigurationService.loadConfig();
+					var portalConfigPromise = sdPortalConfigurationService.getConfig();
 					
 					var promises = [preferenceStorePromise, portalConfigPromise];
 

@@ -9,6 +9,7 @@
 package org.eclipse.stardust.ui.web.rest.component.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -48,6 +50,7 @@ import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.ui.web.rest.component.cachemanager.ParticipantServiceHelperCacheManager;
 import org.eclipse.stardust.ui.web.rest.component.util.ParticipantManagementUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ParticipantManagementUtils.ParticipantType;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
@@ -88,17 +91,25 @@ public class ParticipantServiceImpl implements ParticipantService
 
    @Autowired
    private ModelServiceBean modelService;
-   
+
    @Resource
    private UserGroupUtils userGroupUtils;
-   
+
+   @Resource(name = "participantServiceHelperCacheManager")
+   private ParticipantServiceHelperCacheManager cacheManager;
+
+   // TODO remove this flag post testing, in next build
+   private boolean cachingOn = true;
+
    /**
-    * @param participantQidIn
+    * @param lazyLoad
     * @return
-    * @throws Exception 
+    * @throws Exception
     */
    public List<ParticipantDTO> getParticipantTree(boolean lazyLoad)
    {
+      cachingOn = !Boolean.valueOf((String) Parameters.instance().get("portal.disableParticipantTreeCache"));
+
       // get Active Models along with top level Participants
       List<ModelDTO> models = modelService.getModelParticipants();
       List<ParticipantDTO> allParticipantDTOs = new ArrayList<ParticipantDTO>();
@@ -127,18 +138,63 @@ public class ParticipantServiceImpl implements ParticipantService
             }
             if (!lazyLoad)
             {
+               // cache users
                populateChildrenRecursively(participantDTO);
             }
+            else
+            {
+               // deletDeps();
+               // createDepartments();
+            }
+            // departmentCacheManagerRest.getUsers(null);
          }
       }
-      
-      //get User Groups
+
+      // get User Groups
       allParticipantDTOs.add(getUserGroupDTOs());
       Collections.sort(allParticipantDTOs);
-      
       return allParticipantDTOs;
    }
-   
+
+   /*
+    * TODO remove this code post testing in next build private void createDepartments() {
+    * Map<String, Object> initialValue = new HashMap<String, Object>();
+    * 
+    * // e.g. "{Model21}BOFonds" final String qualifiedBusinessObjectId =
+    * "{BOTest_20}BOFonds20"; final String prefixFondsISIN = "DE666_"; WorkflowService wfs
+    * = serviceFactoryUtils.getWorkflowService(); for (int i = 0; i < 200; ++i) { String
+    * businessObjectPKValue = prefixFondsISIN + i;
+    * 
+    * if (i % 50 == 0) System.out.println(businessObjectPKValue);
+    * 
+    * initialValue.put("ISIN", businessObjectPKValue); initialValue.put("WKN", "WKN666");
+    * initialValue.put("name", "hugo & steve " + i); initialValue.put("emitter",
+    * "bla blub blubber foo"); initialValue.put("date", "2001-09-11");
+    * initialValue.put("datetime", "2001-09-11T08:46:33"); initialValue.put("enumAges",
+    * "42"); initialValue.put("enumDays", "Fri"); initialValue.put("bool", true);
+    * 
+    * wfs.createBusinessObjectInstance(qualifiedBusinessObjectId, initialValue);
+    * 
+    * } // END for-loop
+    * 
+    * }
+    * 
+    * private void deletDeps() { Map<String, Object> initialValue = new HashMap<String,
+    * Object>();
+    * 
+    * // e.g. "{Model21}BOFonds" final String qualifiedBusinessObjectId =
+    * "{BOTest_20}BOFonds20"; final String prefixFondsISIN = "DE666_"; WorkflowService wfs
+    * = serviceFactoryUtils.getWorkflowService(); for (int i = 0; i < 200; ++i) { String
+    * businessObjectPKValue = prefixFondsISIN + i; deleteDepartment("{BOTest_20}DepOrga["
+    * + businessObjectPKValue + "]");
+    * 
+    * } // END for-loop
+    * 
+    * deleteDepartment("{BOTest_20}DepOrga[fdf]");
+    * 
+    * }
+    */
+
    /**
     *
     */
@@ -162,7 +218,7 @@ public class ParticipantServiceImpl implements ParticipantService
     * @param user
     * @return
     */
-   private List<ParticipantDTO> getUserGrants(User user)
+   public List<ParticipantDTO> getUserGrants(User user)
    {
       List<ParticipantDTO> grants = new ArrayList<ParticipantDTO>();
       List<Grant> roleOrgReportDefinitionsGrants = DocumentMgmtUtility.getRoleOrgReportDefinitionsGrants(user);
@@ -212,7 +268,7 @@ public class ParticipantServiceImpl implements ParticipantService
          }
          else
          {
-            // role 
+            // role
             participantDTO = getParticipant(modelParticipant, grant.getDepartment(), false);
          }
 
@@ -221,7 +277,7 @@ public class ParticipantServiceImpl implements ParticipantService
 
       return grants;
    }
-   
+
    /**
     * @return
     */
@@ -247,8 +303,7 @@ public class ParticipantServiceImpl implements ParticipantService
       Collections.sort(userGroupDTOs.children);
       return userGroupDTOs;
    }
-   
-   
+
    /**
     * @param participantDTO
     */
@@ -269,20 +324,18 @@ public class ParticipantServiceImpl implements ParticipantService
          }
       }
    }
-   
+
    /**
-    * @param participantQidIn
-    * @return
+    *
     */
    public List<ParticipantDTO> getSubParticipants(String participantQidIn, boolean lazyLoad)
    {
       ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(participantQidIn);
       return getSubParticipants(participantContainer, lazyLoad);
    }
-   
+
    /**
-    * @param participantQidIn
-    * @return
+    *
     */
    @Override
    public List<ParticipantDTO> getParticipantDTOFromQualifiedId(List<String> participantIds)
@@ -353,7 +406,7 @@ public class ParticipantServiceImpl implements ParticipantService
       }
       return participantDTOs;
    }
-   
+
    /**
     * create or modify department
     * 
@@ -370,8 +423,8 @@ public class ParticipantServiceImpl implements ParticipantService
       {
          // create department
          // check if department with same id already exist
-         DepartmentInfo department = participantManagementUtils.getDepartment(
-               (QualifiedOrganizationInfo) modelParticipant, departmentDTO.id);
+         DepartmentInfo department = cacheManager.getDepartment((QualifiedOrganizationInfo) modelParticipant,
+               departmentDTO.id);
          // we should not re-create the department
          if (department != null)
          {
@@ -383,6 +436,7 @@ public class ParticipantServiceImpl implements ParticipantService
          ParticipantDTO participantDTO = getParticipant(updatedDepartment);
          if (!lazyLoad)
          {
+            cacheManager.reset();
             populateChildrenRecursively(participantDTO);
          }
          return participantDTO;
@@ -395,7 +449,7 @@ public class ParticipantServiceImpl implements ParticipantService
                departmentDTO.description);
          return getParticipant(updatedDepartment);
       }
-      
+
       return null;
    }
 
@@ -408,7 +462,10 @@ public class ParticipantServiceImpl implements ParticipantService
       try
       {
          ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(departmentQualifiedId);
-         serviceFactoryUtils.getAdministrationService().removeDepartment(participantContainer.department.getOID());
+         if (participantContainer.department != null)
+         {
+            serviceFactoryUtils.getAdministrationService().removeDepartment(participantContainer.department.getOID());
+         }
       }
       catch (InvalidArgumentException aex)
       {
@@ -424,9 +481,6 @@ public class ParticipantServiceImpl implements ParticipantService
       return true;
    }
 
-   /**
-    * TODO: userId should also contain realm in future
-    */
    @Override
    public Map<String, List<ParticipantDTO>> modifyParticipant(HashSet<String> participant, HashSet<String> add,
          HashSet<String> remove)
@@ -494,7 +548,7 @@ public class ParticipantServiceImpl implements ParticipantService
          }
          participantContainers.put(participantQId, participantContainer);
       }
-      
+
       updateSelectedUsers(users);
 
       for (String pId : participantContainers.keySet())
@@ -560,7 +614,7 @@ public class ParticipantServiceImpl implements ParticipantService
          userService.modifyUser(user2);
       }
    }
-   
+
    /**
     * 
     * @param participantQidIn
@@ -575,22 +629,23 @@ public class ParticipantServiceImpl implements ParticipantService
       // assumed it is UserGroup (dynamic participant)
       if (StringUtils.isEmpty(participantQid))
       {
-         ParticipantContainer participantContainer = new ParticipantContainer();
+         ParticipantContainer participantContainer = new ParticipantContainer(participantQidIn);
          participantContainer.dynamicParticipantInfoId = participantQidIn;
          participantContainer.participantType = ParticipantManagementUtils.ParticipantType.USERGROUP.name();
          return participantContainer;
       }
-      return getParticipantContainer(participantQid, parentDepartmentId, departmentId);
+      return getParticipantContainer(participantQid, parentDepartmentId, departmentId, participantQidIn);
    }
 
    /**
     * @param participantQid
     * @param parentDepartmentId
     * @param departmentId
+    * @param fullQId
     * @return
     */
    private ParticipantContainer getParticipantContainer(String participantQid, String parentDepartmentId,
-         String departmentId)
+         String departmentId, String fullQId)
    {
       DepartmentInfo departmentInfo = null;
 
@@ -612,7 +667,7 @@ public class ParticipantServiceImpl implements ParticipantService
                // department
                pType = ParticipantType.DEPARTMENT.name();
                parentDepartmentId += "/" + departmentId;
-               departmentInfo = participantManagementUtils.getDepartment(org, parentDepartmentId);
+               departmentInfo = cacheManager.getDepartment(org, parentDepartmentId);
             }
             else
             {
@@ -630,7 +685,7 @@ public class ParticipantServiceImpl implements ParticipantService
          if (superOrganizations != null)
          {
             departmentInfo = getDepartmentInfoFromSuperOrganizations(superOrganizations, parentDepartmentId);
-            
+
             if (departmentInfo != null)
             {
                modelParticipant = getDepartment(departmentInfo.getOID()).getScopedParticipant(
@@ -652,8 +707,7 @@ public class ParticipantServiceImpl implements ParticipantService
          {
             // department
             pType = ParticipantType.DEPARTMENT.name();
-            departmentInfo = participantManagementUtils.getDepartment((QualifiedOrganizationInfo) modelParticipant,
-                  departmentId);
+            departmentInfo = cacheManager.getDepartment((QualifiedOrganizationInfo) modelParticipant, departmentId);
          }
       }
 
@@ -663,7 +717,7 @@ public class ParticipantServiceImpl implements ParticipantService
          department = getDepartment(departmentInfo.getOID());
       }
 
-      ParticipantContainer participantContainer = new ParticipantContainer();
+      ParticipantContainer participantContainer = new ParticipantContainer(fullQId);
       participantContainer.modelparticipant = modelParticipant;
       participantContainer.department = department;
       participantContainer.participantType = pType;
@@ -684,7 +738,7 @@ public class ParticipantServiceImpl implements ParticipantService
       DepartmentInfo departmentInfo = null;
       for (Organization organization : superOrganizations)
       {
-         departmentInfo = participantManagementUtils.getDepartment(organization, parentDepartmentId);
+         departmentInfo = cacheManager.getDepartment(organization, parentDepartmentId);
          if (departmentInfo != null)
          {
             return departmentInfo;
@@ -697,12 +751,10 @@ public class ParticipantServiceImpl implements ParticipantService
       }
 
       return null;
-   }   
-   
+   }
+
    /**
-    * @param modelparticipant
-    * @param department
-    * @param pTypeStr
+    * @param participantContainer
     * @return
     */
    private List<ParticipantDTO> getSubParticipants(ParticipantContainer participantContainer)
@@ -719,7 +771,8 @@ public class ParticipantServiceImpl implements ParticipantService
       {
       case ORGANIZATION_UNSCOPED:
       case ORGANIZATON_SCOPED_IMPLICIT:
-         getSubParticipantsForOrganization((QualifiedOrganizationInfo) modelparticipant, participantDTOs);
+         getSubParticipantsForOrganization(participantContainer, (QualifiedOrganizationInfo) modelparticipant,
+               participantDTOs);
          break;
       case ORGANIZATON_SCOPED_EXPLICIT:
          getSubParticipantsForExplicitelyScopedOrganization((QualifiedOrganizationInfo) modelparticipant,
@@ -728,19 +781,28 @@ public class ParticipantServiceImpl implements ParticipantService
 
       case ROLE_SCOPED:
       case ROLE_UNSCOPED:
-         getUsers(modelparticipant, participantDTOs);
+         if (cachingOn)
+         {
+            getUsers(participantContainer, participantDTOs);
+         }
+         else
+         {
+            getUsers(modelparticipant, participantDTOs);
+         }
+
          break;
 
       case DEPARTMENT:
-         getSubParticipantsForDepartment(department, participantDTOs);
+         getSubParticipantsForDepartment(participantContainer, department, participantDTOs);
          break;
 
       case USERGROUP:
          getUsers(userGroupUtils.getUserGroup(participantContainer.dynamicParticipantInfoId), participantDTOs);
-         break;   
-         
+         break;
+
       case DEPARTMENT_DEFAULT:
-         getSubParticipantsForDefaultDepartment((QualifiedOrganizationInfo) modelparticipant, participantDTOs);
+         getSubParticipantsForDefaultDepartment(participantContainer, (QualifiedOrganizationInfo) modelparticipant,
+               participantDTOs);
          break;
 
       default:
@@ -755,14 +817,22 @@ public class ParticipantServiceImpl implements ParticipantService
    }
 
    /**
+    * @param participantContainer
     * @param qualifiedOrganizationInfo
     * @param participantDTOs
     */
-   private void getSubParticipantsForOrganization(QualifiedOrganizationInfo qualifiedOrganizationInfo,
-         List<ParticipantDTO> participantDTOs)
+   private void getSubParticipantsForOrganization(ParticipantContainer participantContainer,
+         QualifiedOrganizationInfo qualifiedOrganizationInfo, List<ParticipantDTO> participantDTOs)
    {
       // Add all associated Users
-      getUsers(qualifiedOrganizationInfo, participantDTOs);
+      if (cachingOn)
+      {
+         getUsers(participantContainer, participantDTOs);
+      }
+      else
+      {
+         getUsers(qualifiedOrganizationInfo, participantDTOs);
+      }
 
       // Add all sub-Organizations
       getSubOrganizations(qualifiedOrganizationInfo, participantDTOs);
@@ -779,8 +849,7 @@ public class ParticipantServiceImpl implements ParticipantService
    private void getSubParticipantsForExplicitelyScopedOrganization(QualifiedOrganizationInfo qualifiedOrganizationInfo,
          List<ParticipantDTO> participantDTOs, Department parentDepartment)
    {
-      List<Department> deptList = serviceFactoryUtils.getQueryService().findAllDepartments(
-            qualifiedOrganizationInfo.getDepartment(), qualifiedOrganizationInfo);
+      List<Department> deptList = cacheManager.getDepartments(qualifiedOrganizationInfo);
 
       // Add Default Department
       participantDTOs.add(getParticipant(qualifiedOrganizationInfo, parentDepartment, true));
@@ -793,16 +862,25 @@ public class ParticipantServiceImpl implements ParticipantService
    }
 
    /**
+    * @param participantContainer
     * @param department
     * @param participantDTOs
     */
-   private void getSubParticipantsForDepartment(Department department, List<ParticipantDTO> participantDTOs)
+   private void getSubParticipantsForDepartment(ParticipantContainer participantContainer, Department department,
+         List<ParticipantDTO> participantDTOs)
    {
       QualifiedModelParticipantInfo scopedOrganizationInfo = department.getScopedParticipant(department
             .getOrganization());
 
       // Add all associated Users
-      getUsers(scopedOrganizationInfo, participantDTOs);
+      if (cachingOn)
+      {
+         getUsers(participantContainer, participantDTOs);
+      }
+      else
+      {
+         getUsers(scopedOrganizationInfo, participantDTOs);
+      }
 
       // Add all sub-Organizations
       getSubOrganizations((QualifiedOrganizationInfo) scopedOrganizationInfo, participantDTOs);
@@ -812,16 +890,24 @@ public class ParticipantServiceImpl implements ParticipantService
    }
 
    /**
+    * @param participantContainer
     * @param qualifiedOrganizationInfo
     * @param participantDTOs
     */
-   private void getSubParticipantsForDefaultDepartment(QualifiedOrganizationInfo qualifiedOrganizationInfo,
-         List<ParticipantDTO> participantDTOs)
+   private void getSubParticipantsForDefaultDepartment(ParticipantContainer participantContainer,
+         QualifiedOrganizationInfo qualifiedOrganizationInfo, List<ParticipantDTO> participantDTOs)
    {
       Department department = getDepartmentSafely(qualifiedOrganizationInfo);
 
       // Add all associated Users
-      getUsers(qualifiedOrganizationInfo, participantDTOs);
+      if (cachingOn)
+      {
+         getUsers(participantContainer, participantDTOs);
+      }
+      else
+      {
+         getUsers(qualifiedOrganizationInfo, participantDTOs);
+      }
 
       // Add all sub-Organizations
       @SuppressWarnings("unchecked")
@@ -836,6 +922,19 @@ public class ParticipantServiceImpl implements ParticipantService
 
       // Add all sub-Roles
       getSubRoles(qualifiedOrganizationInfo, participantDTOs);
+   }
+
+   /**
+    * @param participantContainer
+    * @param participantDTOs
+    */
+   private void getUsers(ParticipantContainer participantContainer, List<ParticipantDTO> participantDTOs)
+   {
+      Collection< ? extends ParticipantDTO> users = cacheManager.getUsers(participantContainer.fullQId);
+      if (users != null)
+      {
+         participantDTOs.addAll(cacheManager.getUsers(participantContainer.fullQId));
+      }
    }
 
    /**
@@ -880,8 +979,8 @@ public class ParticipantServiceImpl implements ParticipantService
    }
 
    /**
-    * @param participantDTOs
     * @param modelParticipantInfo
+    * @param participantDTOs
     */
    private void getSubRoles(QualifiedModelParticipantInfo modelParticipantInfo, List<ParticipantDTO> participantDTOs)
    {
@@ -901,7 +1000,7 @@ public class ParticipantServiceImpl implements ParticipantService
 
    /**
     * @param department
-    * @param participantDTOs
+    * @return
     */
    private ParticipantDTO getParticipant(Department department)
    {
@@ -920,7 +1019,7 @@ public class ParticipantServiceImpl implements ParticipantService
       }
 
       participantDTO.uiQualifiedId += "[" + department.getId() + "]";
-      
+
       return participantDTO;
    }
 
@@ -948,7 +1047,7 @@ public class ParticipantServiceImpl implements ParticipantService
          participantDTO.uiQualifiedId += qualifiedParticipantInfo.getQualifiedId() + "[]";
          participantDTO.type = ParticipantType.DEPARTMENT_DEFAULT.name();
          participantDTO.name = participantDTO.name + " "
-               + MessagesViewsCommonBean.getInstance().getString("views.participantTree.default"); 
+               + MessagesViewsCommonBean.getInstance().getString("views.participantTree.default");
       }
       else
       {
@@ -964,7 +1063,7 @@ public class ParticipantServiceImpl implements ParticipantService
     */
    private String getDepartmentId(Department parentDepartment)
    {
-      return "[" + ParticipantManagementUtils.getDepartmentsHierarchy(parentDepartment, "") + "]";
+      return "[" + cacheManager.getDepartmentsHierarchy(parentDepartment, "") + "]";
    }
 
    /**
@@ -986,15 +1085,20 @@ public class ParticipantServiceImpl implements ParticipantService
     */
    private Department getDepartment(long departmentOid)
    {
-      Department department = serviceFactoryUtils.getAdministrationService().getDepartment(departmentOid);
-      return department;
+      return cacheManager.getDepartment(departmentOid);
    }
 
    public static class ParticipantContainer
    {
       QualifiedModelParticipantInfo modelparticipant;
-      String dynamicParticipantInfoId; //used only for userGroups
+      String dynamicParticipantInfoId; // used only for userGroups
       Department department;
       String participantType;
+      String fullQId;
+
+      public ParticipantContainer(String fullQid)
+      {
+         this.fullQId = fullQid;
+      }
    }
 }

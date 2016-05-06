@@ -224,7 +224,7 @@
 						scope.verHistoryCtrl.fileVersionHistoryDialog.open();
 					});
 				}
-				else{
+				else if(newValue===false){
 					scope.verHistoryCtrl.fileVersionHistoryDialog.close();
 				}
 			});

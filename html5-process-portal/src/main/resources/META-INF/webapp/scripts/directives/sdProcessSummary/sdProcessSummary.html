@@ -82,7 +82,7 @@
 							class="pi pi-activity-group pi-1x"></i></span></td>
 					<td width="28%"
 						class="process-summary-cell process-summary-border-bottom"
-						ng-show="{{flowElement.type_=='Process'}}"><span>{{flowElement.activity.name}}({{flowElement.activityOID}})</span></td>
+						ng-show="{{flowElement.type_=='Process'}}"><span>{{flowElement.name_}}({{flowElement.oid_}})</span></td>
 					<td width="10%"
 						class="process-summary-cell process-summary-border-bottom"
 						ng-show="{{flowElement.type_=='Process'}}"><span>{{flowElement.status.label}}</span>
@@ -107,7 +107,7 @@
 									<td class="">
 										<table width="100%" class="process-summary-border-bottom">
 											<tr
-												ng-class="{highlightActivity: sdProcessSummaryCtrl.currentActivityInstanceOid == flowElement.activityOID}"
+												ng-class="{highlightActivity: sdProcessSummaryCtrl.currentActivityInstanceOid == flowElement.oid_}"
 												title="{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.showActivityHistory')}}"
 												ng-click="flowElement.expanded_=!flowElement.expanded_"
 												aid="PP-processSummary-showHideActivityHistory"
@@ -115,7 +115,7 @@
 												<td class="process-summary-cell"><i
 													class="pi pi-service-task pi-1x"></i></td>
 												<td width="28%" class="process-summary-cell"><span>
-														{{flowElement.activity.name}}({{flowElement.activityOID}})</span></td>
+														{{flowElement.name_}}({{flowElement.oid_}})</span></td>
 												<td width="10%"><span>{{flowElement.status.label}}</span>
 												</td>
 												<td width="60%"><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.startTime')}}:
@@ -185,7 +185,8 @@
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.checklist.maker')}}</span></th>
 														</tr>
 														<tr>
-															<td style="width: 20%"><span>{{flowElement.activity.description}}</span></td>
+															<td style="width: 20%"><span
+																ng-bind-html="flowElement.activity.description | sdSanitize"></span></td>
 															<td style="width: 30%"><span
 																ng-show="!!flowElement.dataModifiedBy"><sd-user-image
 																		sda-path="{{flowElement.dataModifiedBy.userImageURI}}"></sd-user-image>

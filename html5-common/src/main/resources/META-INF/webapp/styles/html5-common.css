@@ -678,9 +678,11 @@ button.close {
 	width: 100%
 }
 
-.properties-panel h2 {
+.properties-panel h1 {
 	margin: 0px;
 	margin-bottom: 5px;
+	border-bottom: solid 1px #ddd;
+    padding-bottom: 2px;
 }
 
 .properties-panel {
@@ -799,6 +801,10 @@ tr.properties-panel-documentRow>td {
 	outline: 1px solid #D6BBCA
 }
 
+.properties-panel-documentRow{
+    font-size: 12px;
+    padding: 2px;
+}
 /*Section for Properties page - end*/
 /******************************************************/
 

@@ -52,6 +52,8 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
    public static final String ABORTING_TYPE = "AbortingActivity";
    public static final String INTERRUPTED_TYPE = "ActivityInterrupted";
    public static final String COMPLETED_TYPE = "ActivityCompleted";
+   public static final String HALTED_TYPE = "ActivityHalted";
+   public static final String HALTING_TYPE = "HaltingActivity";
 
    private String type;
    private String name;
@@ -214,6 +216,14 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          case ActivityInstanceState.COMPLETED:
             name = Localizer.getString(LocalizerKey.PH_COMPLETED_TYPE);
             type = COMPLETED_TYPE;
+            break;
+         case ActivityInstanceState.HALTED:
+            name = Localizer.getString(LocalizerKey.PH_HALTED_TYPE);
+            type = HALTED_TYPE;
+            break;
+         case ActivityInstanceState.HALTING:
+            name = Localizer.getString(LocalizerKey.PH_HALTING_TYPE);
+            type = HALTING_TYPE;
             break;
          }
          break;

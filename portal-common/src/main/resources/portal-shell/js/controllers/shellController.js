@@ -281,7 +281,10 @@ angular.module('shell').controller('sg.shell.Controller',
 				}
 
 		        // Initially Calculate sizes
+				// Have few more attempts, on first attempt footer height is not calculated correctly
 		        $timeout(calculateShellSizes, 0);
+		        $timeout(calculateShellSizes, 500);
+		        $timeout(calculateShellSizes, 500);
 
 		        // Register for window resize, and re-calculate sizes
 		        angular.element($window).resize(function() {
