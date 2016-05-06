@@ -250,12 +250,13 @@ public final class XsdSchemaUtils
 
       private XSDSchema schema;
       private Stack<XSDComponent> visited;
+      private Stack<XSDComponent> required;
       private boolean includeIcon;
 
       private JsonObject nsMappings;
       private Map<String, String> prefixes;
 
-      public Xsd2Json(String componentId)
+      private Xsd2Json(String componentId)
       {
          this.componentId = componentId;
       }
@@ -265,6 +266,8 @@ public final class XsdSchemaUtils
       {
          this.schema = schema;
          visited = new Stack<XSDComponent>();
+         required = new Stack<XSDComponent>();
+         Set<XSDComponent> processed = new HashSet<XSDComponent>();
 
          Predicate<XSDComponent> filter = null;
          List<XSDElementDeclaration> elements = null;
@@ -272,7 +275,6 @@ public final class XsdSchemaUtils
 
          if (componentId == null)
          {
-
             if (!schema.getElementDeclarations().isEmpty())
             {
                elements = schema.getElementDeclarations();
@@ -329,50 +331,79 @@ public final class XsdSchemaUtils
                   location = location.substring(StructuredDataConstants.URN_INTERNAL_PREFIX.length());
                   if(xsdImport.getNamespace() != null)
                   {
-                  locations.addProperty(xsdImport.getNamespace(), location);
-               }
+                     locations.addProperty(xsdImport.getNamespace(), location);
+                  }
                   else
                   {
                      locations.addProperty("", location);
                   }
+               }
             }
-         }
          }
          if (!locations.entrySet().isEmpty())
          {
             json.add(LOCATIONS, locations);
          }
 
+         String tns = schema.getTargetNamespace();
+         JsonArray elementsArray = new JsonArray();
          if (elements != null && !elements.isEmpty())
          {
-            JsonArray jsonArray = new JsonArray();
             for (XSDElementDeclaration component : elements)
             {
-               if(component.getSchema().equals(schema))
+               if (tns.equals(component.getSchema().getTargetNamespace()))
                {
-               if (filter == null || filter.accept(component))
-               {
-                  jsonArray.add(doSwitch(component));
+                  if (filter == null || filter.accept(component))
+                  {
+                     elementsArray.add(doSwitch(component));
+                     processed.add(component);
+                  }
                }
             }
-            }
-            json.add("elements", jsonArray);
          }
+         JsonArray typesArray = new JsonArray();
          if (types != null && !types.isEmpty())
          {
-            JsonArray jsonArray = new JsonArray();
             for (XSDTypeDefinition component : types)
             {
-               if(component.getSchema().equals(schema))
+               if (tns.equals(component.getSchema().getTargetNamespace()))
                {
-               if (filter == null || filter.accept(component))
-               {
-                  jsonArray.add(doSwitch(component));
+                  if (filter == null || filter.accept(component))
+                  {
+                     typesArray.add(doSwitch(component));
+                     processed.add(component);
+                  }
                }
             }
-            }
-            json.add("types", jsonArray);
          }
+
+         while (!required.isEmpty())
+         {
+            XSDComponent component = required.pop();
+            if (!processed.contains(component)
+                  && (filter == null || filter.accept(component)))
+            {
+               if (component instanceof XSDElementDeclaration)
+               {
+                  elementsArray.add(doSwitch(component));
+               }
+               processed.add(component);
+               if (component instanceof XSDTypeDefinition)
+               {
+                  typesArray.add(doSwitch(component));
+               }
+            }
+         }
+
+         if (elementsArray.size() > 0)
+         {
+            json.add("elements", elementsArray);
+         }
+         if (typesArray.size() > 0)
+         {
+            json.add("types", typesArray);
+         }
+
 
          return json;
       }
@@ -380,20 +411,31 @@ public final class XsdSchemaUtils
       @Override
       public JsonObject caseXSDElementDeclaration(XSDElementDeclaration element)
       {
+         // elements are constructed similar with types
+         JsonObject json = new JsonObject();
          if (element.isElementDeclarationReference())
          {
-            return doSwitch(element.getResolvedElementDeclaration());
+            //return doSwitch(element.getResolvedElementDeclaration());
+            XSDElementDeclaration resolvedElement = element.getResolvedElementDeclaration();
+            required.push(resolvedElement);
+            json.addProperty("ref", getPrefixedName(resolvedElement));
+            return json;
          }
 
          XSDTypeDefinition type = element.getTypeDefinition();
-         
-         // elements are constructed similar with types
-         JsonObject json = new JsonObject();
-         if (type == element.getAnonymousTypeDefinition() && type != null
-               || type instanceof XSDSimpleTypeDefinition
-               || (type instanceof XSDComplexTypeDefinition && element.eContainer() instanceof XSDSchema))
+
+         if (type != null)
          {
-            json = doSwitch(type);
+            if (type == element.getAnonymousTypeDefinition()
+                  /*|| type instanceof XSDSimpleTypeDefinition
+                  || (type instanceof XSDComplexTypeDefinition && element.eContainer() instanceof XSDSchema)*/)
+            {
+               json = doSwitch(type);
+            }
+            else
+            {
+               required.push(type);
+            }
          }
 
          // now overwrite properties
@@ -418,7 +460,7 @@ public final class XsdSchemaUtils
             {
                prefixedName = element.getName();
             }
-            
+
             json.addProperty("type", prefixedName);
          }
 
@@ -792,7 +834,6 @@ public final class XsdSchemaUtils
 
       private String getPrefixedName(XSDNamedComponent type)
       {
-
          String qName = type.getQName(schema);
          String tns = type.getTargetNamespace();
          if (!StringUtils.isEmpty(tns) && qName != null && qName.indexOf(':') < 0)
@@ -1542,7 +1583,7 @@ public final class XsdSchemaUtils
          }
          else
          {
-            localName = type;                        
+            localName = type;
          }
       }
 
@@ -1645,19 +1686,19 @@ public final class XsdSchemaUtils
       XSDImport schemaImport = XSDFactory.eINSTANCE.createXSDImport();
       schemaImport.setNamespace(namespace);
       updateInternalImport(schema, schemaImport, decl);
-      
-      
+
+
       XSDNamedComponent findComponent = findElementOrTypeDeclaration(decl.getSchema(), localName, namespace);
       if(findComponent instanceof XSDElementDeclaration)
       {
-         String tns = findComponent.getTargetNamespace();      
+         String tns = findComponent.getTargetNamespace();
          if (!schema.getQNamePrefixToNamespaceMap().values().contains(tns))
          {
             String namespacePrefix = TypeDeclarationUtils.getNamespacePrefix(decl.getSchema(), findComponent.getTargetNamespace());
             schema.getQNamePrefixToNamespaceMap().put(namespacePrefix, tns);
          }
       }
-      
+
       schema.getContents().add(0, schemaImport);
    }
 
