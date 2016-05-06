@@ -44,7 +44,7 @@
         var totalN = colors.length;
 
         scope.$watch(attrs['sdStateDisplay'], function(newVal) {
-          var index = attrs['sdStateDisplay'] % totalN;
+          var index = newVal % totalN;
           el.css('background-color', colors[index]);
           /*
            * if(borderBottom){ el.css('border-bottom', "'" + borderBottom + "'" +

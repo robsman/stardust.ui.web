@@ -84,4 +84,6 @@ public class ProcessInstanceDTO extends AbstractDTO
    public List<DocumentDTO> attachments;
    
    public List<HistoricalDataDTO> historicalData;
+   
+   public NotesResultDTO notes;
 }

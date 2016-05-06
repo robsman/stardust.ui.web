@@ -60,21 +60,21 @@
 					ng-show="!{{flowElement.type_=='Activity'}} || sdProcessSummaryCtrl.isProcessExpanded(flowElement.processOid_)">
 					<td
 						ng-hide="{{flowElement.type_=='Activity'}} || (sdProcessSummaryCtrl.isProcessExpanded(flowElement.processOid_) && {{flowElement.type_=='Process'}})"
-						sd-state-display="{{flowElement.processOid_}}"
+						sd-state-display="flowElement.colorIndex_"
 						class="process-summary-control"><div
 							aid="PP-processSummary-showProcessHistory"
 							title="{{sdProcessSummaryCtrl.sdI18n('html5-common.common.expand')}}"
-							ng-click="sdProcessSummaryCtrl.toggleProcessSelection(flowElement.processOid_)">
+							ng-click="sdProcessSummaryCtrl.toggleProcessSelection(flowElement)">
 							<i class="pi pi-table-expand pi-1x"></i>
 						</div></td>
 					<td
 						ng-show="sdProcessSummaryCtrl.isProcessExpanded(flowElement.processOid_) && {{flowElement.type_=='Process'}}"
-						sd-state-display="{{flowElement.processOid_}}"
+						sd-state-display="flowElement.colorIndex_"
 						class="process-summary-control"><div
 							aid="PP-processSummary-hideProcessHistory"
 							title="{{sdProcessSummaryCtrl.sdI18n('html5-common.common.collapse')}}"
 							ng-show="{{flowElement.type_=='Process'}}"
-							ng-click="sdProcessSummaryCtrl.toggleProcessSelection(flowElement.processOid_)">
+							ng-click="sdProcessSummaryCtrl.toggleProcessSelection(flowElement)">
 							<i class="pi pi-table-collapse pi-1x"></i>
 						</div></td>
 					<td class="process-summary-cell process-summary-border-bottom"
@@ -101,7 +101,7 @@
 						<table width="100%">
 							<tbody>
 								<tr>
-									<td sd-state-display="{{flowElement.processOid_}}"
+									<td sd-state-display="flowElement.colorIndex_"
 										class="process-summary-control"><i style="opacity: 0"
 										class="pi pi-table-expand pi-1x"></i></td>
 									<td class="">
@@ -112,8 +112,12 @@
 												ng-click="flowElement.expanded_=!flowElement.expanded_"
 												aid="PP-processSummary-showHideActivityHistory"
 												class="process-summary-control">
-												<td class="process-summary-cell"><i
-													class="pi pi-service-task pi-1x"></i></td>
+												<td class="process-summary-cell"><span
+													ng-hide="{{flowElement.isRoot_}}"><i
+														class="pi pi-service-task pi-1x"></i></span> 
+													<span style="margin-left: -7px"
+													ng-show="{{flowElement.isRoot_}}"><i
+														class="pi pi-activity-complete pi-lg"></i></td>
 												<td width="28%" class="process-summary-cell"><span>
 														{{flowElement.name_}}({{flowElement.oid_}})</span></td>
 												<td width="10%"><span>{{flowElement.status.label}}</span>
@@ -137,7 +141,7 @@
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-common.common.date')}}</span></th>
 														</tr>
 														<tr ng-repeat="note in flowElement.notes_"
-															sd-state-display="{{$index}}"
+															sd-state-display="$index"
 															sda-state-display-colors="['white', '#F5F5F5']">
 															<td><span><i class="pi pi-notes-empty pi-1x"></i>
 																	{{note.note}}</span></td>
@@ -160,7 +164,7 @@
 															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-common.common.date')}}</span></th>
 														</tr>
 														<tr ng-repeat="document in flowElement.documents"
-															sd-state-display="{{$index}}"
+															sd-state-display="$index"
 															sda-state-display-colors="['white', '#F5F5F5']">
 															<td><span sd-open-document-link
 																sda-name="document.name"
@@ -193,7 +197,7 @@
 																	{{flowElement.dataModifiedBy.displayName}}</span></td>
 															<td>
 																<div ng-repeat="data in flowElement.historicalData"
-																	sd-state-display="{{$index}}"
+																	sd-state-display="$index"
 																	sda-state-display-colors="['white', '#F5F5F5']">
 																	<div style="float: left">{{data.name}}:</div>
 																	<div ng-switch on="data.javaType">

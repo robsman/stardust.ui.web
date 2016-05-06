@@ -68,12 +68,16 @@
     }
   }
 
-  ProcessSummaryController.prototype.toggleProcessSelection = function(oid) {
-    var index = this.expandedProcessOids.indexOf(oid);
+  ProcessSummaryController.prototype.toggleProcessSelection = function(flowElement) {
+    var index = this.expandedProcessOids.indexOf(flowElement.processOid_);
     if (index > -1) {
       this.expandedProcessOids.splice(index, 1);
+      // parent process oid color
+      flowElement.colorIndex_ = flowElement.parentProcessOid_;   
     } else {
-      this.expandedProcessOids.push(oid);
+      // own process oid color
+      flowElement.colorIndex_ = flowElement.startingProcessInstance.oid;
+      this.expandedProcessOids.push(flowElement.processOid_);
     }
   }
 
@@ -87,6 +91,7 @@
         this.flowElements[prop].expanded_ = true;
       } else {
         if (this.expandedProcessOids.indexOf(this.flowElements[prop].processOid_)) {
+          this.flowElements[prop].colorIndex_ = this.flowElements[prop].startingProcessInstance.oid;
           this.expandedProcessOids.push(this.flowElements[prop].processOid_);
         }
       }
@@ -103,6 +108,8 @@
     for ( var prop in this.flowElements) {
       if (this.flowElements[prop].type_ == 'Activity') {
         this.flowElements[prop].expanded_ = false;
+      } else {
+        this.flowElements[prop].colorIndex_ = this.flowElements[prop].parentProcessOid_;
       }
     }
   }
@@ -119,12 +126,15 @@
     // stratify documents
     // this.documents = this.normalizeData(activityInstance.attachments);
     this.documents = {};
+    this.procDocuments = {};
     this.historicalData = {};
 
-    this.processInstance.type_ = "Process";
+    this.processInstance.type_ = "Activity";
+    this.processInstance.isRoot_ = true;
     this.processInstance.name_ = this.processInstance.processName;
-    this.processInstance.processOid_ = this.processInstance.oid;
     this.processInstance.oid_ = this.processInstance.oid;
+    this.processInstance.processOid_= this.processInstance.oid;
+    this.processInstance.colorIndex_ = this.processInstance.oid;
     
     this.expandedProcessOids.push(this.processInstance.oid);
     this.flowElements.push(this.processInstance);
@@ -137,13 +147,23 @@
 
     this.normalizeAttachments(processInstance.attachments);
     this.normalizeHistoricalData(processInstance.historicalData);
+    
+    // add notes
+    if (processInstance.notes && processInstance.notes.list.length > 0) {
+      processInstance.notes_ = processInstance.notes.list;
+    }
+    
+    // add documents
+    processInstance.documents = this.procDocuments[processInstance.oid];
 
     for ( var index in activityInstances) {
       var activityInstance = activityInstances[index];
 
       if (activityInstance.startingProcessInstance) {
         activityInstance.type_ = "Process";
-        activityInstance.processOid_ = activityInstance.startingProcessInstance.oid;
+        activityInstance.parentProcessOid_ = activityInstance.processInstance.oid;
+        activityInstance.colorIndex_ = activityInstance.processInstance.oid;
+        activityInstance.processOid_= activityInstance.startingProcessInstance.oid;
         activityInstance.name_ = activityInstance.activity.name;
         activityInstance.oid_ = activityInstance.activityOID;
         this.flowElements.push(activityInstance);
@@ -152,6 +172,7 @@
         // insert activities
         activityInstance.type_ = "Activity";
         activityInstance.expanded_ = false;
+        activityInstance.colorIndex_ = processInstance.oid;
         activityInstance.processOid_ = processInstance.oid;
         activityInstance.name_ = activityInstance.activity.name;
         activityInstance.oid_ = activityInstance.activityOID;
@@ -161,7 +182,7 @@
           activityInstance.notes_ = activityInstance.notes.list;
         }
 
-        // add Documents
+        // add documents
         activityInstance.documents = this.documents[activityInstance.activityOID];
         
         //add historical data
@@ -202,19 +223,22 @@
 
     for (i = 0; i < data.length; i++) {
       if (data[i].contextKind === "AI") {
-        if (!res[data[i].contextOID]) {
-          res[data[i].contextOID] = [];
+        res = this.documents;
+      } else if (data[i].contextKind === "PI") {
+        res = this.procDocuments;
+      }
+      if (!res[data[i].contextOID]) {
+        res[data[i].contextOID] = [];
+      }
+      var doc_exist = false;
+      for ( var docInd in res[data[i].contextOID]) {
+        if (data[i].uuid == res[data[i].contextOID][docInd].uuid) {
+          doc_exist = true;
+          break;
         }
-        var doc_exist = false;
-        for ( var docInd in res[data[i].contextOID]) {
-          if (data[i].uuid == res[data[i].contextOID][docInd].uuid) {
-            doc_exist = true;
-            break;
-          }
-        }
-        if (!doc_exist) {
-          res[data[i].contextOID].push(data[i]);
-        }
+      }
+      if (!doc_exist) {
+        res[data[i].contextOID].push(data[i]);
       }
     }
   }

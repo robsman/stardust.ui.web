@@ -146,6 +146,9 @@ public class ProcessInstanceService
    @Resource
    UserAttributesCacheManager userAttributesCacheManager;
    
+   @Resource
+   private NotesService notesService;
+   
    /**
     * @param processInstanceOid
     * @return
@@ -161,6 +164,8 @@ public class ProcessInstanceService
          rootProcessInstance = getProcessInstance(rootProcessInstance.getRootProcessInstanceOID(), policies);
       }
       ProcessInstanceDTO rootProcessInstanceDTO  = processInstanceUtilsREST.buildProcessInstanceDTO(rootProcessInstance);
+      rootProcessInstanceDTO.notes = notesService.getProcessNotes(rootProcessInstanceDTO.oid, true);
+      
       traverseProcessInstanceHierarchy(rootProcessInstanceDTO, rootProcessInstance, policies);
       return rootProcessInstanceDTO;
    }
