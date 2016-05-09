@@ -607,6 +607,11 @@ Icon implementations
 	content: "\f114"; /* fa-folder-o */
 }
 
+.pi-process-documents-filled:before{
+	font-family: "FontAwesome";
+	content: "\f07b"; /* fa-folder */
+}
+
 .pi-search:before{
 	font-family: "FontAwesome";
 	content: "\f002"; /* fa-search */
