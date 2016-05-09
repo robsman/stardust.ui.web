@@ -95,9 +95,30 @@ public class IppThemeProvider implements ThemeProvider
             themeFound = true;
          }
       }
-      
-      this.themeId = themeFound ? themeId : DefaultPreferenceProviderUtils
-            .getDefaultSkinPreference();
+
+      if (themeFound)
+      {
+         this.themeId = themeId;
+      }
+      else
+      {
+         this.themeId = DefaultPreferenceProviderUtils.getDefaultSkinPreference();
+         if (null != this.themeId)
+         {
+            // If it's just the name of the skin and not fully qualified path, so get the same
+            if (!this.themeId.contains(Constants.SKIN_FOLDER))
+            {
+               for (Theme theme : availableThemes)
+               {
+                  if (null != theme.getThemeName() && theme.getThemeName().equals(this.themeId))
+                  {
+                     this.themeId = theme.getThemeId();
+                     break;
+                  }
+               }
+            }
+         }
+      }
 
       loginStyleSheet = Parameters.instance().getString(LoginDialogBean.LOGIN_SKIN_CSS_PARAM,
             LoginDialogBean.DEFAULT_LOGIN_SKIN_CSS_NAME);
