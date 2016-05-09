@@ -187,20 +187,8 @@
 		****************** Document Repository Beans: end ******************
 	-->
 
-	<bean name="correspondenceViewBean"
-		class="org.eclipse.stardust.ui.web.viewscommon.views.correspondence.CorrespondenceViewBean"
-		scope="portalTab">
-		<property name="editor" ref="richTextEditor" />
-		<property name="mailService" ref="mailService" />
-	</bean>
-
 	<bean name="richTextEditor"
 		class="org.eclipse.stardust.ui.web.viewscommon.views.document.RichTextEditor"
-		scope="portalTab">
-	</bean>
-
-	<bean name="mailService"
-		class="org.eclipse.stardust.ui.web.viewscommon.views.correspondence.MailServiceImpl"
 		scope="portalTab">
 	</bean>
 
@@ -218,16 +206,6 @@
 
 	<bean name="richTextMessenger"
 		class="org.eclipse.stardust.ui.web.viewscommon.views.chat.RichTextMessenger"
-		scope="portalTab">
-	</bean>
-
-	<bean name="correspondenceAddressPickerDialog"
-		class="org.eclipse.stardust.ui.web.viewscommon.views.correspondence.CorrespondenceAddressPickerDialog"
-		scope="portalTab">
-	</bean>
-
-	<bean name="printerDialogPopup"
-		class="org.eclipse.stardust.ui.web.viewscommon.views.printer.PrinterDialogPopup"
 		scope="portalTab">
 	</bean>
 
