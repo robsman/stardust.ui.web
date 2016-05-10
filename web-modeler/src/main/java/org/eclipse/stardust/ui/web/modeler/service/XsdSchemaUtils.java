@@ -351,7 +351,7 @@ public final class XsdSchemaUtils
          {
             for (XSDElementDeclaration component : elements)
             {
-               if (tns.equals(component.getSchema().getTargetNamespace()))
+               if (CompareHelper.areEqual(tns, component.getSchema().getTargetNamespace()))
                {
                   if (filter == null || filter.accept(component))
                   {
@@ -366,7 +366,7 @@ public final class XsdSchemaUtils
          {
             for (XSDTypeDefinition component : types)
             {
-               if (tns.equals(component.getSchema().getTargetNamespace()))
+               if (CompareHelper.areEqual(tns, component.getSchema().getTargetNamespace()))
                {
                   if (filter == null || filter.accept(component))
                   {
