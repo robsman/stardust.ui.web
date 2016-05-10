@@ -1763,3 +1763,11 @@ a span.pi:hover {
 	font-family:"FontAwesome";
 	content:'\f141'; /*  fa-ellipsis-h*/
 }
+
+.pi-success:before{
+	color:green;
+}
+
+.pi-danger:before{
+	color:red;
+}
