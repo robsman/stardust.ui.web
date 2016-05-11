@@ -317,6 +317,7 @@ public class ModelerSessionController
       if (editingSession.canUndo())
       {
          Modification undoneChange = editingSession.undoLast();
+         undoneChange.getMetadata().put("commandId", "undoMostCurrent");
          postprocessChange(undoneChange);
          ChangeJto jto = toJto(undoneChange);
 
@@ -329,7 +330,6 @@ public class ModelerSessionController
          if (editingSession.canRedo())
          {
             Modification pendingRedo = editingSession.getPendingRedo();
-            //postprocessChange(pendingRedo);
             jto.pendingRedoableChange = toJto(pendingRedo);
          }
 

@@ -15,6 +15,7 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.Iterator;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -200,6 +201,15 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
             changes.removed.add(removeInfo);
          }
          modelMgtStrategy.deleteModel(model);
+         
+         // Remove pending elements from EObjectUUIDMapper and purge them
+         for (Iterator<EObject> i = model.eAllContents(); i.hasNext();)
+         {
+            EObject element = i.next();
+            modelService.currentSession().uuidMapper().unmap(element, true);
+         }
+         modelService.currentSession().uuidMapper().unmap(model, false);
+         modelService.currentSession().uuidMapper().cleanup();         
       }
       return changes;
    }

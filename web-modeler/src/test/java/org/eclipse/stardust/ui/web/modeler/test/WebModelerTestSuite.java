@@ -73,7 +73,8 @@ import org.eclipse.stardust.ui.web.modeler.xpdl.validation.TestXpdlValidation;
                TestIdFromNameGeneration.class,
                TestCompositeDescriptors.class,
                TestMandatoryDataMappings.class,
-               TestAnnotations.class
+               TestAnnotations.class,
+               TestUUIDMapping.class
              })
 public class WebModelerTestSuite
 {

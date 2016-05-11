@@ -306,7 +306,6 @@ public class ModelService
                throw new MissingWritePermissionException(
                      "Failed to (re-)validate edit lock on model " + xpdlModel.getId());
             }
-            //ExternalReferenceUtils.checkExternalReferences(models, xpdlModel);
             modelsToBeSaved.add(xpdlModel);
          }
       }
@@ -326,6 +325,7 @@ public class ModelService
          }
       }
       currentSession().reset();
+      currentSession().uuidMapper().cleanup();
    }
 
    /**
