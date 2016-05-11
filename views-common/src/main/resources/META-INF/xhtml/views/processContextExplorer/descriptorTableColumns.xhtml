@@ -8,7 +8,7 @@
 
 	<ice:panelGroup>
 		<ice:panelGroup rendered="#{col.columnName == 'Value'}">
-			<ice:outputText value="#{row.value}" rendered="#{!row.editable} and !(row.type eq 'Link')" />
+			<ice:outputText value="#{row.value}" rendered="#{!row.editable and !(row.type eq 'Link')}" />
 			<a href="#{row.value}" rendered="#{row.type eq 'Link'}" target="_blank">#{row.linkText}</a>
 			<ice:inputText value="#{row.value}" partialSubmit="true"
 				valueChangeListener="#{bean.valueChange}"
