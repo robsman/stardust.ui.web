@@ -1144,33 +1144,37 @@ public final class XsdSchemaUtils
             String typeName = GsonUtils.safeGetAsString(defJson, ModelerConstants.NAME_PROPERTY);
             XSDElementDeclaration element = elementsIndex.get(typeName);
 
-            if(element != null)
+            if (element != null)
             {
-            if (defJson.has("type"))
-            {
-               String typeRef = GsonUtils.safeGetAsString(defJson, "type");
-               int ix = typeRef.indexOf(":");
-               if (ix >= 0)
+               if (defJson.has("type"))
                {
-                  typeRef = typeRef.substring(ix + 1);
+                  String typeRef = GsonUtils.safeGetAsString(defJson, "type");
+                  String simpleRef = typeRef;
+                  int ix = simpleRef.indexOf(":");
+                  if (ix >= 0)
+                  {
+                     simpleRef = simpleRef.substring(ix + 1);
+                  }
+                  XSDTypeDefinition type = element.getTypeDefinition();
+                  XSDNamedComponent resolvedType = resolveType(element, typeRef, locations);
+                  XSDTypeDefinition updatedType = resolvedType instanceof XSDTypeDefinition
+                        ? (XSDTypeDefinition) resolvedType
+                        : updateTypeDefinition(schema, defJson, simpleRef, type, locations);
+                  if (updatedType != type)
+                  {
+                     element.setTypeDefinition(updatedType);
+                  }
                }
-               XSDTypeDefinition type = element.getTypeDefinition();
-               XSDTypeDefinition updatedType = updateTypeDefinition(schema, defJson, typeRef, type, locations);
-               if (updatedType != type)
+               else
                {
-                  element.setTypeDefinition(updatedType);
+                  XSDTypeDefinition type = element.getAnonymousTypeDefinition();
+                  XSDTypeDefinition updatedType = updateTypeDefinition(schema, defJson, null, type, locations);
+                  if (updatedType != type)
+                  {
+                     element.setAnonymousTypeDefinition(updatedType);
+                  }
                }
             }
-            else
-            {
-               XSDTypeDefinition type = element.getAnonymousTypeDefinition();
-               XSDTypeDefinition updatedType = updateTypeDefinition(schema, defJson, null, type, locations);
-               if (updatedType != type)
-               {
-                  element.setAnonymousTypeDefinition(updatedType);
-               }
-            }
-         }
          }
          else
          {
@@ -1483,11 +1487,11 @@ public final class XsdSchemaUtils
                   String type = elementJson.getAsJsonPrimitive("type").getAsString();
 
                   Object definition = resolveType(def, type, locations);
-                  if(definition instanceof XSDTypeDefinition)
+                  if (definition instanceof XSDTypeDefinition)
                   {
                      decl.setTypeDefinition((XSDTypeDefinition) definition);
                   }
-                  else if(definition instanceof XSDElementDeclaration)
+                  else if (definition instanceof XSDElementDeclaration)
                   {
                      decl.setResolvedElementDeclaration((XSDElementDeclaration) definition);
                   }
@@ -1542,7 +1546,7 @@ public final class XsdSchemaUtils
       return element;
    }
 
-   private static Object resolveType(XSDComponent def, String type, JsonObject locations)
+   private static XSDNamedComponent resolveType(XSDComponent def, String type, JsonObject locations)
    {
       XSDSchema schema = def.getSchema();
       Map<String, String> prefix2Namespace = schema.getQNamePrefixToNamespaceMap();
@@ -1585,6 +1589,12 @@ public final class XsdSchemaUtils
          {
             localName = type;
          }
+      }
+
+      XSDTypeDefinition found = def.resolveTypeDefinition(namespace, localName);
+      if (found.eContainer() != null)
+      {
+         return found;
       }
 
       TypeDeclarationType useType = null;
