@@ -55,7 +55,7 @@ public class ModelingConfigurationPanel implements UserPreferencesEntries, Porta
    public static String getProfile()
    {
       UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(M_MODULE);
-      return userPrefsHelper.getSingleString(V_MODELER, F_DEFAULT_PROFILE, PROFILE_BA);
+      return userPrefsHelper.getSingleString(V_MODELER, F_DEFAULT_PROFILE, PROFILE_INTEGRATOR);
    }
 
    /**
@@ -74,7 +74,7 @@ public class ModelingConfigurationPanel implements UserPreferencesEntries, Porta
    {
       UserPreferencesHelper userPrefsHelper = getUserPrefenceHelper();
       
-      defaultProfile = userPrefsHelper.getSingleString(V_MODELER, F_DEFAULT_PROFILE, PROFILE_BA);
+      defaultProfile = userPrefsHelper.getSingleString(V_MODELER, F_DEFAULT_PROFILE, PROFILE_INTEGRATOR);
       showTechnologyPreview = userPrefsHelper.getBoolean(V_MODELER, F_TECH_PREVIEW, false);
       showSimpleModels = userPrefsHelper.getBoolean(V_MODELER, F_SHOW_SIMPLE_MODELS, false);
    }
