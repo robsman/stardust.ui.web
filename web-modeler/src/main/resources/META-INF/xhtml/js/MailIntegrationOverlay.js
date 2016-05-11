@@ -1942,11 +1942,14 @@ define(
                MailIntegrationOverlay.prototype.checkTemplatingStructure = function(
                         element, name)
                {
-                  var type = element.name == "tTemplate" ? "xsd:boolean" : "xsd:string";
-                  return (element != undefined) && (element.name == name)
-                           && (element.classifier == "element")
-                           && (element.cardinality == "required")
-                           && (element.type == type) ? true : false;
+                  if(element){
+                     var type = element.name == "tTemplate" ? "xsd:boolean" : "xsd:string";
+                     return (element != undefined) && (element.name == name)
+                              && (element.classifier == "element")
+                              && (element.cardinality == "required")
+                              && (element.type == type) ? true : false;
+                  }
+                  return false;
                };
                /**
                 * 
