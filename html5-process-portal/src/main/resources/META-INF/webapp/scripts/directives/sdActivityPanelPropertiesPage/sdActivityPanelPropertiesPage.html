@@ -29,7 +29,7 @@
 									</a></td>
 								</tr>
 
-								<tr ng-click="propertiesPageController.selectedPropertiesPage = 'notes'">
+								<tr ng-click="propertiesPageController.expand();propertiesPageController.selectedPropertiesPage = 'notes'">
 									<td ng-class="{active : propertiesPageController.selectedPropertiesPage=='notes'}">
 										<a 	href='#'
 											title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showNotesPanel')}}"
@@ -49,7 +49,7 @@
 									</td>
 								</tr>
 
-								<tr ng-click="propertiesPageController.selectedPropertiesPage = 'documents'">
+								<tr ng-click="propertiesPageController.expand();propertiesPageController.selectedPropertiesPage = 'documents'">
 									<td ng-class="{active : propertiesPageController.selectedPropertiesPage=='documents'}">
 										<a 	href='#'
 											title="{{propertiesPageController.sdI18n('views-common-messages.propertiesPage.showDocumentsView')}}"
