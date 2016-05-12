@@ -9,6 +9,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.util.ResourceHelper;
 import org.apache.commons.io.IOUtils;
+import org.apache.velocity.VelocityContext;
 import org.eclipse.stardust.engine.extensions.templating.core.ServiceException;
 import org.eclipse.stardust.engine.extensions.templating.enricher.VelocityContextAppenderProcessor;
 import org.junit.After;
@@ -51,10 +52,8 @@ public class Base64EncoderToolTest
       ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
             new String[] {
                   "classpath:META-INF/spring/templating-application-context.xml"});
-      VelocityContextAppenderProcessor customVelocityContextAppender = (VelocityContextAppenderProcessor) ctx
-            .getBean("customVelocityContextAppender");
-      Base64EncoderTool tool = (Base64EncoderTool) customVelocityContextAppender
-            .getVelocityContext().get("base64Encoder");
+      VelocityContext velocityContext=VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml");
+      Base64EncoderTool tool = (Base64EncoderTool) velocityContext.get("base64Encoder");
       InputStream is = ResourceHelper.resolveMandatoryResourceAsInputStream(
             camelContext.getClassResolver(),
             "file:src/test/resources/custom/templates/simpleDocxTemplate.docx");

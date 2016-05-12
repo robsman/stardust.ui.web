@@ -1,6 +1,7 @@
 package org.eclipse.stardust.engine.extensions.templating.core;
 
-import static org.eclipse.stardust.engine.extensions.templating.core.Util.*;
+import static org.eclipse.stardust.engine.extensions.templating.core.Util.composeRepositoryLocationForTemplates;
+import static org.eclipse.stardust.engine.extensions.templating.core.Util.getServiceFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,18 +11,16 @@ import java.util.Map;
 import org.apache.camel.spi.ClassResolver;
 import org.apache.camel.util.IOHelper;
 import org.apache.camel.util.ResourceHelper;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.lowagie.text.DocumentException;
-
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.extensions.itext.converter.InvalidFormatException;
 import org.eclipse.stardust.engine.extensions.itext.converter.StringToPdfConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.lowagie.text.DocumentException;
 
 public class VelocityTemplatesHandler
 {
@@ -31,13 +30,6 @@ public class VelocityTemplatesHandler
 
    private ClassResolver resolver;
 
-   private VelocityContext velocityContext;
-
-   public void setVelocityContext(VelocityContext velocityContext)
-   {
-      this.velocityContext = velocityContext;
-   }
-
    public VelocityTemplatesHandler(ClassResolver resolver)
    {
       this.engine = new VelocityEngineEvaluator(resolver);
@@ -45,20 +37,20 @@ public class VelocityTemplatesHandler
    }
 
    public byte[] handleClassPathOrRepositoryRequest(String templateUri, String format,
-         boolean convertToPdf, Map<String, Object> parameters)
+         boolean convertToPdf, Map<String, Object> parameters, VelocityContext velocityContext)
                throws DocumentException, IOException, InvalidFormatException
    {
       if (templateUri.startsWith("classpath"))
       {
-         return handleClassPathTemplate(templateUri, format, convertToPdf, parameters);
+         return handleClassPathTemplate(templateUri, format, convertToPdf, parameters, velocityContext);
       }
       else if (templateUri.startsWith("repository"))
       {
-         return handleRepositoryTemplate(templateUri, format, convertToPdf, parameters);
+         return handleRepositoryTemplate(templateUri, format, convertToPdf, parameters, velocityContext);
       }
       else if (templateUri.startsWith("http"))
       {
-         return handleHttpVfsRequest(templateUri, format, convertToPdf, parameters);
+         return handleHttpVfsRequest(templateUri, format, convertToPdf, parameters, velocityContext);
       }
       return null;
    }
@@ -76,11 +68,11 @@ public class VelocityTemplatesHandler
     * @throws InvalidFormatException
     */
    private byte[] handleHttpVfsRequest(String templateUri, String format,
-         boolean convertToPdf, Map<String, Object> parameters)
+         boolean convertToPdf, Map<String, Object> parameters, VelocityContext velocityContext)
                throws DocumentException, IOException, InvalidFormatException
    {
       byte[] response = null;
-      registerParametersinVelocityContext(parameters);
+      registerParametersinVelocityContext(velocityContext,parameters);
       return response;
    }
 
@@ -96,11 +88,11 @@ public class VelocityTemplatesHandler
     * @throws InvalidFormatException
     */
    private byte[] handleRepositoryTemplate(String templateUri, String format,
-         boolean convertToPdf, Map<String, Object> parameters)
+         boolean convertToPdf, Map<String, Object> parameters, VelocityContext velocityContext)
                throws DocumentException, IOException, InvalidFormatException
    {
       byte[] response = null;
-      registerParametersinVelocityContext(parameters);
+      registerParametersinVelocityContext(velocityContext,parameters);
       ServiceFactory sf = getServiceFactory();
       DocumentManagementService dms = sf.getDocumentManagementService();
       String templateLocation = composeRepositoryLocationForTemplates(
@@ -134,12 +126,12 @@ public class VelocityTemplatesHandler
     * @throws DocumentException
     */
    private byte[] handleClassPathTemplate(String templateUri, String format,
-         boolean convertToPdf, Map<String, Object> parameters)
+         boolean convertToPdf, Map<String, Object> parameters, VelocityContext velocityContext)
                throws DocumentException, IOException, InvalidFormatException
    {
       byte[] response = null;
 
-      registerParametersinVelocityContext(parameters);
+      registerParametersinVelocityContext(velocityContext,parameters);
       InputStream is = ResourceHelper.resolveMandatoryResourceAsInputStream(resolver,
             templateUri);
       StringWriter buffer = engine.evaluate(
@@ -167,13 +159,13 @@ public class VelocityTemplatesHandler
     * @throws DocumentException
     */
    public byte[] handleEmbeddedTemplate(String content, String format,
-         boolean convertToPdf, Map<String, Object> parameters)
+         boolean convertToPdf, Map<String, Object> parameters, VelocityContext velocityContext)
                throws DocumentException, IOException, InvalidFormatException
    {
       byte[] response;
 
-      registerParametersinVelocityContext(parameters);
-      StringWriter buffer = engine.evaluate(appendCustomMacros(StringEscapeUtils.unescapeHtml(content)).toString(),
+      registerParametersinVelocityContext(velocityContext, parameters);
+      StringWriter buffer = engine.evaluate(appendCustomMacros(content).toString(),
             velocityContext);
       if (convertToPdf)
          response = StringToPdfConverter.convertToPdf(format,
@@ -183,7 +175,7 @@ public class VelocityTemplatesHandler
       return response;
    }
 
-   private void registerParametersinVelocityContext(Map<String, Object> parameters)
+   private void registerParametersinVelocityContext(VelocityContext velocityContext, Map<String, Object> parameters)
    {
       for (String key : parameters.keySet())
       {

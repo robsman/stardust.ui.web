@@ -12,6 +12,7 @@ import org.eclipse.stardust.engine.extensions.templating.core.FieldMetaData;
 import org.eclipse.stardust.engine.extensions.templating.core.RequestHandler;
 import org.eclipse.stardust.engine.extensions.templating.core.ServiceException;
 import org.eclipse.stardust.engine.extensions.templating.core.TemplatingRequest;
+import org.eclipse.stardust.engine.extensions.templating.enricher.VelocityContextAppenderProcessor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -20,7 +21,7 @@ public class TestClasspathTemplatingHandler
 {
    private static ClassPathXmlApplicationContext ctx;
    private static Date currentDate = null;
-   private static RequestHandler handler;
+   private static RequestHandler handler=new RequestHandler();
    private static TemplatingRequest requestForTestClasspathPlainDocx;
 
    private static TemplatingRequest requestForTestClasspathDocxPdf;
@@ -32,7 +33,6 @@ public class TestClasspathTemplatingHandler
       currentDate = new Date();
       requestForTestClasspathPlainDocx=initRequest(false);
       requestForTestClasspathDocxPdf=initRequest(true);
-      handler=(RequestHandler) ctx.getBean("requestHandler");
    }
    private static TemplatingRequest initRequest(boolean convertToPdf)
    {
@@ -54,7 +54,7 @@ public class TestClasspathTemplatingHandler
    @Test
    public void testClasspathPlainDocx() throws ServiceException, IOException
    {
-      byte[] response = handler.handleRequest(requestForTestClasspathPlainDocx);
+      byte[] response = handler.handleRequest(requestForTestClasspathPlainDocx, VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       File f = new File("./target/testClasspathPlainDocx.docx");
       FileOutputStream fos = new FileOutputStream(f);
       fos.write(response);
@@ -64,7 +64,7 @@ public class TestClasspathTemplatingHandler
    @Test
    public void testClasspathDocxPdf() throws ServiceException, IOException
    {
-      byte[] response = handler.handleRequest(requestForTestClasspathDocxPdf);
+      byte[] response = handler.handleRequest(requestForTestClasspathDocxPdf, VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       File f = new File("./target/testClasspathDocxPdf.pdf");
       FileOutputStream fos = new FileOutputStream(f);
       fos.write(response);
@@ -85,7 +85,7 @@ public class TestClasspathTemplatingHandler
       parameters.put("Follow_UpLetterDetails", Follow_UpLetterDetails);
       request.setParameters(parameters);
       
-      byte[] response = handler.handleRequest(request);
+      byte[] response = handler.handleRequest(request,VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       File f = new File("./target/SUNChoice Letterhead updated.pdf");
       FileOutputStream fos = new FileOutputStream(f);
       fos.write(response);
@@ -114,7 +114,7 @@ public class TestClasspathTemplatingHandler
 
       request.setParameters(parameters);
       
-      byte[] response = handler.handleRequest(request);
+      byte[] response = handler.handleRequest(request,VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       File f = new File("./target/user-greetings-with-signature.docx");
       FileOutputStream fos = new FileOutputStream(f);
       fos.write(response);
@@ -142,7 +142,7 @@ public class TestClasspathTemplatingHandler
 
       request.setParameters(parameters);
       
-      byte[] response = handler.handleRequest(request);
+      byte[] response = handler.handleRequest(request,VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       File f = new File("./target/user-greetings-with-signature.pdf");
       FileOutputStream fos = new FileOutputStream(f);
       fos.write(response);
@@ -167,7 +167,7 @@ public class TestClasspathTemplatingHandler
       parameters.put("Person", person);
       request.setParameters(parameters);
       
-      byte[] response = handler.handleRequest(request);
+      byte[] response = handler.handleRequest(request,VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       File f = new File("./target/docxLetter.pdf");
       FileOutputStream fos = new FileOutputStream(f);
       fos.write(response);
@@ -199,7 +199,7 @@ public class TestClasspathTemplatingHandler
       parameters.put("claim", claim);
       request.setParameters(parameters);
       
-      byte[] response = handler.handleRequest(request);
+      byte[] response = handler.handleRequest(request,VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       File f = new File("./target/CD008-CAL_Final_liability.pdf");
       FileOutputStream fos = new FileOutputStream(f);
       fos.write(response);
@@ -217,7 +217,7 @@ public class TestClasspathTemplatingHandler
       parameters.put("address","main street");
       request.setParameters(parameters);
       
-      byte[] response = handler.handleRequest(request);
+      byte[] response = handler.handleRequest(request,VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       File f = new File("./target/my-template-background-images1.pdf");
       FileOutputStream fos = new FileOutputStream(f);
       fos.write(response);
@@ -235,10 +235,10 @@ public class TestClasspathTemplatingHandler
       parameters.put("lastName","FIS");
       request.setParameters(parameters);
       
-      byte[] response = handler.handleRequest(request);
+      byte[] response = handler.handleRequest(request,VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       File f = new File("./target/DocxResume.pdf");
       FileOutputStream fos = new FileOutputStream(f);
       fos.write(response);
    }
-   
+  
 }

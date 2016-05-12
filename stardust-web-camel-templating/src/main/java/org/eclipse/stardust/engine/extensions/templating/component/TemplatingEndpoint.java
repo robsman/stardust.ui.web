@@ -19,6 +19,7 @@ import org.apache.camel.Message;
 import org.apache.camel.component.ResourceEndpoint;
 import org.apache.camel.util.CamelContextHelper;
 import org.apache.commons.lang.StringUtils;
+import org.apache.velocity.VelocityContext;
 import org.eclipse.stardust.engine.extensions.templating.core.FieldMetaData;
 import org.eclipse.stardust.engine.extensions.templating.core.RequestHandler;
 import org.eclipse.stardust.engine.extensions.templating.core.ServiceException;
@@ -174,9 +175,8 @@ public class TemplatingEndpoint extends ResourceEndpoint
    {
       copyTemplatingHeaders(exchange);
       TemplatingRequest request = createTemplatingRequestFromExchange(exchange);
-      RequestHandler handler = (RequestHandler) CamelContextHelper
-            .mandatoryLookup(exchange.getContext(), "requestHandler");
-      byte[] out = handler.handleRequest(request);
+      RequestHandler handler = new RequestHandler(exchange.getContext());
+      byte[] out = handler.handleRequest(request,exchange.getIn().getHeader("CamelVelocityContext", VelocityContext.class) );
       Message outMessage = exchange.getOut();
       outMessage.setBody(out);
       outMessage.setHeaders(exchange.getIn().getHeaders());
