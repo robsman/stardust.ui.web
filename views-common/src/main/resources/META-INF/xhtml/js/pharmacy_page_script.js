@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 jQuery(function () {
-	require({baseUrl: "../../../graphics-common/js"},["m_pageController", "m_pharmacyToolbarController", "m_pharmacyCanvasController", "m_urlUtils"], function() {
+	require({baseUrl: "../../../graphics-common/js"},["m_pageController", "m_pharmacyToolbarController", "m_pharmacyCanvasController", "m_urlUtils", "extensions_jquery"], function() {
 		var canvasController = require('m_pharmacyCanvasController');
 		var urlUtils = require('m_urlUtils');
 		var tiffIframe = parent.frames['tiff_frame' + urlUtils

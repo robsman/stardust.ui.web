@@ -131,7 +131,9 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
          facade.createPrimitiveData(model, "BusinessDate", "Business Date",
                ModelerConstants.DATE_PRIMITIVE_DATA_TYPE);
       }
-
+      
+      model.setId(preventDuplicateFilenames(model.getId()));
+      
       modelService.getModelManagementStrategy()
             .getModels()
             .put(model.getId(), model);
@@ -212,5 +214,24 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
          modelService.currentSession().uuidMapper().cleanup();         
       }
       return changes;
+   }
+   
+   private String preventDuplicateFilenames(String modelID) 
+   {
+      for (Iterator<ModelType> i = modelService.getModelManagementStrategy()
+            .getModels().values().iterator(); i.hasNext();)
+      {
+         ModelType modelType = i.next();
+         if (modelType != null)
+         {
+            if ((modelID + ".xpdl").equals(modelService
+                  .getModelManagementStrategy().getModelFileName(modelType)))
+            {
+               modelID = modelID + "1";
+               return preventDuplicateFilenames(modelID);
+            }
+         }
+      }
+      return modelID;
    }
 }

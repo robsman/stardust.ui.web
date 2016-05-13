@@ -125,13 +125,13 @@ public class ManualActivityUi
          {
             path = createStructureDataMapping(dataMapping, manualActivityPath);
          }
-         else if (ModelUtils.isPrimitiveType(getModel(), dataMapping))
-         {
-            path = createPrimitiveDataMapping(dataMapping, manualActivityPath);
-         }
          else if (ModelUtils.isStructuredType(getModel(), dataMapping))
          {
             path = createStructureDataMapping(dataMapping, manualActivityPath);
+         }
+         else if (ModelUtils.isPrimitiveType(getModel(), dataMapping))
+         {
+            path = createPrimitiveDataMapping(dataMapping, manualActivityPath);
          }
 
          if (null != path)

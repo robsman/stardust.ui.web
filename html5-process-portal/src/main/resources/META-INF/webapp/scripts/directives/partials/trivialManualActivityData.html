@@ -50,6 +50,15 @@
 					<div ng-show="trivialFieldsForm.dateField{{$index}}.$error.validate" class="msg-error">{{i18n('html5-common.date-error')}}
 					</div>
 				</div>
+				<div ng-if="mapping.typeName == 'date'">
+					<input type="text" name="dateField" sd-date-picker 
+						ng-click="bpmCommon.stopEvent($event);" aid="PP-TrivialManualActivity-EnterDate"
+						sda-server-date-format="yy-mm-dd" ng-change="dataCtrl.onChange();" sda-test="true"
+						sda-change-year="true" ng-model-on-blur sda-data-type="date"
+						ng-model="dataCtrl.outData[mapping.id]"></input>
+					<div ng-show="subForm.dateField.$error.validate" class="msg-error">{{i18n('html5-common.date-error')}}
+					</div>
+				</div>
 				<!-- Money -->
 				<div  ng-if="mapping.typeName == 'java.lang.Double'">
 					<input name="doubleField{{$index}}" ng-class="{'tma-input': true, 'tma-input-highlighted': trivialFieldsForm.doubleField{{$index}}.$invalid}"
