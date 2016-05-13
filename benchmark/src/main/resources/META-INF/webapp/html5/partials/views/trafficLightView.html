@@ -137,7 +137,7 @@
      <div ng-if="ctrl.showTLVStatasticsByBO"
 		  ng-include="'plugins/benchmark/html5/partials/views/tlvStatasticsByBO.html'">
 	</div>
-	<div class="view-panel-content">
+	<div class="view-panel-content" ng-if="ctrl.showProcessTable">
 		<div class="view-panel-toolbar heading"
 			ng-bind="i18n('views-common-messages.views-userDetails-processTable-title')"></div>
 		<div sd-process-table="ctrl.processDataTable"
@@ -147,7 +147,7 @@
 			sda-preference-name="ipp-views-common.processTable.selectedColumns" />
 	</div>
 	
-	<div class="view-panel-content" >
+	<div class="view-panel-content" ng-if="ctrl.showActivityTable">
 		<div class="view-panel-toolbar heading"
 			ng-bind="i18n('views-common-messages.views-userDetails-activityTable-title')"></div>
 		<div sd-activity-table="ctrl.activityDataTable" sda-mode="activityTable"
