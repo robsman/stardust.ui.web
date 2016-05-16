@@ -81,12 +81,12 @@ public class AuditTrailService
     * @param retainUsersAndDepts
     * @return
     */
-   public Boolean cleanupATD(boolean retainUsersAndDepts)
+   public Boolean cleanupATD(boolean retainUsersAndDepts, boolean retainBOInstances)
    {
       AdministrationService service = serviceFactoryUtils.getServiceFactory().getAdministrationService();
       if (service != null)
       {
-         service.cleanupRuntime(retainUsersAndDepts);
+         service.cleanupRuntime(retainUsersAndDepts, retainBOInstances);
          SessionContext.findSessionContext().resetSession();
          return true;
       }

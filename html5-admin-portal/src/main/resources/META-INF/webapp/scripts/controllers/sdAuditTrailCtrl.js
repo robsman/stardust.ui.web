@@ -71,7 +71,8 @@
 	 */
 	AuditTrailCtrl.prototype.openCleanupATDConfirm = function(){
 		var self = this;
-		self.retainUsersAndDepts = false;
+		self.retainUsersAndDepts = true;
+		self.retainBOInstances = true;
 		var openViewCount = _sdViewUtilService.getOpenViewCount();
 		if(openViewCount > 0){
 			_sdDialogService.error(_scope, _sgI18nService.translate('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-auditTrail-viewsOpen-errorMessage'),{});
@@ -85,7 +86,11 @@
 	 */
 	AuditTrailCtrl.prototype.cleanupATD = function(res){
 		var self = this;
-		_sdAuditTrailService.cleanupAuditTrailDatabase(self.retainUsersAndDepts).then(
+		var params = {
+				retainUsersAndDepts	: self.retainUsersAndDepts,
+				retainBOInstances:	self.retainBOInstances
+		};
+		_sdAuditTrailService.cleanupAuditTrailDatabase(params).then(
 				function(result) {
 					if(result.status){
 						_sdViewUtilService.logout();
