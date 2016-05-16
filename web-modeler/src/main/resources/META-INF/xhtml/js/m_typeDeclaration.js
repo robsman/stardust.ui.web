@@ -201,10 +201,10 @@ define(
 					if (this.typeDeclaration
 							&& this.typeDeclaration.schema && this.typeDeclaration.schema.elements) {
 						for (var i in this.typeDeclaration.schema.elements) {
-							if (this.typeDeclaration.schema.elements[i].facets) {
-								for (var j in this.typeDeclaration.schema.elements[i].facets) {
-									if (this.typeDeclaration.schema.elements[i].facets[j].classifier === classifier) {
-										this.typeDeclaration.schema.elements[i].facets.splice(j, 1);
+							if (this.typeDeclaration.schema.types[i].facets) {
+								for (var j in this.typeDeclaration.schema.types[i].facets) {
+									if (this.typeDeclaration.schema.types[i].facets[j].classifier === classifier) {
+										this.typeDeclaration.schema.types[i].facets.splice(j, 1);
 									}
 								}
 							}
@@ -212,16 +212,20 @@ define(
 					}
 				};
 
-
 				/**
-				 *
+				 * 
+				 * @param newElement
 				 */
-				TypeDeclaration.prototype.addFacet = function(facet) {
+				TypeDeclaration.prototype.addFacet = function(newElement) {
 					if (this.typeDeclaration
-							&& this.typeDeclaration.schema && this.typeDeclaration.schema.elements) {
-						for (var i in this.typeDeclaration.schema.elements) {
-							if (this.typeDeclaration.schema.elements[i].facets) {
-								this.typeDeclaration.schema.elements[i].facets.push(facet);
+							&& this.typeDeclaration.schema && this.typeDeclaration.schema.types) {
+						for (var i in this.typeDeclaration.schema.types) {
+							if (!this.typeDeclaration.schema.types.inherited) {
+								if (!this.typeDeclaration.schema.types[i].facets) {
+									this.typeDeclaration.schema.types[i].facets = [];
+								}
+								this.typeDeclaration.schema.types[i].facets.push(newElement);
+								break;
 							}
 						}
 					}
@@ -469,9 +473,9 @@ define(
 					} else {
 						if (this.typeDeclaration
 								&& this.typeDeclaration.schema && this.typeDeclaration.schema.elements) {
-							for (var i in this.typeDeclaration.schema.elements) {
-								if (!this.typeDeclaration.schema.elements.inherited) {
-									return this.typeDeclaration.schema.elements[i].facets;
+							for (var i in this.typeDeclaration.schema.types) {
+								if (!this.typeDeclaration.schema.types.inherited) {
+									return this.typeDeclaration.schema.types[i].facets;
 								}
 							}
 						}
@@ -531,21 +535,6 @@ define(
 						}
 
 						thisBody.push(newElement);
-					}
-				};
-
-				TypeDeclaration.prototype.addFacet = function(newElement) {
-					if (this.typeDeclaration
-							&& this.typeDeclaration.schema && this.typeDeclaration.schema.elements) {
-						for (var i in this.typeDeclaration.schema.elements) {
-							if (!this.typeDeclaration.schema.elements.inherited) {
-								if (!this.typeDeclaration.schema.elements[i].facets) {
-									this.typeDeclaration.schema.elements[i].facets = [];
-								}
-								this.typeDeclaration.schema.elements[i].facets.push(newElement);
-								break;
-							}
-						}
 					}
 				};
 
