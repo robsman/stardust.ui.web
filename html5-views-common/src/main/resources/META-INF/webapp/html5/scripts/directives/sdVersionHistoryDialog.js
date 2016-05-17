@@ -130,6 +130,9 @@
 				//assume the correct name to display is the name of the document in its current revision.
 				that.title = that.textMap.header.replace("{0}",res.data[0].name);
 			}
+			else{
+				that.currentFileVersionHistory =[];
+			}
 			//always resolve, even if no version history length = 0
 			deferred.resolve(res);
 		})
