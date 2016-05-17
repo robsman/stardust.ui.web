@@ -55,7 +55,7 @@
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procStartFrom"
-									name="procStartFrom"
+									name="procStartFrom" ng-change="procSearchViewCtrl.validateData();"
 									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
 									sda-aid-prefix="BCC-ProcSrch-ProcStartFrom"/></td>
 								<td></td>
@@ -65,7 +65,7 @@
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procStartTo"
-									name="procStartTo"
+									name="procStartTo" ng-change="procSearchViewCtrl.validateData();"
 									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
 									sda-aid-prefix="BCC-ProcSrch-ProcStartTo"/></td>
 								<td></td>
@@ -82,7 +82,7 @@
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procEndFrom"
-									name="procEndFrom"
+									name="procEndFrom" ng-change="procSearchViewCtrl.validateData();"
 									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
 									sda-aid-prefix="BCC-ProcSrch-ProcEndFrom"/></td>
 								<td></td>
@@ -92,7 +92,7 @@
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procEndTo"
-									name="procEndTo"
+									name="procEndTo" ng-change="procSearchViewCtrl.validateData();"
 									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
 									sda-aid-prefix="BCC-ProcSrch-ProcEndTo"/></td>
 								<td></td>
@@ -185,7 +185,7 @@
 								<td><label>{{i18n('business-control-center-messages.views-processOverviewView-processTable-column-rootPOID')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><input type="text" id="rootProcessOID"
-									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchRootProcessOID"
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchRootProcessOID" ng-change="procSearchViewCtrl.validateData();"
 									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
 									aid="BCC-ProcSrch-RootPOID"></td>
 								<td></td>
@@ -201,8 +201,8 @@
 								<td><label>{{i18n('business-control-center-messages.views-processOverviewView-processTable-column-pOID')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><input type="text" id="processOID"
-									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchProcessOID"
-									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchProcessOID" ng-change="procSearchViewCtrl.validateData();"
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1" 
 									aid="BCC-ProcSrch-POID"></td>
 								<td></td>
 							</tr>
@@ -230,7 +230,7 @@
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actStartFrom"
-									name="acttartFrom"
+									name="acttartFrom"  ng-change="procSearchViewCtrl.validateData();"
 									sda-aid-prefix="BCC-ActivitySrch-StartedFrom"/></td>
 								<td></td>
 							</tr>
@@ -239,7 +239,7 @@
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actStartTo"
-									name="actStartTo"
+									name="actStartTo" ng-change ="procSearchViewCtrl.validateData();"
 									sda-aid-prefix="BCC-ActivitySrch-StartedTo"/></td>
 								<td></td>
 							</tr>
@@ -255,7 +255,7 @@
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actModifyFrom"
-									name="actModifyFrom"
+									name="actModifyFrom" ng-change="procSearchViewCtrl.validateData();"
 									sda-aid-prefix="BCC-ActivitySrch-ModifyTimeFrom"/></td>
 								<td></td>
 							</tr>
@@ -264,7 +264,7 @@
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><div sd-date-time-condensed ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actModifyTo"
-									name="actModifyTo"
+									name="actModifyTo" ng-change="procSearchViewCtrl.validateData();"
 									sda-aid-prefix="BCC-ActivitySrch-ModifyTimeTo"/></td>
 								<td></td>
 							</tr>
@@ -360,7 +360,7 @@
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processOverviewView-activityTable-column-aOID')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><input type="text" id="activityOID"
+								<td><input type="text" id="activityOID" ng-change="procSearchViewCtrl.validateData();"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.activitySrchActivityOID"
 									aid="BCC-ActivitySrch-AOID"></td>
 								<td></td>

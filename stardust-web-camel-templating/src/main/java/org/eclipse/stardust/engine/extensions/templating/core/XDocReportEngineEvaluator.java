@@ -14,7 +14,6 @@ import org.apache.poi.xwpf.converter.pdf.PdfOptions;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.velocity.VelocityContext;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.engine.extensions.templating.enricher.VelocityContextAppenderProcessor;
 import org.eclipse.stardust.engine.extensions.templating.imageprovider.HttpImageProvider;
 import org.eclipse.stardust.engine.extensions.templating.imageprovider.JCRImageProvider;
 import org.eclipse.stardust.engine.extensions.templating.imageprovider.LocalImageProvider;
@@ -46,61 +45,28 @@ public class XDocReportEngineEvaluator
       options = PdfOptions.create();
    }
 
-   private VelocityContextAppenderProcessor customVelocityContextAppender;
-
-   private FieldsMetadata fieldsMetaData;
-
-   private IContext customContext;
-
-   public void setCustomVelocityContextAppender(
-         VelocityContextAppenderProcessor customVelocityContextAppender)
-   {
-      this.customVelocityContextAppender = customVelocityContextAppender;
-   }
-
-   public void setFieldsMetaData(FieldsMetadata fieldsMetaData)
-   {
-      this.fieldsMetaData = fieldsMetaData;
-   }
-
-   public void setCustomContext(IContext customContext)
-   {
-      this.customContext = customContext;
-   }
-
-   private IContext loadContext()
+   private IContext loadContext(VelocityContext customVelocityContext)
    {
       IContext context = null;
-      if (this.customContext != null)
+      Map<String, Object> contextMap = new HashMap<String, Object>();
+
+      for (Object key : customVelocityContext.getKeys())
       {
-         context = this.customContext;
+         contextMap.put(((String) key), customVelocityContext.get(((String) key)));
       }
-      else
-      {
-
-         VelocityContext customVelocityContext = customVelocityContextAppender
-               .getVelocityContext();
-         Map<String, Object> contextMap = new HashMap<String, Object>();
-
-         for (Object key : customVelocityContext.getKeys())
-         {
-            contextMap.put(((String) key), customVelocityContext.get(((String) key)));
-         }
-         context = new org.eclipse.stardust.engine.extensions.templating.component.XDocVelocityContext(
-               customVelocityContext);
-
-      }
+      context = new org.eclipse.stardust.engine.extensions.templating.component.XDocVelocityContext(
+            customVelocityContext);
       return context;
    }
 
    public byte[] evaluate(InputStream in, boolean convertToPdf,
-         Map<String, Object> parameters, List<FieldMetaData> fieldsMetaData)
+         Map<String, Object> parameters, List<FieldMetaData> fieldsMetaData, VelocityContext customVelocityContext)
                throws ServiceException
    // throws IOException, XDocReportException
    {
       try
       {
-         IContext context = loadContext();
+         IContext context = loadContext(customVelocityContext);
 
          ByteArrayOutputStream out = new ByteArrayOutputStream();
          TemplateEngineKind kind = TemplateEngineKind.Velocity;

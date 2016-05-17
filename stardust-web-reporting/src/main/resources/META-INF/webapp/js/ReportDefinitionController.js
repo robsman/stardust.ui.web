@@ -2344,13 +2344,17 @@ define(
           var isValid = false;
           var inValidGroupableDimensions = [this.reportingService.metadata.objects.activityInstance.dimensions.processOID, 
                    this.reportingService.metadata.objects.activityInstance.dimensions.activityOID];
-          for ( var dim in inValidGroupableDimensions)
-             {
-                if (inValidGroupableDimensions[dim].id === dimension.id)
-                {
-                   return isValid;
-		}
-             }
+          for ( var dim in inValidGroupableDimensions) {
+            if (inValidGroupableDimensions[dim].id === dimension.id) 
+            { 
+              return isValid; 
+            }
+          }
+
+          if (dimension.metadata && dimension.metadata.isCompositeOrLinkDescriptor) { 
+            return false; 
+          }
+          
           isValid = true;
           return isValid;
         };

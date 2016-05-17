@@ -20,6 +20,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDSchema;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
+import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.*;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -371,7 +373,7 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       JsonObject dataFlowsJson = new JsonObject();
       processJson.add(ModelerConstants.DATA_FLOWS_PROPERTY, dataFlowsJson);
-      
+
       JsonArray permissionsJson = AuthorizationUtils.getPermissionsJson(processDefinition);
       processJson.add("permissions", permissionsJson);
 
@@ -1211,7 +1213,7 @@ public class ModelElementMarshaller implements ModelMarshaller
          JsonObject resubmissionJson = this.toEventJson(eventHandler, new JsonObject());
          activityJson.add("resubmissionHandler", resubmissionJson);
       }
-      
+
       JsonArray permissionsJson = AuthorizationUtils.getPermissionsJson(activity);
       activityJson.add("permissions", permissionsJson);
 
@@ -1419,7 +1421,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                else
                {
                   ApplicationTypeType applicationType = application.getType();
-                  if (applicationType == null) 
+                  if (applicationType == null)
                   {
                      break;
                   }
@@ -1861,7 +1863,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       // UUID is being used
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             eventHandler.getElementOid());
-      
+
       // Calcuate Lane offset for hostActivitySymbol
       int laneOffsetX = 0;
       int laneOffsetY = 0;
@@ -1878,10 +1880,10 @@ public class ModelElementMarshaller implements ModelMarshaller
                ? (ISwimlaneSymbol) container.eContainer()
                : null;
       }
-      
+
       long activitySymbolXPos = hostActivitySymbol.getXPos() + laneOffsetX;
       long activitySymbolYPos = hostActivitySymbol.getYPos() + laneOffsetY;
-      
+
       // guess coordinates relative to the hosting activity's symbol
       // TODO handle multiple events per activity, avoid collisions with explicit
       // intermediate event symbols
@@ -2319,7 +2321,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                   {
                      typeDeclaration = refModel.getTypeDeclarations()
                            .getTypeDeclaration(data.getExternalReference().getXref());
-                  }                 
+                  }
                }
 
                if (typeDeclaration == null && data.eIsProxy())
@@ -2424,7 +2426,7 @@ public class ModelElementMarshaller implements ModelMarshaller
             }
          }
       }
-      
+
       JsonArray permissionsJson = AuthorizationUtils.getPermissionsJson(data);
       dataJson.add("permissions", permissionsJson);
 
@@ -4032,6 +4034,16 @@ public class ModelElementMarshaller implements ModelMarshaller
       XSDSchema schema = structType.getSchema();
       if (null != schema)
       {
+         XSDNamedComponent component = StructuredTypeRtUtils.findElementOrTypeDeclaration(schema, structType.getId(), true);
+         if (component != null)
+         {
+            XSDSchema declaringSchema = component.getSchema();
+            if (declaringSchema != null)
+            {
+               schema = declaringSchema;
+            }
+         }
+
          Map<EObject, JsonObject> cache = jsonCache.get();
          JsonObject schemaJson = cache.get(schema);
          if (schemaJson == null)
@@ -4239,7 +4251,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                   attributes.addProperty(attributeName, attributeValue);
                }
             }
-            else if (attributeName.startsWith("authorization:")) 
+            else if (attributeName.startsWith("authorization:"))
             {
                //Ignore authorization related attributes, as they are stored separately in a shorter manner.
             }

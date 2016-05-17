@@ -14,6 +14,7 @@ import java.util.Map;
 import org.eclipse.stardust.engine.extensions.templating.core.RequestHandler;
 import org.eclipse.stardust.engine.extensions.templating.core.ServiceException;
 import org.eclipse.stardust.engine.extensions.templating.core.TemplatingRequest;
+import org.eclipse.stardust.engine.extensions.templating.enricher.VelocityContextAppenderProcessor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -28,7 +29,7 @@ public class TestClasspathTemplatingHandler
 
    private static TemplatingRequest requestForTestClasspathTextPdf;
 
-   private static RequestHandler handler;
+   private static RequestHandler handler=new RequestHandler();
 
    @BeforeClass
    public static void beforeClass()
@@ -38,7 +39,7 @@ public class TestClasspathTemplatingHandler
       currentDate = new Date();
       requestForTestClasspathTextText = initRequest(false);
       requestForTestClasspathTextPdf = initRequest(true);
-      handler=(RequestHandler) ctx.getBean("requestHandler");
+
    }
 
    private static TemplatingRequest initRequest(boolean convertToPdf)
@@ -60,7 +61,7 @@ public class TestClasspathTemplatingHandler
    @Test
    public void testClasspathTextText() throws ServiceException
    {
-      byte[] response = handler.handleRequest(requestForTestClasspathTextText);
+      byte[] response = handler.handleRequest(requestForTestClasspathTextText, VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       assertNotNull(response != null);
       assertTrue(new String(response).trim().equals("Hello John Smith "
             + new SimpleDateFormat("dd/MM/yyyy").format(currentDate)));
@@ -70,7 +71,7 @@ public class TestClasspathTemplatingHandler
    @Test
    public void testClasspathTextPdf() throws ServiceException, IOException
    {
-      byte[] response = handler.handleRequest(requestForTestClasspathTextPdf);
+      byte[] response = handler.handleRequest(requestForTestClasspathTextPdf, VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       assertNotNull(response != null);
       File f = new File("./target/testClasspathTextPdf.pdf");
       FileOutputStream fos = new FileOutputStream(f);

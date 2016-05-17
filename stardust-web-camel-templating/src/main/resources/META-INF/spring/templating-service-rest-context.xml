@@ -16,8 +16,9 @@
    <bean id="templatingRestlet"
       class="org.eclipse.stardust.engine.extensions.templating.rest.TemplatingRestlet"
       scope="prototype">
-      <property name="requestHadnler" ref="requestHandler" />
+       <property name="velocityToolsPath" value="default-velocity-tools.xml" />
    </bean>
+
 
    <bean id="gsonProvider" class="org.eclipse.stardust.engine.extensions.templating.rest.GsonProvider" />
 </beans>

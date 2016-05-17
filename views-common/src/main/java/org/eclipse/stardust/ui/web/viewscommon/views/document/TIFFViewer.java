@@ -120,14 +120,13 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
          if (null != obj && obj instanceof TIFFDocumentHolder)
          {
             docHolder = (TIFFDocumentHolder) obj;
-            docHolder.initialize(documentInfo);
-            docHolder.setProcessInstance(processInstance);
+            docHolder.initialize(documentInfo, processInstance);
          }
          else
          {
-            docHolder = new TIFFDocumentHolder(documentInfo);
+            docHolder = new TIFFDocumentHolder(documentInfo, processInstance);
             docHolder.setEditable(documentInfo.isContentEditable());
-            docHolder.setProcessInstance(processInstance);
+
             sessionMap.setObject(docId, docHolder);
             sessionMap.setObject("SESSION_CONTEXT", SessionContext.findSessionContext());
             sessionMap.setObject("DOCUMENT_MANAGEMENT_SERVICE", SessionContext.findSessionContext().getServiceFactory()

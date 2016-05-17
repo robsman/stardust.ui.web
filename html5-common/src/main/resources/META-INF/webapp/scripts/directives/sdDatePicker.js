@@ -49,7 +49,8 @@ angular.module('bpm-common.directives')
 	                yearRange = attrs.sdaYearRange || 'c-10:c+10',
 	                buttonImageOnly = (attrs.sdaButtonImageOnly==='true')?true:false ,
 	                buttonText = attrs.sdaButtonText || "Select Date",
-	                milliseconds = attrs.sdaMilliseconds === 'true' ? true : false;
+	                milliseconds = attrs.sdaMilliseconds === 'true' ? true : false,
+	                serverDateFormat = attrs.sdaServerDateFormat;
 
 		            ngModelCtrl.$parsers.push(function(value) {
 		               ngModelCtrl.$setValidity('validate', true);
@@ -57,7 +58,10 @@ angular.module('bpm-common.directives')
 		            		return value;
 		            	}
 		            	try{
-		            	var date = jQuery.datepicker.parseDate(dateFormat, value);
+			            	var date = jQuery.datepicker.parseDate(dateFormat, value);
+			            	if (serverDateFormat) {
+			            		value = jQuery.datepicker.formatDate(serverDateFormat, date);
+			            	}
 		            	}catch (e) {
 		            	   ngModelCtrl.$setValidity('validate', false);
 	                     return undefined;
@@ -71,9 +75,12 @@ angular.module('bpm-common.directives')
 		            		return value;
 		            	}
 
+		            	if (serverDateFormat) {
+		            		value = jQuery.datepicker.formatDate(dateFormat, jQuery.datepicker.parseDate(serverDateFormat, value));
+		            	}
 		            	var date = new Date(value);
                 		return  milliseconds ? jQuery.datepicker.formatDate(dateFormat, date) : value;
-		            });
+                	});
 
 	                $(element).datepicker({
 	                numberOfMonths : numberOfMonths,

@@ -14,6 +14,7 @@ import java.util.Map;
 import org.eclipse.stardust.engine.extensions.templating.core.RequestHandler;
 import org.eclipse.stardust.engine.extensions.templating.core.ServiceException;
 import org.eclipse.stardust.engine.extensions.templating.core.TemplatingRequest;
+import org.eclipse.stardust.engine.extensions.templating.enricher.VelocityContextAppenderProcessor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -28,7 +29,7 @@ public class TestEmbeddedTemplatingHandler
 
    private static TemplatingRequest requestForTestEmbeddedTextPdf;
 
-   private static RequestHandler handler;
+   private static RequestHandler handler=new RequestHandler();
 
    @BeforeClass
    public static void beforeClass()
@@ -38,7 +39,6 @@ public class TestEmbeddedTemplatingHandler
       currentDate = new Date();
       requestForTestEmbeddedTextText = initRequest(false);
       requestForTestEmbeddedTextPdf = initRequest(true);
-      handler=(RequestHandler) ctx.getBean("requestHandler");
    }
 
    private static TemplatingRequest initRequest(boolean convertToPdf)
@@ -61,7 +61,7 @@ public class TestEmbeddedTemplatingHandler
    @Test
    public void testEmbeddedTextText() throws ServiceException
    {
-      byte[] response = handler.handleRequest(requestForTestEmbeddedTextText);
+      byte[] response = handler.handleRequest(requestForTestEmbeddedTextText, VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       assertNotNull(response != null);
       assertTrue(new String(response).equalsIgnoreCase("Hello John Smith "
             + new SimpleDateFormat("dd/MM/yyyy").format(currentDate)));
@@ -71,7 +71,7 @@ public class TestEmbeddedTemplatingHandler
    @Test
    public void testEmbeddedTextPdf() throws ServiceException, IOException
    {
-      byte[] response = handler.handleRequest(requestForTestEmbeddedTextPdf);
+      byte[] response = handler.handleRequest(requestForTestEmbeddedTextPdf,VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml"));
       assertNotNull(response != null);
       File f = new File("./target/testEmbeddedTextPdf.pdf");
       FileOutputStream fos = new FileOutputStream(f);

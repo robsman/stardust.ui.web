@@ -27,6 +27,7 @@ import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AccessControlEntry;
 import org.eclipse.stardust.engine.api.runtime.AccessControlEntry.EntryType;
 import org.eclipse.stardust.engine.api.runtime.AccessControlPolicy;
+import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Privilege;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrincipal;
@@ -46,6 +47,7 @@ import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.DepartmentCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
@@ -629,15 +631,27 @@ public class SecurityDialog extends PopupUIComponentBean
       Map<String, QualifiedModelParticipantInfo> participants = new HashMap<String, QualifiedModelParticipantInfo>();
       for (QualifiedModelParticipantInfo qualifiedModelParticipantInfo : allParticipants)
       {
-         DmsPrincipal principal = new DmsPrincipal(qualifiedModelParticipantInfo,
-               ModelUtils.extractModelId(qualifiedModelParticipantInfo.getQualifiedId()));
+         DmsPrincipal principal = null;
+         if (qualifiedModelParticipantInfo.getDepartment() != null)
+         {
+            Department department = DepartmentCacheManager.getDepartment(qualifiedModelParticipantInfo.getDepartment()
+                  .getOID());
+            principal = new DmsPrincipal(qualifiedModelParticipantInfo, department,
+                  ModelUtils.extractModelId(qualifiedModelParticipantInfo.getQualifiedId()));
+         }
+         else
+         {
+            principal = new DmsPrincipal(qualifiedModelParticipantInfo,
+                  ModelUtils.extractModelId(qualifiedModelParticipantInfo.getQualifiedId()));
+         }
+
          if (!participants.containsKey(principal.getName()))
          {
             participants.put(principal.getName(), qualifiedModelParticipantInfo);
          }
          else
          {
-            System.out.println("#### This key already exist...." + principal.getName());
+            trace.debug("#### This key already exist...." + principal.getName());
          }
       }
       return participants;

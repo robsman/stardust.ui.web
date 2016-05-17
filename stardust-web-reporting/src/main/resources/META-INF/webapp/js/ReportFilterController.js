@@ -233,19 +233,19 @@ define(
 				 * Adding order parameter to dimension object used in Filtering
 				 * for displaying it on UI in specific order
 				 */
-				ReportFilterController.prototype.getDimensions = function(donotFilter) {
-					var dimensions = this.reportingService.getCumulatedDimensions(this.report);
+			  ReportFilterController.prototype.getDimensions = function(donotFilter) {
+          var dimensions = this.reportingService.getCumulatedDimensions(this.report);
 
-					for (var i = dimensions.length - 1; i >= 0; i--) {
-						if ((this.reportingService.metadata.durationType.id == dimensions[i].type.id) || (!donotFilter && dimensions[i].notSupportedAsFilter) ||
-						         this.reportingService.metadata.objects.activityInstance.dimensions.activityType.id == dimensions[i].id) {
-						   //As activityType is non-Filterable so removing it from Filter List.
-							dimensions.splice(i, 1);
-						}
-					}
-
-					return dimensions;
-				};
+          for (var i = dimensions.length - 1; i >= 0; i--) {
+            if ((dimensions[i].metadata && dimensions[i].metadata.isCompositeOrLinkDescriptor)
+                    || (this.reportingService.metadata.durationType.id == dimensions[i].type.id)
+                    || (!donotFilter && dimensions[i].notSupportedAsFilter)
+                    || this.reportingService.metadata.objects.activityInstance.dimensions.activityType.id == dimensions[i].id) {
+                      dimensions.splice(i, 1);
+            }
+          }
+          return dimensions;
+        };
 
 				/**
 				 * 

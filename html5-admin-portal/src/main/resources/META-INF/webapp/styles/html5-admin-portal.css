@@ -40,7 +40,7 @@ input.search:invalid{
 
 .permission-tree {
 	overflow: auto;
-    height: 600px;
+    height: calc(100vh - 250px);
 }
 
 .permission-tree .sd-tree .expand-section {

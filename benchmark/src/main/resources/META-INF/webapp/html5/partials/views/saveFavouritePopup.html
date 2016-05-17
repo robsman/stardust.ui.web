@@ -8,9 +8,9 @@
 	<div class="confirmation-buttonpane">
 		<div class="button-pane cf">
 			<div class="button-alignment">
-				<button ng-disabled="ctrl.tlvReportName.length == 0" class="button" ng-click="ctrl.updateFavorite();ctrl.saveFavoritePopup.close();">{{i18n('admin-portal-messages.common-button-save')}}
+				<button ng-disabled="ctrl.tlvReportName.length == 0" class="button" ng-click="ctrl.updateFavorite();ctrl.saveFavoritePopup.close();">{{i18n('views-common-messages.common-save')}}
 				</button>
-				<button ng-show="ctrl.showDeleteButton" class="button" ng-click="ctrl.deleteFavorite();ctrl.saveFavoritePopup.close();close($event, $scope.item.view.path)">{{i18n('admin-portal-messages.common-delete')}}
+				<button ng-show="ctrl.showDeleteButton" class="button" ng-click="ctrl.deleteFavorite();ctrl.saveFavoritePopup.close();close($event, $scope.item.view.path)">{{i18n('views-common-messages.common-delete')}}
 				</button>
 				<button class="button"
 					ng-click="ctrl.saveFavoritePopupClose();">

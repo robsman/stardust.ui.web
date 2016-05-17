@@ -143,15 +143,22 @@
                 }
               });
 
-              
+              var header = {
+                "Content-Type": "multipart/form-data"
+              };
+
+              //It is for dear Internet Explorer
+              if (!!navigator.userAgent.match(/Trident/)) {
+                header = {
+                  "Content-Type": undefined
+                };
+              }
 
               $http({
                 method: 'POST',
                 url: scope.url,
                 data: formData,
-                headers: {
-                  "Content-Type": "multipart/form-data"
-                }
+                headers: header,
               }).success(
                       function(data) {
                         scope.placeHolder = sdI18n("views-common-messages.fileDropbox.success",

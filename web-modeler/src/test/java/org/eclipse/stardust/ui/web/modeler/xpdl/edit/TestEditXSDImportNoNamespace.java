@@ -42,10 +42,9 @@ public class TestEditXSDImportNoNamespace extends RecordingTestcase
       assertThat(typeDeclaration, is(not(nullValue())));
       XSDSchema schema = typeDeclaration.getSchema();
       assertThat(schema, is(not(nullValue())));
-      
-      XSDTypeDefinition foundType = null;      
-      EList<XSDTypeDefinition> typeDefinitions = schema.getTypeDefinitions();
-      XSDTypeDefinition typeDefinition = typeDefinitions.get(0);
+
+      XSDTypeDefinition foundType = null;
+      XSDTypeDefinition typeDefinition = schema.resolveTypeDefinition("XSDDataStructure1");
       if(typeDefinition instanceof XSDComplexTypeDefinition)
       {
          XSDParticle complexType = typeDefinition.getComplexType();
@@ -63,14 +62,14 @@ public class TestEditXSDImportNoNamespace extends RecordingTestcase
                   {
                      foundType = element.getType();
                      break;
-                  }                  
+                  }
                }
-            }            
+            }
          }
       }
-            
+
       assertThat(foundType, is(not(nullValue())));
-      assertThat("Address", is(foundType.getName()));            
+      assertThat("Address", is(foundType.getName()));
    }
 
    @Override

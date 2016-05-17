@@ -971,22 +971,31 @@ define(
                   producerInboundConversion, consumerRoute, consumerBpmTypeConverter, consumerInboundConversion, 
                   includeProcessContextHeaders) 
             {
+               var attributes={};
+               attributes["synchronous:retry:responsibility"]="application";
+               attributes["carnot:engine:camel::invocationPattern"]=invocationPatternChanges;
+               attributes["carnot:engine:camel::invocationType"]=invocationTypeChanges;
+               attributes["carnot:engine:camel::routeEntries"]=producerRoute;
+               attributes["carnot:engine:camel::producerBpmTypeConverter"]=producerBpmTypeConverter;
+               if(producerOutboundConversion === "None" || producerOutboundConversion ===  m_constants.TO_BE_DEFINED)
+                  attributes["carnot:engine:camel::producerOutboundConversion"]=null;
+               else
+                  attributes["carnot:engine:camel::producerOutboundConversion"]=producerOutboundConversion;
+               if(producerInboundConversion === "None" || producerInboundConversion ===  m_constants.TO_BE_DEFINED)
+                  attributes["carnot:engine:camel::producerInboundConversion"]=null;
+               else
+                  attributes["carnot:engine:camel::producerInboundConversion"]=producerInboundConversion;
+               
+               attributes["carnot:engine:camel::consumerRoute"]=consumerRoute;
+               attributes["carnot:engine:camel::consumerBpmTypeConverter"]=consumerBpmTypeConverter;
+               attributes["carnot:engine:camel::consumerInboundConversion"]=consumerInboundConversion;
+               attributes["carnot:engine:camel::processContextHeaders"]=includeProcessContextHeaders;
+               
+               
                this.view
                      .submitChanges({
                         type : applicationTypeChanges,
-                        attributes : {
-                           "synchronous:retry:responsibility": "application",
-                           "carnot:engine:camel::invocationPattern" : invocationPatternChanges,
-                           "carnot:engine:camel::invocationType" : invocationTypeChanges,
-                           "carnot:engine:camel::routeEntries" : producerRoute,
-                           "carnot:engine:camel::producerBpmTypeConverter" : producerBpmTypeConverter,
-                           "carnot:engine:camel::producerOutboundConversion" : producerOutboundConversion,
-                           "carnot:engine:camel::producerInboundConversion" : producerInboundConversion,
-                           "carnot:engine:camel::consumerRoute" : consumerRoute,
-                           "carnot:engine:camel::consumerBpmTypeConverter" : consumerBpmTypeConverter,
-                           "carnot:engine:camel::consumerInboundConversion" : consumerInboundConversion,
-                           "carnot:engine:camel::processContextHeaders" : includeProcessContextHeaders
-                        }
+                        attributes : attributes
                      });
             };
 

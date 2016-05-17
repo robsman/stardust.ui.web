@@ -1,5 +1,6 @@
 package org.eclipse.stardust.engine.extensions.velocity.tool;
 
+import org.apache.velocity.VelocityContext;
 import org.eclipse.stardust.engine.extensions.templating.enricher.VelocityContextAppenderProcessor;
 import org.junit.After;
 import org.junit.Before;
@@ -18,10 +19,8 @@ public class DocReqToolTest
    {
       ctx = new ClassPathXmlApplicationContext(new String[] {
             "classpath:META-INF/spring/templating-application-context.xml"});
-      VelocityContextAppenderProcessor customVelocityContextAppender = (VelocityContextAppenderProcessor) ctx
-            .getBean("customVelocityContextAppender");
-      tool = (DocReqTool) customVelocityContextAppender.getVelocityContext()
-            .get("docreq");
+      VelocityContext velocityContext=VelocityContextAppenderProcessor.initializeVelocityContext("default-velocity-tools.xml");
+      tool = (DocReqTool) velocityContext.get("docreq");
 
    }
 

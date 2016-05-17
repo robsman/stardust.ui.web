@@ -70,7 +70,7 @@ public class ModelerConfigurationService
 
       if (isEmpty(defaultProfile))
       {
-         defaultProfile = UserPreferencesEntries.PROFILE_BA;
+         defaultProfile = UserPreferencesEntries.PROFILE_INTEGRATOR;
       }
 
       if (isEmpty(showTechnologyPreview))

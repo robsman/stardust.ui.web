@@ -8,7 +8,4 @@
       class="org.eclipse.stardust.engine.extensions.templating.enricher.VelocityContextAppenderProcessor">
       <constructor-arg value="default-velocity-tools.xml" />
    </bean>
-   <bean id="requestHandler" class="org.eclipse.stardust.engine.extensions.templating.core.RequestHandler">
-      <property name="appender" ref="customVelocityContextAppender" />
-   </bean>
 </beans>

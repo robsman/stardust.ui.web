@@ -14,17 +14,19 @@ import java.security.Principal;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
-import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.UserGroupInfo;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrincipal;
-
+import org.eclipse.stardust.ui.web.viewscommon.common.DepartmentCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantLabel;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 public class Participant implements Comparable<Participant>
 {
@@ -51,27 +53,35 @@ public class Participant implements Comparable<Participant>
    private void initialize(ModelParticipantInfo modelParticipantInfo)
    {
       modelId = ModelUtils.extractModelId(modelParticipantInfo.getQualifiedId());
-      principal = new DmsPrincipal(modelParticipantInfo, modelId);
-      id = principal.getName();
+      
       if (modelParticipantInfo instanceof org.eclipse.stardust.engine.api.model.Participant)
       {
+         principal = new DmsPrincipal(modelParticipantInfo, modelId);
          name = I18nUtils.getParticipantName((org.eclipse.stardust.engine.api.model.Participant) modelParticipantInfo);
-         
       }
       else
       // scoped roles / departments
       {
-         name = I18nUtils.getParticipantName(ParticipantUtils.getParticipant(modelParticipantInfo));
          if (null != modelParticipantInfo.getDepartment())
          {
-            name += POSTFIX_OPEN + modelParticipantInfo.getDepartment().getName() + POSTFIX_CLOSE;
+            Department department = DepartmentCacheManager.getDepartment(modelParticipantInfo.getDepartment().getOID());
+            principal = new DmsPrincipal(modelParticipantInfo, department, modelId);
          }
+         else
+         {
+            principal = new DmsPrincipal(modelParticipantInfo, modelId);
+         }
+         
+         ParticipantLabel pl = ModelHelper.getParticipantLabel((ParticipantInfo) modelParticipantInfo);
+         name = pl.getLabel();
       }
 
       if (StringUtils.isEmpty(name))
       {
          name = principal.getName();
       }
+      
+      id = principal.getName();
    }
 
    /**

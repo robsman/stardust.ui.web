@@ -12,17 +12,15 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.velocity.VelocityContext;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.extensions.templating.enricher.VelocityContextAppenderProcessor;
 
 public class RequestHandler
 {
    private CamelContext camelContext;
-
-   private VelocityContextAppenderProcessor appender;
 
    public static final Logger logger = LogManager.getLogger(RequestHandler.class);
 
@@ -31,9 +29,9 @@ public class RequestHandler
       this.camelContext = new DefaultCamelContext();
    }
 
-   public void setAppender(VelocityContextAppenderProcessor appender)
+   public RequestHandler(CamelContext camelContext)
    {
-      this.appender = appender;
+      this.camelContext = camelContext;
    }
 
    /**
@@ -64,7 +62,7 @@ public class RequestHandler
       }
    }
 
-   public byte[] handleRequest(TemplatingRequest request) throws ServiceException
+   public byte[] handleRequest(TemplatingRequest request, VelocityContext velocityContext) throws ServiceException
    {
       ServiceFactory sf = getServiceFactory();
 
@@ -79,26 +77,26 @@ public class RequestHandler
          registerDataPaths(request, dataPaths);
       }
       
-      return dispatch(request);
+      return dispatch(request, velocityContext);
    }
 
-   private byte[] dispatch(TemplatingRequest request) throws ServiceException
+   private byte[] dispatch(TemplatingRequest request, VelocityContext velocityContext) throws ServiceException
    {
       IRequestHandler handler;
       if (isDocx(request))
       {
-         handler = new XDocReportRequestHandler(camelContext, appender);
+         handler = new XDocReportRequestHandler(camelContext);
          if(logger.isDebugEnabled())
             logger.debug("The request is dispatched to XDocReportRequestHandler");
       }
       else
       {
-         handler = new VelocityRequestHandler(camelContext, appender);
+         handler = new VelocityRequestHandler(camelContext);
          if(logger.isDebugEnabled())
             logger.debug("The request is dispatched to VelocityRequestHandler");
       }
       
-      return handler.handleRequest(request);
+      return handler.handleRequest(request,velocityContext);
    }
 
    protected void validate(TemplatingRequest request)

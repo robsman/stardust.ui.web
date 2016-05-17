@@ -1639,7 +1639,7 @@ public class ProcessInstanceUtils
       }
 
       // process name Filter
-      else if (null != filterDTO.processName)
+      if (null != filterDTO.processName)
       {
          FilterOrTerm or = filter.addOrTerm();
          if (!filterDTO.processName.processes.contains("-1"))
@@ -1652,7 +1652,7 @@ public class ProcessInstanceUtils
       }
       
       // Root process name Filter
-      else if (null != filterDTO.rootProcessName)
+      if (null != filterDTO.rootProcessName)
       {
          FilterOrTerm or = filter.addOrTerm();
          if (!filterDTO.rootProcessName.processes.contains("-1"))

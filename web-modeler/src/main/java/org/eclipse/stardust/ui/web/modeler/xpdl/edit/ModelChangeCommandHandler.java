@@ -15,6 +15,7 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.Iterator;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -130,7 +131,9 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
          facade.createPrimitiveData(model, "BusinessDate", "Business Date",
                ModelerConstants.DATE_PRIMITIVE_DATA_TYPE);
       }
-
+      
+      model.setId(preventDuplicateFilenames(model.getId()));
+      
       modelService.getModelManagementStrategy()
             .getModels()
             .put(model.getId(), model);
@@ -200,7 +203,35 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
             changes.removed.add(removeInfo);
          }
          modelMgtStrategy.deleteModel(model);
+         
+         // Remove pending elements from EObjectUUIDMapper and purge them
+         for (Iterator<EObject> i = model.eAllContents(); i.hasNext();)
+         {
+            EObject element = i.next();
+            modelService.currentSession().uuidMapper().unmap(element, true);
+         }
+         modelService.currentSession().uuidMapper().unmap(model, false);
+         modelService.currentSession().uuidMapper().cleanup();         
       }
       return changes;
+   }
+   
+   private String preventDuplicateFilenames(String modelID) 
+   {
+      for (Iterator<ModelType> i = modelService.getModelManagementStrategy()
+            .getModels().values().iterator(); i.hasNext();)
+      {
+         ModelType modelType = i.next();
+         if (modelType != null)
+         {
+            if ((modelID + ".xpdl").equals(modelService
+                  .getModelManagementStrategy().getModelFileName(modelType)))
+            {
+               modelID = modelID + "1";
+               return preventDuplicateFilenames(modelID);
+            }
+         }
+      }
+      return modelID;
    }
 }

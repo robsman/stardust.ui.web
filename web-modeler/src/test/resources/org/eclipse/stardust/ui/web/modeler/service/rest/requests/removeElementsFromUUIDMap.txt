@@ -1,0 +1,6 @@
+{"commandId":"data.delete","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"ProviderModel","changes":{"id":"ProvidedDocument"}}]}
+{"commandId":"data.delete","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"ProviderModel","changes":{"id":"ProvidedPrimitive"}}]}
+{"commandId":"data.delete","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"ProviderModel","changes":{"id":"ProvidedStructData"}}]}
+{"commandId":"application.delete","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"ProviderModel","changes":{"id":"ProvidedUIMashup"}}]}
+{"commandId":"process.delete","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"ProviderModel","changes":{"id":"ProvidedProcess"}}]}
+{"commandId":"structuredDataType.delete","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"ProviderModel","changes":{"id":"ProvidedTypeDeclaration"}}]}

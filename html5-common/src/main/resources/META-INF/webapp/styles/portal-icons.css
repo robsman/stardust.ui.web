@@ -9,19 +9,25 @@ reference for all our icons.
 Supported fonts we wrap for our portal icon (pi-) classes
 -------------------------------------------------------------
 */
-@font-face{
-	font-family: starclipse;
-	src: url(./starclipse/fonts/starclipse.woff?x=1)  format('woff');
+@font-face {
+  font-family: 'starclipse';
+  src: url('./starclipse/fonts/starclipse.eot?') format('eot'), url('./starclipse/fonts/starclipse.woff') format('woff'), url('./starclipse/fonts/starclipse.ttf') format('truetype');
 }
 
 @font-face{
 	font-family: 'Glyphicons Halflings';
 	src: url(./3rd-party/glyphicons/3.3.2/fonts/glyphicons-halflings-regular.woff)  format('woff');
+	src: url('./3rd-party/glyphicons/3.3.2/fonts/glyphicons-halflings-regular.eot?') format('eot'), 
+	url('./3rd-party/glyphicons/3.3.2/fonts/glyphicons-halflings-regular.woff') format('woff'), 
+	url('./3rd-party/glyphicons/3.3.2/fonts/glyphicons-halflings-regular.ttf') format('truetype');
 }
 
-@font-face{
-	font-family: FontAwesome;
-	src: url(./3rd-party/font-awesome/4.4.0/fonts/fontawesome-webfont.woff)  format('woff');
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('./3rd-party/font-awesome/4.4.0/fonts/fontawesome-webfont.eot?') format('eot'),
+   url('./3rd-party/font-awesome/4.4.0/fonts/fontawesome-webfont.woff') format('woff'),
+   url('./3rd-party/font-awesome/4.4.0/fonts/fontawesome-webfont') format('truetype'), 
+   url('./3rd-party/font-awesome/4.4.0/fonts/fontawesome-webfont.woff2?v=4.4.0') format('woff2');
 }
 
 
@@ -605,6 +611,11 @@ Icon implementations
 .pi-process-documents:before{
 	font-family: "FontAwesome";
 	content: "\f114"; /* fa-folder-o */
+}
+
+.pi-process-documents-filled:before{
+	font-family: "FontAwesome";
+	content: "\f07b"; /* fa-folder */
 }
 
 .pi-search:before{
@@ -1757,4 +1768,12 @@ a span.pi:hover {
 .pi-actions:before{
 	font-family:"FontAwesome";
 	content:'\f141'; /*  fa-ellipsis-h*/
+}
+
+.pi-success:before{
+	color:green;
+}
+
+.pi-danger:before{
+	color:red;
 }
