@@ -780,6 +780,20 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
 
          dataMapping.setId(id);
+         
+         if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
+         {
+            DataType data = null;
+            String dataFullID = null;
+            dataFullID = dataMappingJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
+                  .getAsString();
+            ModelType model = ModelUtils.findContainingModel(dataMapping);
+            data = getModelBuilderFacade().importData(model, dataFullID);
+            if (data != null)
+            {
+               dataMapping.setData(data);
+            }
+         }
       }
 
       if (hasNotJsonNull(dataMappingJson, ModelerConstants.ACCESS_POINT_ID_PROPERTY))
