@@ -15,6 +15,7 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtil
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isSupportsWeb;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -116,6 +117,8 @@ public class ActivityInstanceUtils
    private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
 
    private static final String STATUS_PREFIX = "views.activityTable.statusFilter.";
+   
+   private static final String DATE_FORMAT = "yyyy-MM-dd";
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
@@ -294,9 +297,17 @@ public class ActivityInstanceUtils
                {
                   if (entry.getKey().equals(pathDto.id))
                   {
-                     Object value = entry.getValue();
-                     if (value instanceof Date) {
-                        value = ((Date) value).getTime();
+                     Serializable value = entry.getValue();
+                     if (value instanceof Date)
+                     {
+                      if ("java.util.Date".equals(pathDto.typeName))
+                         {
+                             value = ((Date) value).getTime();
+                         }
+                      else
+                      {
+                         value = new SimpleDateFormat(DATE_FORMAT).format(value);
+                      }
                      }
                      dto.inOutData.put(entry.getKey(), value);
                      break;
