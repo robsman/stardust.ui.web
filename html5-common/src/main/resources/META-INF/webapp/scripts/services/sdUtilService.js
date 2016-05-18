@@ -182,68 +182,7 @@
 				throw msg;
 			}
 		};
-
-		/*
-		 * For async, use angular resource
-		 */
-		UtilService.prototype.syncAjax = function(endpoint) {
-			var data, failed;
-
-			jQuery.ajax({
-				type : 'GET',
-				url : endpoint,
-				async : false,
-				contentType : 'application/json',
-				success : function(result) {
-					data = result;
-				},
-				error : function(errObj) {
-					failed = true;
-				}
-			});
-
-			if (failed) {
-				throw 'Error in invoking syncAjaxPost()';
-			}
-
-			return data;
-		};
-
-		/*
-		 * For async, use angular resource
-		 */
-		UtilService.prototype.syncAjaxSubmit = function(endpoint, value, type) {
-			var data, failed;
-
-			if (value != undefined && value != null) {
-				if (angular.isObject(value) || angular.isArray(value)) {
-					value = angular.toJson(value);
-				} else {
-					value = '' + value;
-				}
-			}
-
-			jQuery.ajax({
-				type : type ? type : 'POST',
-				url : endpoint,
-				async : false,
-				contentType : 'application/json',
-				data : value,
-				success : function(result) {
-					data = result;
-				},
-				error : function(errObj) {
-					failed = true;
-				}
-			});
-
-			if (failed) {
-				throw 'Error in invoking syncAjaxSubmit()';
-			}
-
-			return data;
-		};
-
+		
 		/**
 		 * 
 		 */
