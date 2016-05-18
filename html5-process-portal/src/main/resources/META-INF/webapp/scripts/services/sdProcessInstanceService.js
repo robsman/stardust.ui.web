@@ -72,15 +72,10 @@
 		/**
 		 * 
 		 */
-		ProcessInstanceService.prototype.getProcessByStartingActivityOid = function(aiOid, sync) {
+		ProcessInstanceService.prototype.getProcessByStartingActivityOid = function(aiOid) {
 			var restUrl = REST_BASE_URL+"startingActivityOID/"+ aiOid;
-
-			if(!sync) {
-				return $resource(restUrl).get().$promise;
-			} else {
-				return sdUtilService.syncAjax(restUrl);
-			}
-		}
+			return $resource(restUrl).get().$promise;
+		};
 
 		
 		/*
