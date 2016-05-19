@@ -1,12 +1,7 @@
-.popover {
-    position: absolute;
-    background-color: #fff;
-    background-clip: padding-box;
-    box-shadow: 0 5px 10px rgba(0,0,0,.2);
-}
+/* Override portal styles here for SPS */
 
-.sidebar-content-inner {
-	margin-top: 35px;
+.sd-tree {
+ 	overflow: visible !important; /* This is required, otherwise unnecessary scroll appears */
 }
 
 .perspective-series-wrapper {
