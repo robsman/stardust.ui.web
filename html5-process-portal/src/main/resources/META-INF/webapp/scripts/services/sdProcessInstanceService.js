@@ -33,7 +33,7 @@
 		/**
 		 * 
 		 */
-		ProcessInstanceService.prototype.getBenchmarkDetailsProcess = function(bOid,pQId) {
+		ProcessInstanceService.prototype.getBenchmarkDetailsByBenchmarkOid = function(bOid) {
 			var deferred = $q.defer();
 			
 			var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/benchmark-definitions/run-time/"+bOid;
@@ -41,19 +41,21 @@
 			var result = {}
 			
 			$resource(restUrl).get().$promise.then(function(data){ 
-
 				result.name  = data.content.name,
 				result.categories = data.content.categories
-				
-				var processDefinitions = {};
+				result.processDefinitions = [];
 
-				angular.forEach(data.content.models,function(model){  
-					processDefinitions = model.processDefinitions;			
+				var processDefs = [];
+				
+				angular.forEach(data.content.models, function (model) {
+					angular.forEach(model.processDefinitions, function (processDef) {
+						processDefs.push(processDef);
+					});
 				});
-				result.processDefinitions = processDefinitions;
-			
+				result.processDefinitions = processDefs;
 				deferred.resolve(result);
 			});
+			
 			return deferred.promise;
 		}
 		
