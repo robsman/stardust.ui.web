@@ -75,6 +75,12 @@ define(
 								"type" : "boolean"
 							},
 							{
+								"name" : "NumericInputPreferences_showGroupingSeparator",
+								"label" : m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.showThousandsSeparator"),
+								"type" : "boolean"
+							},
+							{
 								"name" : "InputPreferences_mandatory",
 								"label" : m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.mandatory"),
