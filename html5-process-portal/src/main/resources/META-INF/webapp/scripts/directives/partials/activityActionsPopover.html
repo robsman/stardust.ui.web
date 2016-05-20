@@ -1,4 +1,4 @@
-<div class="menu-list">
+<div style="min-width:120px;" class="menu-list">
 
 	<div class="menu-container"
 	     ng-click="activityTableCtrl.$openProcessDetails(rowData);"
@@ -79,41 +79,34 @@
 	   	 </span>
 
 	</div>
-
+	
 	<div class="menu-container"
-	     ng-click="activityTableCtrl.$openAbortDialog(rowData);"
-	     aid="PP-ActivityTable-AbortAction"
-	     ng-if="::activityTableCtrl.isActionButtonVisible('abort')"
-		 ng-disabled="!rowData.abortActivity || rowData.defaultCaseActivity"
-		 title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}"
-		 class="button-link tbl-tool-link"
-		 ng-class="{'tbl-tool-joined-link' : activityTableCtrl.isActivityTableMode()}">
+		 class="button-link tbl-tool-link">
 
-		<i class="pi pi-activity-abort pi-lg">
+		<i class="pi pi-activity-abort pi-lg"
+			ng-click="activityTableCtrl.$openAbortDialog(rowData);"
+	     	aid="PP-ActivityTable-AbortAction"
+	     	ng-if="::activityTableCtrl.isActionButtonVisible('abort')"
+		 	ng-disabled="!rowData.abortActivity || rowData.defaultCaseActivity"
+		 	title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}"
+		 	ng-class="{'tbl-tool-joined-link' : activityTableCtrl.isActivityTableMode()}">
 		</i>
 
-		<span>
+		<span ng-click="activityTableCtrl.$openAbortDialog(rowData);">
 			{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}
 		</span>
 
-	</div>
-
-	<div class="menu-container"
-	     ng-if="::(activityTableCtrl.isActivityTableMode() && activityTableCtrl.isActionButtonVisible('abort'))"
-	     aid="PP-ActivityTable-AbortPopoverAction"
-		 ng-disabled="!rowData.abortProcess || rowData.isCaseInstance"
-		 sd-popover
-		 sda-template="activityTableCtrl.abortMenuTemplateUrl"
-		 sda-placement ="bottom-right auto"
-		 ng-click="activityTableCtrl.openAbortPopover(rowData);" >
-
 		<i title ="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
+		   style="position: relative;left: calc(100% - 25px);"
+		   ng-if="::(activityTableCtrl.isActivityTableMode() && activityTableCtrl.isActionButtonVisible('abort'))"
+	       aid="PP-ActivityTable-AbortPopoverAction"
+		   ng-disabled="!rowData.abortProcess || rowData.isCaseInstance"
+		   sd-popover
+		   sda-template="activityTableCtrl.abortMenuTemplateUrl"
+		   sda-placement ="bottom-right auto"
+		   ng-click="activityTableCtrl.openAbortPopover(rowData);"
 		   class="pi pi-menu-dropdown button-link tbl-tool-link">
 		</i>
-
-		<span>
-			{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}
-		</span>
 
 	</div>
 
