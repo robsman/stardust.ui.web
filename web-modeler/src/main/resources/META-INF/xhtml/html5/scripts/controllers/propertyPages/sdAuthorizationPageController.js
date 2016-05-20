@@ -292,7 +292,11 @@
 		if (fullId) {
 			var m_model = this.propertiesPanel.getMModel();
 			var participant = m_model.findParticipant(fullId);
-			return participant.model.name + "/" + participant.name;
+			if (participant.id === 'Administrator') {
+				return participant.name;
+			} else {
+				return participant.model.name + "/" + participant.name;
+			}
 		}
 	};
 
