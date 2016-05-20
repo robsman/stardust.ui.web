@@ -1248,29 +1248,31 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
          if (!isEmpty(descriptorValue))
          {
             DataPathDetails dataPathDetails = datapathMap.get(key);
-            GenericDataMapping mapping = new GenericDataMapping(dataPathDetails);
-            DataMappingWrapper dmWrapper = new DataMappingWrapper(mapping, null, false);
-            if(DescriptorColumnUtils.isLinkDescriptor(dataPathDetails))
-            {
-               Object text =   dataPathDetails.getAttribute("text");
-               if(null != text && StringUtils.isNotEmpty(text.toString()))
+            if(null != dataPathDetails) {
+               GenericDataMapping mapping = new GenericDataMapping(dataPathDetails);
+               DataMappingWrapper dmWrapper = new DataMappingWrapper(mapping, null, false);
+               if(DescriptorColumnUtils.isLinkDescriptor(dataPathDetails))
                {
-                  processDescriptor = new ProcessDescriptor(dataPathDetails.getId(), I18nUtils.getDataPathName(dataPathDetails),
-                        formatDescriptorValue(descriptors.get(key), dmWrapper.getType()), true);   
+                  Object text =   dataPathDetails.getAttribute("text");
+                  if(null != text && StringUtils.isNotEmpty(text.toString()))
+                  {
+                     processDescriptor = new ProcessDescriptor(dataPathDetails.getId(), I18nUtils.getDataPathName(dataPathDetails),
+                           formatDescriptorValue(descriptors.get(key), dmWrapper.getType()), true);   
+                  }
+                  else
+                  {
+                     processDescriptor = new ProcessDescriptor(dataPathDetails.getId(), I18nUtils.getDataPathName(dataPathDetails),
+                           formatDescriptorValue(descriptors.get(key), dmWrapper.getType()));
+                  }
                }
                else
                {
                   processDescriptor = new ProcessDescriptor(dataPathDetails.getId(), I18nUtils.getDataPathName(dataPathDetails),
                         formatDescriptorValue(descriptors.get(key), dmWrapper.getType()));
                }
+               processDescriptors.add(processDescriptor);  
+
             }
-            else
-            {
-               processDescriptor = new ProcessDescriptor(dataPathDetails.getId(), I18nUtils.getDataPathName(dataPathDetails),
-                     formatDescriptorValue(descriptors.get(key), dmWrapper.getType()));
-            }
-            processDescriptors.add(processDescriptor);  
-            
          }
       }
       return processDescriptors;

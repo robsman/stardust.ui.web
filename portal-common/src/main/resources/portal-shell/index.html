@@ -142,7 +142,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="sidebar-content" sg-stretch-to-bottom ng-class="{'display-none': !sidebar.pinned}"
+				<div class="sidebar-content" ng-class="{'display-none': !sidebar.pinned}"
 					ng-style="{'width': sidebarWidth}">
 					<div class="sidebar-title-wrapper">
 						<span class="sidebar-title">{{config.sidebar.title}}</span>
@@ -150,7 +150,7 @@
 							<span>&raquo;</span>
 						</div>
 					</div>
-					<div class="sidebar-content-inner" ng-class="{'display-none': !sidebar.visible}">
+					<div class="sidebar-content-inner" sg-stretch-to-bottom ng-class="{'display-none': !sidebar.visible}">
 						<div ng-repeat="item in sidebars">
 							<div ng-if="sidebarCheck(item)" ng-controller="sidebarCtrl">
 								<ng-include src="item.partial"/>

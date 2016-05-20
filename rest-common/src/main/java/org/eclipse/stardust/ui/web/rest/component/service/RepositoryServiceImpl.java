@@ -348,7 +348,7 @@ public class RepositoryServiceImpl implements RepositoryService
       }
       else
       {
-         return null;
+         docVersionList = new ArrayList<Document>();
       }
 
       Collections.sort(docVersionList, new Comparator<Document>()

@@ -46,9 +46,10 @@ public class AuditTrailResource
    @DELETE
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/database")
-   public Response cleanupATD(@QueryParam("retainUsersAndDepts") @DefaultValue("false") boolean retainUsersAndDepts)
+   public Response cleanupATD( @QueryParam("retainUsersAndDepts") @DefaultValue("true") boolean retainUsersAndDepts ,
+                               @QueryParam("retainBOInstances") @DefaultValue("true") boolean retainBOInstances)
    {
-      Boolean status = auditTrailService.cleanupATD(retainUsersAndDepts);
+      Boolean status = auditTrailService.cleanupATD(retainUsersAndDepts, retainBOInstances);
       JsonObject json = new JsonObject();
       json.addProperty("status", status);
       return Response.ok(json.toString(), MediaType.APPLICATION_JSON).build();

@@ -866,8 +866,7 @@
 	            //on the parent TreeNode directive to communicate back to the 
 	            //users controller.
 	            scope.invokeCallback = function(name,e){
-
-	              
+	            	
 	              if(e && e.preventDefault){
 	                e.preventDefault();
 	                e.stopImmediatePropagation();
@@ -970,6 +969,12 @@
 	                //Requires resolution.
 	                case 'node-rename-commit':
 	                
+	                  //filter duplicates caused by user commiting an event with the enter key.
+	                  if(scope.lastRenameCommit && scope.lastRenameCommit.timeStamp === e.timeStamp){
+	                  	return;
+	                  }
+	                  scope.lastRenameCommit = e;
+
 	                  if(inputElem && inputElem.value && inputElem.value.trim().length >0){
 	                	  data.newValue=inputElem.value;
 	                  }

@@ -157,6 +157,9 @@ var html5Deps = function() {
   }
 
   function bootstrapAngular(applicationModules) {
+	// bpm-ui is a parent module to all modules in app but cannot be loaded here
+	// However, some artifacts from it are required
+	// So implement or mock them in a new module here
     var module = angular.module("dummyBootstrapModule", ['ngResource']);
     
     module.provider('sgViewPanelService', function () {
@@ -329,13 +332,15 @@ var html5Deps = function() {
       
     var modules = portalApplication.getModules();
     if (modules != null && modules.length > 0) {
-      modules = modules.concat(module.name);
       if (modules[0] == 'bpm-ui') {
         modules = modules.splice(1);
       }
     } else {
       modules = [];
     }
+
+    // This module contains dependent artifacts so it needs to be the first module
+    modules = [module.name].concat(modules);
 
     // Append application modules
     modules = modules.concat(applicationModules);

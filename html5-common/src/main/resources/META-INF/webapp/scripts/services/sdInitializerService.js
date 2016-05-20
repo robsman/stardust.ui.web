@@ -23,10 +23,11 @@ angular.module('bpm-common.services').provider(
 					'sdLocalizationService',
 					'sgPubSubService',
 					'sdLoggerService',
+					'sgI18nService',
 					function ($q, sdSsoService, sdLoggedInUserService, sdEnvConfigService, sdLocalizationService,
-							sgPubSubService, sdLoggerService) {
+							sgPubSubService, sdLoggerService, sgI18nService) {
 						var service = new InitializerService($q, sdSsoService, sdLoggedInUserService,
-								sdEnvConfigService, sdLocalizationService, sgPubSubService, sdLoggerService);
+								sdEnvConfigService, sdLocalizationService, sgPubSubService, sdLoggerService, sgI18nService);
 						return service;
 					}];
 		});
@@ -35,7 +36,7 @@ angular.module('bpm-common.services').provider(
  *
  */
 function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfigService, sdLocalizationService,
-		sgPubSubService, sdLoggerService) {
+		sgPubSubService, sdLoggerService, sgI18nService) {
 
 	var trace = sdLoggerService.getLogger('bpm-common.services.sdInitializerService');
 	var self = this;
@@ -102,6 +103,10 @@ function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfi
 		};
 
 		if (initializationSuccess) {
+			if (sdEnvConfigService.isConfigured()) {
+				sgI18nService.addResourceBundle();
+			}
+
 			var msg = "IPP Initialization successful.";
 			pubSubMessage.message = msg;
 			trace.debug("Publishing Success Event : "+ self.events.success , pubSubMessage);
@@ -124,4 +129,45 @@ function InitializerService ($q, sdSsoService, sdLoggedInUserService, sdEnvConfi
 			failure : "sd-initialization-failure"
 	};
 }
+
+/**
+ * Decorate I18N Service, in order to add bundle
+ */
+angular.module('bpm-common.services').decorator('sgI18nService',
+		['$delegate', '$http', 'sdEnvConfigService', 'sdLoggerService', I18nServiceDecorator]);
+
+/*
+ * 
+ */
+function I18nServiceDecorator($delegate, $http, sdEnvConfigService, sdLoggerService) {
+	var I18N_MESSAGE_URL = 'services/rest/common/html5/api/messages/';
+
+	var trace = sdLoggerService.getLogger('bpm-common.services.sgI18nService.decorator');
+	
+	/*
+	 * Decorate by adding new method for adding bundle
+	 * This will be invoked after initialization is complete
+	 */
+	$delegate.addResourceBundle = function() {
+		var locale = this.locale() || 'en';
+		var url = sdEnvConfigService.getBaseUrl() + I18N_MESSAGE_URL + locale;
+		var namespace = 'translation';
+
+		trace.info('Fetching resource bundle, url: ' + url);
+
+		$http.get(url).success(function(resources) {
+			try {
+				trace.info('Adding resource bundle');
+				window.i18n.addResourceBundle(locale, namespace, resources[locale][namespace]);
+			} catch (e) {
+				trace.error('Error in adding resource bundle', e);
+			}
+        }).error(function(err) {
+        	trace.error('Error in fetching resource bundle, url: ' + url, err);
+        });
+	}
+
+	return $delegate;	
+}
+
 })();

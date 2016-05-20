@@ -141,7 +141,7 @@ public class SingleViewLaunchPanels implements InitializingBean
       List<String> values = StringUtils.splitAndKeepOrder(value, ":");
       String viewId = values.get(0);
       String viewKey = (values.size() == 2) ? values.get(1) : null;
-            
+      viewKey =  StringUtils.replace(viewKey, "'", "\\'");
       View view = findView(viewId, viewKey, portalApp);
       if (null != view)
       {

@@ -6,7 +6,6 @@
 angular.module('shell').directive('sgStretchToBottom',['$window', '$timeout', function($window, $timeout) {
     return {
         restrict : 'A',
-        require: '?sgReinit',
         replace : false,
         link: function(scope, element, attrs, sgReinit) {
             var shellSizes = {};
@@ -14,19 +13,16 @@ angular.module('shell').directive('sgStretchToBottom',['$window', '$timeout', fu
             function calc() {
                 var elemOffset = element.offset();
                 if(elemOffset.top < shellSizes.windowHeight) {
-                    element.outerHeight(shellSizes.windowHeight - elemOffset.top - shellSizes.footerHeight);
+                	var height = shellSizes.windowHeight - elemOffset.top - shellSizes.footerHeight;
+                	console.log('sgStretchToBottom', element, height, shellSizes.windowHeight, elemOffset.top, shellSizes.footerHeight);
+                	if (height <= 0 || elemOffset.top <= 0) {
+                		setTimeout(calc, 200); // If height or offertTop is zero or less retry
+                	} else {
+                		element.outerHeight(height);
+                	}
                 }
             }
-
-            if(sgReinit) {
-                sgReinit.trigger = function() {
-                    // Wait for the $digest cycle
-                    $timeout(function() {
-                        calc();
-                    });
-                };
-            }
-
+            
             scope.$watch('shell.sizes', function(sizes) {
                 shellSizes = sizes;
                 if(shellSizes !== {}){

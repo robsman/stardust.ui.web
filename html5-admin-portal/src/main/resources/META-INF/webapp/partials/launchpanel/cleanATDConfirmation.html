@@ -1,12 +1,25 @@
- <div>
-   <span style="color: #708090;" ng-bind-html="i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-auditTrail-cleanUpAuditTrailDbText')"></span>
-   <div>
-   <input type="checkbox"
-		  ng-model="ctrl.retainUsersAndDepts"
-		  style="vertical-align: middle"
-		  aid="ADM-ClnATD-RetainUsersAndDepts" />
-   <span class="inline-label">
-        {{i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-auditTrail-retailUsersAndDepts-label')}}
-   </span>
-  </div>
+<div class="inline-label">
+	<div
+		ng-bind-html="i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-auditTrail-cleanUpAuditTrailDbText')"></div>
+	<div>
+		<input type="checkbox" class="spacing-right" ng-model="ctrl.retainUsersAndDepts"
+			style="vertical-align: middle" aid="ADM-ClnATD-RetainUsersAndDepts" />
+		<span class="inline-label">{{i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-auditTrail-retailUsersAndDepts-label')}}</span>
+	</div>
+
+	<div>
+		<input type="checkbox" class="spacing-right" ng-model="ctrl.retainBOInstances"
+			style="vertical-align: middle" aid="ADM-ClnATD-RetainBoInstances" />
+		<span class="inline-label">{{i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-auditTrail-businessObjectInstances-label')}}</span>
+	</div>
+	
+	<div ng-bind-html="i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-auditTrail-cleanUpAuditTrailDbText1')"></div>
+	
+	<div>
+		<i class="pi pi-dialog-warning pi-1-5x spacing-right"></i>
+		<span ng-bind-html="i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-auditTrail-cleanUpAuditTrailDbText2')"> </span>
+	</div>
+	
+	<div ng-bind-html="i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-auditTrail-cleanUpAuditTrailDbText3')">
+	</div>
 </div>

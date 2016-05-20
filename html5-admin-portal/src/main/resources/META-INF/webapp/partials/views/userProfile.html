@@ -131,7 +131,7 @@
 			<tr>
 				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-validFrom-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
-				<td><div sd-date-time-picker ng-model="ctrl.user.validFrom"
+				<td><div sd-date-time-condensed ng-model="ctrl.user.validFrom"
 						name="validFrom" ng-model-onblur
 						sda-aid-prefix="ADM-PartMgmt-UserPopup-ValidFrom"
 						ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication"></div>
@@ -142,7 +142,7 @@
 			<tr>
 				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-validTo-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
-				<td><div sd-date-time-picker ng-model="ctrl.user.validTo"
+				<td><div sd-date-time-condensed ng-model="ctrl.user.validTo"
 						name="validTo" ng-model-onblur
 						sda-aid-prefix="ADM-PartMgmt-UserPopup-ValidTo"
 						ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication"></div>

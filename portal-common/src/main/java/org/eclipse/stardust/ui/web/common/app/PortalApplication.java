@@ -1159,17 +1159,29 @@ public class PortalApplication
    public void processHTML5OpenViewCall(View view, String url, Boolean ext)
    {
       FrameworkViewInfo frameworkViewInfo = view.getHtml5FwViewInfo();
-      
-      String script = "parent.BridgeUtils.View.openView('" + frameworkViewInfo.getHtml5FwViewId() + "', '" + frameworkViewInfo.getViewId()
+
+      String script = "parent.BridgeUtils.View.openView('" + escapeSpecialCharacters(frameworkViewInfo.getHtml5FwViewId()) + "', '" + escapeSpecialCharacters(frameworkViewInfo.getViewId())
             + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', icon: '_ICON_', url: '_URL_', custom: _CUSTOM_});";
-      script = StringUtils.replace(script, "_TYPE_", frameworkViewInfo.getTypeId());
-      script = StringUtils.replace(script, "_ID_", frameworkViewInfo.getId());
-      script = StringUtils.replace(script, "_LABEL_", StringUtils.replace(view.getFullLabel(), "'", "\\'"));
+      
+      script = StringUtils.replace(script, "_TYPE_", escapeSpecialCharacters(frameworkViewInfo.getTypeId()));
+      script = StringUtils.replace(script, "_ID_", escapeSpecialCharacters(frameworkViewInfo.getId()));
+      script = StringUtils.replace(script, "_LABEL_", escapeSpecialCharacters(view.getFullLabel()));
       script = StringUtils.replace(script, "_ICON_", deriveIconClass(view.getIcon()));
       script = StringUtils.replace(script, "_URL_", url);
-      script = StringUtils.replace(script, "_CUSTOM_", view.getParamsAsJson());
-
+      String viewParam = escapeSpecialCharacters(view.getParamsAsJson());
+      script = StringUtils.replace(script, "_CUSTOM_", viewParam);
       addEventScript(script);
+   }
+   
+   /**
+    * 
+    * @param iValue
+    * @return
+    */
+   private String escapeSpecialCharacters(String iValue) {
+      //Escaping '
+      String value =  StringUtils.replace(iValue, "'", "\\'");
+      return value;
    }
 
    /**
@@ -1227,11 +1239,11 @@ public class PortalApplication
       
       if (StringUtils.isNotEmpty(html5FWViewId))
       {
-         popupScript = "parent.BridgeUtils.View.setTitle('" + StringUtils.replace(title, "'", "\\'") + "', '" + html5FWViewId + "');";
+         popupScript = "parent.BridgeUtils.View.setTitle('" + escapeSpecialCharacters(title) + "', '" + html5FWViewId + "');";
       }
       else
       {
-         popupScript = "parent.BridgeUtils.View.setTitle('" + StringUtils.replace(title, "'", "\\'") + "');";   
+         popupScript = "parent.BridgeUtils.View.setTitle('" + escapeSpecialCharacters(title) + "');";   
       }
       
       addEventScript(popupScript);

@@ -979,7 +979,7 @@ if (!window["BridgeUtils"].View) {
 					ret.visible = sidebar.hasClass("sg-sidebar-opened");
 					ret.pinned = sidebar.hasClass("sg-sidebar-pinned");
 					
-					ret.height = jQuery(".sg-sidebar-content-well", sidebar).outerHeight() + 3;
+					ret.height = jQuery(".sg-sidebar-content-well", sidebar).outerHeight() - 3;
 					if (ret.visible) {
 						ret.left = jQuery(".sg-sidebar-content", sidebar).offset().left;
 						if (ret.pinned) {
@@ -1124,11 +1124,21 @@ if (!window["BridgeUtils"].Dialog) {
 			invokedFromlaunchPanels = fromlaunchPanels;
 
 			var scrollWidth = document.body.scrollWidth;
-			var headerHeight = jQuery(".header").height();
-			var footerHeight = jQuery(".footer").height();
-			var footerTopMargin = jQuery(".footer").css("margin-top"); // Margin is not covered in height, so check it
-			if (footerTopMargin && footerTopMargin != "") {
-			  footerHeight += BridgeUtils.getAbsoluteSize(footerTopMargin) + 1;
+			
+			var headerHeight, footerHeight, headerFixed;
+			if (jQuery(".app.sg-shell>header").length > 0) {
+				headerFixed = true;
+				headerHeight = jQuery(".app.sg-shell>header").height() + jQuery(".app.sg-shell>nav").height();
+				footerHeight = jQuery(".app.sg-shell>footer").height() + 20; // Add constant value it will be adjusted in sidebar
+			} else {
+				headerFixed = false;
+				headerHeight = jQuery(".header").height();
+				footerHeight = jQuery(".footer").height();
+				var footerTopMargin = jQuery(".footer").css("margin-top"); // Margin is not covered in height, so check it
+				if (footerTopMargin && footerTopMargin != "") {
+				  footerHeight += BridgeUtils.getAbsoluteSize(footerTopMargin) + 1;
+				}
+				footerHeight += 10; // Add constant value it will be adjusted in sidebar
 			}
 
 			var contentHeight = jQuery(window).height() - headerHeight - footerHeight;
@@ -1160,7 +1170,7 @@ if (!window["BridgeUtils"].Dialog) {
 					iframeForSidebar.style.top = headerHeight + "px";
 				}
 				iframeForSidebar.style.width = (sidebarDetails.width) + "px";
-				iframeForSidebar.style.height = (sidebarDetails.height - 17) + "px";
+				iframeForSidebar.style.height = (sidebarDetails.height - 20) + "px"; // Substract constant value it is aleredy adjusted in header
 				iframeForSidebar.style.visibility = "visible";
 				
 				// Activate the View, if fromView is not visible
@@ -1181,7 +1191,7 @@ if (!window["BridgeUtils"].Dialog) {
 
 				// New Size
 				var newWidth = scrollWidth + "px";
-				var newHeight = (sidebarDetails.height) + "px";
+				var newHeight = (sidebarDetails.height - 11) + "px";
 
 				// Launch Panels iframe				
 				launchPanelIframe = document.getElementById("portalLaunchPanels");
@@ -1196,7 +1206,9 @@ if (!window["BridgeUtils"].Dialog) {
 				launchPanelIframe.style.height = newHeight;
 
 				if (headerHeight) {
-					launchPanelIframe.style.top = headerHeight + "px";
+					if (!headerFixed) {
+						launchPanelIframe.style.top = headerHeight + "px";
+					}
 					launchPanelIframe.style.left = 0 + "px";
 				}
 				

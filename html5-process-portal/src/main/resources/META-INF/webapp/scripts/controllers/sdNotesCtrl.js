@@ -80,10 +80,13 @@
 			if(self.viewParams.createNote === true && data.totalCount == 0){
 				self.addNote();
 				delete self.viewParams.createNote;
-			}else if(self.viewParams.noteTimestamp != undefined){
+			} else if(self.viewParams.noteTimestamp !== undefined) {  //From Activity Panel
 				self.initialSelection = {'created' : self.viewParams.noteTimestamp};
 				delete self.viewParams.noteTimestamp;
-			}else{
+			} else if(self.viewParams.noteNr !== undefined) { //From Process Details
+				self.initialSelection = {'noteNumber' : self.viewParams.noteNr};
+				delete self.viewParams.noteNr;
+			} else {
 				self.initialSelection = {'noteNumber' : data.totalCount };
 			}
 			self.showNotesTable = true;
@@ -180,7 +183,7 @@
 		}
 
 	};
-	
+
 	NotesCtrl.prototype.truncateNote = function(note){
 		return _sdUtilService.truncate(note, 53);
 	};

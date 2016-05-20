@@ -23,7 +23,7 @@
 	 * 
 	 */
 	function LoggerService($log) {
-		var MAIN_MODULE = 'bpm-portal.'
+		var MAIN_MODULE = 'bpm-portal.';
 
 		/*
 		 * 

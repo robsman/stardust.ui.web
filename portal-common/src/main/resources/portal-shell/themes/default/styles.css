@@ -4,6 +4,10 @@ body, table {
 	font-size:11px;
 }
 
+body, .iceOutTxt, .tbl, .genericTableHdr .iceOutTxt, td.iceDatTblCol.genericTableCol .iceOutTxt, .tbl-col-sel-label {
+    color: #464646;
+}
+
 .display-none {
 	display: none;
 }
@@ -18,7 +22,8 @@ body, table {
 	width: 100%;
 }
 
-.app-header {
+.header {
+	font-size: 1.1em !important;
 }
 
 .header-table {
@@ -185,6 +190,10 @@ body, table {
 	margin-right: 10px;
 }
 
+.nav-tab-label {
+	margin-left: 4px; 
+}
+
 .nav-tab-active {
 	background-color: #FFFFFF;
 	color: #000000;
@@ -266,16 +275,20 @@ body, table {
 }
 
 .sidebar {
-	float: left;
 	position: absolute;
+	top: 114px;
 }
 
 .sidebar-content {
     background-color: #FFFFFF;
     border: 1px solid #E8E8E8;
-    overflow: auto;
     word-wrap: break-word;
     z-index: 1028;
+}
+
+.sidebar-content-inner {
+	margin-top: 35px;
+	overflow: auto;
 }
 
 .sidebar-title-wrapper {
@@ -339,6 +352,7 @@ body, table {
 	position: fixed;
 	bottom: 0px;
 	margin-top: 5px;
+	padding: 0px !important;
 }
 
 .footer-row {
@@ -371,4 +385,24 @@ body, table {
 .content-frame {
   width: 100%;
   border: none;
+}
+
+button, html input[type=button], input[type=reset], input[type=submit] {
+    -webkit-appearance: button;
+    cursor: pointer;
+}
+
+.popover {
+    position: absolute;
+	max-width: 276px;
+    padding: 1px;
+    font-weight: 400;
+    line-height: 1.4;
+	text-align: start;
+    text-transform: none;
+    white-space: normal;
+    word-wrap: normal;
+    background-color: #fff;
+    background-clip: padding-box;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
 }
