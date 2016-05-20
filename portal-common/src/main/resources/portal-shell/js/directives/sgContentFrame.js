@@ -14,14 +14,15 @@ angular.module('shell').directive('sgStretchToBottom',['$window', '$timeout', fu
                 var elemOffset = element.offset();
                 if(elemOffset.top < shellSizes.windowHeight) {
                 	var height = shellSizes.windowHeight - elemOffset.top - shellSizes.footerHeight;
-                	if (height > 0) {
-                		element.outerHeight(height);
+                	console.log('sgStretchToBottom', element, height, shellSizes.windowHeight, elemOffset.top, shellSizes.footerHeight);
+                	if (height <= 0 || elemOffset.top <= 0) {
+                		setTimeout(calc, 200); // If height or offertTop is zero or less retry
                 	} else {
-                		setTimeout(calc, 200); // If height is zero or less retry
+                		element.outerHeight(height);
                 	}
                 }
             }
-
+            
             scope.$watch('shell.sizes', function(sizes) {
                 shellSizes = sizes;
                 if(shellSizes !== {}){

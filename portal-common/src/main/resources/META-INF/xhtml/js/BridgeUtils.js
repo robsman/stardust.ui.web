@@ -1125,17 +1125,20 @@ if (!window["BridgeUtils"].Dialog) {
 
 			var scrollWidth = document.body.scrollWidth;
 			
-			var headerHeight, footerHeight;
+			var headerHeight, footerHeight, headerFixed;
 			if (jQuery(".app.sg-shell>header").length > 0) {
+				headerFixed = true;
 				headerHeight = jQuery(".app.sg-shell>header").height() + jQuery(".app.sg-shell>nav").height();
 				footerHeight = jQuery(".app.sg-shell>footer").height() + 20; // Add constant value it will be adjusted in sidebar
 			} else {
+				headerFixed = false;
 				headerHeight = jQuery(".header").height();
 				footerHeight = jQuery(".footer").height();
 				var footerTopMargin = jQuery(".footer").css("margin-top"); // Margin is not covered in height, so check it
 				if (footerTopMargin && footerTopMargin != "") {
 				  footerHeight += BridgeUtils.getAbsoluteSize(footerTopMargin) + 1;
 				}
+				footerHeight += 10; // Add constant value it will be adjusted in sidebar
 			}
 
 			var contentHeight = jQuery(window).height() - headerHeight - footerHeight;
@@ -1203,7 +1206,9 @@ if (!window["BridgeUtils"].Dialog) {
 				launchPanelIframe.style.height = newHeight;
 
 				if (headerHeight) {
-					//launchPanelIframe.style.top = headerHeight + "px";
+					if (!headerFixed) {
+						launchPanelIframe.style.top = headerHeight + "px";
+					}
 					launchPanelIframe.style.left = 0 + "px";
 				}
 				

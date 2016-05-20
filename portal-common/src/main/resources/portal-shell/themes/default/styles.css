@@ -275,8 +275,8 @@ body, .iceOutTxt, .tbl, .genericTableHdr .iceOutTxt, td.iceDatTblCol.genericTabl
 }
 
 .sidebar {
-	float: left;
 	position: absolute;
+	top: 114px;
 }
 
 .sidebar-content {
@@ -352,6 +352,7 @@ body, .iceOutTxt, .tbl, .genericTableHdr .iceOutTxt, td.iceDatTblCol.genericTabl
 	position: fixed;
 	bottom: 0px;
 	margin-top: 5px;
+	padding: 0px !important;
 }
 
 .footer-row {
