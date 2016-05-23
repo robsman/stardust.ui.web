@@ -81,14 +81,14 @@
 						ng-show="{{flowElement.type_=='Process'}}"><span><i
 							class="pi pi-activity-group pi-1x"></i></span></td>
 					<td width="28%"
-						class="process-summary-cell process-summary-border-bottom"
-						ng-show="{{flowElement.type_=='Process'}}"><span>{{flowElement.name_}}({{flowElement.oid_}})</span></td>
+						class="process-summary-border-bottom"
+						ng-show="{{flowElement.type_=='Process'}}"><span>{{flowElement.name_}} ({{flowElement.oid_}})</span></td>
 					<td width="10%"
-						class="process-summary-cell process-summary-border-bottom"
+						class="process-summary-border-bottom"
 						ng-show="{{flowElement.type_=='Process'}}"><span>{{flowElement.status.label}}</span>
 					</td>
 					<td width="60%"
-						class="process-summary-cell process-summary-border-bottom"
+						class="process-summary-border-bottom"
 						ng-show="{{flowElement.type_=='Process'}}"><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.startTime')}}:
 							{{flowElement.startTime | sdDateTimeFilter}}</span> <span
 						ng-show="{{flowElement.status.value == 2}}"
@@ -112,14 +112,13 @@
 												ng-click="flowElement.expanded_=!flowElement.expanded_"
 												aid="PP-processSummary-showHideActivityHistory"
 												class="process-summary-control">
-												<td class="process-summary-cell"><span
+												<td class="process-summary-cell" style="padding-left:5px"><span
 													ng-hide="{{flowElement.isRoot_}}"><i
 														class="pi pi-service-task pi-1x"></i></span> 
-													<span style="margin-left: -7px"
-													ng-show="{{flowElement.isRoot_}}"><i
+													<span ng-show="{{flowElement.isRoot_}}"><i
 														class="pi pi-activity-complete pi-lg"></i></td>
 												<td width="28%" class="process-summary-cell"><span>
-														{{flowElement.name_}}({{flowElement.oid_}})</span></td>
+														{{flowElement.name_}} ({{flowElement.oid_}})</span></td>
 												<td width="10%"><span>{{flowElement.status.label}}</span>
 												</td>
 												<td width="60%"><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.startTime')}}:
@@ -143,8 +142,7 @@
 														<tr ng-repeat="note in flowElement.notes_"
 															sd-state-display="$index"
 															sda-state-display-colors="['white', '#F5F5F5']">
-															<td><span><i class="pi pi-notes-empty pi-1x"></i>
-																	{{note.note}}</span></td>
+															<td><i class="pi pi-notes-empty spacing-right pi-1x"></i> <span>{{note.note}}</span></td>
 															<td style="width: 30%"><sd-user-image
 																	sda-path="{{note.avatarImageURI}}"></sd-user-image>
 																{{note.creatorName}}</td>
