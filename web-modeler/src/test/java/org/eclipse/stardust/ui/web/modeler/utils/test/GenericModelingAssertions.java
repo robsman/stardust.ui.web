@@ -367,6 +367,17 @@ public class GenericModelingAssertions
       assertThat(roleType.getName(), is(roleName));
       return roleType;
    }
+   
+   public static OrganizationType assertOrganization(ModelType model, String orgID, String orgName)
+   {
+
+      OrganizationType orgType = (OrganizationType) ModelUtils.findIdentifiableElement(model,
+            CarnotWorkflowModelPackage.eINSTANCE.getModelType_Organization(), orgID);
+      assertThat(orgType, is(not(nullValue())));
+      assertThat(orgType.getId(), is(not(nullValue())));
+      assertThat(orgType.getName(), is(orgName));
+      return orgType;
+   }
 
 
    public static DataType assertStructData(ModelType model, String dataID, String dataName,
