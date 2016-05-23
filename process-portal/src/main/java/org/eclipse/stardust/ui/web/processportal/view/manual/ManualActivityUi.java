@@ -117,6 +117,10 @@ public class ManualActivityUi
          {
             path = createSystemDataMapping(dataMapping, manualActivityPath);
          }
+         else if (ModelUtils.isConstantType(getModel(), dataMapping))
+         {
+            path = createConstantDataMapping(dataMapping, manualActivityPath);
+         }
          else if (ModelUtils.isDMSType(getModel(), dataMapping))
          {
             path = createDMSDataMapping(dataMapping, allInMappings, manualActivityPath);
@@ -157,6 +161,15 @@ public class ManualActivityUi
    public ManualActivityPath getManualActivityPath()
    {
       return manualActivityPath;
+   }
+   
+   /**
+    * @return
+    */
+   private Path createConstantDataMapping(DataMapping dataMapping,
+         ManualActivityPath maPath)
+   {
+      return JavaPath.createFromClass(maPath, dataMapping.getId(), dataMapping.getMappedType(), isReadOnly(dataMapping));
    }
 
    /**

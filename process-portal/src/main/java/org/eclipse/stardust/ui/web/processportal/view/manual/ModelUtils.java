@@ -539,4 +539,22 @@ public class ModelUtils
          return readOnly;
       }
    }
+   
+   /**
+    * 
+    * @param model
+    * @param dataMapping
+    * @return
+    */
+   public static boolean isConstantType(Model model, DataMapping dataMapping)
+   {
+      boolean isConstant = false;
+      Data data = model.getData(dataMapping.getDataId());
+      if (null == data)
+      {
+         isConstant = true;
+      }
+      return isConstant;
+   }
+
 }
