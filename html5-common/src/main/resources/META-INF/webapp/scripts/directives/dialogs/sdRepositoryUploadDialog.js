@@ -133,6 +133,12 @@
 		//Execute in a timeout so we allow the sdDialog in our template to be compiled
 		//and have time to initialize the api object tagged to its attribute.
 		$timeout(function(){
+
+			//guard against initialization before Angular compilation has finished.
+			if(!that.uploadDialog){
+				return;
+			}
+
 			var customApi = {
 					"close" : that.uploadDialog.close,
 					"open" : function(stagedFiles){
