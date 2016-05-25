@@ -349,7 +349,10 @@ define(
                      for ( var appId in model.applications)
                      {
                         var app = model.applications[appId];
-                        elts.applications.push(app);
+                        if(app && app.applicationType!="interactive")
+                           elts.applications.push(app);
+                        else
+                           m_utils.debug("===> Skipping interactive application" + app.name);
                      }
 
                      for ( var j in model.processes)
