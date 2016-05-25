@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -13,18 +13,32 @@
  */
 (function() {
 	'use strict';
-
+	var sdBusinessObjectManagementService = null;
+	var trace = null;
+	
 	angular.module('bpm-common').directive(
 			'sdBusinessObjectFilterDialog',
-			[ 'sdUtilService', 'sdBusinessObjectManagementService',
+			[ 'sdUtilService','$injector','sdLoggerService',
 					BusinessObjectFilterDialog ]);
 
-	function BusinessObjectFilterDialog(sdUtilService,
-			sdBusinessObjectManagementService) {
-		sdBusinessObjectManagementService.getBusinessObjects().then(
+	function BusinessObjectFilterDialog(sdUtilService, $injector, sdLoggerService) {
+		
+		trace = sdLoggerService.getLogger('bpm-common.sdBusinessObjectFilterDialog');
+		
+		//Check the presence of sdBusinessObjectManagementService
+		if($injector.has('sdBusinessObjectManagementService')) {
+			sdBusinessObjectManagementService = $injector.get('sdBusinessObjectManagementService');
+			trace.log('sdBusinessObjectManagementService found!');
+		} else {
+			trace.log('sdBusinessObjectManagementService not found.Operating in non BO mode.');
+		}
+
+		if(sdBusinessObjectManagementService) {
+			sdBusinessObjectManagementService.getBusinessObjects().then(
 				function(json) {
 					console.log(json);
 				});
+		}
 		return {
 			restrict : 'A',
 			scope: {
@@ -32,26 +46,27 @@
 			},
 			templateUrl : sdUtilService.getBaseUrl()
 					+ 'plugins/html5-process-portal/scripts/directives/partials/businessObjectFilterDialog.html',
-			controller : [ '$scope', 'sdBusinessObjectManagementService',
+			controller : [ '$scope',
 					BusinessObjectFilterDialogCtrl ]
 		};
 	}
 
-	function BusinessObjectFilterDialogCtrl($scope,
-			sdBusinessObjectManagementService) {
+	function BusinessObjectFilterDialogCtrl($scope) {
 		this.bomService = sdBusinessObjectManagementService;
 		this.i18n = $scope.$parent.i18n;
 		this.open = false;
 		this.parentScope = $scope.$parent;
 		setBOMaxDisplayLenght.call(this, $scope);
 		this.attributes = $scope.attributes;
-		
-		
-		$scope.boDialog = this;
 
-		this.initializeBOs();
+
+		$scope.boDialog = this;
+		
+		if(this.bomService) {
+			this.initializeBOs();
+		}
 	}
-	
+
 	function setBOMaxDisplayLenght(scope) {
 		if (scope.selectedBoMaxDisplayLength) {
 			try {
@@ -88,7 +103,7 @@
 
 				});
 	};
-	
+
 	BusinessObjectFilterDialogCtrl.prototype.setSelectedBOInstancesString = function() {
 		var self = this;
 		var str;
@@ -101,7 +116,7 @@
 
 		this.selectedBOInstancesString = truncateStringToLength(str, this.selectedBoMaxDisplayLength);
 	};
-	
+
 	function truncateStringToLength(str, length) {
 		if (str !== undefined && str !== null) {
 			if (str.length <= (length + 1)) { // "+ 1" is to compensate for the trailing comma
@@ -110,14 +125,14 @@
 				if (length > 3) {
 					return str.substring(0, (length - 3)) + "..."
 				} else {
-					return "..."; 
+					return "...";
 				}
 			}
 		}
-		
+
 		return str;
 	}
-	
+
 	function truncateTralingComma(str) {
 		return str.substring(0, (str.length - 1));
 	}
@@ -153,7 +168,7 @@
 		this.selectedBO = this.selectedType;
 		this.selectedBOInstances = this.selectedInstances;
 		this.setSelectedBOInstancesString();
-		
+
 		this.closeDialog();
 	};
 
