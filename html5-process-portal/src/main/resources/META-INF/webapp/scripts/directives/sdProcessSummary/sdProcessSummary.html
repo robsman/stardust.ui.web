@@ -142,7 +142,7 @@
 														<tr ng-repeat="note in flowElement.notes_"
 															sd-state-display="$index"
 															sda-state-display-colors="['white', '#F5F5F5']">
-															<td><i class="pi pi-notes-empty spacing-right pi-1x"></i> <span>{{note.note}}</span></td>
+															<td><i class="pi pi-notes-empty spacing-right spacing-left pi-1x"></i> <span>{{note.note}}</span></td>
 															<td style="width: 30%"><sd-user-image
 																	sda-path="{{note.avatarImageURI}}"></sd-user-image>
 																{{note.creatorName}}</td>
@@ -164,7 +164,7 @@
 														<tr ng-repeat="document in flowElement.documents"
 															sd-state-display="$index"
 															sda-state-display-colors="['white', '#F5F5F5']">
-															<td><span sd-open-document-link
+															<td><span class="spacing-left" sd-open-document-link
 																sda-name="document.name"
 																sda-mime-type="document.contentType"
 																sda-document-id="document.uuid"></span></td>
