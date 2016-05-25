@@ -28,7 +28,7 @@ public class TestEventHandler extends RecordingTestcase
       replay(requestStream, "create Event Handler", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
-      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "abc", ActivityImplementationType.MANUAL_LITERAL);
       EventHandlerType eventHandler = assertEventHandler(activity, "abc", "abc", "exception");
       assertThat(eventHandler.isConsumeOnMatch(), is(true));
       assertThat(eventHandler.isLogHandler(), is(true));
@@ -39,7 +39,7 @@ public class TestEventHandler extends RecordingTestcase
       replay(requestStream, "update Event Handler", false);
 
       process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
-      activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
+      activity = GenericModelingAssertions.assertActivity(process, "Activity1", "abc", ActivityImplementationType.MANUAL_LITERAL);
       eventHandler = assertEventHandler(activity, "abc", "abc", "exception");
       assertThat(eventHandler.isConsumeOnMatch(), is(false));
       assertThat(eventHandler.isLogHandler(), is(false));
