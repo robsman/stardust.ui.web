@@ -2107,7 +2107,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject eventSymbolJson)
    {
       JsonObject eventJson = eventSymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-
+      
       updateNodeSymbol(eventSymbol, eventSymbolJson);
 
       if (null == eventJson)
@@ -2314,6 +2314,15 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          if (null != eventHandler)
          {
             EventMarshallingUtils.bindEvent(eventHandler, eventSymbol);
+         }
+         
+         if (hostActivity != null)
+         {
+            if (hasNotJsonNull(eventJson, ModelerConstants.NAME_PROPERTY))
+            {
+               String name = extractAsString(eventJson, ModelerConstants.NAME_PROPERTY);
+               hostActivity.setName(name);
+            }
          }
       }
    }
