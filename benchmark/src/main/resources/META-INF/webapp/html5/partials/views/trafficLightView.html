@@ -37,14 +37,16 @@
 			<table>
 			<tr>
 				<td style="width: 84px;"><label class="label-item">{{i18n('benchmark-messages.views-trafficLightView-drilldown-label')}}</label></td>
-				<td><select size="1"
-					style="padding: 0;height: 20px;"
-					ng-model="ctrl.selectedDrillDown"
-					ng-change="ctrl.drillDownChange()"
-					aid="COM-benchmark-tlv-selectDrilDown">
-					<option value="PROCESS_WORKITEM">{{i18n('benchmark-messages.views-trafficLightView-processOrWorkItem-label')}}</option>
-					<option value="BUSINESS_OBJECT">{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</option>
-				</select></td>
+				<td>
+					<select size="1" ng-disabled="!ctrl.boAvailable"
+						style="padding: 0;height: 20px;"
+						ng-model="ctrl.selectedDrillDown"
+						ng-change="ctrl.drillDownChange()"
+						aid="COM-benchmark-tlv-selectDrilDown">
+						<option value="PROCESS_WORKITEM">{{i18n('benchmark-messages.views-trafficLightView-processOrWorkItem-label')}}</option>
+						<option ng-if="ctrl.boAvailable" value="BUSINESS_OBJECT">{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</option>
+					</select>
+				</td>
 			</tr>
 			</table>
 			<table>
