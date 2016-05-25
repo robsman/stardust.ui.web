@@ -129,6 +129,7 @@
                         </fileset>
                         <filterchain>
                             <tokenfilter>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/toc.html" replace="../../jartoc.html"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/" replace="../../portal/"/>
                             </tokenfilter>
                         </filterchain>
@@ -142,8 +143,9 @@
                         </fileset>
                         <filterchain>
                             <tokenfilter>
+                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/toc.html" replace="../../../jartoc.html"/>
                                 <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/" replace="../../../portal/"/>
-                            </tokenfilter>
+                             </tokenfilter>
                         </filterchain>
                      </copy>
  
