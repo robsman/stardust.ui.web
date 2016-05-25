@@ -36,7 +36,7 @@
 	var _parse;
 
 	/**
-	 * 
+	 *
 	 */
 	function TrafficLightViewController($scope, $q, benchmarkService, sdProcessDefinitionService,
 			sdTrafficLightViewService, sdProcessInstanceService, sdActivityInstanceService, sdLoggerService, $injector,
@@ -54,7 +54,17 @@
 		_sdViewUtilService = sdViewUtilService;
 		// dynamically injecting the sdBusinessObjectManagementService from
 		// ipp-business-object-management
-		_sdBusinessObjectManagementService = $injector.get('sdBusinessObjectManagementService');
+		_sdBusinessObjectManagementService - null;
+		
+		this.boAvailable = false;
+		//Check if Business object management is present.
+		if($injector.has('sdBusinessObjectManagementService')) {
+					_sdBusinessObjectManagementService = $injector.get('sdBusinessObjectManagementService');
+					this.boAvailable = true;
+					trace.log('sdBusinessObjectManagementService found!');
+		} else {
+					trace.log('sdBusinessObjectManagementService not found.Operating in non BO mode.');
+		}
 
 		// Getting the custom view params if view is getting opened from
 		// favorite instance
@@ -110,7 +120,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 * @returns
 	 */
 	TrafficLightViewController.prototype.getRuntimeBenchmarkDefinitions = function() {
@@ -131,7 +141,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.getAllProcesses = function(params, $scope) {
 		var self = this;
@@ -153,7 +163,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.showTrafficLightView = function() {
 		var self = this;
@@ -287,7 +297,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.createProcessActivityArray = function(bOids, processes) {
 		var benchmarkProcessActivityMap = {};
@@ -320,7 +330,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 
 	TrafficLightViewController.prototype.getTlvStatsData = function(params) {
@@ -352,7 +362,7 @@
 		return deferred.promise;
 	}
 	/**
-	 * 
+	 *
 	 * @param params
 	 * @returns
 	 */
@@ -396,7 +406,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.setShowTLVCriteria = function() {
 		var self = this;
@@ -404,7 +414,7 @@
 	};
 	/**
 	 * \
-	 * 
+	 *
 	 * @param processId
 	 * @param state
 	 * @param benchmarkIndex
@@ -477,7 +487,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 * @param params
 	 * @returns
 	 */
@@ -517,7 +527,7 @@
 		return deferred.promise;
 	};
 	/**
-	 * 
+	 *
 	 * @param params
 	 * @returns
 	 */
@@ -557,7 +567,7 @@
 		return deferred.promise;
 	};
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.drillDownChange = function(favSelectedBusinessObject,
 			favSelectedBusinessObjectInstances, favSelectedRelatedBusinessObject,
@@ -598,7 +608,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.getBusinessObjectInstances = function(favSelectedBusinessObjectInstances,
 			favSelectedRelatedBusinessObject, favSelectedRelatedBusinessObjectInstances) {
@@ -702,7 +712,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.refreshBusinessObjects = function() {
 		var self = this;
@@ -732,7 +742,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.refreshRelatedBusinessObjects = function(relationshipData) {
 		var self = this;
@@ -749,7 +759,7 @@
 		});
 	};
 	/**
-	 * 
+	 *
 	 * @param matchVal
 	 */
 	TrafficLightViewController.prototype.getBOInstanceMatches = function(matchVal) {
@@ -766,7 +776,7 @@
 		self.businessObjectInstancesData = results;
 	};
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.getRelatedBOInstances = function(favSelectedRelatedBusinessObjectInstances) {
 		var self = this;
@@ -798,7 +808,7 @@
 		}
 	};
 	/**
-	 * 
+	 *
 	 * @param relatedMatchVal
 	 */
 	TrafficLightViewController.prototype.getRelatedBOInstanceMatches = function(relatedMatchVal) {
@@ -815,7 +825,7 @@
 		self.relatedBusinessObjectInstancesData = results;
 	};
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.getfontSize = function(count) {
 		var fontSize = 10;
@@ -827,7 +837,7 @@
 
 
 	/**
-	 * 
+	 *
 	 * @param res
 	 */
 	TrafficLightViewController.prototype.updateFavorite = function(res) {
@@ -871,7 +881,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 * @param params
 	 * @param $scope
 	 */
@@ -916,10 +926,10 @@
 					trace.log(error);
 				});
 	};
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @param params
 	 * @param $scope
 	 */
@@ -937,7 +947,7 @@
 				});
 	};
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.saveFavoritePopupClose = function(){
 		var self = this;
@@ -945,15 +955,15 @@
 		self.saveFavoritePopup.close();
 	};
 	/**
-	 * 
+	 *
 	 */
 	TrafficLightViewController.prototype.processChange = function(){
 		var self = this;
 		var selectedProcesses = [];
-		angular.forEach(self.selProcesses, function(process){	
+		angular.forEach(self.selProcesses, function(process){
 			selectedProcesses.push(JSON.parse(process));
 		});
-		
+
 		self.selectedProcesses = selectedProcesses;
 	};
 })();
