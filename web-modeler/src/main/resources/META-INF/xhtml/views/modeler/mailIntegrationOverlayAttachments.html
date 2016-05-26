@@ -87,10 +87,11 @@
                         ng-blur="overlayPanel.submitTemplateChanges()"/>
                </td>
                <td style="border: 1px solid lightgray;">
-                  <select ng-model="templateConf.tSource"
+                 <select ng-model="templateConf.tSource"
                         ng-disabled="templateConf.tSource == 'data' ? true : false"
-                     ng-options="srcOpt.value as srcOpt.title for srcOpt in templateConf.sourceOptions"
-                        ng-change="overlayPanel.submitTemplateChanges(templateConf.tSource, $index)"/>
+                        ng-change="overlayPanel.submitTemplateChanges(templateConf.tSource, $index)">
+                        <option ng-repeat="srcOpt in overlayPanel.defaultSourceOptions" value="{{srcOpt.value}}" ng-hide="overlayPanel.hideOption(srcOpt , templateConf)">{{srcOpt.title}}</option>
+                  </select>
                </td>
                <td style="border: 1px solid lightgray;">
                   <input type="text" ng-model="templateConf.tPath"
