@@ -608,6 +608,9 @@ define(
                        //var oldValue = event.data.headerName;
                         var newValue = event.target.value;
                         event.data.page.httpHeaders[index].headerName = newValue;
+                        if(!event.data.page.validate())
+                           return;
+                       
                         var attributes= event.data.page.getApplication().attributes;
                         var accessPoints=event.data.page.getApplication().contexts.application.accessPoints;
                         attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(event.data.page.httpHeaders);
@@ -1521,7 +1524,7 @@ define(
                         for (var i = 0; i < this.httpHeaders.length; i++)
                         {
                            var httpHeader = this.httpHeaders[i];
-                           if(httpHeader.headerSource=="direct"){
+//                           if(httpHeader.headerSource=="direct"){
                               for (var j = 0; j < this.getApplication().contexts.application.accessPoints.length; j++)
                               {
                                  var accessPoint = this.getApplication().contexts.application.accessPoints[j];
@@ -1533,7 +1536,7 @@ define(
                               if(m_utils.isEmptyString(httpHeader.headerValue)){
                                  this.view.errorMessages.push("The value for header "+httpHeader.headerName+" cannot be empty.");
                               }
-                           }
+//                           }
                         }
                      }
                      
