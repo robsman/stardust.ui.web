@@ -997,7 +997,8 @@ define(
                         "tName" : ap.name,
                         "tPath" : "",
                         "tSource" : "data",
-                        "tFormat" : "plain"
+                        "tFormat" : "plain",
+                        "sourceOptions": this.getSourceOptions({tSource: "data"})
                      });
                   }
                   var attributes=this.getApplication().attributes;
