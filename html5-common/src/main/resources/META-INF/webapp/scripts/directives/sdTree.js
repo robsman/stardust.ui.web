@@ -968,7 +968,7 @@
 	                //can expect the new value and resolve/reject it as needed.
 	                //Requires resolution.
 	                case 'node-rename-commit':
-	                  var currentTime =  Math.round((Date.now()/1000)|0);
+	                  var currentTime =  Math.round(Date.now()/1000);
 	                  //filter duplicates caused by user commiting an event with the enter key.
 	                  if(scope.lastRenameCommit && scope.lastRenameCommit === currentTime){
 	                  	return;
