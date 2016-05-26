@@ -100,17 +100,17 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          {
             fullDetail = BpmPortalErrorMessages.getString(PortalErrorClass.ACTIVITY_ALREADY_ACTIVATED.getId());
          }
-         
-         
+
+
          break;
-         
+
       case HistoricalEventType.EVENT_EXECUTION:
          EventHandlerDetails ehd = (EventHandlerDetails) event.getDetails();
          StringBuffer detailsB = new StringBuffer();
 
          // Event details
          detailsB.append(I18nUtils.getLabel(ehd, ehd.getName()));
-         
+
          //exception if applicable
          @SuppressWarnings("rawtypes")
          Map attributes = ehd.getAllAttributes();
@@ -125,7 +125,7 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
             type = EVENT_TIMER_TYPE;
             name = Localizer.getString(LocalizerKey.PH_EVENT_TIMER_TYPE);
          }
-         
+
          //actions
          @SuppressWarnings("rawtypes")
          List actions = ehd.getAllEventActions();
@@ -151,9 +151,9 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
             actionstr = actionstr.substring(0, actionstr.length() - 2);
             detailsB.append(" --> ").append(actionstr);
          }
-         
+
          fullDetail = detailsB.toString();
-         break;   
+         break;
 
       case HistoricalEventType.NOTE:
          type = NOTE_TYPE;
@@ -220,10 +220,6 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          case ActivityInstanceState.HALTED:
             name = Localizer.getString(LocalizerKey.PH_HALTED_TYPE);
             type = HALTED_TYPE;
-            break;
-         case ActivityInstanceState.HALTING:
-            name = Localizer.getString(LocalizerKey.PH_HALTING_TYPE);
-            type = HALTING_TYPE;
             break;
          }
          break;
