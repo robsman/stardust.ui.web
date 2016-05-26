@@ -28,7 +28,7 @@
 				type : '=sdaDataType'
 			},
 			template : '<div ng-if="descriptorCtrl.dataType ==\'NUMBER\' ">'+
-							'{{descriptorCtrl.descriptorValue.value | number}}<\/div>'+
+							'{{descriptorCtrl.descriptorValue.value}}<\/div>'+
 						'<div ng-if="descriptorCtrl.dataType == \'DATE\' "> ' +
 						'{{descriptorCtrl.descriptorValue.value | sdDateFilter}}<\/div>'+
 						'<div ng-if="(descriptorCtrl.dataType == \'STRING\' && !descriptorCtrl.descriptorValue.isLink) || descriptorCtrl.dataType == \'BOOLEAN\' ">'+
