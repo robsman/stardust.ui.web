@@ -622,10 +622,6 @@ define(
                                     },
                                     function(event)
                                     {
-                                       if (!event.data.panel.view.validate())
-                                       {
-                                          return;
-                                       }
                                        var submitElements = {};
                                        var attributes = event.data.panel.getApplication().attributes;
                                        attributes["carnot:engine:camel::transactedRoute"] = self.transactedRouteInput.prop('checked');
@@ -639,10 +635,6 @@ define(
                                     },
                                     function(event)
                                     {
-                                       if (!event.data.panel.view.validate())
-                                       {
-                                          return;
-                                       }
                                        var submitElements = {};
                                        var attributes = event.data.panel.getApplication().attributes;
                                        attributes["carnot:engine:camel::autoStartup"] = self.autoStartupInput.prop('checked');
@@ -930,7 +922,7 @@ define(
                      this.setInputTextFieldValue(inputText, extendedAttribute);
                   else{
                      inputText.val(defaultValue);
-                     inputText.change();
+                     //inputText.change();
                   }
                }
 
@@ -1257,11 +1249,6 @@ define(
 
                SqlIntegrationOverlay.prototype.populateDataSourceBeanDefinition = function(attributes)
                {
-                  if (!this.view.validate())
-                  {
-                     return;
-                  }
-
                   var beanDefinition = "";
                   var driverClassName = "";
                   var url = "";
