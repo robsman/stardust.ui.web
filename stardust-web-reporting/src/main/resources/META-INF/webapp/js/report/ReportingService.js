@@ -567,10 +567,6 @@ define(
 							id : "Interrupted",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.interrupted")
 						},
-						halting : {
-							id : "Halting",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.halting")
-						},
 						halted : {
 							id : "Halted",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.halted")

@@ -53,7 +53,6 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
    public static final String INTERRUPTED_TYPE = "ActivityInterrupted";
    public static final String COMPLETED_TYPE = "ActivityCompleted";
    public static final String HALTED_TYPE = "ActivityHalted";
-   public static final String HALTING_TYPE = "HaltingActivity";
 
    private String type;
    private String name;
