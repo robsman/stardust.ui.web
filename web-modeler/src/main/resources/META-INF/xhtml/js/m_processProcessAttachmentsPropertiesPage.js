@@ -137,7 +137,7 @@ define(
 						dataPath : null
 					});
 					this.submitChanges({
-						dataPathes : this.propertiesPanel.element.dataPathes
+						dataPathes : this.resetDataPathDelimiters(this.propertiesPanel.element.dataPathes)
 					});
 				};
 
@@ -154,7 +154,7 @@ define(
 						}
 					}
 
-					this.propertiesPanel.element.dataPathes = changedPathes;
+					this.propertiesPanel.element.dataPathes = this.resetDataPathDelimiters(changedPathes);
 
 					this.submitChanges({
 						dataPathes : this.propertiesPanel.element.dataPathes
@@ -177,7 +177,18 @@ define(
 						this.uniquePerRootProcessInstanceInput.attr("disabled", true);
 					}
 				};
-
+				
+				ProcessProcessAttachmentsPropertiesPage.prototype.resetDataPathDelimiters = function(dataPaths){
+					for (var i = 0; i < dataPaths.length; i++) {
+						if(dataPaths[i].dataPath && (dataPaths[i].dataPath.indexOf(".") > -1)){
+							if(!dataPaths[i].type || dataPaths[i].type != m_constants.TYPE_LINK) {
+								dataPaths[i].dataPath = dataPaths[i].dataPath.replace(/\./g, "/");	
+						    	}
+						    }
+						  }
+					return dataPaths;
+				}
+				
 				/**
 				 *
 				 */
