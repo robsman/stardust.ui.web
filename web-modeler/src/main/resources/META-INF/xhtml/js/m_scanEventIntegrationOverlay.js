@@ -181,15 +181,17 @@ define(
 
 						if (this.scopeModel.dataItems["PROCESS_ATTACHMENTS"]
 								&& processSupportsAttachments) {
-							this.documentDataList
-									.append("<option value='"
-											+ m_model.getFullId(
-													this.scopeModel,
-													"PROCESS_ATTACHMENTS")
-											+ "'>"
-											+ m_i18nUtils
-													.getProperty("modeler.element.properties.scanEvent.processAttachmentsOption.label")
-											+ "</option>");
+							var pad = m_model.findData(m_model.getFullId(this.scopeModel, "PROCESS_ATTACHMENTS"));
+							if (pad) {
+								var padFullId = pad.externalReference ? pad.dataFullId : pad.getFullId();
+								this.documentDataList
+										.append("<option value='"
+												+ padFullId
+												+ "'>"
+												+ m_i18nUtils
+														.getProperty("modeler.element.properties.scanEvent.processAttachmentsOption.label")
+												+ "</option>");
+							}
 						}
 
 						for ( var i in this.scopeModel.dataItems) {
