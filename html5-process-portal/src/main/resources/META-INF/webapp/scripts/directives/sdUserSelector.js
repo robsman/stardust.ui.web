@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdUserSelector', ['$q', 'sdUtilService', 'sdUserService', 
+	angular.module('workflow-ui').directive('sdUserSelector', ['$q', 'sdUtilService', 'sdUserService',
 	                                                                 UserSelectorDirective]);
 
 	/*

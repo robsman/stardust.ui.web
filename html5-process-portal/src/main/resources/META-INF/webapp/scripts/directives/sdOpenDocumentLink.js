@@ -15,7 +15,7 @@
 (function() {
 
 	'use strict';
-	angular.module('bpm-common').directive('sdOpenDocumentLink',
+	angular.module('workflow-ui').directive('sdOpenDocumentLink',
 			[ 'sdUtilService', 'sdCommonViewUtilService', 'sdMimeTypeService', OpenDocumentDirective ]);
 
 	/*

@@ -256,7 +256,7 @@
 
 	sdVersionHistoryDialog.$inject = ["sdUtilService","$q"];
 
-	angular.module("bpm-common.directives")
+	angular.module("viewscommon-ui")
 	.directive("sdVersionHistoryDialog",sdVersionHistoryDialog);
 
 })();

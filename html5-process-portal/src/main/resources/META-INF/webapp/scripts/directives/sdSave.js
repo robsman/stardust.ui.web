@@ -16,7 +16,7 @@
 (function() {
     'use strict';
 
-    angular.module('bpm-common').directive('sdSave', [ SaveDirective ]);
+    angular.module('workflow-ui').directive('sdSave', [ SaveDirective ]);
 
     /*
      * 

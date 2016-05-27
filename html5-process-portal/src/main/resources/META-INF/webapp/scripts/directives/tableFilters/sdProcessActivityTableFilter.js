@@ -14,7 +14,7 @@
  (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdProcessActivityTableFilter',[ '$filter', '$parse', 'sdUtilService','sdLoggerService', ActivityFilter]);
+   angular.module('workflow-ui').directive('sdProcessActivityTableFilter',[ '$filter', '$parse', 'sdUtilService','sdLoggerService', ActivityFilter]);
 
    var trace = null;
    /*

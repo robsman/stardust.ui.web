@@ -14,7 +14,7 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdTrivialManualActivityData',['sdUtilService', TrivialManualActivityDataDirective]);
+   angular.module('workflow-ui').directive('sdTrivialManualActivityData',['sdUtilService', TrivialManualActivityDataDirective]);
 
    /*
     *

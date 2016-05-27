@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService', '$sce',
+	angular.module('workflow-ui').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService', '$sce',
 	                                                                    SwitchProcessDialogDirective]);
 
 	var trace;

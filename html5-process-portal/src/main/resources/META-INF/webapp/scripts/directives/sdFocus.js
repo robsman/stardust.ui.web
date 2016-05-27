@@ -16,7 +16,7 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common').directive('sdFocus', [ FocusDirective ]);
+	angular.module('workflow-ui').directive('sdFocus', [ FocusDirective ]);
 
 	/*
 	 * 

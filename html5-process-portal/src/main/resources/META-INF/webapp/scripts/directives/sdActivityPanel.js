@@ -16,7 +16,7 @@
 (function() {
     'use strict';
 
-    angular.module('bpm-common').directive(
+    angular.module('workflow-ui').directive(
 	    'sdActivityPanel',
 	    [ '$parse', '$q', '$timeout', '$http', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', ActivityPanelDirective ]);
 

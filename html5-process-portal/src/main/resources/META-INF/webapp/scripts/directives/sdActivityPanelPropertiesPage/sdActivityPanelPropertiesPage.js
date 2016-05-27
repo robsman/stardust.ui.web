@@ -24,7 +24,7 @@
 
 (function() {
 
-  var app = angular.module('bpm-common.directives');
+  var app = angular.module('workflow-ui');
 
   // define controller
   function PropertiesPageController($scope, sgI18nService) {

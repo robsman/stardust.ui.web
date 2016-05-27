@@ -14,7 +14,7 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdCriticalityIconSelector', [ CriticalityIconSelector ]);
+   angular.module('workflow-ui').directive('sdCriticalityIconSelector', [ CriticalityIconSelector ]);
 
    /*
 	 * Directive class

@@ -14,7 +14,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdAbortProcessDialog', [ 'sdProcessInstanceService','sdLoggerService', 'sdUtilService', 'sdWorkflowPerspectiveConfigService', AbortProcess]);
+	angular.module('workflow-ui').directive( 'sdAbortProcessDialog', [ 'sdProcessInstanceService','sdLoggerService', 'sdUtilService', 'sdWorkflowPerspectiveConfigService', AbortProcess]);
 
 	var trace;
 	

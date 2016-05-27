@@ -16,7 +16,7 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common').directive('sdRefresh', [ RefreshDirective ]);
+	angular.module('workflow-ui').directive('sdRefresh', [ RefreshDirective ]);
 
 	/*
 	 * 

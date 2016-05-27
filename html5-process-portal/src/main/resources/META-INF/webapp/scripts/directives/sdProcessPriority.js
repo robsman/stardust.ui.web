@@ -14,7 +14,7 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive( 'sdProcessPriority', [ '$parse', ProcessPriority ]);
+   angular.module('workflow-ui').directive( 'sdProcessPriority', [ '$parse', ProcessPriority ]);
 
    /*
     *

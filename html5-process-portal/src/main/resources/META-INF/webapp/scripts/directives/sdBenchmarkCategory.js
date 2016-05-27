@@ -14,7 +14,7 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive( 'sdBenchmarkCategory', [ BenchmarkDirective]);
+   angular.module('workflow-ui').directive( 'sdBenchmarkCategory', [ BenchmarkDirective]);
 
    /*
     *

@@ -14,7 +14,7 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdActivityCriticality', [ '$parse', ActivityCriticality ]);
+   angular.module('workflow-ui').directive('sdActivityCriticality', [ '$parse', ActivityCriticality ]);
 
    /*
     *

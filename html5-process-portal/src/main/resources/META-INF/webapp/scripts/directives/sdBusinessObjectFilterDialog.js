@@ -16,7 +16,7 @@
 	var sdBusinessObjectManagementService = null;
 	var trace = null;
 	
-	angular.module('bpm-common').directive(
+	angular.module('workflow-ui').directive(
 			'sdBusinessObjectFilterDialog',
 			[ 'sdUtilService','$injector','sdLoggerService',
 					BusinessObjectFilterDialog ]);

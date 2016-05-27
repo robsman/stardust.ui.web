@@ -14,7 +14,7 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdFileUpload', [ FileUpload ]);
+   angular.module('workflow-ui').directive('sdFileUpload', [ FileUpload ]);
 
    /*
 	 * Directive class

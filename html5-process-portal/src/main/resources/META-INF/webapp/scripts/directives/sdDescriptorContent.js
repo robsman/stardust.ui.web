@@ -14,7 +14,7 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common').directive('sdDescriptorContent', [ DesciptorContentDirective]);
+	angular.module('workflow-ui').directive('sdDescriptorContent', [ DesciptorContentDirective]);
 
 	/*
 	 * 

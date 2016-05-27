@@ -16,7 +16,7 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common').directive(
+	angular.module('workflow-ui').directive(
 			'sdProcessTable',
 			[ '$parse', '$q', '$timeout', '$filter', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService',
 					'sgI18nService','sdProcessInstanceService', 'sdProcessDefinitionService',
