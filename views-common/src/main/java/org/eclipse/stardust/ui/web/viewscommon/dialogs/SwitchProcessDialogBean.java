@@ -154,11 +154,6 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean
    @Override
    public void openPopup()
    {
-      openPopup(null);
-   }
-   
-   public void openPopup(String action)
-   {
       try
       {
          if (CollectionUtils.isEmpty(sourceProcessInstances))
@@ -176,7 +171,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean
          // if any of selected process is allowed to abort and user select "continue"
          // then allow to proceed.
          nonAbortableProcesses = CollectionUtils.newArrayList();
-         List<SwitchProcessTableEntry> tableEntry = checkAndShowAbortNotification(action);
+         List<SwitchProcessTableEntry> tableEntry = checkAndShowAbortNotification();
 
          if (CollectionUtils.isNotEmpty(tableEntry))
          {
@@ -550,43 +545,29 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean
     * @param processInstance
     * @return
     */
-   private SwitchProcessTableEntry createNotificationItem(ProcessInstance processInstance, String action)
+   private SwitchProcessTableEntry createNotificationItem(ProcessInstance processInstance)
    {
       SwitchProcessTableEntry tableEntry = null;
-      
-      if ("abortAndStart".equals(action))
-      {
-         if (!ProcessInstanceUtils.isAbortableState(processInstance))
-         {
-            String key = ProcessInstanceUtils.getProcessLabel(processInstance);
-            tableEntry = new SwitchProcessTableEntry(null, null, false,
-                  COMMON_MESSAGE_BEAN.getString("common.notifyProcessAlreadyAborted"), key);
-         }
-      }
-      else
-      {
-         if (!AuthorizationUtils.hasAbortPermission(processInstance))
-         {
-            String key = ProcessInstanceUtils.getProcessLabel(processInstance);
-            tableEntry = new SwitchProcessTableEntry(null, null, false,
-                  COMMON_MESSAGE_BEAN.getString("common.authorization.msg"), key);
-         }
-         else if (!ProcessInstanceUtils.isAbortable(processInstance))
-         {
-            String key = ProcessInstanceUtils.getProcessLabel(processInstance);
-            tableEntry = new SwitchProcessTableEntry(null, null, false,
-                  COMMON_MESSAGE_BEAN.getString("common.notifyProcessAlreadyAborted"), key);
-         }
-      }
 
-      if (processInstance.isCaseProcessInstance())
+      if (!AuthorizationUtils.hasAbortPermission(processInstance))
+      {
+         String key = ProcessInstanceUtils.getProcessLabel(processInstance);
+         tableEntry = new SwitchProcessTableEntry(null, null, false,
+               COMMON_MESSAGE_BEAN.getString("common.authorization.msg"), key);
+      }
+      else if (!ProcessInstanceUtils.isAbortable(processInstance))
+      {
+         String key = ProcessInstanceUtils.getProcessLabel(processInstance);
+         tableEntry = new SwitchProcessTableEntry(null, null, false,
+               COMMON_MESSAGE_BEAN.getString("common.notifyProcessAlreadyAborted"), key);
+      }
+      else if (processInstance.isCaseProcessInstance())
       {
          String key = ProcessInstanceUtils.getProcessLabel(processInstance);
          tableEntry = new SwitchProcessTableEntry(null, null, false,
                COMMON_MESSAGE_BEAN.getString("views.switchProcessDialog.caseAbort.message"), key);
       }
 
-      
       return tableEntry;
    }
 
@@ -594,18 +575,21 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean
     * prepare List of processes already aborted or unauthorized to abort by use
     * 
     */
-   private List<SwitchProcessTableEntry> checkAndShowAbortNotification(String action)
+   private List<SwitchProcessTableEntry> checkAndShowAbortNotification()
    {
       List<SwitchProcessTableEntry> tableEntryList = CollectionUtils.newArrayList();
 
-      for (ProcessInstance processInstance : sourceProcessInstances)
+      if (!this.pauseParentProcess)
       {
-         SwitchProcessTableEntry abortedProcess = createNotificationItem(processInstance, action);
-
-         if (null != abortedProcess)
+         for (ProcessInstance processInstance : sourceProcessInstances)
          {
-            tableEntryList.add(abortedProcess);
-            nonAbortableProcesses.add(processInstance);
+            SwitchProcessTableEntry abortedProcess = createNotificationItem(processInstance);
+
+            if (null != abortedProcess)
+            {
+               tableEntryList.add(abortedProcess);
+               nonAbortableProcesses.add(processInstance);
+            }
          }
       }
 

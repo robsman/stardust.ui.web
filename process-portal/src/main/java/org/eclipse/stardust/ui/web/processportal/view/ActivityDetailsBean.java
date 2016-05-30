@@ -3414,7 +3414,7 @@ public class ActivityDetailsBean extends UIComponentBean
       List<ProcessInstance> sourceList = CollectionUtils.newArrayList();
       sourceList.add(getActivityInstance().getProcessInstance());
       dialog.setSourceProcessInstances(sourceList);
-      dialog.openPopup("abortAndStart");
+      dialog.openPopup();
       closeSwitchProcessIframePopup();
 
       dialog.setICallbackHandler(new ICallbackHandler()
@@ -3443,7 +3443,7 @@ public class ActivityDetailsBean extends UIComponentBean
       List<ProcessInstance> sourceList = CollectionUtils.newArrayList();
       sourceList.add(getActivityInstance().getProcessInstance());
       dialog.setSourceProcessInstances(sourceList);
-      dialog.openPopup("abortAndStart");
+      dialog.openPopup();
       closeSwitchProcessIframePopup();
 
       dialog.setICallbackHandler(new ICallbackHandler()
