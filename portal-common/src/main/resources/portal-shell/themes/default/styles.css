@@ -406,3 +406,7 @@ button, html input[type=button], input[type=reset], input[type=submit] {
     background-clip: padding-box;
     box-shadow: 0 5px 10px rgba(0,0,0,.2);
 }
+
+.container-fluid {
+    padding-left: 0px;
+}
