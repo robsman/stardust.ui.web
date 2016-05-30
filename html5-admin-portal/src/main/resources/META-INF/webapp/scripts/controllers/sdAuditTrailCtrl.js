@@ -15,7 +15,7 @@
 
 	angular.module("admin-ui").controller(
 			'sdAuditTrailCtrl',
-			[ '$scope', 'sdAuditTrailService', 'sdLoggerService', 'sdViewUtilService', 'sdDialogService', 'sgI18nService',
+			[ '$scope', 'sdAuditTrailService', 'sdLoggerService', 'sdViewUtilService', 'sdDialogService', 'sgI18nService','$sce',
 					AuditTrailCtrl ]);
 
 	var trace;
@@ -24,19 +24,27 @@
 	var _sdDialogService;
 	var _sgI18nService;
 	var _scope;
+	var _sce;
 
 	/**
 	 * 
 	 */
-	function AuditTrailCtrl($scope, sdAuditTrailService, sdLoggerService, sdViewUtilService, sdDialogService, sgI18nService) {
+	function AuditTrailCtrl($scope, sdAuditTrailService, sdLoggerService, sdViewUtilService, sdDialogService, sgI18nService, $sce) {
 		trace = sdLoggerService.getLogger('admin-ui.sdAuditTrailCtrl');
 		_sdViewUtilService = sdViewUtilService;
 		_sdAuditTrailService = sdAuditTrailService;
 		_sdDialogService = sdDialogService;
 		_sgI18nService = sgI18nService;
 		_scope = $scope;
+		_sce = $sce;
 	}
-
+	/**
+	 * 
+	 */
+	AuditTrailCtrl.prototype.trustAsHtml = function( unTrustedHtml ) { 
+		 return _sce.trustAsHtml( unTrustedHtml );
+	}
+	
 	/**
 	 * 
 	 */
