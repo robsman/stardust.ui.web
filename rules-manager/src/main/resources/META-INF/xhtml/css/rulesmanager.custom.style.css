@@ -8,10 +8,11 @@
  * Contributors:
  *     SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
- .panelView{
- margin-left: 20px; 
- margin-right: 20px;
+.panelView {
+	margin-left: 20px;
+	max-height: 550px;
 }
+
 .hdrButton{
   position:relative;
   padding-left:5px;
