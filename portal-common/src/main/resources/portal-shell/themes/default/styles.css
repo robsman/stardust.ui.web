@@ -114,10 +114,6 @@ body, .iceOutTxt, .tbl, .genericTableHdr .iceOutTxt, td.iceDatTblCol.genericTabl
 	cursor: pointer;
 }
 
-.nav-tabs {
-	display: table;
-}
-
 .nav-tabs-row {
 	display: table-row;
 }
@@ -264,6 +260,10 @@ body, .iceOutTxt, .tbl, .genericTableHdr .iceOutTxt, td.iceDatTblCol.genericTabl
 }
 
 .nav-overflow-tab-item-label {
+}
+
+.nav>li>a {
+    padding: 1px 9px;
 }
 
 .view-panel-active {
