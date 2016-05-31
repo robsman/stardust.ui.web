@@ -29,7 +29,7 @@
       return {
          restrict : 'A',
          template :
-          '<button class="button-link" aid="CritIconSelector">' +
+          '<button ng-click="openPopover()" class="button-link" aid="CritIconSelector">' +
            '<i class="pi pi-flag pi-lg" ng-show="editMode == true" sd-popover sda-template="\'criticalitySelector.html\'" '+
               'sda-trigger="outsideClick" sda-is-open="criticalityIconSelectorCtrl.popovers.visible" '+
               'sda-placement="right auto" aid="CritIconSelector-SelectedFlg"' +
@@ -52,12 +52,12 @@
 			 bindModel:'=ngModel',
 			 editMode:'=sdaEditMode'
 		 },
-         controller : [ '$scope', CriticalityIconSelectorController ]
+         controller : [ '$scope', '$timeout', CriticalityIconSelectorController ]
       };
 
    }
 
-   function CriticalityIconSelectorController( $scope) {
+   function CriticalityIconSelectorController( $scope, $timeout) {
 
       this.i18n = $scope.i18n;
       this.popovers = {
@@ -65,7 +65,10 @@
       }
 
       this.openPopover = function(event) {
-    	  this.popovers.visible = true;
+        
+        this.popovers.visible = true;
+        $timeout(function(){},0);
+    	  
       };
 
       this.closePopover = function() {
