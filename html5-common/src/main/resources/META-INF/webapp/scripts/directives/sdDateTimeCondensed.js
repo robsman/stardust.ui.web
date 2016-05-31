@@ -76,6 +76,7 @@
 			controllerAs: 'ctrl',
 			controller : ['$scope', 'sdLocalizationService', 'sgI18nService', '$timeout', Controller],
 			template : 	'<div class="sda-date-time-condensed" id="date">'+
+							'<input type="text" style="display:none;">' +
 							'<input class="date-part" placeholder="{{ctrl.formatObj.dateFormat}}"  ' +
 								'ng-class="{invalid:!ctrl.isDateValid(ctrl.selectedDate) && ctrl.isDirty}" ' +
 								'ng-blur=" ctrl.isDirty = true"' +
