@@ -32,15 +32,15 @@
 		this.absUrl = $location.absUrl();
 		
 		//Record rest Common Benchmark Definition component for calls into common
-		this.portalCommon = "/services/rest/portal";
+		this.portalCommon = "services/rest/portal";
 		
 		//Benchmark Definitions Portal Component EndPoint 
 		this.portalBDComponent = "/benchmark-definitions";
 		
 		//TODO: plugins is not part of base url, find out why and fix
-		this.absRoot = this.absUrl.substring(0,this.absUrl.indexOf("/main.html#"));
+		this.absRoot = sdUtilService.getBaseUrl();
 		
-		this.rootUrl = this.absRoot + "/services/rest/benchmark";
+		this.rootUrl = this.absRoot + "services/rest/benchmark";
 		
 	}
 	
@@ -270,7 +270,7 @@
 		
 		pluginId = pluginId || 'timeOffCalendar';
 		
-		url = this.absRoot + '/services/rest/business-calendar/groups/' + pluginId + ".json";
+		url = this.absRoot + 'services/rest/business-calendar/groups/' + pluginId + ".json";
 	
 		this.$http.get(url)
 		.success(function(data){

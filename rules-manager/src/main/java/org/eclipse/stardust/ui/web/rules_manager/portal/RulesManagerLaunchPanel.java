@@ -18,8 +18,6 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.icesoft.faces.context.effects.JavascriptContext;
-
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
@@ -31,6 +29,7 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 
 /**
  * @author Marc.Gille
@@ -119,6 +118,9 @@ public class RulesManagerLaunchPanel extends AbstractLaunchPanel
          setExpanded(true);
          activateIframe();
       case LAUNCH_PANELS_ACTIVATED:
+         // Creates "process-models" folder if it doesn't exist already.
+         DocumentMgmtUtility.createFolderIfNotExists("/process-models");
+
          Boolean launchPanelActivated = null;
          try
          {

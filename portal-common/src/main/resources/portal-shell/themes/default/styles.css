@@ -114,10 +114,6 @@ body, .iceOutTxt, .tbl, .genericTableHdr .iceOutTxt, td.iceDatTblCol.genericTabl
 	cursor: pointer;
 }
 
-.nav-tabs {
-	display: table;
-}
-
 .nav-tabs-row {
 	display: table-row;
 }
@@ -266,6 +262,10 @@ body, .iceOutTxt, .tbl, .genericTableHdr .iceOutTxt, td.iceDatTblCol.genericTabl
 .nav-overflow-tab-item-label {
 }
 
+.nav>li>a {
+    padding: 1px 9px;
+}
+
 .view-panel-active {
 	display: block;
 }
@@ -405,4 +405,8 @@ button, html input[type=button], input[type=reset], input[type=submit] {
     background-color: #fff;
     background-clip: padding-box;
     box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.container-fluid {
+    padding-left: 0px;
 }
