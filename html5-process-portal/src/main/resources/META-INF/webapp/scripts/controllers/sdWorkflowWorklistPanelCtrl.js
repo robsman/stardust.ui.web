@@ -18,7 +18,8 @@
 			'sdWorkflowWorklistPanelCtrl',
 			[ 'sdWorkflowWorklistService', 'sdLoggerService', 'sdViewUtilService',
 					'sdI18nService', 'sdActivityInstanceService', 'sdDialogService', 'sdCommonViewUtilService',
-					'$scope', 'sgPubSubService', 'sdSidebarService', '$timeout', 'sdUtilService' , WorkflowWorklistPanelCtrl ]);
+					'$scope', 'sgPubSubService', 'sdSidebarService', '$timeout', 'sdUtilService',
+					'sdWorkflowOverviewService' , WorkflowWorklistPanelCtrl ]);
 	var _sdWorkflowWorklistService;
 	var _sdViewUtilService;
 	var trace;
@@ -29,11 +30,15 @@
 	var _scope;
 	var _timeout;
 	var _sdUtilService;
+	var _sgPubSubService;
+	var _sdWorkflowOverviewService;
 	/**
 	 *
 	 */
-	function WorkflowWorklistPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService, 
-			sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope, sgPubSubService, sdSidebarService, $timeout, sdUtilService) {
+	function WorkflowWorklistPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService,
+			sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService,
+			$scope, sgPubSubService, sdSidebarService, $timeout, sdUtilService,
+			sdWorkflowOverviewService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowWorklistPanelCtrl');
 		_sdWorkflowWorklistService = sdWorkflowWorklistService;
 		_sdViewUtilService = sdViewUtilService;
@@ -44,40 +49,27 @@
 		_scope = $scope;
 		_timeout = $timeout;
 		_sdUtilService = sdUtilService;
+		_sgPubSubService = sgPubSubService;
+		_sdWorkflowOverviewService = sdWorkflowOverviewService;
 		this.showEmptyWorklists = false;
-		
+
 		this.collapsePanelHandle = null;
 		var self = this;
-		
-		this.getUserAssignments(this.showEmptyWorklists, true);
-		
-		sgPubSubService.subscribe("sdActivePerspectiveChange", function(){
+
+		_sgPubSubService.subscribe('sdRefreshCounts', function() {
 			var activePerspective = sdSidebarService.getActivePerspectiveName();
 			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
-				if(self.syncPanel == true){
-					self.syncPanel = false;
-					self.refreshMyAssignmentPanel(self.showEmptyWorklists, true);
-				}
-				
+				self.getUserAssignments(self.showEmptyWorklists);
 			}
-		});
-		
-		sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){
-			var activePerspective = sdSidebarService.getActivePerspectiveName();
-			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
-				self.refreshMyAssignmentPanel(self.showEmptyWorklists, true);
-			}else{
-				self.syncPanel = true;
-			}				
 		});
 	}
 
 	/**
 	 *
 	 */
-	WorkflowWorklistPanelCtrl.prototype.getUserAssignments = function(showEmptyWorklist, reload) {
+	WorkflowWorklistPanelCtrl.prototype.getUserAssignments = function(showEmptyWorklist) {
 		var self = this;
-		_sdWorkflowWorklistService.getUserAssignments(showEmptyWorklist, reload).then(function(data) {
+		_sdWorkflowWorklistService.getUserAssignments(showEmptyWorklist).then(function(data) {
 			self.workflowMyAssignments = data.list;
 			// Added this logic to expand the parent node by default.
 			_timeout(function(){
@@ -93,19 +85,21 @@
 	/**
 	 *
 	 */
-	WorkflowWorklistPanelCtrl.prototype.refreshMyAssignmentPanel = function(showEmptyWorklist, reload) {
-		this.getUserAssignments(showEmptyWorklist, reload);
+	WorkflowWorklistPanelCtrl.prototype.refreshMyAssignmentPanel = function(showEmptyWorklist) {
+		_sdWorkflowOverviewService.resetCache().then(function(){
+			_sgPubSubService.publish('sdRefreshCounts');
+		});
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	WorkflowWorklistPanelCtrl.prototype.refreshPanelToSync = function() {
 		var self = this;
 		if(self.syncPanel){
 			self.syncPanel = false;
 			self.getUserAssignments(self.showEmptyWorklists, false);
-		}		
+		}
 	};
 
 
@@ -204,20 +198,20 @@
 			var cssText = "";
 			style.type = 'text/css';
 			// First css rule to take care of non hover appearance
-			cssText += ".node-" + item.uuid 
-				    + " + span" 
-				    + "{color:#2a5db0;" 
+			cssText += ".node-" + item.uuid
+				    + " + span"
+				    + "{color:#2a5db0;"
 				    + "background: url("
-					+ _sdUtilService.getRootUrl() + item.icon 
+					+ _sdUtilService.getRootUrl() + item.icon
 					+ ") left no-repeat !important; background-size: 12px 12px !important;"
 					+ "padding-left: 1em !important;}";
 
 			// second css rule to take care of hover otherwise the image will
 			// disappear on hover using the default css
-			cssText += ".node-" + item.uuid 
-			        + " + span:hover " 
+			cssText += ".node-" + item.uuid
+			        + " + span:hover "
 			        + "{background: url("
-					+ _sdUtilService.getRootUrl() + item.icon 
+					+ _sdUtilService.getRootUrl() + item.icon
 					+ ") left no-repeat !important;  background-size: 12px 12px !important;}";
 			style.innerHTML = cssText;
 			document.getElementsByTagName('head')[0].appendChild(style);
@@ -229,16 +223,16 @@
 			return item.icon;
 		}
 	};
-		  
-		  
+
+
 	/**
 	 * Getting tree API handler.
-	 * 
+	 *
 	 * @param api
-	 */	  
+	 */
      WorkflowWorklistPanelCtrl.prototype.onTreeInit = function(api){
 		 var self = this;
-		 self.treeApi = api;		 		 
+		 self.treeApi = api;
 	  };
 
 })();

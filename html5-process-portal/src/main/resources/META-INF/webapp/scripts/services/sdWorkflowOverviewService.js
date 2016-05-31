@@ -10,6 +10,7 @@
 
 /**
  * @author Abhay.Thappan
+ * @author Johnson.Quadras
  */
 (function() {
 	'use strict';
@@ -37,14 +38,23 @@
 		 */
 		WorkflowOverviewService.prototype.getWorkflowOverviewCounts = function() {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:type";
+			var restUrl = REST_BASE_URL + "/counts";
+			return $resource(restUrl).get().$promise;
+		};
+		
+		/**
+		 * 
+		 */
+		WorkflowOverviewService.prototype.resetCache = function() {
+			// Prepare URL
+			var restUrl = REST_BASE_URL + "/resetCache";
+			
+			var cache =  $resource(restUrl, {}, {
+				  reset : {method:'POST'},
+				});
 
-			var urlTemplateParams = {};
-			urlTemplateParams.type = "counts"
-
-			return $resource(restUrl).get(urlTemplateParams).$promise;
+			return cache.reset().$promise;
 		};
 
 	}
-	;
 })();

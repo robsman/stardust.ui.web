@@ -213,9 +213,9 @@ public class WorklistService
       return resultDTO;
    }
    
-   public QueryResultDTO getWorklistAssignemnt(Boolean showEmptyWorklist, boolean reload) throws PortalException
+   public QueryResultDTO getWorklistAssignemnt(Boolean showEmptyWorklist) throws PortalException
    {
-      List<WorklistParticipantDTO> listOfAssignments = worklistUtils.getWorklistAssignemnt(showEmptyWorklist, reload);
+      List<WorklistParticipantDTO> listOfAssignments = worklistUtils.getWorklistAssignemnt(showEmptyWorklist);
       QueryResultDTO result = new QueryResultDTO();
       result.list = listOfAssignments;
       result.totalCount = listOfAssignments.size();

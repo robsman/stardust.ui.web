@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -25,7 +25,7 @@
 			});
 
 	/**
-	 * 
+	 *
 	 */
 	function WorkflowWorklistService($resource, sdLoggerService, sdUtilService) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/worklist";
@@ -33,43 +33,37 @@
 		var trace = sdLoggerService.getLogger('workflow-ui.services.sdWorkflowWorklistService');
 
 		/**
-		 * 
+		 *
 		 */
-		WorkflowWorklistService.prototype.getUserAssignments = function(showEmptyWorklist, reload) {
+		WorkflowWorklistService.prototype.getUserAssignments = function(showEmptyWorklist) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:type";
-            if(showEmptyWorklist === true && reload == true){
-            	restUrl = restUrl + "?showEmptyWorklist=" + showEmptyWorklist + "&reload=" + reload;
-            }else if(reload === true){
-            	restUrl = restUrl + "?reload=" + reload;
-            }else if(showEmptyWorklist === true){
-            	restUrl = restUrl + "?showEmptyWorklist=" + showEmptyWorklist;
-            }
-            			
-			var urlTemplateParams = {};
-			urlTemplateParams.type = "worklist-assignments";
+			var restUrl = REST_BASE_URL + "/:type?:queryParams";
+			var urlTemplateParams = {
+				type : "worklist-assignments",
+				queryParams : "showEmptyWorklist=" + showEmptyWorklist
+			};
+
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
-		
+
 		WorkflowWorklistService.prototype.getNextAssemblyLineActivity = function(){
 			// Prepare URL
 			var restUrl = REST_BASE_URL + "/nextAssemblyLineActivity";
 
 			var urlTemplateParams = {};
-			
+
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
-		
+
 		WorkflowWorklistService.prototype.getUserProcesses = function(){
 			// Prepare URL
 			var restUrl = REST_BASE_URL + "/userProcesses";
 
 			var urlTemplateParams = {};
-			
+
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
 
 
 	}
-	;
 })();
