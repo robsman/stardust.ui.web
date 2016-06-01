@@ -1916,6 +1916,12 @@ public class ModelElementMarshaller implements ModelMarshaller
             eObjectUUIDMapper().getUUID(eventHandler));
       eventJson.addProperty(ModelerConstants.OID_PROPERTY, eventHandler.getElementOid());
       ModelType model = ModelUtils.findContainingModel(eventHandler);
+      
+      if (model == null)
+      {
+         return null;
+      }
+      
       eventJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
             eObjectUUIDMapper().getUUID(model));
       setContainingModelIdProperty(eventJson, eventHandler);
