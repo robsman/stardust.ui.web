@@ -119,7 +119,8 @@ public class ManualActivityUi
          }
          else if (ModelUtils.isConstantType(getModel(), dataMapping))
          {
-            path = createConstantDataMapping(dataMapping, manualActivityPath);
+            //Constants are always of the type primitive
+            path = createPrimitiveDataMapping(dataMapping, manualActivityPath);
          }
          else if (ModelUtils.isDMSType(getModel(), dataMapping))
          {
@@ -163,14 +164,6 @@ public class ManualActivityUi
       return manualActivityPath;
    }
    
-   /**
-    * @return
-    */
-   private Path createConstantDataMapping(DataMapping dataMapping,
-         ManualActivityPath maPath)
-   {
-      return JavaPath.createFromClass(maPath, dataMapping.getId(), dataMapping.getMappedType(), isReadOnly(dataMapping));
-   }
 
    /**
     * @param dataMapping

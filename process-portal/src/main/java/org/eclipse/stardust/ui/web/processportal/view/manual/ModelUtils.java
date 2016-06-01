@@ -262,6 +262,10 @@ public class ModelUtils
    public static boolean isDMSType(Model model, DataMapping mapping)
    {
       Data data = model.getData(mapping.getDataId());
+      if(null == data) 
+      {
+         return false;
+      }
       return StructuredTypeRtUtils.isDmsType(getTypeId(data));
    }
 
