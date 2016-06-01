@@ -1114,6 +1114,11 @@ public class ActivityDetailsBean extends UIComponentBean
     */
    public void handleEvent(DocumentEvent documentEvent)
    {
+      if (processInstance == null)
+      {
+         return;
+      }
+      
       if (EventMode.PROCESS_ATTACHMENTS == documentEvent.getEventMode()
             && processInstance.getOID() == documentEvent.getProcessInstanceOid())
       {
