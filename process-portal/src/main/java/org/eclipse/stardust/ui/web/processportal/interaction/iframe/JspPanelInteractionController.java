@@ -14,8 +14,8 @@ import static org.eclipse.stardust.ui.web.processportal.interaction.iframe.Ifram
 
 import javax.faces.context.FacesContext;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionController;
