@@ -39,8 +39,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.ui.web.common.log.LogManager;
-import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;

@@ -12,8 +12,8 @@ package org.eclipse.stardust.ui.web.processportal;
 
 import java.io.Serializable;
 
-import org.eclipse.stardust.ui.web.common.log.LogManager;
-import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.event.ActivityEventObserver;
 import org.eclipse.stardust.ui.event.Observers;
