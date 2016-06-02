@@ -5,8 +5,6 @@
 }
 
 .perspective-series-wrapper {
-    left: 2px !important;
     top: 138px !important;
-    width: 345px !important;
     border-top: none !important;
 }

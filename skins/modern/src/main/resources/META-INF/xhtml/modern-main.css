@@ -9716,10 +9716,9 @@ img[src *='world_go.png'].nodeMenuIcon {
 	border-top: 1px solid #958977;
 	position:fixed;
 	z-index:1;
-	left:42px;
 	top:40px;
 	padding-left:4px;
-	width:306px;
+	width:348px;
 }
 
 .sg-sidebar-opened.sg-sidebar-pinned .perspective-series-wrapper{
