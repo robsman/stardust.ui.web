@@ -20,27 +20,27 @@
 	     ng-disabled="!rowData.enableTerminate"  
 	     aid="PP-ProcessTable-AbortAction">
 
-		<i	ng-click="processTableCtrl.openAbortDialog(rowData);"  
+		<i	ng-click="!rowData.enableTerminate || processTableCtrl.openAbortDialog(rowData);"  
 			title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" 
 		   	class="pi pi-process-abort pi-lg button-link tbl-tool-link tbl-tool-joined-link" >
 		</i>
 
 		<i  sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
 		    sda-placement="auto bottom-right"
-			ng-click="processTableCtrl.openAbortPopover(rowData); "
+			ng-click="!rowData.enableTerminate || processTableCtrl.openAbortPopover(rowData); "
 			title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}" 
 			style="position: relative;left: calc(100% - 25px);"
 			class="pi pi-menu-dropdown button-link tbl-tool-link">
 		</i>
 
-		<span ng-click="processTableCtrl.openAbortDialog(rowData);">
+		<span ng-click="!rowData.enableTerminate || processTableCtrl.openAbortDialog(rowData);">
 			{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}
 		</span>
 
 	</div>
 
 	<div class="menu-container"  
-	     ng-click="processTableCtrl.recoverProcess(this, rowData)" 
+	     ng-click="!rowData.enableRecover || processTableCtrl.recoverProcess(this, rowData)" 
 	     aid="PP-ProcessTable-RecoverAction"
 		 ng-disabled="!rowData.enableRecover">
 
