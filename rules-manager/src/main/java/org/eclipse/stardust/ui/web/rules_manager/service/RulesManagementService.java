@@ -29,8 +29,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifactQuery;
 import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifacts;
 import org.eclipse.stardust.engine.api.runtime.DeployedRuntimeArtifact;

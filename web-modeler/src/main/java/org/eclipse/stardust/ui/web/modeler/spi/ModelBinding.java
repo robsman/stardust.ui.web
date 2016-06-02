@@ -8,8 +8,8 @@ import org.eclipse.emf.ecore.EObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelUnmarshaller;

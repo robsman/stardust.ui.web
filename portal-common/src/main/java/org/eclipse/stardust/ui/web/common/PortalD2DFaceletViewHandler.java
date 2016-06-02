@@ -22,8 +22,8 @@ import javax.servlet.http.HttpSession;
 
 import com.icesoft.faces.facelets.D2DFaceletViewHandler;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.app.InternalErrorHandler;
 import org.eclipse.stardust.ui.web.jsf.icefaces.IceFacesUtils;
 

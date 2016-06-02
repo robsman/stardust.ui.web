@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 

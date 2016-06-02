@@ -28,8 +28,8 @@ import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.springframework.stereotype.Service;
 
 import org.eclipse.stardust.common.config.CurrentVersion;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.compatibility.AdonisImporter;

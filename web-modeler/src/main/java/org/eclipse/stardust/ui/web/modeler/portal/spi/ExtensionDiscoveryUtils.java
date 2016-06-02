@@ -10,8 +10,8 @@ import java.util.List;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils;
 import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils.PluginDescriptor;
 

@@ -21,8 +21,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.ResourceLoginTimeService;
 import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
 import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;

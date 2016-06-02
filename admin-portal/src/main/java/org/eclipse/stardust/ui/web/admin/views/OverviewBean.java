@@ -17,8 +17,8 @@ import java.util.List;
 import javax.faces.component.UIComponent;
 import javax.faces.event.ActionEvent;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.LogEntryDetails;
 import org.eclipse.stardust.engine.api.query.LogEntryQuery;
 import org.eclipse.stardust.engine.api.query.Query;

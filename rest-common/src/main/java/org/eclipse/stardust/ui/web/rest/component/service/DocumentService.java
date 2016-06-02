@@ -13,8 +13,8 @@ package org.eclipse.stardust.ui.web.rest.component.service;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;

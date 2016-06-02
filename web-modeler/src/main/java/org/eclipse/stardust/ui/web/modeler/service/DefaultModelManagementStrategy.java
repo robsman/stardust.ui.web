@@ -12,8 +12,8 @@ import java.util.*;
 import org.eclipse.emf.ecore.EObject;
 
 import org.eclipse.stardust.common.CompareHelper;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;

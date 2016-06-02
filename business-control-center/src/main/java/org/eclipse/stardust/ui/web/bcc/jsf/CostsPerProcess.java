@@ -13,8 +13,8 @@ package org.eclipse.stardust.ui.web.bcc.jsf;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ProcessDefinitionDetails;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;

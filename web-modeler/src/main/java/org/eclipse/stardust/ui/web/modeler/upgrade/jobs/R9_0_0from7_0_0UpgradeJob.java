@@ -12,8 +12,8 @@
 package org.eclipse.stardust.ui.web.modeler.upgrade.jobs;
 
 import org.eclipse.stardust.common.config.Version;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 
 public class R9_0_0from7_0_0UpgradeJob extends M3_1_0from1_0_0UpgradeJob
 {

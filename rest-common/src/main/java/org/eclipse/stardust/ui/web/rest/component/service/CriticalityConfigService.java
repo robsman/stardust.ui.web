@@ -15,8 +15,8 @@ import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.util.CriticalityConfigUtils;

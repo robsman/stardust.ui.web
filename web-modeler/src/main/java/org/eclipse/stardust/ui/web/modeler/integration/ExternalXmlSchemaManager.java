@@ -18,8 +18,8 @@ import org.eclipse.xsd.util.XSDResourceFactoryImpl;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.service.WebModelerUriConverter;
 
 @Component

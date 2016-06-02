@@ -17,8 +17,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;

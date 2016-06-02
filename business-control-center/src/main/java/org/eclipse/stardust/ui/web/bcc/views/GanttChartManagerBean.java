@@ -26,8 +26,8 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.swing.tree.DefaultTreeModel;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
