@@ -837,6 +837,16 @@ tr.properties-panel-documentRow>td {
 	background:#ffffE0;
 }
 
+.popover-content .menu-list .menu-container[disabled] {
+	opacity: 0.5;
+	cursor:default;
+	background: none;
+}
+
+.popover-content .menu-list .menu-container[disabled] i {
+	cursor:default;
+}
+
 .sd-portal-loading {
   display : none;
 }

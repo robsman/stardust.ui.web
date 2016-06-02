@@ -17,7 +17,7 @@
 
 	<div class="menu-container"
 	     ng-if="::(activityTableCtrl.isActivityTableMode() && activityTableCtrl.isActionButtonVisible('activate'))"
-	     ng-click="activityTableCtrl.$activateItem(rowData);"
+	     ng-click="(!rowData.activatable || rowData.isCaseInstance) || activityTableCtrl.$activateItem(rowData);"
 		 aid="PP-ActivityTable-ActivateAction"
 		 ng-disabled="!rowData.activatable || rowData.isCaseInstance">
 
@@ -51,7 +51,7 @@
 	     ng-if="::(activityTableCtrl.isWorklistMode() && activityTableCtrl.isActionButtonVisible('complete'))"
 	     aid="PP-ActivityTable-CompleteAction"
 		 ng-disabled="(rowData.dataMappings == undefined) || !rowData.activatable || !rowData.isTrivialDataValid"
-		 ng-click="activityTableCtrl.$openCompleteDialog(rowData);">
+		 ng-click="((rowData.dataMappings == undefined) || !rowData.activatable || !rowData.isTrivialDataValid) || activityTableCtrl.$openCompleteDialog(rowData);">
 
 		<i title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}"
 		   class="pi pi-activity-complete pi-lg button-link tbl-tool-link">
@@ -64,7 +64,7 @@
 	</div>
 
 	<div class="menu-container"
-	     ng-click="activityTableCtrl.$openDelegateDialog(rowData);"
+	     ng-click="(!rowData.delegable || rowData.defaultCaseActivity) || activityTableCtrl.$openDelegateDialog(rowData);"
 	     aid="PP-ActivityTable-DelegateAction"
 	     ng-if="::activityTableCtrl.isActionButtonVisible('delegate')"
 		 ng-disabled="!rowData.delegable || rowData.defaultCaseActivity">
@@ -84,7 +84,7 @@
 		 class="button-link tbl-tool-link">
 
 		<i class="pi pi-activity-abort pi-lg"
-			ng-click="activityTableCtrl.$openAbortDialog(rowData);"
+			ng-click="(!rowData.abortActivity || rowData.defaultCaseActivity) || activityTableCtrl.$openAbortDialog(rowData);"
 	     	aid="PP-ActivityTable-AbortAction"
 	     	ng-if="::activityTableCtrl.isActionButtonVisible('abort')"
 		 	ng-disabled="!rowData.abortActivity || rowData.defaultCaseActivity"
@@ -104,14 +104,14 @@
 		   sd-popover
 		   sda-template="activityTableCtrl.abortMenuTemplateUrl"
 		   sda-placement ="bottom-right auto"
-		   ng-click="activityTableCtrl.openAbortPopover(rowData);"
+		   ng-click="(!rowData.abortProcess || rowData.isCaseInstance) || activityTableCtrl.openAbortPopover(rowData);"
 		   class="pi pi-menu-dropdown button-link tbl-tool-link">
 		</i>
 
 	</div>
 
 	<div class="menu-container"
-	     ng-click="activityTableCtrl.openRelocationDialog(rowData);"
+	     ng-click="!(rowData.relocationEligible) || activityTableCtrl.openRelocationDialog(rowData);"
 		 aid="PP-ActivityTable-OpenRelocationDialogAction"
 		 ng-if="::activityTableCtrl.isActionButtonVisible('relocate')"
 	 	 ng-disabled="!(rowData.relocationEligible)">
