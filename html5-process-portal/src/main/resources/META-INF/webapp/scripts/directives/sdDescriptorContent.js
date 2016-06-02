@@ -43,7 +43,12 @@
 										'sda-mime-type="document.contentType" sda-document-id="document.uuid">' +
 									'<\/div>'+
 								'<\/div>'+
-						'<\/div>',
+						'<\/div>'+
+						'<div style="text-align:left;" ng-if="descriptorCtrl.dataType == \'LIST\' && !descriptorCtrl.descriptorValue.isDocument">'+
+							'{{descriptorCtrl.descriptorValue.value}}'+
+						'<\/div>'
+						
+								,
 			controller : [ '$scope', '$parse', '$attrs', DesciptorContentController ]
 		};
 	};

@@ -190,7 +190,10 @@ public class CommonDescriptorUtils
                                  processAttachment.getContentType()), processAttachment));
                         }
                      }
-                     descriptorValues.put(entry.getKey(), documentList);
+                     
+                     if(CollectionUtils.isNotEmpty(documentList)) {
+                        descriptorValues.put(entry.getKey(), documentList);
+                     }
                   }
                   else if (null != dataDetails && DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
                   {
