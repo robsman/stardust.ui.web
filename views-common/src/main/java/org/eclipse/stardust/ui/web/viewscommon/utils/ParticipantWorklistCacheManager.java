@@ -70,6 +70,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
     */
    public void reset()
    {
+      trace.debug("Reseting ParticipantWorklistCache");
       participantWorklists = new LinkedHashMap<ParticipantInfoWrapper, ParticipantWorklistCacheEntry>();
       participantInfoMap = new LinkedHashMap<ParticipantInfoDTO, ParticipantInfo>();
       ParticipantInfo worklistOwner = null;

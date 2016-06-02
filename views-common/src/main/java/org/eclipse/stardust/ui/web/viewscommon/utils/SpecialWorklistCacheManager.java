@@ -66,11 +66,13 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
    
    public void reset()
    {
+      trace.debug("Reseting SpecialWorklistCache");
       initialize();
    }
 
    private void initialize()
    {
+      
       worklists = new LinkedHashMap<String, ProcessWorklistCacheEntry>();
       ActivityInstances result = WorklistUtils.getAllAssignedActivities();
       worklists.put(ALL_ACTVITIES,

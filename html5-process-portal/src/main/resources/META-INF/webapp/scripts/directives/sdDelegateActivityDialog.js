@@ -215,8 +215,6 @@
 							
 							return;
 						}
-						
-						sdViewUtilService.syncLaunchPanels();
 
 						if (angular.isDefined(self.onConfirm)) {
 							self.onConfirm();

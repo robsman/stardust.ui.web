@@ -355,9 +355,6 @@
 
 			//Refreshing when Item is activated //remove on completion of server push
 			this.refreshHandler = $parse(attr.sdaAutoRefresh);
-			ActivityTableCompiler.prototype.registerRefresh = function(){
-				this.refreshHandler(scopeToUse);
-			}
 
 			if (attr.sdaSelection) {
 				var assignable = $parse(attr.sdaSelection).assign;
@@ -415,6 +412,14 @@
 					}
 				});
 			}
+		};
+		
+		
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.registerRefresh = function(){
+			this.refreshHandler(scopeToUse);
 		};
 
 
@@ -541,12 +546,12 @@
 			 *
 			 */
 			self.joinCompleted = function(result) {
-				self.refresh();
 				if (angular.isDefined(result)) {
 					if (angular.isDefined(result)) {
 						sdCommonViewUtilService.openProcessInstanceDetailsView(result,true);
 					}
 				}
+				self.refresh();
 			};
 
 			/*
@@ -561,7 +566,7 @@
 			 *
 			 */
 			self.switchCompleted = function(result) {
-				self.refresh();
+				
 				if (angular.isDefined(result)) {
 					var name  =  sgI18nService.translate('views-common-messages.views-switchProcessDialog-worklist-title');
 					var params = {
@@ -571,6 +576,7 @@
 					}
 					sdViewUtilService.openView('worklistPanel', 'id='+new Date().getTime(), params, true);
 				}
+				self.refresh();
 			};
 
 			/*

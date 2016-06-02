@@ -56,7 +56,7 @@
 		this.collapsePanelHandle = null;
 		var self = this;
 
-		_sgPubSubService.subscribe('sdRefreshCounts', function() {
+		_sgPubSubService.subscribe('sdRefreshLaunchPanel', function() {
 			var activePerspective = sdSidebarService.getActivePerspectiveName();
 			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
 				self.getUserAssignments(self.showEmptyWorklists);
@@ -87,7 +87,7 @@
 	 */
 	WorkflowWorklistPanelCtrl.prototype.refreshMyAssignmentPanel = function(showEmptyWorklist) {
 		_sdWorkflowOverviewService.resetCache().then(function(){
-			_sgPubSubService.publish('sdRefreshCounts');
+			_sgPubSubService.publish('sdRefreshLaunchPanel');
 		});
 	};
 

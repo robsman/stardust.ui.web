@@ -53,12 +53,8 @@
 		_sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){
 			var activePerspective = sdSidebarService.getActivePerspectiveName();
 			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution") {
-				self.refreshOverviewPanel();
-			}
-		});
-
-		sgPubSubService.subscribe('sdRefreshCounts', function() {
 				self.getOverviewCounts();
+			}
 		});
 
 		self.refreshOverviewPanel();
@@ -135,12 +131,13 @@
 	      _sdViewUtilService.openView("worklistPanel","id=" + "lastNWorkedOn" + "&dateID=" + self.dateId, params);
 	};
 
+	
 	/**
 	 *
 	 */
 	WorkflowOverviewPanelCtrl.prototype.refreshOverviewPanel = function(){
 		_sdWorkflowOverviewService.resetCache().then(function(){
-			_sgPubSubService.publish('sdRefreshCounts');
+			_sgPubSubService.publish('sdRefreshLaunchPanel');
 		});
 	};
 

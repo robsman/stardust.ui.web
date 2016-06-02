@@ -13,10 +13,14 @@ import org.eclipse.stardust.ui.web.rest.dto.WorkflowOverviewCountsDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 
 @Path("/workflow-overview")
 public class WorkflowOverviewResource
 {
+   public static final Logger trace = LogManager.getLogger(WorkflowOverviewResource.class);
+   
    @Autowired
    private WorkflowOverviewService workflowOverviewService;
 
@@ -25,6 +29,8 @@ public class WorkflowOverviewResource
    @Path("/resetCache")
    public Response resetCache( )
    {
+      trace.debug("Reseting Participant and Special worklist cache.");
+      
       ParticipantWorklistCacheManager.getInstance().reset();
       SpecialWorklistCacheManager.getInstance().reset();
       return Response.ok().build();
