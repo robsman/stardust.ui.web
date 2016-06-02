@@ -46,9 +46,7 @@
 						'<\/div>'+
 						'<div style="text-align:left;" ng-if="descriptorCtrl.dataType == \'LIST\' && !descriptorCtrl.descriptorValue.isDocument">'+
 							'{{descriptorCtrl.descriptorValue.value}}'+
-						'<\/div>'
-						
-								,
+						'<\/div>',
 			controller : [ '$scope', '$parse', '$attrs', DesciptorContentController ]
 		};
 	};
