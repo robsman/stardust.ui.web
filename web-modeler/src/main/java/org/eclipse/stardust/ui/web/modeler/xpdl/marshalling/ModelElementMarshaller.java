@@ -2116,13 +2116,19 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       if (model != null)
       {
-         participantFullID = getModelBuilderFacade().createFullId(
-               model,
-               XPDLFinderUtils.findParticipant(
-                     model,
-                     getModelBuilderFacade().getAttributeValue(
-                           getModelBuilderFacade().getAttribute(event,
-                                 PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT))));
+         IModelParticipant participant = XPDLFinderUtils.findParticipant(model,
+               getModelBuilderFacade()
+                     .getAttributeValue(getModelBuilderFacade().getAttribute(event,
+                           PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT)));
+         if (participant != null)
+         {
+            if (participant.eIsProxy()) {
+               URI proxyUri = ((InternalEObject) participant).eProxyURI();
+               ModelType participantModel = ModelUtils.getModelByProxyURI(model, proxyUri);
+               model = participantModel;
+            }
+            participantFullID = getModelBuilderFacade().createFullId(model, participant);
+         }
       }
 
       eventJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, participantFullID);
