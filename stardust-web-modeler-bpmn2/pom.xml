@@ -103,7 +103,13 @@
       </dependency>
       <dependency>
 	     <groupId>org.eclipse.stardust.engine</groupId>
-      <artifactId>carnot-engine</artifactId>
+     	 <artifactId>carnot-engine</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+       <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-portal-common</artifactId>
          <version>${project.version}</version>
          <scope>compile</scope>
       </dependency>
