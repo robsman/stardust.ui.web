@@ -91,7 +91,13 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
     */
    public long getWorklistCount(String worklistName)
    {
-      return worklists.get(worklistName).getCount();
+      //Guard against null pointer if counts accessed when the cache is being reset.
+      if( null != worklists.get(worklistName)) 
+      {
+         return worklists.get(worklistName).getCount();
+      }
+      
+      return 0;
    }
    
    /**
@@ -100,7 +106,13 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
     */
    public long getWorklistCountThreshold(String worklistName)
    {
-      return worklists.get(worklistName).getTotalCountThreshold();
+    //Guard against null pointer if counts accessed when the cache is being reset.
+      if( null != worklists.get(worklistName)) 
+      {
+         return worklists.get(worklistName).getTotalCountThreshold();
+      }
+      
+      return 0;
    }
 
    /**

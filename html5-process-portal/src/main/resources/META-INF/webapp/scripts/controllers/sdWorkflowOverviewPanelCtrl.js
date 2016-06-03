@@ -39,6 +39,12 @@
 		this.collapsePanelHandle = null;
 		this.dateId = "-";
 		var self = this;
+		
+		this.workflowOverviewCounts = {
+				"directUserWorkCount" : "",
+				"assignedActivitiesCount" : "",
+				"criticalActivitiesCount" : ""
+		}
 
 		_sgPubSubService.subscribe("sdActivePerspectiveChange", function(){
 			var activePerspective = sdSidebarService.getActivePerspectiveName();
