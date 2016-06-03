@@ -69,7 +69,7 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.rest.util.DescriptorColumnUtils.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.dto.AbortNotificationDTO;
 import org.eclipse.stardust.ui.web.rest.dto.BenchmarkDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
@@ -1768,6 +1768,11 @@ public class ProcessInstanceUtils
                   ((DateRange) value).setToDateValue(new Date(to));
                }
             }
+            //Descriptors of type  Multi cardinality
+            else if (descriptor.getValue().type.equals(ColumnDataType.LIST.toString()))
+            {
+               value = ((TextSearchDTO) descriptor.getValue().value).textSearch;
+            }
 
             filterModel.setFilterValue(key, (Serializable) value);
          }
@@ -2258,12 +2263,20 @@ public class ProcessInstanceUtils
                filterDTO = new Gson().fromJson(descriptorColumnsFilterJson.get(id),
                      ProcessTableFilterDTO.BooleanDTO.class);
             }
+            else if (ColumnDataType.LIST.toString().equals(descriptorColumnDTO.type))
+            {
+               filterDTO = new Gson().fromJson(descriptorColumnsFilterJson.get(id),
+                     ProcessTableFilterDTO.TextSearchDTO.class);
+
+            }
             descriptorColumnMap.put(id, new DescriptorFilterDTO(descriptorColumnDTO.type, filterDTO));
          }
       }
 
       processListFilterDTO.descriptorFilterMap = descriptorColumnMap;
    }
+   
+   
 
    /**
     * 

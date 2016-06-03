@@ -516,6 +516,10 @@
 						}else if (this.descritorCols[index].dataType == "DATE") {
 							obj['from'] = this.selected[this.descritorCols[index].id].from;
 							obj['to'] = this.selected[this.descritorCols[index].id].to;
+						}else if (this.descritorCols[index].dataType == "LIST") {
+							if(!_sdUtilService.isEmpty(this.selected[this.descritorCols[index].id])) {
+								obj['textSearch'] = this.selected[this.descritorCols[index].id];
+							}
 						}
 
 						this.query.processSearchCriteria.descriptors.formatted[item] = obj;
