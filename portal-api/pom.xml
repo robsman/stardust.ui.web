@@ -34,6 +34,11 @@
          <scope>compile</scope>
       </dependency>
       <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-portal-common</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+      <dependency>
          <groupId>org.eclipse.stardust.engine</groupId>
          <artifactId>spring-module</artifactId>
          <version>${project.version}</version>
