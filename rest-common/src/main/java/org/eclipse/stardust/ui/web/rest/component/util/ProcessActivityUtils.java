@@ -500,8 +500,11 @@ public class ProcessActivityUtils
       {
          FilterTerm orFilter = filter.addOrTerm();
          ProcessDefinition caseProcessDefination = ModelCache.findModelCache().getCaseProcessDefination();
-         orFilter
-               .add(ProcessInstanceQuery.PROCESS_DEFINITION_OID.notEqual(caseProcessDefination.getRuntimeElementOID()));
+         if(null != caseProcessDefination)
+         {
+            orFilter
+            .add(ProcessInstanceQuery.PROCESS_DEFINITION_OID.notEqual(caseProcessDefination.getRuntimeElementOID()));
+         }
       }
 
       if (filterAttributesDTO.isIncludeRootProcess())
