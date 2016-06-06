@@ -41,6 +41,31 @@ public class GenericModelingAssertions
       return process;
    }
    
+   public static DataPathType assertDataPath(ProcessDefinitionType process,
+         String dataPathID, String dataPathName, DirectionType direction)
+   {
+      List<DataPathType> dataPaths = process.getDataPath();
+      assertThat(dataPaths.isEmpty(), is(false));
+      DataPathType dataPath = null;
+      for (Iterator<DataPathType> i = dataPaths.iterator(); i.hasNext();)
+      {
+         DataPathType foundType = i.next();
+         assertThat(foundType.getName(), is(not(nullValue())));
+         assertThat(foundType.getId(), is(not(nullValue())));
+         assertThat(foundType.getDirection(), is(not(nullValue())));
+         if (foundType.getId().equals(dataPathID)
+               && foundType.getName().equals(dataPathName)
+               && foundType.getDirection().equals(direction))
+         {
+            dataPath = foundType;
+         }
+      }
+      assertThat(dataPath, is(not(nullValue())));
+      return dataPath;
+   }
+   
+ 
+   
    public static void assertProcessDoesNotExist(ModelType model, String processID)
    {
       ProcessDefinitionType process = (ProcessDefinitionType) ModelUtils
