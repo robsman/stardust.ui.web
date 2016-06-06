@@ -989,6 +989,7 @@
 	                  .catch(function(){
 	                    //Reset to the initial value which is still in our span elem
 	                    inputElem.value=spanElem.innerText;
+	                    rootCtrl.api.setNodeIcon(that.nodeId, "");
 	                  }).
 	                  finally(function(){
 	                    //always toggle edit mode off regardless.

@@ -388,13 +388,18 @@
         }
         break;
       case "node-rename-commit":
-        if(data.valueItem.nodeType==="document"){
-          this.renameDocument(data.valueItem.id,data.newValue,data.valueItem);
+        if(angular.isString(data.newValue) && data.newValue.length > 0){
+          if(data.valueItem.nodeType==="document"){
+            this.renameDocument(data.valueItem.id,data.newValue,data.valueItem);
+          }
+          else if(data.valueItem.nodeType==="folder"){
+             this.renameFolder(data.valueItem.id,data.newValue,data.valueItem);
+          }
+          data.deferred.resolve();
         }
-        else if(data.valueItem.nodeType==="folder"){
-           this.renameFolder(data.valueItem.id,data.newValue,data.valueItem);
+        else{
+          data.deferred.reject();
         }
-        data.deferred.resolve();
         break;
       case "node-click" :
         if(data.valueItem.nodeType==="document"){
