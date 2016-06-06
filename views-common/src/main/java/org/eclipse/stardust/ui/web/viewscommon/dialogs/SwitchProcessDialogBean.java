@@ -255,9 +255,8 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean
 
    private void abortOrHaltAndSpawnProcess(ProcessInstance processInstance)
    {   // check permission
-      if (ProcessInstanceUtils.isAbortable(processInstance))
+      if (pauseParentProcess || ProcessInstanceUtils.isAbortable(processInstance))
       {
-
          ProcessInstance pi = null;
          DataCopyOptions dataCopyOptions = new DataCopyOptions(true, null, null, true);
          SpawnOptions options;
