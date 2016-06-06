@@ -10,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.camel.CamelContext;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
@@ -24,14 +25,19 @@ import org.eclipse.stardust.engine.extensions.json.GsonHandler;
 @Path("/")
 public class TemplatingRestlet
 {
-   private final GsonHandler gson = new GsonHandler();
    private String velocityToolsPath;
+   private CamelContext camelContext;
    
    public void setVelocityToolsPath(String velocityToolsPath)
    {
       this.velocityToolsPath = velocityToolsPath;
    }
 
+   public void setCamelContext(CamelContext camelContext)
+   {
+      this.camelContext = camelContext;
+   }
+   
    @POST
    @Path("/")
    @Consumes({"application/json"})
@@ -40,14 +46,15 @@ public class TemplatingRestlet
       try
       {
          validateRequest(request);
-         RequestHandler requestHadnler=new RequestHandler();
+         RequestHandler requestHadnler=new RequestHandler(this.camelContext);
          byte[] content = requestHadnler.handleRequest(request, VelocityContextAppenderProcessor.initializeVelocityContext(this.velocityToolsPath));
          Document createdDocument = storeDocument(request, content);
          if (createdDocument != null)
             return Response.ok(createdDocument.getId()).build();
-         else
+         else{
+            GsonHandler gson = new GsonHandler();
             return Response.ok(gson.toJson(new String(content))).build();
-
+         }
       }
       catch (ValidationException ve)
       {

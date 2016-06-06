@@ -21,8 +21,6 @@ import org.eclipse.stardust.engine.extensions.templating.core.TemplatingRequest;
 @Consumes(MediaType.APPLICATION_JSON)
 public class GsonProvider implements MessageBodyReader<TemplatingRequest>
 {
-   private final GsonHandler gson = new GsonHandler();
-
    @Override
    public boolean isReadable(Class< ? > type, Type genericType, Annotation[] annotations,
          MediaType mediaType)
@@ -37,6 +35,7 @@ public class GsonProvider implements MessageBodyReader<TemplatingRequest>
          MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
                throws IOException, WebApplicationException
    {
+      GsonHandler gson = new GsonHandler();
       InputStreamReader streamReader = new InputStreamReader(entityStream, "UTF-8");
       Map<String, Object> requestMap = (Map<String, Object>) gson.fromJson(streamReader,
             Object.class);

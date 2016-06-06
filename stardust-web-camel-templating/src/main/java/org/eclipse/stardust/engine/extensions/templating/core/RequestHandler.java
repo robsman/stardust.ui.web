@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.velocity.VelocityContext;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
@@ -23,11 +22,6 @@ public class RequestHandler
    private CamelContext camelContext;
 
    public static final Logger logger = LogManager.getLogger(RequestHandler.class);
-
-   public RequestHandler()
-   {
-      this.camelContext = new DefaultCamelContext();
-   }
 
    public RequestHandler(CamelContext camelContext)
    {

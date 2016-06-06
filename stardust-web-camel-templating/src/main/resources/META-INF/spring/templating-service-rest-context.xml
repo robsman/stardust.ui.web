@@ -17,6 +17,7 @@
       class="org.eclipse.stardust.engine.extensions.templating.rest.TemplatingRestlet"
       scope="prototype">
        <property name="velocityToolsPath" value="default-velocity-tools.xml" />
+       <property name="camelContext" ref="defaultCamelContext" />
    </bean>
 
 

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.camel.impl.DefaultCamelContext;
 import org.eclipse.stardust.engine.extensions.templating.core.FieldMetaData;
 import org.eclipse.stardust.engine.extensions.templating.core.RequestHandler;
 import org.eclipse.stardust.engine.extensions.templating.core.ServiceException;
@@ -21,7 +22,7 @@ public class TestClasspathTemplatingHandler
 {
    private static ClassPathXmlApplicationContext ctx;
    private static Date currentDate = null;
-   private static RequestHandler handler=new RequestHandler();
+   private static RequestHandler handler=new RequestHandler(new DefaultCamelContext());
    private static TemplatingRequest requestForTestClasspathPlainDocx;
 
    private static TemplatingRequest requestForTestClasspathDocxPdf;
