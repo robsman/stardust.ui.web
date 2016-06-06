@@ -295,18 +295,18 @@ public class DocumentSearchUtils
       }
 
       FilterCriterion contentFilter = null, dataFilter = null;
+      FilterOrTerm filterOrTerm = filter.addOrTerm();
+      
       if (StringUtils.isNotEmpty(documentSearchRequest.contentLike))
       {
          contentFilter = DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
                .escapeIllegalJcrChars(documentSearchRequest.contentLike)));
-         FilterOrTerm filterOrTerm = filter.addOrTerm();
          filterOrTerm.add(contentFilter);
       }
       if (StringUtils.isNotEmpty(documentSearchRequest.metaDataLike))
       {
          dataFilter = DocumentQuery.META_DATA.any().like(
                QueryUtils.getFormattedString(Text.escapeIllegalJcrChars(documentSearchRequest.metaDataLike)));
-         FilterOrTerm filterOrTerm = filter.addOrTerm();
          filterOrTerm.add(dataFilter);
       }
 
