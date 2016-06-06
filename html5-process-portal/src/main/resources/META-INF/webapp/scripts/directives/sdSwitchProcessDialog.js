@@ -285,6 +285,8 @@
 				self.processInstanceOIDs = getProcessInstanceOIDs();
 				if($scope.pauseParentProcess === "true"){
 					self.dialogTitle = sdUtilService.format(self.i18n('views-common-messages.views-pauseProcessDialog-title'));
+					openSwitchProcessDialog();
+					return;
 				}else{
 					self.dialogTitle = sdUtilService.format(self.i18n('views-common-messages.views-switchProcessDialog-title'));
 				}

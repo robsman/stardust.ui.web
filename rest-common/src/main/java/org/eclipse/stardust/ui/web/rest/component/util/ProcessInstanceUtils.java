@@ -812,8 +812,8 @@ public class ProcessInstanceUtils
          ProcessInstance srcProcessInstance = getProcessInstance(processInstOID);
 
          // First check the permission
-         if (!AuthorizationUtils.hasAbortPermission(srcProcessInstance) || !isAbortable(srcProcessInstance)
-               || srcProcessInstance.isCaseProcessInstance())
+         if (!pauseParentProcess && (!AuthorizationUtils.hasAbortPermission(srcProcessInstance) || !isAbortable(srcProcessInstance)
+               || srcProcessInstance.isCaseProcessInstance()))
          {
             continue;
          }
