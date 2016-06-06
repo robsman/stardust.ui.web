@@ -1245,6 +1245,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject processDefinitionJson)
    {
       List<DataPathType> newDataPaths = new ArrayList<DataPathType>();
+      
 
       JsonArray dataPathes = processDefinitionJson.get(
             ModelerConstants.DATA_PATHES_PROPERTY).getAsJsonArray();
@@ -1257,6 +1258,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                .getAsString();
          String dataPathName = dataPathJson.get(ModelerConstants.NAME_PROPERTY)
                .getAsString();
+         
+         DataPathType oldDataPath = XPDLFinderUtils.findDataPath(processDefinition, dataPathID);
 
          DataPathType dataPathType = getModelBuilderFacade().createDataPath();
 
@@ -1274,13 +1277,18 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             dataPathType.setName("PROCESS_ATTACHMENTS");
          }
 
-         if (StringUtils.isNotEmpty(dataPathName)
-               && !dataPathName.equals(dataPathType.getName())
-               && !dataPathID.equals("PROCESS_ATTACHMENTS"))
+
+         if (oldDataPath == null || !dataPathName.equals(oldDataPath.getName())) 
          {
-            dataPathID = (NameIdUtilsExtension.createIdFromName(null,
-                  (IIdentifiableElement) dataPathType, dataPathName));
+            if (StringUtils.isNotEmpty(dataPathName)
+                  && !dataPathName.equals(dataPathType.getName())
+                  && !dataPathID.equals("PROCESS_ATTACHMENTS"))
+            {
+               dataPathID = (NameIdUtilsExtension.createIdFromName(null,
+                     (IIdentifiableElement) dataPathType, dataPathName));
+            }            
          }
+         
 
          dataPathType.setId(dataPathID);
          dataPathType.setName(dataPathName);
@@ -1321,7 +1329,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       processDefinition.getDataPath().clear();
       processDefinition.getDataPath().addAll(newDataPaths);
    }
-
+   
    public void updateProcessInterfaceImplementation(ProcessDefinitionType processDefinition,
          JsonObject processDefinitionJson)
    {
