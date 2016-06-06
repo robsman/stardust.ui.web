@@ -278,6 +278,11 @@
 	content:"\f0f6";
 }
 
+.document-css:before{
+	font-family:"FontAwesome";
+	content:"\f13c";
+}
+
 .document-code:before {
 	font-family:"FontAwesome";
 	content:"\f1c9";
