@@ -125,9 +125,17 @@ public class UserAttributesCacheManager
             }
          }
       }
-
-      User user = UserUtils.getUser(account, UserDetailsLevel.Minimal);
-      return populateUser(user);
+      
+      if(org.apache.commons.lang.StringUtils.isNotEmpty(account)) 
+      {
+         User user = UserUtils.getUser(account, UserDetailsLevel.Minimal);
+         if(null != user)
+         {
+            return populateUser(user);
+         }
+      }
+      
+      return null;
    }
 
    /**
