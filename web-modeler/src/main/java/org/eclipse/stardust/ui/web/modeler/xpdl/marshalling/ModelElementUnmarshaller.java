@@ -2316,7 +2316,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             EventMarshallingUtils.bindEvent(eventHandler, eventSymbol);
          }
          
-         if (hostActivity != null)
+         if (hostActivity != null && (hostActivity.getActivitySymbols() == null
+               || hostActivity.getActivitySymbols().isEmpty()))
          {
             if (hasNotJsonNull(eventJson, ModelerConstants.NAME_PROPERTY))
             {

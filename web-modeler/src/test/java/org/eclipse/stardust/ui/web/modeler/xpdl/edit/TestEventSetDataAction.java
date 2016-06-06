@@ -31,7 +31,7 @@ public class TestEventSetDataAction extends RecordingTestcase
       replay(requestStream, "createSimpleIntermediateEvent", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
-      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "MyEvent", ActivityImplementationType.MANUAL_LITERAL);
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       EventHandlerType eventHandler = assertEventHandler(activity, "MyEvent", "MyEvent", "exception");
       assertThat(eventHandler.getEventAction().size(),  is(1));
       assertEventAction(eventHandler, "AbortActivity", "Abort Activity", "abortActivity");
@@ -54,7 +54,7 @@ public class TestEventSetDataAction extends RecordingTestcase
       replay(requestStream, "createEventSetDataAction", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
-      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "MyEvent", ActivityImplementationType.MANUAL_LITERAL);
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       EventHandlerType eventHandler = assertEventHandler(activity, "MyEvent", "MyEvent", "exception");
       assertThat(eventHandler.getEventAction().size(),  is(2));
       assertEventAction(eventHandler, "AbortActivity", "Abort Activity", "abortActivity");
@@ -84,7 +84,7 @@ public class TestEventSetDataAction extends RecordingTestcase
       replay(requestStream, "removeEventSetDataAction", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
-      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "MyEvent", ActivityImplementationType.MANUAL_LITERAL);
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       EventHandlerType eventHandler = assertEventHandler(activity, "MyEvent", "MyEvent", "exception");
       assertThat(eventHandler.getEventAction().size(),  is(1));
       assertEventAction(eventHandler, "AbortActivity", "Abort Activity", "abortActivity");
@@ -107,7 +107,7 @@ public class TestEventSetDataAction extends RecordingTestcase
       replaySimple(command, "testCloneProcessCreateSimpleIntermediateEvent", null, false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "CLONE_Process1", "CLONE - Process 1");
-      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "MyEvent", ActivityImplementationType.MANUAL_LITERAL);
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       EventHandlerType eventHandler = assertEventHandler(activity, "MyEvent", "MyEvent", "exception");
       assertThat(eventHandler.getEventAction().size(),  is(1));
       assertEventAction(eventHandler, "AbortActivity", "Abort Activity", "abortActivity");
@@ -134,7 +134,7 @@ public class TestEventSetDataAction extends RecordingTestcase
       replaySimple(command, "testCloneProcessCreateSimpleIntermediateEvent", null, false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "CLONE_Process1", "CLONE - Process 1");
-      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "MyEvent", ActivityImplementationType.MANUAL_LITERAL);
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       EventHandlerType eventHandler = assertEventHandler(activity, "MyEvent", "MyEvent", "exception");
       assertThat(eventHandler.getEventAction().size(),  is(2));
       assertEventAction(eventHandler, "AbortActivity", "Abort Activity", "abortActivity");
