@@ -17,7 +17,7 @@
 			<i class="pi pi-process-abort pi-lg"></i>
 		</ice:commandLink>
 		<!-- Rendered when process termination is allowed -->
-		<ice:panelGroup
+		<ice:panelGroup styleClass="abort-menu-drop-down-toolbar"
 			rendered="#{(processInstanceDetailsBean.abortProcess)}">
 			<c:set var="bean" value="#{processInstanceDetailsBean}" />
 			<c:set var="processInstance" value="#{processInstanceDetailsBean.processInstance}" />
@@ -25,9 +25,9 @@
 				src="/plugins/views-common/common/switchProcessMenuBar.xhtml" />
 		</ice:panelGroup>
 		<!-- Rendered when process termination is not allowed -->
-		<ice:panelGroup
+		<ice:panelGroup styleClass="abort-menu-drop-down-toolbar"
 			rendered="#{!(processInstanceDetailsBean.abortProcess)}">
-			<ice:outputText styleClass="iceCmdBtn-dis pi pi-menu-dropdown pi-sm" />
+			<ice:outputText styleClass="iceCmdBtn-dis pi pi-menu-dropdown" />
 		</ice:panelGroup>
 		
 		<pc:automationTag value="auto-COM-PCERecover"/>

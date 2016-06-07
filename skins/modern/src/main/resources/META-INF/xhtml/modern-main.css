@@ -6167,6 +6167,15 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	font-weight: bold;
 }
 
+.abort-menu-drop-down
+{
+	margin: 6px -2px 0px -9px;
+}
+.abort-menu-drop-down-toolbar
+{
+	margin: 0px 0px 0px -10px;
+}
+
 /* *********** Dialogs - START *********** */
 
 .popupDialog {
