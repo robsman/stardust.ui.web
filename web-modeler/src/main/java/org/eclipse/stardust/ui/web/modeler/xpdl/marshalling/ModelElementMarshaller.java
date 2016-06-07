@@ -3948,40 +3948,23 @@ public class ModelElementMarshaller implements ModelMarshaller
 
             if (null != childParticipant)
             {
-               JsonObject childJson = new JsonObject();
-               childrenArray.add(childJson);
-
-               childJson.addProperty(ModelerConstants.ID_PROPERTY,
-                     childParticipant.getId());
-               childJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                     childParticipant.getName());
-               childJson.addProperty(ModelerConstants.OID_PROPERTY,
-                     childParticipant.getElementOid());
-               childJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                     eObjectUUIDMapper().getUUID(childParticipant));
-               childJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
-                     eObjectUUIDMapper().getUUID(parent));
-               loadDescription(childJson, childParticipant);
-
                if (childParticipant instanceof OrganizationType)
                {
-                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
-                  addChildParticipantsJson(childJson, (OrganizationType) childParticipant);
+                  JsonObject participantJson = toOrganizationJson((OrganizationType) childParticipant);
+                  childrenArray.add(participantJson);
+
+                  addChildParticipantsJson(participantJson, (OrganizationType) childParticipant);
                }
                else if (childParticipant instanceof RoleType)
                {
-                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
+                  JsonObject participantJson = toRoleJson((RoleType) childParticipant);
+                  childrenArray.add(participantJson);
                }
                else if (childParticipant instanceof ConditionalPerformerType)
                {
-                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
+                  JsonObject participantJson = toConditionalPerformerJson((ConditionalPerformerType) childParticipant);
+                  childrenArray.add(participantJson);
                }
-
-               loadDescription(childJson, childParticipant);
-               loadAttributes(childParticipant, childJson);
             }
          }
       }
