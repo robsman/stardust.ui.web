@@ -288,14 +288,22 @@ public class TypedDocumentsUtil
          if (null != model)
          {
             TypeDeclaration typeDeclaration = model.getTypeDeclaration(docType);
-            Set<TypedXPath> datpaths = XPathUtils.getXPaths(model, typeDeclaration.getId());
-            for (TypedXPath typedXPath : datpaths)
+            if (typeDeclaration != null)
             {
-               if (null == typedXPath.getParentXPath())
+               Set<TypedXPath> datpaths = XPathUtils.getXPaths(model, typeDeclaration.getId());
+               for (TypedXPath typedXPath : datpaths)
                {
-                  label = I18nUtils.getLabel(typedXPath, model, typeDeclaration.getName());
-                  break;
+                  if (null == typedXPath.getParentXPath())
+                  {
+                     label = I18nUtils.getLabel(typedXPath, model, typeDeclaration.getName());
+                     break;
+                  }
                }
+            }
+            else
+            {
+               trace.error("TypeDeclaration could not be located for document type with id: "
+                     + docType.getDocumentTypeId() + " Schema Location: " + docType.getSchemaLocation());
             }
          }
       }
