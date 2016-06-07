@@ -301,6 +301,11 @@ public class TypedDocumentsUtil
                   }
                }
             }
+            else
+            {
+               trace.error("TypeDeclaration could not be located for document type with id: "
+                     + docType.getDocumentTypeId() + " Schema Location: " + docType.getSchemaLocation());
+            }            
          }
       }
       return label;
