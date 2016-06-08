@@ -468,7 +468,11 @@
             targetDocumentList = [];
           }
         } else if (tempDataPath.documents[j].contextKind == "PI") {
-          targetDocumentList = res.processAttachments;
+          if (this.$scope.processInstanceOid == tempDataPath.documents[j].contextOID) {
+            targetDocumentList = res.processAttachments;
+          } else {
+            targetDocumentList = [];
+          }
         }
 
         tempDoc = tempDataPath.documents[j];
