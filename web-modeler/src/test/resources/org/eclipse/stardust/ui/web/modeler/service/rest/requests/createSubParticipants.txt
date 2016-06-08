@@ -1,0 +1,12 @@
+{"commandId":"organization.create","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"ProviderModel","changes":{"name":"Organization 1"}}]}
+{"commandId":"role.create","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"26","changes":{"name":"Role 1"}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000082","changes":{"attributes":{"carnot:engine:tasks:assignment:mode":"assemblyLine"}}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000082","changes":{"cardinality":"2","attributes":{}}}]}
+{"commandId":"organization.create","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"26","changes":{"name":"Organization 2"}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000083","changes":{"attributes":{"carnot:engine:bound":true}}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000083","changes":{"attributes":{"carnot:engine:dataId":"CURRENT_DATE"}}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000083","changes":{"attributes":{"carnot:engine:dataPath":"/test"}}}]}
+{"commandId":"organization.create","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"28","changes":{"name":"Organization 3"}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000084","changes":{"attributes":{"carnot:engine:bound":true}}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000084","changes":{"attributes":{"carnot:engine:dataId":"PROCESS_PRIORITY"}}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000084","changes":{"attributes":{"carnot:engine:dataPath":"/b"}}}]}
