@@ -177,7 +177,7 @@
 		var sdData = ctrl[0];
 
 		var treeTable = false, treeTableData, treeData;
-		var tableInLocalMode, initialized, firstLoad, firstInitiaizingDraw = true;
+		var tableInLocalMode, initialized, firstInitiaizingDraw = true;
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
@@ -1210,10 +1210,8 @@
 				ret.iTotalRecords = 0;
 				ret.iTotalDisplayRecords = 0;
 				ret.aaData = [];
-
 				callback(ret);
-				firstLoad = true;
-
+				loadInitialState(params);
 				return;
 			}
 
@@ -1238,11 +1236,6 @@
 				if (filterScope.$$filterData != undefined && !jQuery.isEmptyObject(filterScope.$$filterData)) {
 					params.filters[colName] = angular.copy(filterScope.$$filterData);
 				}
-			}
-			
-			if(firstLoad) {
-				loadIntialState(params);
-				firstLoad = false;
 			}
 			
 			if (jQuery.isEmptyObject(params.filters)) {
@@ -1297,50 +1290,97 @@
 		/**
 		 * 
 		 */
-		function loadIntialState(params) {
+		function loadInitialState(params) {
 			var intialFilters = getInitialFilters();
 			if(intialFilters) {
-				loadIntialFilterState(params, intialFilters);
+				loadInitialFilterState(params, intialFilters);
 			}
 		}
 		
 		/**
 		 * 
 		 */
-		function loadIntialFilterState(params, filters) {
-
+		function validateFilter(colName, filter, dataType) {
+			if(dataType == "STRING") {
+				if(angular.isUndefined(filter.textSearch)) {
+					trace.error("Expected 'textSearch' attr in the filter for column "+colName +".Not applying filter")
+					return false;
+				}
+			}else if(dataType == "NUMBER" || dataType == "DATE") {
+				if( !(angular.isDefined(filter.from) || angular.isDefined(filter.to))) {
+					trace.error("Expected 'from'/ 'to' attr in the filter for column "+colName +".Not applying filter")
+					return false;
+				}
+			} else if(dataType == "BOOLEAN" ) {
+				if( angular.isUndefined(filter.equals)) {
+					trace.error("Expected 'equals' attr in the filter for column "+colName +".Not applying filter")
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		/**
+		 * 
+		 */
+		function loadInitialFilterState(params, filters) {
 			for (var colName in filters) {
 				var filter = angular.copy(filters[colName]);
 				if (columnFilters[colName]) {
-					columnFilters[colName].filter.scope().$$filterTitle = getFilterTitle(filter);
-					columnFilters[colName].filter.scope().$$filterData = filter;
-					params.filters[colName] = filter;
+					var scope = columnFilters[colName].filter.scope();
+					var filterValid = validateFilter(colName, filter,
+							scope.colData.dataType);
+					if ( filterValid ) {
+						scope.$$filterTitle = getFilterTitle(filter,scope.colData.dataType);
+						scope.$$filterData = filter;
+					}
 				} else {
 					trace.error(colName + " is a invalid filter.");
 				}
 			}
 		}
 		
+		
 		/**
 		 * 
 		 */
-		function getFilterTitle(filter) {
-			
+		function getFilterTitle(filter, dataType) {
+			var title = "";
+
 			if (filter.from || filter.to) {
-				if (filter.from && filter.to) {
-					return formatDate(filter.from) + " - " + formatDate(filter.to);
+				var from,to;
+				if(dataType == "DATE") {
+					from = filter.from ? formatDate(filter.from) : filter.from;
+					to = filter.to ? formatDate(filter.to) : filter.to;
 				} else {
-					if (filter.from) {
-						return '> ' + formatDate(filter.from);
+					from = filter.from;
+					to = filter.to;
+				}
+				title = formatRangeTitle(from, to);
+			} else if (filter.textSearch) {
+				title = filter.textSearch;
+			} else if (angular.isDefined(filter.equals)) {
+				title = filter.equals;
+			}
+			return title;
+		}
+		
+		
+		function formatRangeTitle (from,to) {
+			var title = "";
+			if (from ||to) {
+				if (from && to) {
+					title =  from + " - " + to;
+				} else {
+					if (from) {
+						title =  '> ' + from;
 					} else {
-						return '< ' + formatDate(filter.to);
+						title = '< ' + to;
 					}
 				}
-			} else if (filter.textSearch) {
-				return filter.textSearch;
-			} else if (angular.isDefined(filter.equals)) {
-				return filter.equals;
 			}
+			
+			return title;
 		}
 		
 		/*
