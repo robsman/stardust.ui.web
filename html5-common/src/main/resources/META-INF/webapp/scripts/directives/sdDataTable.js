@@ -17,7 +17,7 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdDataTable', 
-			['$parse', '$q', '$compile', '$timeout', 'sgI18nService', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService','sdPortalConfigurationService','sdDialogService',
+			['$parse', '$q', '$compile', '$timeout', 'sgI18nService', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService','sdPortalConfigurationService','sdDialogService','$filter',
 			 DataTableDirective]);
 
 	var trace;
@@ -37,7 +37,7 @@
 	/*
 	 * 
 	 */
-	function DataTableDirective($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdLoggerService, sdPreferenceService, sdPortalConfigurationService, sdDialogService) {
+	function DataTableDirective($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdLoggerService, sdPreferenceService, sdPortalConfigurationService, sdDialogService, $filter) {
 		trace = sdLoggerService.getLogger('bpm-common.sdDataTable');
 
 		return {
@@ -51,7 +51,7 @@
 					post : function(scope, element, attr, ctrl) {
 						var dataTableCompiler = new DataTableCompiler(
 								$parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService, 
-								scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService);
+								scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService, $filter);
 					}
 				};
 			}
@@ -104,7 +104,7 @@
 	 * 
 	 */
 	function DataTableCompiler($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService, 
-			scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService) {
+			scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService, $filter) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
@@ -177,7 +177,7 @@
 		var sdData = ctrl[0];
 
 		var treeTable = false, treeTableData, treeData;
-		var tableInLocalMode, initialized, firstInitiaizingDraw = true;
+		var tableInLocalMode, initialized, firstLoad, firstInitiaizingDraw = true;
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
@@ -947,7 +947,7 @@
 				ret.iTotalRecords = 0;
 				ret.iTotalDisplayRecords = 0;
 				ret.aaData = [];
-
+				
 				callback(ret);
 
 				return;
@@ -1212,6 +1212,7 @@
 				ret.aaData = [];
 
 				callback(ret);
+				firstLoad = true;
 
 				return;
 			}
@@ -1238,6 +1239,12 @@
 					params.filters[colName] = angular.copy(filterScope.$$filterData);
 				}
 			}
+			
+			if(firstLoad) {
+				loadIntialState(params);
+				firstLoad = false;
+			}
+			
 			if (jQuery.isEmptyObject(params.filters)) {
 				delete params.filters;	
 			}
@@ -1272,6 +1279,77 @@
 			}, function(error) {
 				showErrorOnUI(error);
 			});
+		}
+		
+		/*
+		 * 
+		 */
+		function getInitialFilters() {
+			if (attr.sdaInitialFilters != undefined && attr.sdaInitialFilters != '') {
+				var initFiltersGetter = $parse(attr.sdaInitialFilters);
+				var initFilters = initFiltersGetter(elemScope);
+				return initFilters;
+			}
+			return null;
+		}
+
+		
+		/**
+		 * 
+		 */
+		function loadIntialState(params) {
+			var intialFilters = getInitialFilters();
+			if(intialFilters) {
+				loadIntialFilterState(params, intialFilters);
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		function loadIntialFilterState(params, filters) {
+
+			for (var colName in filters) {
+				var filter = angular.copy(filters[colName]);
+				if (columnFilters[colName]) {
+					columnFilters[colName].filter.scope().$$filterTitle = getFilterTitle(filter);
+					columnFilters[colName].filter.scope().$$filterData = filter;
+					params.filters[colName] = filter;
+				} else {
+					trace.error(colName + " is a invalid filter.");
+				}
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		function getFilterTitle(filter) {
+			
+			if (filter.from || filter.to) {
+				if (filter.from && filter.to) {
+					return formatDate(filter.from) + " - " + formatDate(filter.to);
+				} else {
+					if (filter.from) {
+						return '> ' + formatDate(filter.from);
+					} else {
+						return '< ' + formatDate(filter.to);
+					}
+				}
+			} else if (filter.textSearch) {
+				return filter.textSearch;
+			} else if (angular.isDefined(filter.equals)) {
+				return filter.equals;
+			}
+		}
+		
+		/*
+		 * 
+		 */
+		function formatDate(mills) {
+		    var date = new Date(mills);
+		    var angularDateFilter = $filter('sdDateTimeFilter');
+		    return angularDateFilter(date);
 		}
 
 		/*

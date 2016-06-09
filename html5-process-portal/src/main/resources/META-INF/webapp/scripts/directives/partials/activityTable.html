@@ -43,7 +43,7 @@
 		</div>
 	</div>
 	<table sd-data-table="{{activityTableCtrl.tableHandleExpr}}" sd-data="activityTableCtrl.fetchPage(params)" sda-ready="activityTableCtrl.ready" 
-		sda-page-size="{{activityTableCtrl.sdaPageSize}}" sda-mode="remote" 
+		sda-page-size="{{activityTableCtrl.sdaPageSize}}" sda-mode="remote"  sda-initial-filters="{{activityTableCtrl.initialFilter}}"
 		sda-selectable="multiple" sda-initial-selection="{{activityTableCtrl.initialSelection}}" sda-selection="{{activityTableCtrl.selectionExpr}}"
 		sda-column-selector="{{activityTableCtrl.columnSelector}}" sda-preference-delegate="activityTableCtrl.preferenceDelegate(prefInfo)"
 		sda-sortable="true" sda-sort-by="activityTableCtrl.initialSort"

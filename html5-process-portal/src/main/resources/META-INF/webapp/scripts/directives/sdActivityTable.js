@@ -226,6 +226,8 @@
 			this.initialSelection = attr.sdaInitialSelection;
 		}
 
+	    this.initialFilter =  getPreFilters(scope);
+
 		if (attr.sdaSelection) {
 			var assignable = $parse(attr.sdaSelection).assign;
 			if (assignable) {
@@ -311,11 +313,12 @@
 	    	}
 	    	return preferenceStore;
 	    };
+	    
 
 	    /**
 	     * 
 	     */
-	    ActivityTableCompiler.prototype.getColumnNamesByMode = function getColumnNamesByMode(value) {
+	    ActivityTableCompiler.prototype.getColumnNamesByMode = function(value) {
 
 	    	if (angular.isUndefined(value)) {
 	    		return value;
@@ -517,6 +520,7 @@
 			});
 	    };
 	};
+	
 
 	/**
 	 * 
@@ -1470,9 +1474,27 @@
 			trace.error("Error in performing default delegate :",error);
 		});
 	};
+	
+	 /**
+     * 
+     */
+    function getPreFilters(scope) { 
+    	var initialFilters = null;
+    	if(scope.panel.params.custom) {
+    		try {
+    			initialFilters =angular.fromJson(scope.panel.params.custom.filters);
+    			 
+    		} catch (e) {
+				trace.error("Unable to parse filters : ",scope.panel.params.custom.filters,e);
+			}
+    	}
+    	return initialFilters;
+    }
 
 	return directiveDefObject;
     }
+    
+    
 
     /**
      * 
