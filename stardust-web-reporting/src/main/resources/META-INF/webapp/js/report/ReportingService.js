@@ -214,7 +214,8 @@ define(
 						name : this.getI18N("reporting.definitionView.activeInstancesOverTime"),
 						type : this.metadata.timestampType,
 						notSupportedAsColumn : true,
-						disableCumulationInterval : true
+						disableCumulationInterval : true,
+						notSupportedAsAutoComplete : true
 				};
 
 				this.metadata.commonTypes.processInstanceProcessingTime = {
