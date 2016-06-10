@@ -1027,15 +1027,18 @@ define(
 				ReportDefinitionController.prototype.getInternalDimensions = function() {
 					var dimensions = [];
 
-					for ( var m in this.getPrimaryObject().dimensions) {
-						var dimension = this.getPrimaryObject().dimensions[m];
+					var dims = this.getPrimaryObject().dimensions;
 
-						dimensions.push({
-							id : dimension.id,
-							name : dimension.name
-						});
+					for ( var m in dims) {
+						var dimension = dims[m];
+
+						if (!dimension.notSupportedAsAutoComplete) {
+							dimensions.push({
+								id : dimension.id,
+								name : dimension.name
+							});
+						}
 					}
-
 					return dimensions;
 				};
 
