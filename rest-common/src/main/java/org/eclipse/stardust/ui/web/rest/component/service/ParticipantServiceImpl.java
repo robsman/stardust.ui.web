@@ -794,7 +794,10 @@ public class ParticipantServiceImpl implements ParticipantService
       // Add all Departments
       for (Department department : deptList)
       {
-         participantDTOs.add(getParticipant(department));
+         if (parentDepartment == null || parentDepartment.equals(department.getParentDepartment()))
+         {
+            participantDTOs.add(getParticipant(department));
+         }
       }
    }
 
