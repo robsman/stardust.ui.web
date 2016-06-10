@@ -23,10 +23,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.InvalidArgumentException;
-import org.eclipse.stardust.ui.web.common.log.LogManager;
-import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.OrganizationDetails;
 import org.eclipse.stardust.engine.api.dto.RoleDetails;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
@@ -50,6 +47,8 @@ import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.cachemanager.ParticipantServiceHelperCacheManager;
 import org.eclipse.stardust.ui.web.rest.component.util.ParticipantManagementUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ParticipantManagementUtils.ParticipantType;
@@ -98,9 +97,6 @@ public class ParticipantServiceImpl implements ParticipantService
    @Resource(name = "participantServiceHelperCacheManager")
    private ParticipantServiceHelperCacheManager cacheManager;
 
-   // TODO remove this flag post testing, in next build
-   private boolean cachingOn = true;
-
    /**
     * @param lazyLoad
     * @return
@@ -108,8 +104,6 @@ public class ParticipantServiceImpl implements ParticipantService
     */
    public List<ParticipantDTO> getParticipantTree(boolean lazyLoad)
    {
-      cachingOn = !Boolean.valueOf((String) Parameters.instance().get("portal.disableParticipantTreeCache"));
-
       // get Active Models along with top level Participants
       List<ModelDTO> models = modelService.getModelParticipants();
       List<ParticipantDTO> allParticipantDTOs = new ArrayList<ParticipantDTO>();
@@ -138,15 +132,8 @@ public class ParticipantServiceImpl implements ParticipantService
             }
             if (!lazyLoad)
             {
-               // cache users
                populateChildrenRecursively(participantDTO);
             }
-            else
-            {
-               // deletDeps();
-               // createDepartments();
-            }
-            // departmentCacheManagerRest.getUsers(null);
          }
       }
 
@@ -155,45 +142,6 @@ public class ParticipantServiceImpl implements ParticipantService
       Collections.sort(allParticipantDTOs);
       return allParticipantDTOs;
    }
-
-   /*
-    * TODO remove this code post testing in next build private void createDepartments() {
-    * Map<String, Object> initialValue = new HashMap<String, Object>();
-    * 
-    * // e.g. "{Model21}BOFonds" final String qualifiedBusinessObjectId =
-    * "{BOTest_20}BOFonds20"; final String prefixFondsISIN = "DE666_"; WorkflowService wfs
-    * = serviceFactoryUtils.getWorkflowService(); for (int i = 0; i < 200; ++i) { String
-    * businessObjectPKValue = prefixFondsISIN + i;
-    * 
-    * if (i % 50 == 0) System.out.println(businessObjectPKValue);
-    * 
-    * initialValue.put("ISIN", businessObjectPKValue); initialValue.put("WKN", "WKN666");
-    * initialValue.put("name", "hugo & steve " + i); initialValue.put("emitter",
-    * "bla blub blubber foo"); initialValue.put("date", "2001-09-11");
-    * initialValue.put("datetime", "2001-09-11T08:46:33"); initialValue.put("enumAges",
-    * "42"); initialValue.put("enumDays", "Fri"); initialValue.put("bool", true);
-    * 
-    * wfs.createBusinessObjectInstance(qualifiedBusinessObjectId, initialValue);
-    * 
-    * } // END for-loop
-    * 
-    * }
-    * 
-    * private void deletDeps() { Map<String, Object> initialValue = new HashMap<String,
-    * Object>();
-    * 
-    * // e.g. "{Model21}BOFonds" final String qualifiedBusinessObjectId =
-    * "{BOTest_20}BOFonds20"; final String prefixFondsISIN = "DE666_"; WorkflowService wfs
-    * = serviceFactoryUtils.getWorkflowService(); for (int i = 0; i < 200; ++i) { String
-    * businessObjectPKValue = prefixFondsISIN + i; deleteDepartment("{BOTest_20}DepOrga["
-    * + businessObjectPKValue + "]");
-    * 
-    * } // END for-loop
-    * 
-    * deleteDepartment("{BOTest_20}DepOrga[fdf]");
-    * 
-    * }
-    */
 
    /**
     *
@@ -465,6 +413,10 @@ public class ParticipantServiceImpl implements ParticipantService
          if (participantContainer.department != null)
          {
             serviceFactoryUtils.getAdministrationService().removeDepartment(participantContainer.department.getOID());
+         }
+         else
+         {
+            trace.debug("no department found with id " + departmentQualifiedId);
          }
       }
       catch (InvalidArgumentException aex)
@@ -781,15 +733,7 @@ public class ParticipantServiceImpl implements ParticipantService
 
       case ROLE_SCOPED:
       case ROLE_UNSCOPED:
-         if (cachingOn)
-         {
-            getUsers(participantContainer, participantDTOs);
-         }
-         else
-         {
-            getUsers(modelparticipant, participantDTOs);
-         }
-
+         getUsers(participantContainer, participantDTOs);
          break;
 
       case DEPARTMENT:
@@ -825,14 +769,7 @@ public class ParticipantServiceImpl implements ParticipantService
          QualifiedOrganizationInfo qualifiedOrganizationInfo, List<ParticipantDTO> participantDTOs)
    {
       // Add all associated Users
-      if (cachingOn)
-      {
-         getUsers(participantContainer, participantDTOs);
-      }
-      else
-      {
-         getUsers(qualifiedOrganizationInfo, participantDTOs);
-      }
+      getUsers(participantContainer, participantDTOs);
 
       // Add all sub-Organizations
       getSubOrganizations(qualifiedOrganizationInfo, participantDTOs);
@@ -873,14 +810,7 @@ public class ParticipantServiceImpl implements ParticipantService
             .getOrganization());
 
       // Add all associated Users
-      if (cachingOn)
-      {
-         getUsers(participantContainer, participantDTOs);
-      }
-      else
-      {
-         getUsers(scopedOrganizationInfo, participantDTOs);
-      }
+      getUsers(participantContainer, participantDTOs);
 
       // Add all sub-Organizations
       getSubOrganizations((QualifiedOrganizationInfo) scopedOrganizationInfo, participantDTOs);
@@ -900,14 +830,7 @@ public class ParticipantServiceImpl implements ParticipantService
       Department department = getDepartmentSafely(qualifiedOrganizationInfo);
 
       // Add all associated Users
-      if (cachingOn)
-      {
-         getUsers(participantContainer, participantDTOs);
-      }
-      else
-      {
-         getUsers(qualifiedOrganizationInfo, participantDTOs);
-      }
+      getUsers(participantContainer, participantDTOs);
 
       // Add all sub-Organizations
       @SuppressWarnings("unchecked")
