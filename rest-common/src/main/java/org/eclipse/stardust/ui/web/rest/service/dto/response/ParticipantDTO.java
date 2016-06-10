@@ -129,4 +129,54 @@ public class ParticipantDTO extends AbstractDTO implements Comparable<Participan
 
       return this.name.compareTo(otherParticipant.name);
    }
+   
+
+   @Override
+   public int hashCode()
+   {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((id == null) ? 0 : id.hashCode());
+      result = prime * result + ((qualifiedId == null) ? 0 : qualifiedId.hashCode());
+      result = prime * result + ((uiQualifiedId == null) ? 0 : uiQualifiedId.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      ParticipantDTO other = (ParticipantDTO) obj;
+
+      if (uiQualifiedId == null)
+      {
+         if (other.uiQualifiedId != null)
+            return false;
+      }
+      else if (uiQualifiedId.equals(other.uiQualifiedId))
+         return true;
+
+      if (qualifiedId == null)
+      {
+         if (other.qualifiedId != null)
+            return false;
+      }
+      else if (qualifiedId.equals(other.qualifiedId))
+         return true;
+
+      else if (id == null)
+      {
+         if (other.id != null)
+            return false;
+      }
+      else if (id.equals(other.id))
+         return true;
+
+      return true;
+   }
 }

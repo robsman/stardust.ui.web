@@ -37,7 +37,6 @@ import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
-import org.eclipse.stardust.engine.api.model.QualifiedOrganizationInfo;
 import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
@@ -53,8 +52,6 @@ import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
-import org.eclipse.stardust.engine.api.runtime.Department;
-import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserExistsException;
@@ -859,51 +856,6 @@ public class ParticipantManagementUtils
          notificationMessageDTO.success = true;
       }
       return notificationMessageDTO;
-   }
-
-   /**
-    * @param organization
-    * @param departmentId
-    * @return
-    */
-   public DepartmentInfo getDepartment(QualifiedOrganizationInfo organization, String departmentId)
-   {
-      DepartmentInfo departmentInfo = null;
-      List<Department> deptList = serviceFactoryUtils.getQueryService().findAllDepartments(
-            organization.getDepartment(), organization);
-
-      for (Department department2 : deptList)
-      {
-         String deps = getDepartmentsHierarchy(department2, "");
-         if (deps.equals(departmentId.trim()))
-         {
-            departmentInfo = department2;
-            break;
-         }
-      }
-      return departmentInfo;
-   }
-
-   /**
-    * @param department2
-    * @param departmentName
-    * @return
-    */
-   public static String getDepartmentsHierarchy(Department department2, String departmentName)
-   {
-      if (department2 == null)
-      {
-         return departmentName;
-      }
-
-      departmentName = department2.getId() + "/" + departmentName;
-
-      if (department2.getParentDepartment() != null)
-      {
-         return getDepartmentsHierarchy(department2.getParentDepartment(), departmentName);
-      }
-
-      return departmentName.substring(0, departmentName.length() - 1);
    }
 
    /**
