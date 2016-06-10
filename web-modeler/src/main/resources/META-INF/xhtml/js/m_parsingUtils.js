@@ -9,7 +9,7 @@
  ******************************************************************************/
 /*Parsing functions that may well need a better home but for now will live here.*/
 define(["bpm-modeler/js/m_model"],function(m_model){
-   
+
    /*Parse a javascript object to an array of its dot-delimited elements
     *where each string is a unique path in the object hierarchy, and all 
     *possible paths are accounted for.*/
@@ -30,7 +30,7 @@ define(["bpm-modeler/js/m_model"],function(m_model){
      }
      return results;
    };
-     
+   
    /*Given a typeDeclaration,parse it to an array of its dot-delimited elements
     *where each string is a unique path in the object hierarchy, and all 
     *possible paths are accounted for.*/
@@ -38,6 +38,9 @@ define(["bpm-modeler/js/m_model"],function(m_model){
         var elements=typeDecl.getElements();
         var elementCount=elements.length;
         var results=[];
+        var rx;
+        var circRefPresent;
+        
         while(elementCount--){
             temp=elements[elementCount];
             results.push(name + "." + temp.name);
@@ -46,11 +49,13 @@ define(["bpm-modeler/js/m_model"],function(m_model){
             } else if (typeof typeDecl.resolveElementType === "function") {
                var childSchemaType = typeDecl.resolveElementType(temp.name);  
             }
-               
-               if (childSchemaType && childSchemaType.type) {
+               rx = new RegExp("(\." + temp.name + "(\.|$))");
+               circRefPresent = name.search(rx) > -1;
+               if (childSchemaType && childSchemaType.type && !circRefPresent && temp.name.indexOf('.')==-1) {
                   results=results.concat(parseTypeToStringFrags(childSchemaType, name + "." + temp.name));
                }
         }
+        
         return results;
      };
      
@@ -79,6 +84,7 @@ define(["bpm-modeler/js/m_model"],function(m_model){
                }
                }
             }
+            console.log(data);
             return data;
          }
      };
