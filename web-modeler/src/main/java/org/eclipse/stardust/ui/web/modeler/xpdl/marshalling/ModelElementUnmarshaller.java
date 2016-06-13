@@ -74,6 +74,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
+import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.DecoratorApplicationUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.WebServiceApplicationUtils;
 
@@ -2798,6 +2799,10 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
                }
             }
+         }
+         
+         if(DecoratorApplicationUtils.isDecoratorApplication(application)){
+            DecoratorApplicationUtils.addExternalReference(application, getModelBuilderFacade() );
          }
       }
    }
