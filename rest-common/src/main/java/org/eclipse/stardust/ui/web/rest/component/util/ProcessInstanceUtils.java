@@ -14,6 +14,7 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUti
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1559,6 +1560,9 @@ public class ProcessInstanceUtils
       {
          return;
       }
+      
+    //Finding if a single process is selected
+      String singleProcessQId = null;
 
       ProcessTableFilterDTO filterDTO = (ProcessTableFilterDTO) options.filter;
 
@@ -1648,6 +1652,10 @@ public class ProcessInstanceUtils
             {
                or.add(new ProcessDefinitionFilter(processQId, false));
             }
+            
+            if(filterDTO.processName.processes.size() == 1) {
+               singleProcessQId = filterDTO.processName.processes.get(0);
+            }
          }
       }
       
@@ -1685,7 +1693,7 @@ public class ProcessInstanceUtils
       }
 
       // descriptors Filter
-      addDescriptorFilters(query, filterDTO);
+      addDescriptorFilters(query, filterDTO, singleProcessQId);
 
    }
 
@@ -1719,16 +1727,24 @@ public class ProcessInstanceUtils
     * @param query
     * @param processListFilterDTO
     */
-   public static void addDescriptorFilters(Query query, ProcessTableFilterDTO processListFilterDTO)
+   public static void addDescriptorFilters(Query query, ProcessTableFilterDTO processListFilterDTO, String singleProcessQId)
    {
 
       Map<String, DescriptorFilterDTO> descFilterMap = processListFilterDTO.descriptorFilterMap;
 
       if (null != descFilterMap)
       {
-
          Map<String, DataPath> descriptors = ProcessDefinitionUtils.getAllDescriptors(false);
-         GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel.create(descriptors.values());
+         Map<String, Map<String, DataPath>> allFilterableDescriptorsByProcess = CommonDescriptorUtils.getAllDescriptorsByProcess(true);
+         Collection<DataPath> dataPaths = descriptors.values();
+         
+      // If it's a single process case then use data paths from that process
+         if (null != singleProcessQId && allFilterableDescriptorsByProcess.containsKey(singleProcessQId))
+         {
+            dataPaths =  allFilterableDescriptorsByProcess.get(singleProcessQId).values();                        
+         }
+
+         GenericDescriptorFilterModel filterModel  = GenericDescriptorFilterModel.create(dataPaths);
          filterModel.setFilterEnabled(true);
 
          for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap.entrySet())
