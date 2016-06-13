@@ -180,7 +180,7 @@ public class ProcessActivityUtils
       // For Criteria Descriptors
       ProcessTableFilterDTO descFilterDTO = new ProcessTableFilterDTO();
       ProcessInstanceUtils.populateDescriptorFilters(descFilterDTO, processSearchAttributes.descriptors, availableDescriptors);
-      ProcessInstanceUtils.addDescriptorFilters(query, descFilterDTO);
+      ProcessInstanceUtils.addDescriptorFilters(query, descFilterDTO, null);
       
       // For Filter Descriptors of table
       ProcessInstanceUtils.populatePostData(options, postData, availableDescriptors);
@@ -272,7 +272,7 @@ public class ProcessActivityUtils
       // For Criteria Descriptors
       WorklistFilterDTO descFilterDTO = new WorklistFilterDTO();
       ActivityTableUtils.populateDescriptorFilters(descFilterDTO, processSearchAttributes.descriptors, availableDescriptors);
-      ActivityTableUtils.addDescriptorFilters(query, descFilterDTO);
+      ActivityTableUtils.addDescriptorFilters(query, descFilterDTO, null);
       
       // For Filter Descriptors of table
       ActivityTableUtils.populatePostData(options, postData, availableDescriptors);
