@@ -295,19 +295,24 @@ public class DocumentSearchUtils
       }
 
       FilterCriterion contentFilter = null, dataFilter = null;
-      FilterOrTerm filterOrTerm = filter.addOrTerm();
-      
-      if (StringUtils.isNotEmpty(documentSearchRequest.contentLike))
+
+      if (StringUtils.isNotEmpty(documentSearchRequest.contentLike)
+            || StringUtils.isNotEmpty(documentSearchRequest.metaDataLike))
       {
-         contentFilter = DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
-               .escapeIllegalJcrChars(documentSearchRequest.contentLike)));
-         filterOrTerm.add(contentFilter);
-      }
-      if (StringUtils.isNotEmpty(documentSearchRequest.metaDataLike))
-      {
-         dataFilter = DocumentQuery.META_DATA.any().like(
-               QueryUtils.getFormattedString(Text.escapeIllegalJcrChars(documentSearchRequest.metaDataLike)));
-         filterOrTerm.add(dataFilter);
+         FilterOrTerm filterOrTerm = filter.addOrTerm();
+
+         if (StringUtils.isNotEmpty(documentSearchRequest.contentLike))
+         {
+            contentFilter = DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
+                  .escapeIllegalJcrChars(documentSearchRequest.contentLike)));
+            filterOrTerm.add(contentFilter);
+         }
+         if (StringUtils.isNotEmpty(documentSearchRequest.metaDataLike))
+         {
+            dataFilter = DocumentQuery.META_DATA.any().like(
+                  QueryUtils.getFormattedString(Text.escapeIllegalJcrChars(documentSearchRequest.metaDataLike)));
+            filterOrTerm.add(dataFilter);
+         }
       }
 
       // override filters with table level filters
