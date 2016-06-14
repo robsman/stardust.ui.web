@@ -82,7 +82,7 @@
 				postData.contentLike = query.documentSearchCriteria.containingText;
 			}
 			
-			if(query.documentSearchCriteria.searchContent){
+			if(query.documentSearchCriteria.searchData){
 				postData.metaDataLike = query.documentSearchCriteria.containingText;
 			}
 			
