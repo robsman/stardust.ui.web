@@ -50,7 +50,8 @@
 						</button>
 					</div>
 					
-					<a ng-click="processDocumentsCtrl.showDocumentMenuPopover(document, $event)" style="float:right;padding-right:5px;">
+					<a ng-click="processDocumentsCtrl.showDocumentMenuPopover(document, $event);"
+					   class="action-menu">
 
 						<button class="button-link tbl-tool-link"  
 							title="{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.show.menu')}}"
@@ -73,7 +74,7 @@
 			<div
 				ng-show="processDocumentsCtrl.showProcessAttachments"
 				class="properties-panel-upload"
-				ng-click="processDocumentsCtrl.uploadNewProcessAttachment()">
+				ng-click="processDocumentsCtrl.uploadNewProcessAttachment();">
 				<button class="button-link tbl-tool-link"
 					title="{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.uploadProcessAttachment')}}"
 					aid="PP-DocumentsPanelP-uploadProcessAtt">
@@ -135,7 +136,8 @@
 						</button>
 					</div>
 					
-					<a ng-click="processDocumentsCtrl.showDocumentMenuPopover(document, $event)" style="float:right;padding-right:5px;">
+					<a ng-click="processDocumentsCtrl.showDocumentMenuPopover(document, $event)" 
+					   class="action-menu">
 
 						<button class="button-link tbl-tool-link"  
 							title="{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.show.menu')}}"
@@ -157,7 +159,7 @@
 			<div
 				ng-show="processDocumentsCtrl.showActivityAttachments"
 				class="properties-panel-upload"
-				ng-click="processDocumentsCtrl.uploadNewActivityAttachment()">
+				ng-click="processDocumentsCtrl.uploadNewActivityAttachment();">
 				<button class="button-link tbl-tool-link"
 					title="{{processDocumentsCtrl.sdI18n('views-common-messages.propertiesPage.uploadActivityAttachment')}}"
 					aid="PP-DocumentsPanelP-uploadActivityAtt">
