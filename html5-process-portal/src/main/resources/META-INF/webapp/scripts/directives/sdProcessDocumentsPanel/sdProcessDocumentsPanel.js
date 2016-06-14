@@ -210,6 +210,7 @@
    */
   ProcessDocumentsController.prototype.uploadNewActivityAttachment = function() {
     var self = this;
+    this.resetAllDocumentEditModes();
     this.uploadActivityAttDialogApi.open().then(function(files) {
       if (files.length > 0) {
         self.initializeDocuments()
@@ -232,6 +233,7 @@
    */
   ProcessDocumentsController.prototype.uploadNewProcessAttachment = function() {
     var self = this;
+    this.resetAllDocumentEditModes();
     this.uploadProcessAttDialogApi.open().then(function(files) {
       if (files.length > 0) {
         self.initializeDocuments()
@@ -254,6 +256,7 @@
    */
   ProcessDocumentsController.prototype.uploadNewVersion = function() {
     var self = this;
+    this.resetAllDocumentEditModes();
     this.versionUploadDialogApi.open().then(function(files) {
       if (files.length > 0) {
         self.replaceDocumentOnUI(files[0]);
@@ -267,6 +270,7 @@
    * @param doc
    */
   ProcessDocumentsController.prototype.download = function() {
+	this.resetAllDocumentEditModes();
     this.sdUtilService.downloadDocument(this.selectedDocument.uuid, this.selectedDocument.name);
   };
 
@@ -324,6 +328,7 @@
    * 
    */
   ProcessDocumentsController.prototype.showDocumentMenuPopover = function(selectedDocument,e) {
+	this.resetAllDocumentEditModes(selectedDocument.uuid);
     this.selectedDocument = selectedDocument;
     e = e || event;
     if (!this.documentActionControl[selectedDocument.uuid].popover) {
@@ -348,6 +353,14 @@
     this.documentActionControl[this.selectedDocument.uuid].name = this.selectedDocument.name;
   }
 
+  ProcessDocumentsController.prototype.resetAllDocumentEditModes = function(excludeUUID){
+	  for(var key in this.documentActionControl){
+		  if(key != excludeUUID){
+			  this.documentActionControl[key].edit = false;
+		  }
+	  }
+  }
+  
   /**
    * 
    */
@@ -390,6 +403,7 @@
    */
   ProcessDocumentsController.prototype.deleteDocument = function() {
     var self = this;
+    this.resetAllDocumentEditModes();
     this.documentRepositoryService.deleteDocument(this.selectedDocument.uuid).then(function() {
       self.initializeDocuments();
     }, function(result) {
@@ -416,6 +430,7 @@
    * 
    */
   ProcessDocumentsController.prototype.viewHistory = function() {
+	this.resetAllDocumentEditModes();
     this.showVersionHistoryDialog = true;
     this.versionHistoryDocId = this.selectedDocument.uuid;
   }
