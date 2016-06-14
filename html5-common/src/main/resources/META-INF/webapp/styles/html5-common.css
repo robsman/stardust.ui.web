@@ -807,7 +807,15 @@ tr.properties-panel-documentRow>td {
 .properties-panel-documentRow{
     font-size: 12px;
     padding: 2px;
+    position:relative;
 }
+
+.properties-panel-documentRow .action-menu{
+    position:absolute;
+    right:0;
+    top:5px;
+}
+
 /*Section for Properties page - end*/
 /******************************************************/
 
