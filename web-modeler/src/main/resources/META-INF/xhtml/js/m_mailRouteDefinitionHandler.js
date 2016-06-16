@@ -382,11 +382,17 @@ define(
                   }
                   else
                   {// embedded
-                     route += "      response = '"
-                              + markup.replace(new RegExp("\n", 'g'), " ").replace(
-                                       new RegExp("toDate", 'g'), "formatDate").replace(
-                                       new RegExp("{{", 'g'), "' + ").replace(
-                                       new RegExp("}}", 'g'), " + '") + "';\n";
+                     var lines=markup.match(new RegExp("\r\n|\r|\n", 'g'));
+                     if(lines!=null && lines.length>0){
+                        markup= markup.replace(new RegExp("\r\n|\r|\n", 'g'), "\n'+'");
+                        markup=markup.substring(0, markup.length-3);
+                     }
+                      route += "response ='" 
+                           + markup.replace(new RegExp("\n", 'g'), "\\n")
+                                   .replace(new RegExp("toDate", 'g'), "formatDate")
+                                   .replace(new RegExp("{{", 'g'), "' + ")
+                                   .replace(new RegExp("}}", 'g'), " + '") 
+                                   + "';\n";
                   }
                   route += "]]>";
                  route += "\nsetOutHeader('response', response.toString());\n";
