@@ -91,7 +91,6 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.UserService;
@@ -111,6 +110,8 @@ import org.eclipse.stardust.ui.web.common.messages.CommonPropertiesMessageBean;
 import org.eclipse.stardust.ui.web.processportal.service.rest.DataException;
 import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUtils;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.ExternalWebAppActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.env.impl.IppCopyrightInfo;
@@ -222,7 +223,7 @@ public class MobileWorkflowService implements ServletContextAware {
 	 * 
 	 * @return
 	 */
-	public JsonObject login(JsonObject credentialsJson) {
+	public JsonObject login(JsonObject credentialsJson) throws PortalException {
 		Map<String, String> credentials = new HashMap<String, String>();
 
 		String partition = credentialsJson.get("partition").getAsString();
@@ -231,15 +232,19 @@ public class MobileWorkflowService implements ServletContextAware {
 
 		System.out.println("Partition: " + partition);
 
-		serviceFactory = ServiceFactoryLocator.get(
-				credentialsJson.get("account").getAsString(), credentialsJson
-						.get("password").getAsString(), credentials);
-		loginUser = getServiceFactory().getWorkflowService().getUser();
-
 		// Initialize session
 		httpRequest.getSession();
-		
-		JsonObject userJson = marshalUser(loginUser);
+
+		// Login using standard SessionContext, which is standard for Portals
+        SessionContext sessionCtx = SessionContext.findSessionContext();
+        sessionCtx.login(credentialsJson.get("account").getAsString(), credentialsJson.get("password").getAsString(),
+            credentials, httpRequest.getSession());
+
+        serviceFactory = sessionCtx.getServiceFactory();
+
+        loginUser = getServiceFactory().getWorkflowService().getUser();
+
+        JsonObject userJson = marshalUser(loginUser);
 
 		userDocumentsRootFolder = (Folder) getDocumentManagementService()
 				.getFolder(getUserDocumentsRootFolderPath(),
