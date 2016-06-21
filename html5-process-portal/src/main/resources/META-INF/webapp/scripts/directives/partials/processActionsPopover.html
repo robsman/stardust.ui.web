@@ -17,7 +17,6 @@
 	</div>
 
 	<div class="menu-container"  
-	     ng-disabled="!rowData.enableTerminate"  
 	     aid="PP-ProcessTable-AbortAction">
 
 		<i	ng-click="!rowData.enableTerminate || processTableCtrl.openAbortDialog(rowData);"  
@@ -27,7 +26,7 @@
 
 		<i  sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
 		    sda-placement="auto bottom-right"
-			ng-click="!rowData.enableTerminate || processTableCtrl.openAbortPopover(rowData); "
+			ng-click="processTableCtrl.openAbortPopover(rowData);"
 			title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}" 
 			style="position: relative;left: calc(100% - 25px);"
 			class="pi pi-menu-dropdown button-link tbl-tool-link">
