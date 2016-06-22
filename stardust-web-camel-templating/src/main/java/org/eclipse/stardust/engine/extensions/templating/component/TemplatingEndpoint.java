@@ -17,7 +17,6 @@ import java.util.Map;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.component.ResourceEndpoint;
-import org.apache.camel.util.CamelContextHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.eclipse.stardust.engine.extensions.templating.core.FieldMetaData;

@@ -12,6 +12,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.camel.CamelContext;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.extensions.camel.util.DmsFileArchiver;
@@ -25,6 +27,7 @@ import org.eclipse.stardust.engine.extensions.json.GsonHandler;
 @Path("/")
 public class TemplatingRestlet
 {
+   private final Logger logger = LogManager.getLogger(TemplatingRestlet.class);
    private String velocityToolsPath;
    private CamelContext camelContext;
    
@@ -45,23 +48,34 @@ public class TemplatingRestlet
    {
       try
       {
+         if(logger.isDebugEnabled()){
+            logger.debug("-->processRequest: "+request);
+         }
          validateRequest(request);
          RequestHandler requestHadnler=new RequestHandler(this.camelContext);
          byte[] content = requestHadnler.handleRequest(request, VelocityContextAppenderProcessor.initializeVelocityContext(this.velocityToolsPath));
          Document createdDocument = storeDocument(request, content);
-         if (createdDocument != null)
+         if (createdDocument != null){
+            if(logger.isDebugEnabled()){
+               logger.debug("<--processRequest");
+            }
             return Response.ok(createdDocument.getId()).build();
-         else{
+         }else{
             GsonHandler gson = new GsonHandler();
+            if(logger.isDebugEnabled()){
+               logger.debug("<--processRequest");
+            }
             return Response.ok(gson.toJson(new String(content))).build();
          }
       }
       catch (ValidationException ve)
       {
+         logger.error("<--processRequest: "+ve.getMessage());
          return Response.status(ve.getStatusCode()).entity(ve.getMessage()).build();
       }
       catch (RuntimeException re)
       {
+         logger.error("<--processRequest: "+re.getMessage());
          return Response.status(Status.INTERNAL_SERVER_ERROR).entity(re.getMessage())
                .build();
       }
@@ -77,6 +91,9 @@ public class TemplatingRestlet
     */
    private Document storeDocument(TemplatingRequest request, byte[] content)
    {
+      if(logger.isDebugEnabled()){
+         logger.debug("-->storeDocument: "+request);
+      }
       Document createdDocument = null;
       if (request.getOutput() == null)
          request.setOutput(new HashMap<String, Object>());
@@ -88,6 +105,9 @@ public class TemplatingRestlet
             && !StringUtils.isEmpty(outputFileName))
          createdDocument = storeDocumentinSpecificLocation(getServiceFactory(), content,
                outputFileName, outputFileLocation);
+      if(logger.isDebugEnabled()){
+         logger.debug("<--storeDocument, created documentId:"+createdDocument);
+      }
       return createdDocument;
    }
 
@@ -98,7 +118,9 @@ public class TemplatingRestlet
     */
    private void validateRequest(TemplatingRequest request)
    {
-
+      if(logger.isDebugEnabled()){
+         logger.debug("-->validateRequest: "+request);
+      }
       if (request.getOutput() != null && !request.getOutput().isEmpty())
       {
          if (!request.getOutput().containsKey("name"))
@@ -119,7 +141,9 @@ public class TemplatingRestlet
                   "Invalid value provided for Name parameter.");
          }
       }
-
+      if(logger.isDebugEnabled()){
+         logger.debug("<--validateRequest");
+      }
    }
 
    private Document storeDocumentinSpecificLocation(ServiceFactory sf, byte[] content,

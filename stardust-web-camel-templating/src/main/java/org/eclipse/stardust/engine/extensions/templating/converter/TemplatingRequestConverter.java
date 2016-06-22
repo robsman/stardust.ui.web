@@ -10,6 +10,8 @@ import java.util.Map;
 import org.apache.camel.Converter;
 import org.apache.camel.Exchange;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.CredentialProvider;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
@@ -20,33 +22,54 @@ import org.eclipse.stardust.engine.extensions.templating.core.TemplatingRequest;
 @Converter
 public class TemplatingRequestConverter
 {
+   private final static Logger logger = LogManager
+         .getLogger(TemplatingRequestConverter.class);
 
    @Converter
    public static TemplatingRequest documentRequestToTemplatingRequest(
          Map<String, Object> documentRequestItem, Exchange exchange)
    {
+      if (logger.isDebugEnabled())
+      {
+         logger.debug("-->documentRequestToTemplatingRequest documentRequestItem="
+               + documentRequestItem);
+      }
+      DocumentManagementService dms = getDocumentManagementService();
 
-	   DocumentManagementService dms = getDocumentManagementService();
-	   
-	      TemplatingRequest templatingRequest = new TemplatingRequest();
-	      String format = "text";
-	      String documentLocation = "";
-	      if ((StringUtils.isNotEmpty(getTemplateId(documentRequestItem)))&&(StringUtils.isEmpty(getOutgoingDocumentId(documentRequestItem))))
-	      {	
-	    	  if((getTemplateId(documentRequestItem)!=null)&&(StringUtils.isNotEmpty(getOutgoingDocumentId(documentRequestItem)))&&(getTemplateId(documentRequestItem).contains("{urn:repositoryId:System}"))){
-	    		  documentLocation= dms.getDocument(getTemplateId(documentRequestItem)).getPath();
+      TemplatingRequest templatingRequest = new TemplatingRequest();
+      String format = "text";
+      String documentLocation = "";
+      if ((StringUtils.isNotEmpty(getTemplateId(documentRequestItem)))
+            && (StringUtils.isEmpty(getOutgoingDocumentId(documentRequestItem))))
+      {
+         if ((getTemplateId(documentRequestItem) != null)
+               && (StringUtils.isNotEmpty(getOutgoingDocumentId(documentRequestItem)))
+               && (getTemplateId(documentRequestItem)
+                     .contains("{urn:repositoryId:System}")))
+         {
+            documentLocation = dms.getDocument(getTemplateId(documentRequestItem))
+                  .getPath();
+         }
+         else
+         {
+            documentLocation = getTemplateId(documentRequestItem);
+         }
+      }
+      else
+      {
+         if ((getOutgoingDocumentId(documentRequestItem) != null)
+               && (getOutgoingDocumentId(documentRequestItem)
+                     .contains("{urn:repositoryId:System}")))
+         {
+            documentLocation = dms.getDocument(getOutgoingDocumentId(documentRequestItem))
+                  .getPath();
+         }
+         else
+         {
+            documentLocation = getOutgoingDocumentId(documentRequestItem);
+         }
+      }
 
-		      }else{
-		    	  documentLocation = getTemplateId(documentRequestItem);
-		      }
-	      }else{
-	        if((getOutgoingDocumentId(documentRequestItem)!=null)&&(getOutgoingDocumentId(documentRequestItem).contains("{urn:repositoryId:System}"))){
-	        	documentLocation= dms.getDocument(getOutgoingDocumentId(documentRequestItem)).getPath();
-	          }else{
-	        	  documentLocation = getOutgoingDocumentId(documentRequestItem);
-	          }
-	      }
-  
       if (StringUtils.isNotEmpty(documentLocation) && documentLocation.endsWith("docx"))
       {
          format = "docx";
@@ -55,6 +78,11 @@ public class TemplatingRequestConverter
       templatingRequest.setFormat(format);
       templatingRequest.setConvertToPdf(IsConvertToPDF(documentRequestItem));
       templatingRequest.setParameters(new HashMap<String, Object>());
+      if (logger.isDebugEnabled())
+      {
+         logger.debug("<--documentRequestToTemplatingRequest templatingRequest="
+               + templatingRequest);
+      }
       return templatingRequest;
    }
 
@@ -72,5 +100,5 @@ public class TemplatingRequestConverter
    {
       return getServiceFactory().getDocumentManagementService();
    }
-   
+
 }

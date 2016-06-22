@@ -13,15 +13,15 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.camel.CamelContext;
 import org.apache.velocity.VelocityContext;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.ui.web.common.log.LogManager;
-import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 
 public class RequestHandler
 {
    private CamelContext camelContext;
 
-   public static final Logger logger = LogManager.getLogger(RequestHandler.class);
+   private final Logger logger = LogManager.getLogger(RequestHandler.class);
 
    public RequestHandler(CamelContext camelContext)
    {
@@ -58,8 +58,10 @@ public class RequestHandler
 
    public byte[] handleRequest(TemplatingRequest request, VelocityContext velocityContext) throws ServiceException
    {
+      if(logger.isDebugEnabled())
+         logger.debug("-->handleRequest"+ request);
+      
       ServiceFactory sf = getServiceFactory();
-
       validate(request);
       if (request.getProcessOid() != null)
       {
@@ -70,12 +72,15 @@ public class RequestHandler
                .getInDataPaths(request.getProcessOid(), null);
          registerDataPaths(request, dataPaths);
       }
-      
+      if(logger.isDebugEnabled())
+         logger.debug("<--handleRequest");
       return dispatch(request, velocityContext);
    }
 
    private byte[] dispatch(TemplatingRequest request, VelocityContext velocityContext) throws ServiceException
    {
+      if(logger.isDebugEnabled())
+         logger.debug("-->dispatch: "+request);
       IRequestHandler handler;
       if (isDocx(request))
       {
@@ -89,12 +94,15 @@ public class RequestHandler
          if(logger.isDebugEnabled())
             logger.debug("The request is dispatched to VelocityRequestHandler");
       }
-      
+      if(logger.isDebugEnabled())
+         logger.debug("<--dispatch");
       return handler.handleRequest(request,velocityContext);
    }
 
    protected void validate(TemplatingRequest request)
    {
+      if(logger.isDebugEnabled())
+         logger.debug("-->validate: "+request);
       if (request == null)
          throw new ValidationException(Status.BAD_REQUEST.getStatusCode(),
                "The request cannot be null");
@@ -139,5 +147,7 @@ public class RequestHandler
                throw new ValidationException(Status.BAD_REQUEST.getStatusCode(),
                      "templateUri should start with classpath|repository|http .");
       }
+      if(logger.isDebugEnabled())
+         logger.debug("<--validate");
    }
 }
