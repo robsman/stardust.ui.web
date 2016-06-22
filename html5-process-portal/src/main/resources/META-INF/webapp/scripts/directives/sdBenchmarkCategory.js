@@ -27,13 +27,13 @@
 		   },
 		   template : '<i ng-if="sdaValue.color" class="pi pi-flag pi-lg" ng-style="benchmarkCtrl.flagStyle" '+
 		   						 'sd-popover sda-template="\'benchmarkPopoverTemplate.html\'" sda-trigger="mouseenter" sda-placement="top auto" '+
-		   			      '<\/i>'+
-                  '<script id="benchmarkPopoverTemplate.html" type="text/ng-template">'+
-      		   			  '<div>'+
-      		   			  		'<span class="worklist-tooltip-label" ng-bind="benchmarkCtrl.i18n(\'views-common-messages.views-processTable-benchmark-tooltip-categoryLabel\')"><\/span> '+
-      		   			  		': <span ng-bind="sdaValue.label"><\/span>' +
-      		   			  '</div>'+
-                  '</script>',
+		   			   '<\/i>'+
+		   			    '<script id="benchmarkPopoverTemplate.html" type="text/ng-template">'+
+	      		   			  '<div>'+
+	      		   			  		'<span class="worklist-tooltip-label" ng-bind="benchmarkCtrl.i18n(\'views-common-messages.views-processTable-benchmark-tooltip-categoryLabel\')"><\/span> '+
+	      		   			  		': <span ng-bind="sdaValue.label"><\/span>' +
+	      		   			  '</div>'+
+	      		   		'</script>',
 		   controller : [ '$scope', BenchmarkController ]
 	   };
    };

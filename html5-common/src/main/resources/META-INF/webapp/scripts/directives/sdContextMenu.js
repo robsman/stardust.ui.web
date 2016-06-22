@@ -96,11 +96,14 @@
     }// Linking function ends.
 
     return {
-      template: "<div class='sd-drop-down-menu'>"
-              + "<div class='dd-header' ng-right-click='openMenu()' ng-transclude></div>"
-              + "<ul style='position:absolute;' ng-show='showMenu'>" + "<span ng-click='closeMenu()'>x</span>"
-              + "<li ng-click='invoke(item,$event)'" + "ng-class='item.class'" + "ng-repeat='item in menuItems'>"
-              + "<span>{{item.value}}</span>" + "</li>" + "</ul>" + "</div>",
+      template: "<div class='sd-drop-down-menu'>"+
+		              "<div class='dd-header' ng-right-click='openMenu()' ng-transclude></div>"+
+		               "<ul style='position:absolute;' ng-show='showMenu'>" + "<span ng-click='closeMenu()'>x</span>"+
+			               "<li ng-click='invoke(item,$event)'" + "ng-class='item.class'" + "ng-repeat='item in menuItems'>"+
+			               	"<span>{{item.value}}</span>" + 
+			               "</li>" +
+		               "</ul>" + 
+		         "</div>",
       restrict: "EA",
       transclude: true,
       scope: {
