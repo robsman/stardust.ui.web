@@ -29,14 +29,14 @@
       return {
          restrict : 'A',
          template :
-          '<button ng-click="openPopover()" class="button-link" aid="CritIconSelector">' +
+          '<div ng-click="openPopover()" class="button-link" aid="CritIconSelector">' +
            '<i class="pi pi-flag pi-lg" ng-show="editMode == true" sd-popover sda-template="\'criticalitySelector.html\'" '+
               'sda-trigger="outsideClick" sda-is-open="criticalityIconSelectorCtrl.popovers.visible" '+
               'sda-placement="right auto" aid="CritIconSelector-SelectedFlg"' +
               'ng-class="\'criticality-flag-\'+ (bindModel != undefined? bindModel : \'NO-COLOR\')"><\/i>  ' +
             '<i class="pi pi-flag pi-lg"  ng-show="editMode != true"' +
               'ng-class="\'criticality-flag-\'+ (bindModel != undefined? bindModel : \'NO-COLOR\')"><\/i>  ' +
-          '</button>' +
+          '</div>' +
           '<script id="criticalitySelector.html" type="text/ng-template">' +
               '<div style="float: left;width: 105px;">' +
                 '<button ng-click="criticalityIconSelectorCtrl.setIcon(icon)" '+
