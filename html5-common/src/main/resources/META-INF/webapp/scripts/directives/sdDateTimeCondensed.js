@@ -60,8 +60,13 @@
 
 					var dateValid = scope.ctrl.isDateValid(scope.ctrl.selectedDateTime);
 					var timeValid = scope.ctrl.isTimeValid(scope.ctrl.timeComponent);
-					
-					if(dateValid && timeValid){
+
+					//if both values are undefined then assume valid as it corresponds to both elements being pristine
+					if(scope.ctrl.selectedDateTime === undefined && scope.ctrl.timeComponent === undefined){
+						ngModelCtrl.$setValidity('validate', true);
+						return value;
+					}
+					else if(dateValid && timeValid){
 						ngModelCtrl.$setValidity('validate', true);
 						return value;
 					}
@@ -79,13 +84,13 @@
 							'<input name="dpart" type="text" style="display:none;">' +
 							'<input name="dpart" class="date-part" placeholder="{{ctrl.formatObj.dateFormat}}"  ' +
 								'ng-class="{invalid:!ctrl.isDateValid(ctrl.selectedDate) && ctrl.isDirty}" ' +
-								'ng-blur=" ctrl.isDirty = true"' +
+								'ng-blur=" ctrl.isDirty = true" ' +
 								'type="text" sd-date-picker ng-model-onblur sda-milliseconds="true" '+
 								'id="selectDate" name="selectDate" ng-change="ctrl.updateView(ctrl.selectedDate,ctrl.timeComponent)" ' +
 								'ng-model="ctrl.selectedDate" aid="{{ctrl.aidDate}}" / >'+
 							'<input class="time-part" ' +
 								'ng-blur="ctrl.updateView(ctrl.selectedDate,ctrl.timeComponent);ctrl.isDirty = true" ' +
-								'ng-keydown="ctrl.keyMonitor($event)"' +
+								'ng-keydown="ctrl.keyMonitor($event)" ' +
 								'ng-model="ctrl.timeComponent" ' +
 								'ng-class="{invalid:!ctrl.isTimeValid(ctrl.timeComponent) && ctrl.isDirty}" ' +
 								'placeholder="{{ctrl.formatObj.timeFormat}}"></input>' +
