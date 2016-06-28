@@ -1560,9 +1560,8 @@ public class ProcessInstanceUtils
       {
          return;
       }
-      
-    //Finding if a single process is selected
-      String singleProcessQId = null;
+    
+      List<String> processFilter = null;
 
       ProcessTableFilterDTO filterDTO = (ProcessTableFilterDTO) options.filter;
 
@@ -1653,9 +1652,7 @@ public class ProcessInstanceUtils
                or.add(new ProcessDefinitionFilter(processQId, false));
             }
             
-            if(filterDTO.processName.processes.size() == 1) {
-               singleProcessQId = filterDTO.processName.processes.get(0);
-            }
+            processFilter = filterDTO.processName.processes;
          }
       }
       
@@ -1693,7 +1690,7 @@ public class ProcessInstanceUtils
       }
 
       // descriptors Filter
-      addDescriptorFilters(query, filterDTO, singleProcessQId);
+      addDescriptorFilters(query, filterDTO, processFilter);
 
    }
 
@@ -1720,6 +1717,58 @@ public class ProcessInstanceUtils
          query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
       }
    }
+   
+   /**
+    * 
+    * @param processFilter
+    * @param descFilterMap
+    * @return
+    */
+   public static Collection<DataPath> getRelevantDataPaths(List<String> processFilter,
+         Map<String, DescriptorFilterDTO> descFilterMap)
+   {
+      Map<String, DataPath> descriptors = ProcessDefinitionUtils.getAllDescriptors(false);
+      Map<String, Map<String, DataPath>> allFilterableDescriptorsByProcess = CommonDescriptorUtils
+            .getAllDescriptorsByProcess(true);
+      Collection<DataPath> dataPaths = null;
+
+      for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap.entrySet())
+      {
+         String dataId = descriptor.getKey();
+         if (null != processFilter)
+         {
+            for (String processQId : processFilter)
+            {
+               Map<String, DataPath> procDescriptors = allFilterableDescriptorsByProcess
+                     .get(processQId);
+               if (null != procDescriptors && procDescriptors.containsKey(dataId))
+               {
+                  dataPaths = procDescriptors.values();
+
+                  if (trace.isDebugEnabled())
+                  {
+                     trace.debug("Descriptor Filtering:: Using Descriptors from Process: "
+                           + processQId + ", because of filtering on dataId: " + dataId);
+                  }
+
+                  break;
+               }
+            }
+         }
+      }
+
+      if (null == dataPaths)
+      {
+         dataPaths = descriptors.values();
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Descriptor Filtering:: Using Descriptors from Default Process");
+         }
+      }
+
+      return dataPaths;
+   }
+   
 
    /**
     * Add filter on descriptor columns .
@@ -1727,27 +1776,23 @@ public class ProcessInstanceUtils
     * @param query
     * @param processListFilterDTO
     */
-   public static void addDescriptorFilters(Query query, ProcessTableFilterDTO processListFilterDTO, String singleProcessQId)
+   public static void addDescriptorFilters(Query query,
+         ProcessTableFilterDTO processListFilterDTO, List<String> processFilter)
    {
 
       Map<String, DescriptorFilterDTO> descFilterMap = processListFilterDTO.descriptorFilterMap;
 
       if (null != descFilterMap)
       {
-         Map<String, DataPath> descriptors = ProcessDefinitionUtils.getAllDescriptors(false);
-         Map<String, Map<String, DataPath>> allFilterableDescriptorsByProcess = CommonDescriptorUtils.getAllDescriptorsByProcess(true);
-         Collection<DataPath> dataPaths = descriptors.values();
-         
-      // If it's a single process case then use data paths from that process
-         if (null != singleProcessQId && allFilterableDescriptorsByProcess.containsKey(singleProcessQId))
-         {
-            dataPaths =  allFilterableDescriptorsByProcess.get(singleProcessQId).values();                        
-         }
+         Collection<DataPath> dataPaths = getRelevantDataPaths(processFilter,
+               descFilterMap);
 
-         GenericDescriptorFilterModel filterModel  = GenericDescriptorFilterModel.create(dataPaths);
+         GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel
+               .create(dataPaths);
          filterModel.setFilterEnabled(true);
 
-         for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap.entrySet())
+         for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap
+               .entrySet())
          {
             Object value = null;
             String key = descriptor.getKey();
@@ -1784,7 +1829,7 @@ public class ProcessInstanceUtils
                   ((DateRange) value).setToDateValue(new Date(to));
                }
             }
-            //Descriptors of type  Multi cardinality
+            // Descriptors of type Multi cardinality
             else if (descriptor.getValue().type.equals(ColumnDataType.LIST.toString()))
             {
                value = ((TextSearchDTO) descriptor.getValue().value).textSearch;
@@ -1802,7 +1847,6 @@ public class ProcessInstanceUtils
             trace.error("Error occurred while applying filter to descriptors..", e);
          }
       }
-
    }
 
    /**
