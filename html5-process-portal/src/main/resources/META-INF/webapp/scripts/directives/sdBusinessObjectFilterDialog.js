@@ -32,13 +32,7 @@
 		} else {
 			trace.log('sdBusinessObjectManagementService not found.Operating in non BO mode.');
 		}
-
-		if(sdBusinessObjectManagementService) {
-			sdBusinessObjectManagementService.getBusinessObjects().then(
-				function(json) {
-					console.log(json);
-				});
-		}
+		
 		return {
 			restrict : 'A',
 			scope: {
@@ -55,16 +49,13 @@
 		this.bomService = sdBusinessObjectManagementService;
 		this.i18n = $scope.$parent.i18n;
 		this.open = false;
+		this.initialized = false;
 		this.parentScope = $scope.$parent;
 		setBOMaxDisplayLenght.call(this, $scope);
 		this.attributes = $scope.attributes;
 
 
 		$scope.boDialog = this;
-		
-		if(this.bomService) {
-			this.initializeBOs();
-		}
 	}
 
 	function setBOMaxDisplayLenght(scope) {
@@ -80,9 +71,13 @@
 	}
 
 	BusinessObjectFilterDialogCtrl.prototype.initializeBOs = function() {
+    if (this.initialized) { return; }
+	  
 		var self = this;
 		this.bos = [];
 		this.selectedInstances = [];
+		this.boInstances = {};
+		
 		this.bomService.getBusinessObjects().then(
 				function(bos) {
 					if (bos && bos.models) {
@@ -92,18 +87,19 @@
 							});
 						});
 					}
-
-					self.boInstances = {};
-					jQuery.each(self.bos, function(_, bo) {
-						self.bomService.getBusinessObjectInstances(bo).then(
-								function(instances) {
-									self.boInstances[bo.id] = instances;
-								});
-					});
-
+					self.initialized = true;
 				});
 	};
 
+	/**
+	 *   fetch each bo instance on demand
+	 */
+	BusinessObjectFilterDialogCtrl.prototype.populateInstances = function(bo) {
+	  var self = this;
+	  
+	  
+  }
+	
 	BusinessObjectFilterDialogCtrl.prototype.setSelectedBOInstancesString = function() {
 		var self = this;
 		var str;
@@ -140,15 +136,32 @@
 	BusinessObjectFilterDialogCtrl.prototype.boSelectionChanged = function() {
 		var self = this;
 		this.selectedInstances = [];
+		
 		if (this.selectedType) {
-			jQuery.each(this.selectedType.fields, function(_, field) {
-				if (field.primaryKey) {
-					self.primaryKeyForSelectedBO = field.id;
-				}
-			});
-		}
+  		  if(self.boInstances[this.selectedType.id]) {
+          self.refreshInstances();
+    		} else {
+    		  jQuery("body").css("cursor", "progress");
+    		  this.bomService.getBusinessObjectInstances(this.selectedType).then(
+                function(instances) {
+          self.boInstances[self.selectedType.id] = instances;
+          jQuery("body").css("cursor", "default");
+          self.refreshInstances();
+        });
+      }
+    }
 	};
 
+	BusinessObjectFilterDialogCtrl.prototype.refreshInstances = function() {
+	  var self = this;
+	  
+	  jQuery.each(self.selectedType.fields, function(_, field) {
+      if (field.primaryKey) {
+        self.primaryKeyForSelectedBO = field.id;
+      }
+    });	    
+	}
+	
 	BusinessObjectFilterDialogCtrl.prototype.applyFilter = function() {
 		var self = this;
 		var boFilter = {
@@ -197,9 +210,12 @@
 	};
 
 	BusinessObjectFilterDialogCtrl.prototype.openDialog = function() {
-		this.selectedType = this.selectedBO;
-		this.selectedInstances = this.selectedBOInstances;
-		this.open = true;
+	  if(this.bomService) {
+      this.initializeBOs();
+      this.selectedType = this.selectedBO;
+      this.selectedInstances = this.selectedBOInstances;
+      this.open = true;
+    }
 	};
 
 	BusinessObjectFilterDialogCtrl.prototype.closeDialog = function() {
