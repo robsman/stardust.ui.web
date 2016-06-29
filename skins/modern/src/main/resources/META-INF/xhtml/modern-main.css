@@ -9739,6 +9739,7 @@ img[src *='world_go.png'].nodeMenuIcon {
 /* IE10+ CSS styles go here */
 	.perspective-series-wrapper {
 		top:112px;
+		left:37px;
 	}
 }
 
