@@ -161,10 +161,12 @@
 					'<script id="columnSelector.html" type="text/ng-template">\n' +
 						'<div>' +
 							'<div class="popup-dlg-hdr">\n' +
-								'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' +
-									'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" aid="PP-DataTable-filterPopupClose" ng-click="$dtApi.toggleColumnSelector()">\n' +
-									'<i class="pi pi-close pi-lg" />\n' +
-								'</button>\n' +
+								'<div class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</div>\n' +
+								'<div class="popup-dlg-cls">'+
+									'<button class="button-link " title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" aid="PP-DataTable-filterPopupClose" ng-click="$dtApi.toggleColumnSelector()">\n' +
+										'<i class="pi pi-close pi-lg" />\n' +
+									'</button>\n' +
+								'</div>'+
 							'</div>\n' +
 							'<div class="popup-dlg-cnt tbl-col-selector">\n' +
 								'<div>\n' +
