@@ -214,6 +214,9 @@
       this.initializeBOs();
       this.selectedType = this.selectedBO;
       this.selectedInstances = this.selectedBOInstances;
+      if (this.selectedType) {
+          this.refreshInstances();
+      }
       this.open = true;
     }
 	};
