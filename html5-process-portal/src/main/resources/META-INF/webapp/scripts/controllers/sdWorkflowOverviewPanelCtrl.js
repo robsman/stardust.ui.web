@@ -38,6 +38,7 @@
 		this.userInfo = sdLoggedInUserService.getUserInfo();
 		this.collapsePanelHandle = null;
 		this.dateId = "-";
+		this.syncPanel = true;
 		var self = this;
 		
 		this.workflowOverviewCounts = {
