@@ -146,6 +146,7 @@ span.heading{
     position:relative;
     float:right;
     width:100%;
+    margin-bottom:10px;
 }
 
 .popup-dlg-hdr-txt {
@@ -153,7 +154,8 @@ span.heading{
     color: #009775 ;
 	font-size: 1.36em;
 	text-transform: uppercase;
-	float:left;
+	float: left;
+	padding-right: 2px;
 }
 
 .popup-dlg-cls {
