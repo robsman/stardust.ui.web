@@ -74,6 +74,8 @@ public class PdfViewer implements IDocumentViewer
       if (null != pdfDocumentHandler.getCurrentDocumentState())
       {
          pdfDocumentHandler.getCurrentDocumentState().closeDocument();
+         SessionSharedObjectsMap sharedObjectsMap = SessionSharedObjectsMap.getCurrent();
+         sharedObjectsMap.removeObject(pdfDocumentHandler.getDocumentId());
       }
    }
 

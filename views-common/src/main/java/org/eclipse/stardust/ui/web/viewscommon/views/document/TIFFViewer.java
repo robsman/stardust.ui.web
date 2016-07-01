@@ -363,6 +363,9 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
       String publishSaveMsg = "window.parent.EventHub.events.publish('VIEW_CLOSING', '" + docId + "');";
       PortalApplication.getInstance().addEventScript(publishSaveMsg);
       DOC_ID_VS_DOC_MAP.remove(docId);
+      SessionSharedObjectsMap sharedObjectsMap = SessionSharedObjectsMap.getCurrent();
+      sharedObjectsMap.removeObject(docId);
+      
       closeIframe();
    }
    
