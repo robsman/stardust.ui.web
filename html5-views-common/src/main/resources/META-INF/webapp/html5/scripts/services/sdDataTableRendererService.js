@@ -72,7 +72,24 @@
 			 * 
 			 */
 			DataTableRenderer.prototype.descriptorsRenderer = function(col, row, contents) {
-				return 'descriptorsRenderer';
+				var result = '';
+				var data = row.descriptorValues;
+
+				if (data) {
+					var descKeys = Object.keys(data);
+
+					if (descKeys && descKeys.length > 0) {
+						result = '<table>';
+						for (var key = 0; key < descKeys.length; key++) {
+							if (data[descKeys[key]] && data[descKeys[key]].value && data[descKeys[key]].value !== '') {
+								result += '\n<tr><td>' + descKeys[key] + ':</td><td>' + data[descKeys[key]].value + '</td></tr>';
+							}
+						}
+						result += '\n</table>';
+					}
+				}
+
+				return result;
 			}
 
 			/*
