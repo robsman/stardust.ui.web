@@ -22,7 +22,7 @@
 	    [ '$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService',
 		    'sdWorklistService', 'sdActivityInstanceService', 'sdProcessInstanceService', 'sdProcessDefinitionService',
 		    'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter', 'sgI18nService',
-		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService',
+		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService', 'sdDataTableRendererService',
 		    ActivityTableDirective ]);
 
     /*
@@ -31,7 +31,7 @@
     function ActivityTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService,
 	    sdWorklistService, sdActivityInstanceService, sdProcessInstanceService, sdProcessDefinitionService, sdCriticalityService,
 	    sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout, sdLoggedInUserService,
-	    sdDialogService, sdCommonViewUtilService) {
+	    sdDialogService, sdCommonViewUtilService, sdDataTableRendererService) {
 
 	var trace = sdLoggerService.getLogger('bpm-common.sdActivityTable');
 
@@ -142,6 +142,8 @@
 			sdUtilService.safeApply(scope);
 		};
 
+		this.renderers = sdDataTableRendererService.create();
+		
 		// Expose controller as a whole on to scope
 		scope.activityTableCtrl = this;
 		sdUtilService.addFunctionProxies(scope.activityTableCtrl);
@@ -313,7 +315,7 @@
 	    	}
 	    	return preferenceStore;
 	    };
-	    
+
 
 	    /**
 	     * 
@@ -520,7 +522,7 @@
 			});
 	    };
 	};
-	
+
 
 	/**
 	 * 
@@ -1474,7 +1476,7 @@
 			trace.error("Error in performing default delegate :",error);
 		});
 	};
-	
+
 	 /**
      * 
      */
@@ -1493,7 +1495,7 @@
 
 	return directiveDefObject;
     }
-    
+
     
 
     /**

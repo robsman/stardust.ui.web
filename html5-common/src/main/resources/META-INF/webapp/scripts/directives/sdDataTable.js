@@ -176,7 +176,7 @@
 		var myScope = scope;
 		var sdData = ctrl[0];
 
-		var treeTable = false, treeTableData, treeData;
+		var treeTable = false, treeTableData, treeData, noAngularComplaintBody, noAngularRowHandlerParser;
 		var tableInLocalMode, initialized, firstInitiaizingDraw = true;
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
@@ -450,6 +450,17 @@
 				i18nScope = head.attr('sda-i18n-scope');
 			}
 
+			var body = element.find('> tbody');
+			noAngularComplaintBody = body.attr('sda-no-angular-body') != undefined
+					&& body.attr('sda-no-angular-body') == 'true' ? true : false;
+			if(noAngularComplaintBody) {
+				trace.log('Table body is configured to run in non angular complaint mode...');
+				var noAngularRowHandler = body.attr('sda-no-angular-row-handler');
+				if (noAngularRowHandler != undefined) {
+					noAngularRowHandlerParser = $parse(noAngularRowHandler);
+				}
+			}
+
 			var headCols = element.find('> thead > tr > th');
 			var bodyCols = element.find('> tbody > tr > td');
 
@@ -509,16 +520,25 @@
 				
 				colDef.contents = bCol.children().html();
 				colDef.contents = colDef.contents.trim();
-				if (colDef.contents == '') {
-					var contents = getDefaultContent(colDef);
-					colDef.contents = '{{' + contents + '}}';
-					colDef.defaultContentsParser = $parse(contents);
+
+				if (noAngularComplaintBody) {
+					var renderer = bCol.attr('sda-renderer');
+					if (renderer) {
+						colDef.rendererParser = $parse(renderer);
+					}
 				} else {
-					// Adding dummy ng-if for creating separate subscope for cell, this is to receive separate colData 
-					colDef.contents = 
-						'<div ng-if="true" ng-init="colData = $dtApi.getColumnData(\'' + colDef.name + '\')">' +
-							colDef.contents + 
-						'</div>';
+
+					if (colDef.contents == '') {
+						var contents = getDefaultContent(colDef);
+						colDef.contents = '{{' + contents + '}}';
+						colDef.defaultContentsParser = $parse(contents);
+					} else {
+						// Adding dummy ng-if for creating separate subscope for cell, this is to receive separate colData 
+						colDef.contents = 
+							'<div ng-if="true" ng-init="colData = $dtApi.getColumnData(\'' + colDef.name + '\')">' +
+								colDef.contents + 
+							'</div>';
+					}
 				}
 
 				if (treeTable && colDef.treeColumn) {
@@ -678,7 +698,9 @@
 			angular.forEach(columns, function(col, i) {
 				dtColumns.push({
 					sName: col.name,
-					mData: colRenderer(col),
+					mData: colDataContents(col),
+					mRender: colRenderer(col),
+					sDefaultContent: '',
 					bSortable: col.sortable
 				});
 			});
@@ -686,11 +708,11 @@
 			/*
 			 * Need to have covering function to maintain outer scope for appropriate 'col' 
 			 */
-			function colRenderer(col) {
+			function colDataContents(col) {
 				return function(row, type, set) {
 					var ret;
 
-					if (type === 'display') {
+					if (type === 'display' || type === 'type') {
 						ret = col.contents;
 					}
 
@@ -700,6 +722,38 @@
 
 					return ret;
 				};
+			}
+
+			/*
+			 * Need to have covering function to maintain outer scope for appropriate 'col' 
+			 */
+			function colRenderer(col) {
+				if (noAngularComplaintBody) {
+					var colDef = {
+						name: col.name,
+						field: col.field,
+						dataType: col.dataType,
+						sortable: col.sortable,
+						fixed: col.fixed,
+						title: col.title
+					};
+	
+					if (col.rendererParser) { // Custom Renderer
+						return function (data, type, row) {
+							return col.rendererParser(elemScope, {
+								col: colDef,
+								row: row,
+								contents: data
+							});
+						};
+					} else { // Default Renderer
+						return function (data, type, row) {
+							return row[colDef.field];
+						};
+					}
+				} else {
+					return undefined;
+				}
 			}
 		}
 
@@ -887,12 +941,17 @@
 			}
 
 			dtOptions.fnDrawCallback = drawCallbackHandler;
-			dtOptions.fnPreDrawCallback = function() {
-				destroyRowScopes();
+
+			if (!noAngularComplaintBody) {
+				dtOptions.fnPreDrawCallback = function() {
+					destroyRowScopes();
+				}
 			}
+
 			dtOptions.fnCreatedRow = createRowHandler;
 
 			dtOptions.bServerSide = true;
+			dtOptions.bDeferRender = true;
 			dtOptions.sAjaxSource = 'dummy.html';
 			dtOptions.fnServerData = tableInLocalMode ? ajaxHandlerLocalMode : ajaxHandler;
 
@@ -947,7 +1006,7 @@
 				ret.iTotalRecords = 0;
 				ret.iTotalDisplayRecords = 0;
 				ret.aaData = [];
-				
+
 				callback(ret);
 
 				return;
@@ -1273,7 +1332,7 @@
 				showErrorOnUI(error);
 			});
 		}
-		
+
 		/*
 		 * 
 		 */
@@ -1570,12 +1629,8 @@
 		 * 
 		 */
 		function createRowHandler(row, data, dataIndex) {
-			row = angular.element(row);
+			row = noAngularComplaintBody ? jQuery(row) : angular.element(row);
 			row.addClass(CLASSES.BODY_TR);
-
-			// Hide row so that uncompiled markup is not visible 
-			row.addClass('ng-hide');
-			row.attr('ng-show', 'true');
 
 			var cells = row.find('> td');
 			cells.addClass(CLASSES.TD);
@@ -1606,9 +1661,26 @@
 				}
 			});
 
-			row.attr('sd-data-table-row', dataIndex); // Another directive, which will handle setting of rowData
-		}
+			if (noAngularComplaintBody) {
+				row.attr('row-index', dataIndex);
+	
+				if (noAngularRowHandlerParser) {
+					noAngularRowHandlerParser(elemScope, {
+						row: row,
+						rowData: data,
+						dataIndex: dataIndex,
+						scope: elemScope
+					})
+				}
+			} else {
+				// Hide row so that uncompiled markup is not visible 
+				row.addClass('ng-hide');
+				row.attr('ng-show', 'true');
 
+				row.attr('sd-data-table-row', dataIndex); // Another directive, which will handle setting of rowData
+			}
+		}
+		
 		/*
 		 * 
 		 */
@@ -1633,20 +1705,22 @@
 				return;
 			}
 
-			// Handle empty table case
-			var count = getPageDataCount();
-			if (count == 0) {
-				trace.log('Handling empty table case...');
+			if (!noAngularComplaintBody) {
+				// Handle empty table case
+				var count = getPageDataCount();
+				if (count == 0) {
+					trace.log('Handling empty table case...');
 
-				var rows = theTable.find('> tbody > tr');
-				var row = angular.element(rows[0]); // There will be only one row 
-				var rowScope = myScope.$new();
-				compileMarkup(row, rowScope, 'Empty row');
-			} else {
-				var body = angular.element(theTable.find('> tbody'));
-				var bodyScope = body.scope();
-				bodyScope.$$pageData = getPageData(); // Used by sd-data-table-row
-				compileMarkup(body, bodyScope, 'Table body');
+					var rows = theTable.find('> tbody > tr');
+					var row = angular.element(rows[0]); // There will be only one row 
+					var rowScope = myScope.$new();
+					compileMarkup(row, rowScope, 'Empty row');
+				} else {
+					var body = angular.element(theTable.find('> tbody'));
+					var bodyScope = body.scope();
+					bodyScope.$$pageData = getPageData(); // Used by sd-data-table-row
+					compileMarkup(body, bodyScope, 'Table body');
+				}
 			}
 
 			if(firstInitiaizingDraw) {
@@ -2144,32 +2218,47 @@
 		 * 
 		 */
 		function processRowSelection(row) {
-			row = angular.element(row);
-			var rowScope = row.scope();
-
+			var rowIndex;
+			
+			if (noAngularComplaintBody) {
+				row = jQuery(row);
+				rowIndex = parseInt(row.attr('row-index'));
+			} else {
+				row = angular.element(row);
+				var rowScope = row.scope();
+				rowIndex = rowScope.$index;
+			}
+			
 			var selectionInfo = {};
-			selectionInfo.current = getPageData(rowScope.$index);
+			selectionInfo.current = getPageData(rowIndex);
 
 			if (rowSelectionMode == 'row') {
 				if (isRowSelected(row)) {
-					unselectRow(row, rowScope.$index);
+					unselectRow(row, rowIndex);
 					selectionInfo.action = 'deselect';
 				} else {
 					var prevSelRow = getSelectedRow();
 					if (prevSelRow) {
-						prevSelRow = angular.element(prevSelRow);
-						unselectRow(prevSelRow, prevSelRow.scope().$index);
+						var prevRowIndex;
+						if (noAngularComplaintBody) {
+							prevSelRow = jQuery(prevSelRow);
+							prevRowIndex = parseInt(prevSelRow.attr('row-index'));
+						} else {
+							prevSelRow = angular.element(prevSelRow);
+							prevRowIndex = prevSelRow.scope().$index;
+						}
+						unselectRow(prevSelRow, prevRowIndex);
 					}
 
-					selectRow(row, rowScope.$index);
+					selectRow(row, rowIndex);
 					selectionInfo.action = 'select';
 				}
 			} else {
 				if (isRowSelected(row)) {
-					unselectRow(row, rowScope.$index);
+					unselectRow(row, rowIndex);
 					selectionInfo.action = 'deselect';
 				} else {
-					selectRow(row, rowScope.$index);
+					selectRow(row, rowIndex);
 					selectionInfo.action = 'select';
 				}
 			}
