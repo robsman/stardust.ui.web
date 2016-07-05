@@ -1255,6 +1255,8 @@
 				this.selectedActivity = selectedItems;
 			}
 		}
+
+		this.safeApply();
 	};
 
 
@@ -1279,6 +1281,10 @@
 		}
 
 		this.showAbortActivityDialog = true;
+		
+		if (!Array.isArray(value)) {
+			this.safeApply();
+		}
 	};
 
 	/*
