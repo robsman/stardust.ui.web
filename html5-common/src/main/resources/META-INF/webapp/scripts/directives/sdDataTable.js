@@ -525,9 +525,12 @@
 					var renderer = bCol.attr('sda-renderer');
 					if (renderer) {
 						colDef.rendererParser = $parse(renderer);
+					} else {
+						var contents = getDefaultContent(colDef);
+						colDef.contents = '{{' + contents + '}}';
+						colDef.defaultContentsParser = $parse(contents);
 					}
 				} else {
-
 					if (colDef.contents == '') {
 						var contents = getDefaultContent(colDef);
 						colDef.contents = '{{' + contents + '}}';
@@ -748,7 +751,10 @@
 						};
 					} else { // Default Renderer
 						return function (data, type, row) {
-							return row[colDef.field];
+							return col.defaultContentsParser(elemScope, {
+								rowData : row,
+								colData : colDef
+							});
 						};
 					}
 				} else {
