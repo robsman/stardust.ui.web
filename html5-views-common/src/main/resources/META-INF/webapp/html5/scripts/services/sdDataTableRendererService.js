@@ -40,6 +40,8 @@
 		 * 
 		 */
 		function DataTableRenderer() {
+			var parserCache = {};
+
 			/*
 			 * 
 			 */
@@ -342,7 +344,12 @@
 				 * 
 				 */
 				function evaluate(expr, rowData) {
-					var parser = $parse(expr);
+					if (!parserCache[expr]) {
+						trace.log('Adding to Parser Cache for Expr: ' + expr);
+						parserCache[expr] = $parse(expr);
+					}
+
+					var parser = parserCache[expr];
 					var value = parser(scope, {
 						rowData: rowData
 					});
