@@ -140,7 +140,8 @@
 			</tr>
 		</thead>
 		<tbody sda-no-angular-body="true"
-			sda-no-angular-row-handler="activityTableCtrl.renderers.rowHandler(row, rowData, dataIndex, scope)">
+			sda-no-angular-row-handler="activityTableCtrl.renderers.rowHandler(row, rowData, dataIndex, scope)"
+			sda-no-angular-draw-handler="activityTableCtrl.renderers.drawHandler(table, scope)">
 			<tr>
 				<td sda-exporter="rowData.activity.name" style="white-space: nowrap;"
 					sda-renderer="activityTableCtrl.renderers.activityNameRenderer(col, row, contents)">

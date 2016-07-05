@@ -176,7 +176,7 @@
 		var myScope = scope;
 		var sdData = ctrl[0];
 
-		var treeTable = false, treeTableData, treeData, noAngularComplaintBody, noAngularRowHandlerParser;
+		var treeTable = false, treeTableData, treeData, noAngularComplaintBody, noAngularRowHandlerParser, noAngularDrawHandlerParser;
 		var tableInLocalMode, initialized, firstInitiaizingDraw = true;
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
@@ -455,9 +455,15 @@
 					&& body.attr('sda-no-angular-body') == 'true' ? true : false;
 			if(noAngularComplaintBody) {
 				trace.log('Table body is configured to run in non angular complaint mode...');
+
 				var noAngularRowHandler = body.attr('sda-no-angular-row-handler');
 				if (noAngularRowHandler != undefined) {
 					noAngularRowHandlerParser = $parse(noAngularRowHandler);
+				}
+
+				var noAngularDrawHandler = body.attr('sda-no-angular-draw-handler');
+				if (noAngularDrawHandler != undefined) {
+					noAngularDrawHandlerParser = $parse(noAngularDrawHandler);
 				}
 			}
 
@@ -1761,6 +1767,15 @@
 				} else {
 					clearState(); // Subsequent draws will pass from here
 					logCompilationTime();
+				}
+
+				if (noAngularComplaintBody) {
+					if (noAngularDrawHandlerParser) {
+						noAngularDrawHandlerParser(elemScope, {
+							table: theTable,
+							scope: elemScope
+						})
+					}
 				}
 
 				sdUtilService.safeApply(elemScope);

@@ -350,6 +350,12 @@
 					return value;
 				}
 			}
+
+			/*
+			 * 
+			 */
+			DataTableRenderer.prototype.drawHandler = function(table, scope) {
+			}
 		}
 	};
 })();
