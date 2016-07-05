@@ -337,7 +337,7 @@
 					if (element === undefined || element.attr('sda-if') === undefined) return;
 
 					var value = evaluate(element.attr('sda-if'), rowData);
-					if (value == false) {
+					if ( value !== true ) {
 						element.remove();
 					}
 				}
