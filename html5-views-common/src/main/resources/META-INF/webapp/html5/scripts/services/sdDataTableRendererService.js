@@ -166,8 +166,14 @@
 					if (descKeys && descKeys.length > 0) {
 						result = '<table>';
 						for (var key = 0; key < descKeys.length; key++) {
-							if (data[descKeys[key]] && data[descKeys[key]].value && data[descKeys[key]].value !== '') {
-								result += '\n<tr><td>' + descKeys[key] + ':</td><td>' + data[descKeys[key]].value + '</td></tr>';
+							if (data[descKeys[key]] && !data[descKeys[key]].isDocument) {
+								if (data[descKeys[key]].value && data[descKeys[key]].value !== '') {
+									result += 
+										'\n<tr>' +
+											'<td style="white-space: nowrap;">' + descKeys[key] + ':</td>' + 
+											'<td style="white-space: normal;">' + data[descKeys[key]].value + '</td>' +
+										'</tr>';
+								}
 							}
 						}
 						result += '\n</table>';
