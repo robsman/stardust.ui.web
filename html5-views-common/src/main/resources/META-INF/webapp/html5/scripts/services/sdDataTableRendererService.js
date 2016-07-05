@@ -17,8 +17,9 @@
 	'use strict';
 
 	angular.module('bpm-common.services').provider('sdDataTableRendererService', function() {
-		this.$get = ['$parse', 'sdLoggerService', 'sgI18nService', function($parse, sdLoggerService, sgI18nService) {
-			var service = new DataTableRendererService($parse, sdLoggerService, sgI18nService);
+		this.$get = ['$parse', 'sdLoggerService', 'sgI18nService','sdMimeTypeService','$filter', 
+		             function($parse, sdLoggerService, sgI18nService, sdMimeTypeService, $filter) {
+			var service = new DataTableRendererService($parse, sdLoggerService, sgI18nService, sdMimeTypeService, $filter);
 			return service;
 		}];
 	});
@@ -26,7 +27,7 @@
 	/*
 	 * 
 	 */
-	function DataTableRendererService($parse, sdLoggerService, sgI18nService) {
+	function DataTableRendererService($parse, sdLoggerService, sgI18nService, sdMimeTypeService, $filter) {
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdDataTableRendererService');
 
 		/*
@@ -73,9 +74,7 @@
 				} else if (data.color === 'WHITE_WARNING') {
 					flag = '<i class="pi pi-flag pi-lg criticality-flag-WHITE_WARNING  spacing-right"></i>';
 				} else {
-					flag = '<i class="pi pi-flag pi-lg  spacing-right criticality-flag-'
-								+ data.color + '">'+
-							'</i>';
+					flag = '<i class="pi pi-flag pi-lg  spacing-right criticality-flag-'+ data.color + '">'+'</i>';
 				}
 				
 				var markup = "";
@@ -83,8 +82,7 @@
 					markup += flag;
 				}
 
-				var html =  getPopover( popOver, markup);
-
+				return getPopover( popOver, markup);
 				return html;
 			}
 
@@ -102,9 +100,9 @@
 					var value = data.label;
 					
 					var popoverContent = '<div>'+
-							'<span ><b>'+ label +'</b></span> : '+
-							'<span>'+value+'</span>' +
-						'</div>';
+											'<span ><b>'+ label +'</b></span> : '+
+											'<span>'+value+'</span>' +
+										 '</div>';
 					return  getPopover( popoverContent, flagMarkUp);	
 					
 				} else {
@@ -114,20 +112,13 @@
 					}
 					
 					var html = '<div class="change-higlight-container">\n'+
-				   	   				'<select class="activity-table-priority-combo">'+
+				   	   				'<select class="activity-table-priority-combo" sda-on-change="activityTableCtrl.registerNewPriority(rowData.activityOID)">'+
 				   	   						options +	
 				   	   				 '</select>\n'+
 			   	   				'</div>';		
 			   	   				
 			   	    return html;    	
 				}
-			}
-			
-
-			function getPopover(popoverContent, markup) {
-				var html = '<div href="#" data-placement="top" data-html="true" data-trigger="hover" data-toggle="popover" '+
-							' data-content="'+ popoverContent + '"' + '>' + markup + '</div>';
-				return html;
 			}
 
 			/*
@@ -149,6 +140,16 @@
 					html =	getPopover(popover ,flagMarkUp );
 				}
 			
+				return html;
+			}
+			
+			
+			/**
+			 * 
+			 */
+			function getPopover(popoverContent, markup) {
+				var html = '<div href="#" data-placement="top" data-html="true" data-trigger="hover" data-toggle="popover" '+
+							' data-content="'+ popoverContent + '"' + '>' + markup + '</div>';
 				return html;
 			}
 
@@ -185,24 +186,25 @@
 				if (obj && obj.isDocument && obj.documents) {
 					for (var indx = 0; indx < obj.documents.length; indx++) {
 						var document = obj.documents[indx];
-						html += '<a href="#" >'
-								+ '<i class="pi-lg spacing-right"> </i> '
-								+ document.name + '</span>' + '</a><br/>';
+						var icon = sdMimeTypeService.getIcon(document.contentType);
+						var documentId = document.uuid;
+						
+						html += '<span class="noWrap">'+
+									'<a href="#" sda-click="activityTableCtrl.openDocumentsView(\''+documentId+'\')">'+
+									 '<i class="pi-lg spacing-right '+icon+'"> </i> '+
+									 document.name+ '</a>'+
+								'</span><br/>';
 					}
 				} else if (obj && obj.isLink) {
-					html = '<a href="' + obj.value + '" title="' + obj.value
-							+ '" target="_blank">' + obj.linkText + '</a>'
+					html = '<a href="' + obj.value + '" title="' + obj.value+ '" target="_blank">' + obj.linkText + 
+							'</a>'
 				} else if (col.dataType === 'DATE') {
-					//TODO format date
-					html =  obj != undefined ? obj.value : ''
+					html =  obj != undefined ? $filter('sdDateFilter')(obj.value) : '';
 				} else {
 					html = obj != undefined ? obj.value : ''
 				}
+				
 				return html;
-				//Filter date 
-				//Link type 
-				// Document List
-				//List
 			}
 
 			/*
@@ -298,7 +300,7 @@
 					var onChangeExpr = element.attr('sda-on-change');
 					if(onChangeExpr !== undefined) {
 						var onChangeParser = null;
-						element.on('change', function(){
+						element.on('change', function($event){
 							if (!onChangeParser) {
 								onChangeParser = $parse(onChangeExpr);
 							}
@@ -362,6 +364,7 @@
 			 * 
 			 */
 			DataTableRenderer.prototype.drawHandler = function(table, scope) {
+				$("[data-toggle=popover]").popover();
 			}
 		}
 	};

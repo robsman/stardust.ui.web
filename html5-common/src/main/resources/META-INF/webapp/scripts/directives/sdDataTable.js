@@ -1471,8 +1471,6 @@
 			theDataTable.on('init.dt', function() {
 				firePaginationEvent();
 			});
-			
-			theDataTable.on( 'draw.dt', handleAfterDrawEvent);
 
 			// Register for pagination events
 			theDataTable.on('page.dt', firePaginationEvent);
@@ -1499,14 +1497,6 @@
 			}
 
 			exposeAPIs();
-		}
-		
-		
-		/*
-		 * 
-		 */
-		function handleAfterDrawEvent() {
-			$("[data-toggle=popover]").popover();
 		}
 
 		/*

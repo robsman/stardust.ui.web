@@ -236,6 +236,13 @@ span.heading{
 	float: left;
 }
 
+.popover {
+    font-size: 11px;
+    border-radius: 3px;
+    color :#464646;
+    border: 1px solid #007d8a;
+}
+
 /*Clear Fix*/
 .cf:before, .cf:after {
 	content: " "; /* 1 */
@@ -244,6 +251,10 @@ span.heading{
 
 .cf:after {
 	clear: both;
+}
+
+.noWrap {
+	white-space: nowrap;
 }
 
 /************** COMMON CLASSES *****************/

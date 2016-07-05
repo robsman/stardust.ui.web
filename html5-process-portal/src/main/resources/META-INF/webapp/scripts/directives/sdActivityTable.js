@@ -24,7 +24,6 @@
 		    'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter', 'sgI18nService',
 		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService', 'sdDataTableRendererService',
 		    ActivityTableDirective ]);
-
     /*
      * 
      */
@@ -1343,11 +1342,33 @@
 		}
 		return false;
 	};
+	
+	/*
+	 * 
+	 */
+	ActivityTableCompiler.prototype.registerNewPriority = function(activityOID) {
+		var self = this;
+		event.stopPropagation();
+		
+		var highlightClazz = "change-highlight";
+		
+		var elem = event.target;
+		var value = parseInt(elem.selectedOptions[0].value);
+		var higlightElem = elem.parentElement;
+		
+		if (self.originalPriorities[activityOID] != value) {
+			self.changedPriorities[activityOID] = value;
+			higlightElem.classList.add(highlightClazz); 
+		} else if (angular.isDefined(self.changedPriorities[activityOID])) {
+			delete self.changedPriorities[activityOID];
+			higlightElem.classList.remove(highlightClazz)
+		}
+	};
 
 	/*
 	 * 
 	 */
-	ActivityTableCompiler.prototype.registerNewPriority = function(activityOID, value) {
+	ActivityTableCompiler.prototype.registerNewPriority1 = function(activityOID, value) {
 		var self = this;
 
 		if (self.originalPriorities[activityOID] != value) {
