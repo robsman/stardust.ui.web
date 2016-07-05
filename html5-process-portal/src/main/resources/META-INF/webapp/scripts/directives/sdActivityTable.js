@@ -505,7 +505,7 @@
 	    	var self = this;
 	    	
 	    	var options = {
-    			title : gI18nService.translate('views-common-messages.common-confirm', 'Confirm'),
+    			title : sgI18nService.translate('views-common-messages.common-confirm', 'Confirm'),
 				dialogActionType : 'YES_NO'
 			};
 		
