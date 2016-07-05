@@ -287,24 +287,6 @@
 						    sda-disabled="!(rowData.relocationEligible)"
 							sda-title="processportal.toolbars-workflowActions-relocation-relocate" class="button-link tbl-tool-link">
 							<i class="pi pi-rotate-right pi-lg"></i>
-							<div sd-dialog sda-modal="true"
-								sda-show="rowData.showRelocationDialog" sda-type="confirm"
-								sda-title="{{i18n('processportal.toolbars-workflowActions-relocation-dialog-title')}}"
-								sda-scope="this"
-								sda-template="plugins/html5-process-portal/partials/views/activityRelocationDialog.html"
-								sda-on-confirm="activityTableCtrl.relocateActivity(rowData)"
-								sda-confirm-action-label="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}"
-								sda-width="400px" sda-height="70px"
-								sda-aid-prefix="RelocationDialog-confirm"></div>
-							<div sd-dialog sda-modal="true"
-								sda-show="rowData.showNoRelocationTargetsDialog" sda-type="alert"
-								sda-title="{{i18n('processportal.toolbars-workflowActions-relocation-dialog-title')}}"
-								sda-scope="this"
-								sda-template="plugins/html5-process-portal/partials/views/activityRelocationDialog.html"
-								sda-confirm-action-label="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}"
-								sda-cancel-action-label="OK"
-								sda-width="400px" sda-height="70px"
-								sda-aid-prefix="RelocationDialog-confirm"></div>
 						</button>
 						<button sda-click="bpmCommon.stopEvent($event); activityTableCtrl.openProcessDocumentsPopover(rowData, $event);" aid="PP-ActivityTable-OpenProcessDocuments"
 						    sda-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
@@ -316,6 +298,24 @@
 			</tr>
 		</tbody>
 	</table>
+
+	<div sd-dialog sda-modal="true" sda-show="activityTableCtrl.showRelocationDialog"
+		sda-type="confirm"
+		sda-title="{{i18n('processportal.toolbars-workflowActions-relocation-dialog-title')}}"
+		sda-scope="this"
+		sda-template="plugins/html5-process-portal/partials/views/activityRelocationDialog.html"
+		sda-on-confirm="activityTableCtrl.relocateActivity()"
+		sda-confirm-action-label="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}"
+		sda-width="400px" sda-height="70px"
+		sda-aid-prefix="RelocationDialog-confirm"></div>
+		
+	<div sd-dialog sda-modal="true"
+		sda-show="activityTableCtrl.showNoRelocationTargetsDialog" sda-type="alert"
+		sda-title="{{i18n('processportal.toolbars-workflowActions-relocation-dialog-title')}}"
+		sda-scope="this"
+		sda-template="plugins/html5-process-portal/partials/views/activityRelocationDialog.html"
+		sda-cancel-action-label="{{i18n('html5-common.common-ok')}}" sda-width="400px" sda-height="70px"
+		sda-aid-prefix="RelocationDialog-confirm"></div>
 
 	<div sd-dialog 
 		sda-show="activityTableCtrl.showCompleteDialog"

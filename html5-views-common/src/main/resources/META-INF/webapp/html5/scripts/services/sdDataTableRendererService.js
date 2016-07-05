@@ -148,7 +148,7 @@
 			 * 
 			 */
 			function getPopover(popoverContent, markup) {
-				var html = '<div href="#" data-placement="top" data-html="true" data-trigger="hover" data-toggle="popover" '+
+				var html = '<div href="#" data-placement="top" data-html="true" data-trigger="hover" data-toggle="worklist-popover" '+
 							' data-content="'+ popoverContent + '"' + '>' + markup + '</div>';
 				return html;
 			}
@@ -201,7 +201,7 @@
 				} else if (col.dataType === 'DATE') {
 					html =  obj != undefined ? $filter('sdDateFilter')(obj.value) : '';
 				} else {
-					html = obj != undefined ? obj.value : ''
+					html = obj != undefined ? '<div class="align-center">'+ obj.value+ '</div>'  : ''
 				}
 				
 				return html;
@@ -364,7 +364,7 @@
 			 * 
 			 */
 			DataTableRenderer.prototype.drawHandler = function(table, scope) {
-				$("[data-toggle=popover]").popover();
+				$("[data-toggle=worklist-popover]").popover();
 			}
 		}
 	};

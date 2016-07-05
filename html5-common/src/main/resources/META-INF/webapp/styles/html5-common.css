@@ -531,3 +531,8 @@ button.close {
 	clear: both;
 	height: 10px;
 }
+
+.align-center {
+	width :100%;
+	text-align: center;
+}
