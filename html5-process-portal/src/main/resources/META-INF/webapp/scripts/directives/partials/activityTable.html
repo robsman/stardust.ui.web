@@ -185,8 +185,8 @@
 					sda-renderer="activityTableCtrl.renderers.criticalityRenderer(col, row, contents)">
 				</td>
 				
-				<td sda-data-type="int" sda-exporter="rowData.priority.label"
-					sda-renderer="activityTableCtrl.renderers.priorityRenderer(col, row, contents)">
+				<td sda-data-type="int" sda-exporter="rowData.priority.label"  
+					sda-renderer="activityTableCtrl.renderers.priorityRenderer(col, row, contents, activityTableCtrl.isWorklistMode(), activityTableCtrl.availablePriorities)">
 				</td>
 				
 				<td style="text-align: center;" sda-exporter="rowData.benchmark.label"

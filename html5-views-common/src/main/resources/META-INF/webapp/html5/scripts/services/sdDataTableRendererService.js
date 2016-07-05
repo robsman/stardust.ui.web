@@ -51,21 +51,103 @@
 			 * 
 			 */
 			DataTableRenderer.prototype.criticalityRenderer = function(col, row, contents) {
-				return row.criticality.label + ' (' + row.criticality.color + ')';
+				
+				var criticality = sgI18nService.translate('views-common-messages.processHistory-activityTable-criticalityTooltip-criticality');
+				var label = sgI18nService.translate('views-common-messages.processHistory-activityTable-criticalityTooltip-value');
+				var data = row.criticality;
+				
+				var popOver = '<div>\n' +
+									'<span><b>' +
+										criticality+
+									 '</b></span> : ' + data.label + '<br/>' +
+									'<span><b>' +
+										label +
+									 '</b></span> : ' + data.value +
+								'</div>';
+
+				var flag = "";
+				if (data.color === 'WHITE') {
+					flag = '<i class="pi pi-flag pi-lg criticality-flag-WHITE spacing-right"></i>';
+				} else if (data.color === 'WHITE_WARNING') {
+					flag = '<i class="pi pi-flag pi-lg criticality-flag-WHITE_WARNING  spacing-right"></i>';
+				} else {
+					flag = '<i class="pi pi-flag pi-lg  spacing-right criticality-flag-'
+								+ data.color + '">'+
+							'</i>';
+				}
+				
+				var markup = "";
+				for (var idx = 0; idx < data.count; idx++) {
+					markup += flag;
+				}
+
+				var html =  getPopover( popOver, markup);
+
+				return html;
 			}
 
 			/*
 			 * 
 			 */
-			DataTableRenderer.prototype.priorityRenderer = function(col, row, contents) {
-				return row.priority.label;
+			DataTableRenderer.prototype.priorityRenderer = function(col, row, contents, isWorklist, availablePrios) {
+				var data = row.priority;
+			
+				if(isWorklist === true) {
+					
+					var styleClass = "pi pi-flag pi-lg priority-flag-"+data.name;
+					var flagMarkUp = '<i class="'+ styleClass +'"></i>'
+					var label = sgI18nService.translate('views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name');
+					var value = data.label;
+					
+					var popoverContent = '<div>'+
+							'<span ><b>'+ label +'</b></span> : '+
+							'<span>'+value+'</span>' +
+						'</div>';
+					return  getPopover( popoverContent, flagMarkUp);	
+					
+				} else {
+					var options ='';
+					for(var indx = 0 ; indx < availablePrios.length; indx++) {
+						options += '<option value="'+availablePrios[indx].value+'">'+availablePrios[indx].label+'</option><br/>';
+					}
+					
+					var html = '<div class="change-higlight-container">\n'+
+				   	   				'<select class="activity-table-priority-combo">'+
+				   	   						options +	
+				   	   				 '</select>\n'+
+			   	   				'</div>';		
+			   	   				
+			   	    return html;    	
+				}
+			}
+			
+
+			function getPopover(popoverContent, markup) {
+				var html = '<div href="#" data-placement="top" data-html="true" data-trigger="hover" data-toggle="popover" '+
+							' data-content="'+ popoverContent + '"' + '>' + markup + '</div>';
+				return html;
 			}
 
 			/*
 			 * 
 			 */
 			DataTableRenderer.prototype.benchmarkRenderer = function(col, row, contents) {
-				return row.benchmark.value;
+				var html = '';
+				var data = row.benchmark;
+				
+				if(data.color !== undefined) {
+					var style = "color:"+data.color;
+					var flagMarkUp = '<i class="pi pi-flag pi-lg" style="'+ style +'"></i>'
+					var label = sgI18nService.translate('views-common-messages.views-processTable-benchmark-tooltip-categoryLabel');
+					var value = data.label;
+					var popover =  '<div>'+
+										'<span ><b>'+ label +'</b></span> : '+
+										'<span>'+value+'</span>' +
+								  '<\/div>',
+					html =	getPopover(popover ,flagMarkUp );
+				}
+			
+				return html;
 			}
 
 			/*
@@ -97,7 +179,28 @@
 			 */
 			DataTableRenderer.prototype.descriptorRenderer = function(col, row, contents) {
 				var obj = row.descriptorValues[col.field];
-				return obj != undefined ? obj.value : '';
+				var html = '';
+				if (obj && obj.isDocument && obj.documents) {
+					for (var indx = 0; indx < obj.documents.length; indx++) {
+						var document = obj.documents[indx];
+						html += '<a href="#" >'
+								+ '<i class="pi-lg spacing-right"> </i> '
+								+ document.name + '</span>' + '</a><br/>';
+					}
+				} else if (obj && obj.isLink) {
+					html = '<a href="' + obj.value + '" title="' + obj.value
+							+ '" target="_blank">' + obj.linkText + '</a>'
+				} else if (col.dataType === 'DATE') {
+					//TODO format date
+					html =  obj != undefined ? obj.value : ''
+				} else {
+					html = obj != undefined ? obj.value : ''
+				}
+				return html;
+				//Filter date 
+				//Link type 
+				// Document List
+				//List
 			}
 
 			/*
