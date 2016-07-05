@@ -1,22 +1,24 @@
-<div ng-if="abortActivityCtrl.abortActivity.isPromptRequired">
-	<div style="margin-left:10px;" ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-headerMsg-prompt')"></div>
-	<div class="abort-activity-form-content">
-		<div class="radio">
-			<input type="radio" name="abortActivity" value="SubHierarchy" ng-model="abortActivityCtrl.abortActivity.scope" /> 
-			<label ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-scope-sub')"></label>
-		</div>
-		<div class="radio">
-			<input type="radio" name="abortActivity" value="RootHierarchy" ng-model="abortActivityCtrl.abortActivity.scope" /> 
-			<label ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-scope-root')"></label>
+<div class="modal-body">
+	<div ng-if="abortActivityCtrl.abortActivity.isPromptRequired">
+		<div style="margin-left:10px;" ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-headerMsg-prompt')"></div>
+		<div class="abort-activity-form-content">
+			<div class="radio">
+				<input type="radio" name="abortActivity" value="SubHierarchy" ng-model="abortActivityCtrl.abortActivity.scope" /> 
+				<label ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-scope-sub')"></label>
+			</div>
+			<div class="radio">
+				<input type="radio" name="abortActivity" value="RootHierarchy" ng-model="abortActivityCtrl.abortActivity.scope" /> 
+				<label ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-scope-root')"></label>
+			</div>
 		</div>
 	</div>
-</div>
-
-<div ng-if="!abortActivityCtrl.abortActivity.isPromptRequired">
-	<div ng-if="abortActivityCtrl.abortActivity.scope == 'SubHierarchy'"
-		ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-headerMsg-sub')"></div>
-	<div ng-if="abortActivityCtrl.abortActivity.scope == 'RootHierarchy'"
-		ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-process-abortProcess-headerMsg-root')"></div>
+	
+	<div ng-if="!abortActivityCtrl.abortActivity.isPromptRequired">
+		<div ng-if="abortActivityCtrl.abortActivity.scope == 'SubHierarchy'"
+			ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-headerMsg-sub')"></div>
+		<div ng-if="abortActivityCtrl.abortActivity.scope == 'RootHierarchy'"
+			ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-process-abortProcess-headerMsg-root')"></div>
+	</div>
 </div>
 
 <div class="modal-footer">
