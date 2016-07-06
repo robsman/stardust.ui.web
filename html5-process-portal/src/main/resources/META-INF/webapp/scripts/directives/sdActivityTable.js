@@ -872,9 +872,11 @@
 			}
 			if (self.relocation.targets.length > 0) {
 				self.showRelocationDialog = true;
+				
 			} else {
 				self.showNoRelocationTargetsDialog = true;
 			}
+			self.safeApply();
 		});
 
 	};
