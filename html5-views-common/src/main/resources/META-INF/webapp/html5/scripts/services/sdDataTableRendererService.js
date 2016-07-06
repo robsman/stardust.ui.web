@@ -30,6 +30,8 @@
 	function DataTableRendererService($parse, sdLoggerService, sgI18nService, sdMimeTypeService, $filter) {
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdDataTableRendererService');
 
+		var templateCache = {};
+
 		/*
 		 * 
 		 */
@@ -46,44 +48,38 @@
 			/*
 			 * 
 			 */
-			DataTableRenderer.prototype.activityNameRenderer = function(col, row, contents) {
-				return contents.replace(new RegExp('__activity.name__', 'g'), row.activity.name || row.activity.id);
+			DataTableRenderer.prototype.defaultRenderer = function(col, row, contents) {
+				return contents;
 			}
 
 			/*
 			 * 
 			 */
 			DataTableRenderer.prototype.criticalityRenderer = function(col, row, contents) {
-				
-				var criticality = sgI18nService.translate('views-common-messages.processHistory-activityTable-criticalityTooltip-criticality');
-				var label = sgI18nService.translate('views-common-messages.processHistory-activityTable-criticalityTooltip-value');
-				var data = row.criticality;
-				
-				var popOver = '<div>\n' +
-									'<span><b>' +
-										criticality+
-									 '</b></span> : ' + data.label + '<br/>' +
-									'<span><b>' +
-										label +
-									 '</b></span> : ' + data.value +
-								'</div>';
+				var flag, popover;
 
-				var flag = "";
-				if (data.color === 'WHITE') {
-					flag = '<i class="pi pi-flag pi-lg criticality-flag-WHITE spacing-right"></i>';
-				} else if (data.color === 'WHITE_WARNING') {
-					flag = '<i class="pi pi-flag pi-lg criticality-flag-WHITE_WARNING  spacing-right"></i>';
+				if (templateCache[col.field] == undefined) {
+					var cellContents = jQuery('<div>' + contents + '</div>');
+					flag = cellContents.find(".flag").html().trim();
+					popover = cellContents.find(".popover").html().trim();
+					
+					templateCache[col.field] = {
+						flag : flag,
+						popover : popover
+					}
 				} else {
-					flag = '<i class="pi pi-flag pi-lg  spacing-right criticality-flag-'+ data.color + '">'+'</i>';
+					flag = templateCache[col.field].flag;
+					popover = templateCache[col.field].popover;
 				}
-				
-				var markup = "";
-				for (var idx = 0; idx < data.count; idx++) {
+
+				var markup = '';
+				for (var i = 0; i < row.criticality.count; i++) {
 					markup += flag;
 				}
 
-				return getPopover( popOver, markup);
-				return html;
+				var popoverId = 'cric-' + row.activityOID;
+
+				return buildPopover(popoverId, popover, markup);
 			}
 
 			/*
@@ -153,6 +149,17 @@
 				return html;
 			}
 
+			/**
+			 * 
+			 */
+			function buildPopover(popoverId, popoverContent, markup) {
+				var popoverSelector = '.' + popoverId;
+				var html = '<div href="#" data-placement="top" data-trigger="hover" data-toggle="table-popover" '+
+							' data-popover-content="'+ popoverSelector + '"' + '>' + markup + '</div>';
+				html += '<div class="' + popoverId + '" style="display: none;">' + popoverContent + '</div>';
+				return html;
+			}
+			
 			/*
 			 * 
 			 */
@@ -223,13 +230,6 @@
 			/*
 			 * 
 			 */
-			DataTableRenderer.prototype.actionsRenderer = function(col, row, contents) {
-				return contents;
-			}
-
-			/*
-			 * 
-			 */
 			DataTableRenderer.prototype.rowHandler = function(row, rowData, dataIndex, scope) {
 				// Binding actions - <a> and <buttons>
 				var actions = row.find("[sda-click]");
@@ -243,16 +243,26 @@
 					bindSelect(selects[i], rowData);
 				}
 
-				// One time processing of sda-if
-				if (row.children().length > 0) {
-					var sdaIfs = row.find("[sda-if]");
-					if (sdaIfs !== undefined && sdaIfs.length > 0) {
-						for (var i = 0; i < sdaIfs.length; i++) {
-							handleSdaIf(sdaIfs[i], rowData);
+				handleAttribute('[sda-if]', handleSdaIf); // One time processing of sda-if
+				handleAttribute('[sda-bind]', handleSdaBind); // One time processing of sda-bind
+				handleAttribute('[sda-bind-i18n]', handleSdaI18n); // One time processing of sda-bind-i18n
+				handleAttribute('[sda-class]', handleSdaAttribute, 'sda-class'); // One time processing of sda-class
+				handleAttribute('[sda-style]', handleSdaAttribute, 'sda-style'); // One time processing of sda-style
+
+				/*
+				 * 
+				 */
+				function handleAttribute(selector, handlerFunc, attr) {
+					if (row.children().length > 0) {
+						var elems = row.find(selector);
+						if (elems !== undefined && elems.length > 0) {
+							for (var i = 0; i < elems.length; i++) {
+								handlerFunc(elems[i], rowData, attr);
+							}
 						}
 					}
 				}
-
+				
 				/*
 				 * 
 				 */
@@ -300,7 +310,8 @@
 				 * 
 				 */
 				function bindSelect(element, rowData) {
-					if (element === undefined) return;
+					if (element === undefined)
+						return;
 
 					element = jQuery(element);
 					var onChangeExpr = element.attr('sda-on-change');
@@ -340,7 +351,8 @@
 				 */
 				function handleSdaIf(element, rowData) {
 					element = jQuery(element);
-					if (element === undefined || element.attr('sda-if') === undefined) return;
+					if (element === undefined || element.attr('sda-if') === undefined)
+						return;
 
 					var value = evaluate(element.attr('sda-if'), rowData);
 					if ( value !== true ) {
@@ -351,17 +363,68 @@
 				/*
 				 * 
 				 */
+				function handleSdaBind(element, rowData) {
+					element = jQuery(element);
+					if (element === undefined || element.attr('sda-bind') === undefined)
+						return;
+
+					var value = evaluate(element.attr('sda-bind'), rowData) || '';
+					element.html(value);
+				}
+
+				/*
+				 * 
+				 */
+				function handleSdaI18n(element, rowData) {
+					element = jQuery(element);
+					if (element === undefined || element.attr('sda-bind-i18n') === undefined)
+						return;
+
+					var key = element.attr('sda-bind-i18n');
+					var value = sgI18nService.translate(key);
+					element.html(value);
+				}
+
+				/*
+				 * 
+				 */
+				function handleSdaAttribute(element, rowData, attr) {
+					element = jQuery(element);
+					if (element === undefined || element.attr(attr) === undefined)
+						return;
+
+					var value = evaluate(element.attr(attr), rowData) || '';
+					var attrKey = attr.substring('sda-'.length);
+					element.attr(attrKey, value);
+				}
+
+				/*
+				 * 
+				 */
 				function evaluate(expr, rowData) {
-					if (!parserCache[expr]) {
-						trace.log('Adding to Parser Cache for Expr: ' + expr);
-						parserCache[expr] = $parse(expr);
+					if (parserCache[expr] == undefined) {
+						try {
+							trace.log('Adding to Parser Cache for expression: ' + expr);
+							parserCache[expr] = $parse(expr);
+						} catch(e) {
+							trace.error('Could not parse expression:' + expr, e);
+							parserCache[expr] = null;
+						}
 					}
 
+					var value = '';
 					var parser = parserCache[expr];
-					var value = parser(scope, {
-						rowData: rowData
-					});
-					
+
+					if (parser) {
+						try {
+							value = parser(scope, {
+								rowData: rowData
+							});
+						} catch (e) {
+							trace.error('Error while running parser function for expression:' + expr, e);
+						}
+					}
+
 					return value;
 				}
 			}
@@ -370,7 +433,17 @@
 			 * 
 			 */
 			DataTableRenderer.prototype.drawHandler = function(table, scope) {
-				$("[data-toggle=worklist-popover]").popover();
+				window.setTimeout(function() {
+					jQuery("[data-toggle=worklist-popover]").popover();
+					
+					jQuery("[data-toggle=table-popover]").popover({
+						html: true,
+						content: function() {
+							var content = jQuery(this).attr('data-popover-content');
+							return jQuery(content).html();
+						}
+					});
+				});
 			}
 		}
 	};

@@ -144,21 +144,21 @@
 			sda-no-angular-draw-handler="activityTableCtrl.renderers.drawHandler(table, scope)">
 			<tr>
 				<td sda-exporter="rowData.activity.name" style="white-space: nowrap;"
-					sda-renderer="activityTableCtrl.renderers.activityNameRenderer(col, row, contents)">
+					sda-renderer="activityTableCtrl.renderers.defaultRenderer(col, row, contents)">
 					<div sda-if="activityTableCtrl.isWorklistMode();"> 
 						<span sda-if="!rowData.isCaseInstance">
 							<a sda-if="rowData.activatable || rowData.showResubmitLink" href="#" aid="PP-ActivityTable-activate"
 							  sda-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);"
-								sda-title="processportal.views-worklistPanel-tooltip-openActivity" class="button-link tbl-tool-link"> 
-								__activity.name__
+								sda-title="processportal.views-worklistPanel-tooltip-openActivity" class="button-link tbl-tool-link"
+								sda-bind="rowData.activity.name">
 							</a>
-							 <span sda-if="!rowData.activatable && !rowData.showResubmitLink">__activity.name__</span> 
+							<span sda-if="!rowData.activatable && !rowData.showResubmitLink" sda-bind="rowData.activity.name"></span> 
 						 </span>
 						 <span sda-if="rowData.isCaseInstance">
-							 <a  href="#" aid="PP-ActivityTable-activate"
-								  sda-click="bpmCommon.stopEvent($event); activityTableCtrl.$openProcessDetails(rowData);"
-									sda-title="processportal.views-worklistPanel-tooltip-openActivity" class="button-link tbl-tool-link"> 
-								__activity.name__
+							 <a href="#" aid="PP-ActivityTable-activate"
+								sda-click="bpmCommon.stopEvent($event); activityTableCtrl.$openProcessDetails(rowData);"
+								sda-title="processportal.views-worklistPanel-tooltip-openActivity" class="button-link tbl-tool-link"
+								sda-bind="rowData.activity.name">
 							</a>
 						 </span>
 						<span sda-if="rowData.qualityAssuranceState"> 
@@ -173,8 +173,8 @@
 					
 					<div sda-if="activityTableCtrl.isActivityTableMode();">
 						<a href="#" sda-click="bpmCommon.stopEvent($event); activityTableCtrl.$openProcessDetails(rowData);" aid="PP-ActivityTable-OpenProcessDetails"
-							sda-title="processportal.toolbars-workflowActions-tooltip-processContextExplorer" class="button-link tbl-tool-link"> 
-							__activity.name__
+							sda-title="processportal.toolbars-workflowActions-tooltip-processContextExplorer" class="button-link tbl-tool-link"
+							sda-bind="rowData.activity.name">
 						</a>
 					</div>
 				</td>
@@ -184,6 +184,16 @@
 				
 				<td sda-data-type="int" sda-exporter="rowData.criticality.label + ' (' + rowData.criticality.value + ')'"
 					sda-renderer="activityTableCtrl.renderers.criticalityRenderer(col, row, contents)">
+					<div class="flag">
+						<i sda-class="'pi pi-flag pi-lg spacing-right criticality-flag-' + rowData.criticality.color"></i>
+					</div>
+					<div class="popover"> 
+						<span><b sda-bind-i18n="views-common-messages.processHistory-activityTable-criticalityTooltip-criticality"></b>: </span>
+						<span sda-bind="rowData.criticality.label"></span>
+						<br/>
+						<span><b sda-bind-i18n="views-common-messages.processHistory-activityTable-criticalityTooltip-value"></b>: </span>
+						<span sda-bind="rowData.criticality.value"></span>
+					</div>
 				</td>
 				
 				<td sda-data-type="int" sda-exporter="rowData.priority.label"  
@@ -238,7 +248,7 @@
 				<td sda-column="TRIVIAL_DATA" sda-renderer="activityTableCtrl.renderers.trivialDataRenderer(col, row, contents)">
 				</td>
 				
-				<td sda-renderer="activityTableCtrl.renderers.actionsRenderer(col, row, contents)">
+				<td sda-renderer="activityTableCtrl.renderers.defaultRenderer(col, row, contents)">
 					<div style="text-align: right; white-space: nowrap;">
 						<button sda-click="bpmCommon.stopEvent($event); activityTableCtrl.$openProcessDetails(rowData);" aid="PP-ActivityTable-OpenProcessDetailsAction"
 							sda-title="processportal.toolbars-workflowActions-tooltip-processContextExplorer" class="button-link tbl-tool-link">
