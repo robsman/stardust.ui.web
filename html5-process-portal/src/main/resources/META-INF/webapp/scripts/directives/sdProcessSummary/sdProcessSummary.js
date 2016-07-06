@@ -67,6 +67,15 @@
       return false;
     }
   }
+  
+  /**
+   * 
+   * @param key
+   * @returns
+   */
+  ProcessSummaryController.prototype.getI18n = function(key) {
+    return this.$scope.$root.sdI18n(key);
+  }  
 
   ProcessSummaryController.prototype.toggleProcessSelection = function(flowElement) {
     var index = this.expandedProcessOids.indexOf(flowElement.processOid_);

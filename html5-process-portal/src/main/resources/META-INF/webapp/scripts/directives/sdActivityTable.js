@@ -419,7 +419,7 @@
 		 * 
 		 */
 		ActivityTableCompiler.prototype.registerRefresh = function(){
-			this.refreshHandler(scopeToUse);
+			this.refreshHandler(this.scope.$parent);
 		};
 
 

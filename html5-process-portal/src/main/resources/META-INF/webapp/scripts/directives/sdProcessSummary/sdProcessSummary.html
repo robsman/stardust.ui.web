@@ -4,13 +4,13 @@
 			<button class="button-link tbl-toolbar-item tbl-tool-link"
 				aid="PP-processSummary-expandAll"
 				ng-click="sdProcessSummaryCtrl.expandAll()"
-				title="{{sdProcessSummaryCtrl.sdI18n('html5-common.common.expandAll')}}">
+				title="{{sdProcessSummaryCtrl.getI18n('html5-common.common.expandAll')}}">
 				<i class="pi pi-table-expand pi-1x"></i>
 			</button>
 			<button class="button-link tbl-toolbar-item tbl-tool-link"
 				aid="PP-processSummary-collapseAll"
 				ng-click="sdProcessSummaryCtrl.collapseAll()"
-				title="{{sdProcessSummaryCtrl.sdI18n('html5-common.common.collapseAll')}}">
+				title="{{sdProcessSummaryCtrl.getI18n('html5-common.common.collapseAll')}}">
 				<i class="pi pi-table-collapse pi-1x"></i>
 			</button>
 		</div>
@@ -19,28 +19,28 @@
 				aid="PP-processSummary-showNotes"
 				class="button-link tbl-toolbar-item tbl-tool-link"
 				ng-click="sdProcessSummaryCtrl.showNotes = !sdProcessSummaryCtrl.showNotes"
-				title="{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.notes.showNotes')}}">
+				title="{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.notes.showNotes')}}">
 				<i class="pi pi-notes-empty pi-1x"></i>
 			</button>
 			<button ng-show="sdProcessSummaryCtrl.showNotes"
 				aid="PP-processSummary-hideNotes"
 				class="button-link tbl-toolbar-item tbl-tool-link"
 				ng-click="sdProcessSummaryCtrl.showNotes = !sdProcessSummaryCtrl.showNotes"
-				title="{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.notes.hideNotes')}}">
+				title="{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.notes.hideNotes')}}">
 				<i class="pi pi-notes pi-1x"></i>
 			</button>
 			<button ng-show="!sdProcessSummaryCtrl.showDocuments"
 				aid="PP-processSummary-showDocs"
 				class="button-link tbl-toolbar-item tbl-tool-link"
 				ng-click="sdProcessSummaryCtrl.showDocuments = !sdProcessSummaryCtrl.showDocuments"
-				title="{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.documents.showDocuments')}}">
+				title="{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.documents.showDocuments')}}">
 				<i class="pi pi-text pi-1x"></i>
 			</button>
 			<button ng-show="sdProcessSummaryCtrl.showDocuments"
 				aid="PP-processSummary-hideDocs"
 				class="button-link tbl-toolbar-item tbl-tool-link"
 				ng-click="sdProcessSummaryCtrl.showDocuments = !sdProcessSummaryCtrl.showDocuments"
-				title="{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.documents.hideDocuments')}}">
+				title="{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.documents.hideDocuments')}}">
 				<i class="pi pi-invert pi-1x"></i>
 			</button>
 		</div>
@@ -48,7 +48,7 @@
 			<button class="button-link tbl-toolbar-item tbl-tool-link"
 				aid="PP-processSummary-refresh"
 				ng-click="sdProcessSummaryCtrl.refresh()"
-				title="{{sdProcessSummaryCtrl.sdI18n('html5-common.common.refresh')}}">
+				title="{{sdProcessSummaryCtrl.getI18n('html5-common.common.refresh')}}">
 				<i class="pi pi-refresh pi-1x"></i>
 			</button>
 		</div>
@@ -63,7 +63,7 @@
 						sd-state-display="flowElement.colorIndex_"
 						class="process-summary-control"><div
 							aid="PP-processSummary-showProcessHistory"
-							title="{{sdProcessSummaryCtrl.sdI18n('html5-common.common.expand')}}"
+							title="{{sdProcessSummaryCtrl.getI18n('html5-common.common.expand')}}"
 							ng-click="sdProcessSummaryCtrl.toggleProcessSelection(flowElement)">
 							<i class="pi pi-table-expand pi-1x"></i>
 						</div></td>
@@ -72,7 +72,7 @@
 						sd-state-display="flowElement.colorIndex_"
 						class="process-summary-control"><div
 							aid="PP-processSummary-hideProcessHistory"
-							title="{{sdProcessSummaryCtrl.sdI18n('html5-common.common.collapse')}}"
+							title="{{sdProcessSummaryCtrl.getI18n('html5-common.common.collapse')}}"
 							ng-show="{{flowElement.type_=='Process'}}"
 							ng-click="sdProcessSummaryCtrl.toggleProcessSelection(flowElement)">
 							<i class="pi pi-table-collapse pi-1x"></i>
@@ -89,14 +89,14 @@
 					</td>
 					<td width="60%"
 						class="process-summary-border-bottom"
-						ng-show="{{flowElement.type_=='Process'}}"><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.startTime')}}:
+						ng-show="{{flowElement.type_=='Process'}}"><span>{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.startTime')}}:
 							{{flowElement.startTime | sdDateTimeFilter}}</span> <span
 						ng-show="{{flowElement.status.value == 2}}"
-						style="margin-left: 5px">{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.endTime')}}:
+						style="margin-left: 5px">{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.endTime')}}:
 							{{flowElement.lastModification | sdDateTimeFilter}}</span> <span
 						ng-show="{{flowElement.status.value != 2}}"
-						style="margin-left: 5px">{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.endTime')}}:
-							{{sdProcessSummaryCtrl.sdI18n('html5-common.common.na')}}</span></td>
+						style="margin-left: 5px">{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.endTime')}}:
+							{{sdProcessSummaryCtrl.getI18n('html5-common.common.na')}}</span></td>
 					<td colspan="5" ng-show="{{flowElement.type_=='Activity'}}">
 						<table width="100%">
 							<tbody>
@@ -108,7 +108,7 @@
 										<table width="100%" class="process-summary-border-bottom">
 											<tr
 												ng-class="{highlightActivity: sdProcessSummaryCtrl.currentActivityInstanceOid == flowElement.oid_}"
-												title="{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.showActivityHistory')}}"
+												title="{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.showActivityHistory')}}"
 												ng-click="flowElement.expanded_=!flowElement.expanded_"
 												aid="PP-processSummary-showHideActivityHistory"
 												class="process-summary-control">
@@ -121,23 +121,23 @@
 														{{flowElement.name_}} ({{flowElement.oid_}})</span></td>
 												<td width="10%"><span>{{flowElement.status.label}}</span>
 												</td>
-												<td width="60%"><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.startTime')}}:
+												<td width="60%"><span>{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.startTime')}}:
 														{{flowElement.startTime | sdDateTimeFilter}}</span> <span
 													ng-show="{{flowElement.status.value == 2}}"
-													style="margin-left: 5px">{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.endTime')}}:
+													style="margin-left: 5px">{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.endTime')}}:
 														{{flowElement.lastModification | sdDateTimeFilter}}</span> <span
 													ng-show="{{flowElement.status.value != 2}}"
-													style="margin-left: 5px">{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.endTime')}}:
-														{{sdProcessSummaryCtrl.sdI18n('html5-common.common.na')}}</span></td>
+													style="margin-left: 5px">{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.endTime')}}:
+														{{sdProcessSummaryCtrl.getI18n('html5-common.common.na')}}</span></td>
 											</tr>
 											<tr
 												ng-show="flowElement.expanded_ && sdProcessSummaryCtrl.showNotes && flowElement.notes_">
 												<td colspan="6">
 													<table width="95%" class="process-summary-notes">
 														<tr style="background-color: #e5e5e5">
-															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.notes.label')}}</span></th>
-															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.notes.addedBy')}}</span></th>
-															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-common.common.date')}}</span></th>
+															<th><span>{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.notes.label')}}</span></th>
+															<th><span>{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.notes.addedBy')}}</span></th>
+															<th><span>{{sdProcessSummaryCtrl.getI18n('html5-common.common.date')}}</span></th>
 														</tr>
 														<tr ng-repeat="note in flowElement.notes_"
 															sd-state-display="$index"
@@ -157,9 +157,9 @@
 												<td colspan="6">
 													<table width="95%" class="process-summary-notes">
 														<tr style="background-color: #e5e5e5">
-															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.documents.label')}}</span></th>
-															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.documents.uploadedBy')}}</span></th>
-															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-common.common.date')}}</span></th>
+															<th><span>{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.documents.label')}}</span></th>
+															<th><span>{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.documents.uploadedBy')}}</span></th>
+															<th><span>{{sdProcessSummaryCtrl.getI18n('html5-common.common.date')}}</span></th>
 														</tr>
 														<tr ng-repeat="document in flowElement.documents"
 															sd-state-display="$index"
@@ -182,9 +182,9 @@
 												<td colspan="4">
 													<table width="95%" class="process-summary-notes">
 														<tr style="background-color: #e5e5e5">
-															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.checklist.label')}}</span></th>
-															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.checklist.performedBy')}}</span></th>
-															<th><span>{{sdProcessSummaryCtrl.sdI18n('html5-process-portal.view.processsummary.checklist.maker')}}</span></th>
+															<th><span>{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.checklist.label')}}</span></th>
+															<th><span>{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.checklist.performedBy')}}</span></th>
+															<th><span>{{sdProcessSummaryCtrl.getI18n('html5-process-portal.view.processsummary.checklist.maker')}}</span></th>
 														</tr>
 														<tr>
 															<td style="width: 20%"><span
