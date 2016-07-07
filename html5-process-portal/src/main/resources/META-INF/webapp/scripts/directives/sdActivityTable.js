@@ -1414,7 +1414,9 @@
 			});
 			self.updatePriorityNotification.visible = true;
 			self.updatePriorityNotification.result = successResult;
-			self.refresh();
+			$timeout(function() {
+				self.refresh();
+			});
 
 		}, function(failureResult) {
 			trace.error("Error occured in updating the priorities : ", failureResult);
