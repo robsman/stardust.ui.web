@@ -74,7 +74,11 @@
    * @returns
    */
   ProcessSummaryController.prototype.getI18n = function(key) {
-    return this.$scope.$root.sdI18n(key);
+    if (this.$scope.$root.sdI18n) {
+      return this.$scope.$root.sdI18n(key);
+    } else {
+      return key;
+    }
   }  
 
   ProcessSummaryController.prototype.toggleProcessSelection = function(flowElement) {
