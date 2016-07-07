@@ -56,22 +56,11 @@
 			 * 
 			 */
 			ProcessActivityTableRenderer.prototype.criticalityRenderer = function(col, row, contents) {
-				var flag, popover;
+				var flagPopoverTemplate = getFlagPopoverTemplate(col, contents);
 
-				if (templateCache[col.field] == undefined) {
-					var cellContents = jQuery('<div>' + contents + '</div>');
-					flag = cellContents.find(".flag").html().trim();
-					popover = cellContents.find(".popover").html().trim();
-					
-					templateCache[col.field] = {
-						flag : flag,
-						popover : popover
-					}
-				} else {
-					flag = templateCache[col.field].flag;
-					popover = templateCache[col.field].popover;
-				}
-
+				var flag = flagPopoverTemplate.flag;
+				var popover = flagPopoverTemplate.popover;
+				
 				var markup = '';
 				for (var i = 0; i < row.criticality.count; i++) {
 					markup += flag;
@@ -122,24 +111,38 @@
 			 */
 			ProcessActivityTableRenderer.prototype.benchmarkRenderer = function(col, row, contents) {
 				var html = '';
-				var data = row.benchmark;
-				
-				if(data.color !== undefined) {
-					var style = "color:"+data.color;
-					var flagMarkUp = '<i class="pi pi-flag pi-lg" style="'+ style +'"></i>'
-					var label = sgI18nService.translate('views-common-messages.views-processTable-benchmark-tooltip-categoryLabel');
-					var value = data.label;
-					var popover =  '<div>'+
-										'<span ><b>'+ label +'</b></span> : '+
-										'<span>'+value+'</span>' +
-								  '<\/div>',
-					html =	getPopover(popover ,flagMarkUp );
+
+				if(row.benchmark != undefined && row.benchmark.color != undefined) {
+					var flagPopoverTemplate = getFlagPopoverTemplate(col, contents);
+
+					var flag = flagPopoverTemplate.flag;
+					var popover = flagPopoverTemplate.popover;
+					var popoverId = 'bm-' + row.activityOID;
+
+					html = buildPopover(popoverId, popover, flag);
 				}
 			
 				return html;
 			}
 			
-			
+			/*
+			 * 
+			 */
+			function getFlagPopoverTemplate(col, contents) {
+				if (templateCache[col.field] == undefined) {
+					var cellContents = jQuery('<div>' + contents + '</div>');
+					var flag = cellContents.find('.flag').html().trim();
+					var popover = cellContents.find('.popover').html().trim();
+					
+					templateCache[col.field] = {
+						flag : flag,
+						popover : popover
+					}
+				}
+
+				return templateCache[col.field];
+			}
+
 			/**
 			 * 
 			 */

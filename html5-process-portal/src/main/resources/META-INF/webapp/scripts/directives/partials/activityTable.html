@@ -202,6 +202,13 @@
 				
 				<td style="text-align: center;" sda-exporter="rowData.benchmark.label"
 					sda-renderer="activityTableCtrl.renderers.benchmarkRenderer(col, row, contents)">
+					<div class="flag">
+						<i class="pi pi-flag pi-lg" sda-style="'color: ' + rowData.benchmark.color"></i>						
+					</div>
+					<div class="popover"> 
+						<span><b sda-bind-i18n="views-common-messages.views-processTable-benchmark-tooltip-categoryLabel"></b>: </span>
+						<span sda-bind="rowData.benchmark.label"></span>
+					</div>
 				</td>
 
 				<td sda-exporter="activityTableCtrl.getDescriptorExportText(rowData.descriptorValues)"
