@@ -30,8 +30,6 @@
 	function DataTableRendererService($parse, sdLoggerService, sgI18nService, sdMimeTypeService, $filter) {
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdDataTableRendererService');
 
-		var templateCache = {};
-
 		/*
 		 * 
 		 */
@@ -44,6 +42,7 @@
 		 */
 		function DataTableRenderer() {
 			var parserCache = {};
+			var templateCache = {};
 
 			/*
 			 * 
