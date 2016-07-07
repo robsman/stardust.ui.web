@@ -1327,7 +1327,8 @@
 			});
 			params.columns = colNames;
 
-			remoteModeLastParams = params;
+			remoteModeLastParams = params;	
+			theTable.find('> tbody').html('<span class="pi pi-lg pi-spin pi-spinner"></span>');
 			fetchData(params).then(function(result) {
 				try {
 					validateData(result, pageSize);

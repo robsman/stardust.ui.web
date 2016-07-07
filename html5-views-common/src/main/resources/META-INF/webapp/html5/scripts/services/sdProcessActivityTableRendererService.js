@@ -214,9 +214,10 @@
 				var content = '';
 				
 				if(row.dataMappings && row.dataMappings.length > 0) {
-					content = '<div selectorId="'+selectorUUID+'AngularCompile" sda-hover="#'+selectorUUID+row.activityOID+'-editFlag">\n';
-					var indicator = '<i class="pi pi-edit pi-lg" id="'+selectorUUID+row.activityOID+'-editFlag" style="display:none;"> </i>';
-					content += '<div style="width:10px;height:15px" class="right">'+indicator +'</div>\n';
+					content = '<div class="tma-row tma-read-only" selectorId="AngularCompile" sda-hover="#'+selectorUUID+row.activityOID+'-editFlag">\n';
+					
+					var indicator = '<i class="pi tma-edit-flag pi-edit pi-lg" id="'+selectorUUID+row.activityOID+'-editFlag" style="display:none;"> </i>';
+					content += '<div class="right">'+indicator +'</div>\n';
 					content += '<table><tbody>';
 					
 					for(var i=0; i < row.dataMappings.length; i++) {
@@ -265,7 +266,7 @@
 			 */
 			ProcessActivityTableRenderer.prototype.rowHandler = function(row, rowData, dataIndex, scope) {
 				
-				var dataMappings = row.find('[selectorId="'+selectorUUID+'AngularCompile"]');
+				var dataMappings = row.find('[selectorId="AngularCompile"]');
 				
 				
 				if(dataMappings !== undefined) {

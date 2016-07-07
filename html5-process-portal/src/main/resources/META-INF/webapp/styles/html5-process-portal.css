@@ -271,4 +271,13 @@ padding : 5px;;
 	background-color: white !important;
 } 
 
+.tma-edit-flag {
+	z-index: 100;
+	position :absolute;
+	display: none;
+} 
+
+.tma-read-only:hover{
+	cursor: hand; cursor: pointer;
+}
 
