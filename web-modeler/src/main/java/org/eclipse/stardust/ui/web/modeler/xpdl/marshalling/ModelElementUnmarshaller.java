@@ -845,6 +845,16 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          AttributeUtil.setAttribute(dataMapping, PredefinedConstants.MANDATORY_DATA_MAPPING, null);
       }
+      
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATAMAPPING_CONSTANT_TYPE)
+         && hasNotJsonNull(dataMappingJson, ModelerConstants.DATAMAPPING_CONSTANT_VALUE))
+      {
+         String constantType = dataMappingJson.get(ModelerConstants.DATAMAPPING_CONSTANT_TYPE).getAsString();
+         String constantValue = dataMappingJson.get(ModelerConstants.DATAMAPPING_CONSTANT_VALUE).getAsString();     
+         String constantExpression = "(" + constantType + ") " + constantValue; 
+         
+         dataMapping.setDataPath(constantExpression);
+      }
    }
 
    /**

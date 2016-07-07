@@ -36,6 +36,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
@@ -411,21 +412,20 @@ public class ConnectionCommandHandler
             defaultPool.getDataMappingConnection().remove(dataMappingConnection);
          }
       }
-
    }
 
-
    @OnCommand(commandId = "datamapping.create")
-   public void createDatamapping(ModelType model, DataMappingConnectionType dataFlowConnection,
+   public void createDatamapping(ModelType model, EObject target,
          JsonObject request)
    {
-      DataMappingType dataMapping = createDataMapping(dataFlowConnection, request);
-      modelService().uuidMapper().map(dataMapping);
+      DataMappingType dataMapping = createDataMapping(target, request);
+      String uuid = modelService().uuidMapper().map(dataMapping);
+      AttributeUtil.setAttribute(dataMapping, "carnot:model:uuid", uuid);      
    }
 
    @OnCommand(commandId = "datamapping.delete")
    public void deleteDatamapping(ModelType model,
-         DataMappingConnectionType dataFlowConnection, JsonObject request)
+         EObject targetElement, JsonObject request)
    {
       if (request.has(ModelerConstants.UUID_PROPERTY))
       {
@@ -441,6 +441,7 @@ public class ConnectionCommandHandler
                      .uuidMapper().getEObject(uuid);
                ActivityType activity = ModelUtils.findContainingActivity(dataMapping);
                activity.getDataMapping().remove(dataMapping);
+               modelService().uuidMapper().unmap(dataMapping, false);               
             }
          }
       }
@@ -625,22 +626,31 @@ public class ConnectionCommandHandler
    * @param name
    * @return
    */
-  private DataMappingType createDataMapping(DataMappingConnectionType dataFlowConnection, JsonObject dataMappingJson)
+  private DataMappingType createDataMapping(EObject target, JsonObject dataMappingJson)
   {
      DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
-     DataType data = dataFlowConnection.getDataSymbol().getData();
-     ActivityType activity = dataFlowConnection.getActivitySymbol().getActivity();
+     ActivityType activity = null;
+     DataType data = null;
+     if(target instanceof ActivityType)
+     {
+        activity = (ActivityType) target;
+        
+     }
+     else
+     {
+        activity = ((DataMappingConnectionType) target).getActivitySymbol().getActivity();
+        data = ((DataMappingConnectionType) target).getDataSymbol().getData();
+     }
 
      if (hasNotJsonNull(dataMappingJson, ModelerConstants.ID_PROPERTY))
      {
         dataMapping.setId(dataMappingJson.get(ModelerConstants.ID_PROPERTY)
               .getAsString());
      }
-     else
+     else if(data != null)
      {
            dataMapping.setId(data.getId());
            dataMapping.setName(data.getId());
-
      }
 
      if (hasNotJsonNull(dataMappingJson, ModelerConstants.NAME_PROPERTY))
@@ -648,7 +658,7 @@ public class ConnectionCommandHandler
         dataMapping.setName(dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
               .getAsString());
      }
-     else
+     else if(data != null)
      {
         dataMapping.setId(data.getId());
         dataMapping.setName(data.getId());
@@ -669,6 +679,7 @@ public class ConnectionCommandHandler
                  ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
         }
      }
+     
      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_PATH_PROPERTY))
      {
         if (dataMappingJson.get(ModelerConstants.ACCESS_POINT_PATH_PROPERTY)
@@ -695,9 +706,23 @@ public class ConnectionCommandHandler
               .getAsString());
      }
 
-     dataMapping.setData(data);
+     if(data != null)
+     {
+        dataMapping.setData(data);
+        data.getDataMappings().add(dataMapping);        
+     }
+     
+     if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATAMAPPING_CONSTANT_TYPE)
+           && hasNotJsonNull(dataMappingJson, ModelerConstants.DATAMAPPING_CONSTANT_VALUE))
+     {
+           String constantType = dataMappingJson.get(ModelerConstants.DATAMAPPING_CONSTANT_TYPE).getAsString();
+           String constantValue = dataMappingJson.get(ModelerConstants.DATAMAPPING_CONSTANT_VALUE).getAsString();     
+           String constantExpression = "(" + constantType + ") " + constantValue; 
+           
+           dataMapping.setDataPath(constantExpression);
+     }
+     
      activity.getDataMapping().add(dataMapping);
-     data.getDataMappings().add(dataMapping);
 
      return dataMapping;
   }
