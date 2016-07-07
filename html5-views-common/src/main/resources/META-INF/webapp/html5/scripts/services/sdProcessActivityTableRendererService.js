@@ -56,10 +56,10 @@
 			 * 
 			 */
 			ProcessActivityTableRenderer.prototype.criticalityRenderer = function(col, row, contents) {
-				var flagPopoverTemplate = getFlagPopoverTemplate(col, contents);
+				var cellTemplate = getCellTemplateMarkup(col, contents, ['flag', 'popover']);
 
-				var flag = flagPopoverTemplate.flag;
-				var popover = flagPopoverTemplate.popover;
+				var flag = cellTemplate.flag;
+				var popover = cellTemplate.popover;
 				
 				var markup = '';
 				for (var i = 0; i < row.criticality.count; i++) {
@@ -75,34 +75,28 @@
 			 * 
 			 */
 			ProcessActivityTableRenderer.prototype.priorityRenderer = function(col, row, contents, isWorklist, availablePrios) {
-				var data = row.priority;
-			
-				if(isWorklist === true) {
-					
-					var styleClass = "pi pi-flag pi-lg priority-flag-"+data.name;
-					var flagMarkUp = '<i class="'+ styleClass +'"></i>'
-					var label = sgI18nService.translate('views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name');
-					var value = data.label;
-					
-					var popoverContent = '<div>'+
-											'<span ><b>'+ label +'</b></span> : '+
-											'<span>'+value+'</span>' +
-										 '</div>';
-					return  getPopover( popoverContent, flagMarkUp);	
-					
+				var cellTemplate = getCellTemplateMarkup(col, contents, ['flag', 'popover', 'editMode']);
+
+				if (isWorklist === true) {
+					var flag = cellTemplate.flag;
+					var popover = cellTemplate.popover;
+					var popoverId = 'prio-' + row.activityOID;
+
+					return buildPopover(popoverId, popover, flag);
 				} else {
-					var options ='';
-					for(var indx = 0 ; indx < availablePrios.length; indx++) {
-						options += '<option value="'+availablePrios[indx].value+'">'+availablePrios[indx].label+'</option><br/>';
-					}
+					var options = '';
 					
-					var html = '<div class="change-higlight-container">\n'+
-				   	   				'<select class="activity-table-priority-combo" sda-on-change="activityTableCtrl.registerNewPriority(rowData.activityOID)">'+
-				   	   						options +	
-				   	   				 '</select>\n'+
-			   	   				'</div>';		
-			   	   				
-			   	    return html;    	
+					for (var i = 0; i < availablePrios.length; i++) {
+						if (availablePrios[i].value == row.priority.value) {
+							options += '<option selected="selected" value="' + availablePrios[i].value + '">'
+									+ availablePrios[i].label + '</option>\n';
+						} else {
+							options += '<option value="' + availablePrios[i].value + '">' + availablePrios[i].label
+									+ '</option>\n';
+						}
+					}
+
+					return cellTemplate.editMode.replace('__OPTIONS__', options);
 				}
 			}
 
@@ -113,10 +107,10 @@
 				var html = '';
 
 				if(row.benchmark != undefined && row.benchmark.color != undefined) {
-					var flagPopoverTemplate = getFlagPopoverTemplate(col, contents);
+					var cellTemplate = getCellTemplateMarkup(col, contents, ['flag', 'popover']);
 
-					var flag = flagPopoverTemplate.flag;
-					var popover = flagPopoverTemplate.popover;
+					var flag = cellTemplate.flag;
+					var popover = cellTemplate.popover;
 					var popoverId = 'bm-' + row.activityOID;
 
 					html = buildPopover(popoverId, popover, flag);
@@ -128,28 +122,18 @@
 			/*
 			 * 
 			 */
-			function getFlagPopoverTemplate(col, contents) {
+			function getCellTemplateMarkup(col, contents, childClasses) {
 				if (templateCache[col.field] == undefined) {
+					templateCache[col.field] = {};
+
 					var cellContents = jQuery('<div>' + contents + '</div>');
-					var flag = cellContents.find('.flag').html().trim();
-					var popover = cellContents.find('.popover').html().trim();
-					
-					templateCache[col.field] = {
-						flag : flag,
-						popover : popover
+					for(var i = 0; i < childClasses.length; i++) {
+						var html = cellContents.find('.' + childClasses[i]).html().trim();
+						templateCache[col.field][childClasses[i]] = html;
 					}
 				}
 
 				return templateCache[col.field];
-			}
-
-			/**
-			 * 
-			 */
-			function getPopover(popoverContent, markup) {
-				var html = '<div href="#" data-placement="top" data-html="true" data-trigger="hover" data-toggle="worklist-popover" '+
-							' data-content="'+ popoverContent + '"' + '>' + markup + '</div>';
-				return html;
 			}
 
 			/**
@@ -357,10 +341,9 @@
 			 * 
 			 */
 			ProcessActivityTableRenderer.prototype.drawHandler = function(table, scope) {
+				// Timeout makes loading of page appear faster
 				window.setTimeout(function() {
-					jQuery("[data-toggle=worklist-popover]").popover();
-					
-					jQuery("[data-toggle=table-popover]").popover({
+					jQuery("[data-toggle=table-popover]", table).popover({
 						html: true,
 						content: function() {
 							var content = jQuery(this).attr('data-popover-content');

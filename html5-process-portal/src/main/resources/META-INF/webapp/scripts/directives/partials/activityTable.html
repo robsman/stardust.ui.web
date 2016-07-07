@@ -198,6 +198,20 @@
 				
 				<td sda-data-type="int" sda-exporter="rowData.priority.label"  
 					sda-renderer="activityTableCtrl.renderers.priorityRenderer(col, row, contents, activityTableCtrl.isWorklistMode(), activityTableCtrl.availablePriorities)">
+					<div class="flag">
+						<i sda-class="'pi pi-flag pi-lg priority-flag-' + rowData.priority.name"></i>						
+					</div>
+					<div class="popover"> 
+						<span><b sda-bind-i18n="views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name"></b>: </span>
+						<span sda-bind="rowData.priority.label"></span>
+					</div>
+					<div class="editMode">
+						<div class="change-higlight-container">
+							<select class="activity-table-priority-combo" sda-on-change="activityTableCtrl.registerNewPriority(rowData.activityOID)">
+				   	   			__OPTIONS__	
+				   	   		</select>
+			   	   		</div>
+					</div>
 				</td>
 				
 				<td style="text-align: center;" sda-exporter="rowData.benchmark.label"
