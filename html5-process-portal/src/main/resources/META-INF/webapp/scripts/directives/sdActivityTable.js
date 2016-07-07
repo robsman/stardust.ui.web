@@ -22,7 +22,7 @@
 	    [ '$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService',
 		    'sdWorklistService', 'sdActivityInstanceService', 'sdProcessInstanceService', 'sdProcessDefinitionService',
 		    'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter', 'sgI18nService',
-		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService', 'sdDataTableRendererService',
+		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService', 'sdProcessActivityTableRendererService',
 		    ActivityTableDirective ]);
     /*
      * 
@@ -30,7 +30,7 @@
     function ActivityTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService,
 	    sdWorklistService, sdActivityInstanceService, sdProcessInstanceService, sdProcessDefinitionService, sdCriticalityService,
 	    sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout, sdLoggedInUserService,
-	    sdDialogService, sdCommonViewUtilService, sdDataTableRendererService) {
+	    sdDialogService, sdCommonViewUtilService, sdProcessActivityTableRendererService) {
 
 	var trace = sdLoggerService.getLogger('bpm-common.sdActivityTable');
 
@@ -141,7 +141,7 @@
 			sdUtilService.safeApply(scope);
 		};
 
-		this.renderers = sdDataTableRendererService.create();
+		this.renderers = sdProcessActivityTableRendererService.create();
 		
 		// Expose controller as a whole on to scope
 		scope.activityTableCtrl = this;
