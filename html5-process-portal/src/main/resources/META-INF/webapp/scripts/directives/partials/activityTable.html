@@ -246,6 +246,11 @@
 				</td>
 				
 				<td sda-column="TRIVIAL_DATA" sda-renderer="activityTableCtrl.renderers.trivialDataRenderer(col, row, contents)">
+					<div ng-if="rowData.dataMappings">
+							<div sd-trivial-manual-activity-data sda-data-mappings="rowData.dataMappings"
+								sda-out-data="rowData.inOutData" sda-on-change="activityTableCtrl.changeFormStatus(rowData)">
+							</div>
+					</div>
 				</td>
 				
 				<td sda-renderer="activityTableCtrl.renderers.defaultRenderer(col, row, contents)">

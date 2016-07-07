@@ -358,11 +358,14 @@
 	    /**
 	     * 
 	     */
-	    ActivityTableCompiler.prototype.changeFormStatus = function(rowId) {
+	    ActivityTableCompiler.prototype.changeFormStatus = function(rowData) {
+	    	var rowId = rowData.activityOID;
 	    	var self = this;
 	    	if (this.dirtyDataForms.indexOf(rowId) == -1) {
 	    		this.dirtyDataForms.push(rowId);
 	    	}
+	    	
+	    	rowData.isDataDirty = true;
 
 	    	// Auto select dirty rows
 	    	var selectedRows = self.dataTable.getSelection();
@@ -1242,6 +1245,8 @@
 				}
 			}
 		}
+		
+		self.safeApply();
 	};
 
 	/*

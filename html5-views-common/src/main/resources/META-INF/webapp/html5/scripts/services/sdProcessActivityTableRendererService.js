@@ -17,9 +17,9 @@
 	'use strict';
 
 	angular.module('bpm-common.services').provider('sdProcessActivityTableRendererService', function() {
-		this.$get = ['$parse', 'sdLoggerService', 'sgI18nService','sdMimeTypeService','$filter', 'sdMarkupCompilerService',
-		             function($parse, sdLoggerService, sgI18nService, sdMimeTypeService, $filter, sdMarkupCompilerService) {
-			var service = new ProcessActivityTableRendererService($parse, sdLoggerService, sgI18nService, sdMimeTypeService, $filter, sdMarkupCompilerService);
+		this.$get = ['$parse', '$compile','$filter', 'sdLoggerService', 'sgI18nService','sdMimeTypeService', 'sdMarkupCompilerService', 'sdUtilService',
+		             function($parse, $compile, $filter, sdLoggerService, sgI18nService, sdMimeTypeService, sdMarkupCompilerService, sdUtilService) {
+			var service = new ProcessActivityTableRendererService($parse, $compile, $filter, sdLoggerService, sgI18nService, sdMimeTypeService, sdMarkupCompilerService, sdUtilService);
 			return service;
 		}];
 	});
@@ -27,9 +27,9 @@
 	/*
 	 * 
 	 */
-	function ProcessActivityTableRendererService($parse, sdLoggerService, sgI18nService, sdMimeTypeService, $filter, sdMarkupCompilerService) {
+	function ProcessActivityTableRendererService($parse, $compile, $filter, sdLoggerService, sgI18nService, sdMimeTypeService, sdMarkupCompilerService, sdUtilService) {
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdProcessActivityTableRendererService');
-
+		var templateCache = {};
 		/*
 		 * 
 		 */
@@ -41,8 +41,9 @@
 		 * 
 		 */
 		function ProcessActivityTableRenderer() {
-			var templateCache = {};
 			var markupCompiler = sdMarkupCompilerService.create();
+			var selectorUUID = "AT-"+(Math.floor(Math.random() * 9000) + 1000);
+			var currentDataMapping;
 
 			/*
 			 * 
@@ -219,17 +220,133 @@
 				return html;
 			}
 
+			/**
+			 * 
+			 */
+			var createDataMappingContent = function(row) {
+				var content = '';
+				
+				if(row.dataMappings && row.dataMappings.length > 0) {
+					content = '<div selectorId="'+selectorUUID+'AngularCompile" sda-hover="#'+selectorUUID+row.activityOID+'-editFlag">\n';
+					var indicator = '<i class="pi pi-edit pi-lg" id="'+selectorUUID+row.activityOID+'-editFlag" style="display:none;"> </i>';
+					content += '<div style="width:10px;height:15px" class="right">'+indicator +'</div>\n';
+					content += '<table><tbody>';
+					
+					for(var i=0; i < row.dataMappings.length; i++) {
+						var item = row.dataMappings[i];
+						var value = row.inOutData[item.id] || '';
+						switch(item.typeName) {	
+						case 'java.util.Date':  
+							value = $filter('sdDateFilter')(value); 
+							break;
+						case 'date':  
+							value = $filter('sdTimeFilter')(value);
+							break;	
+						case 'java.lang.Boolean':  
+							value = !!value; 
+							break;
+						}
+						content += '<tr>';
+						content += '<td>'+item.name+'</td>';
+						content += '<td style="width:5px">:</td>';
+						content += '<td style="white-space: nowrap;">'+value+'</td>';
+						content += '</tr>';
+					}
+					content += '</tbody></table></div>';
+				}
+				return content;
+			}
+			
+			
 			/*
 			 * 
 			 */
 			ProcessActivityTableRenderer.prototype.trivialDataRenderer = function(col, row, contents) {
-				return 'trivialDataRenderer';
+				if(templateCache['trivialManual'] === undefined) {
+					templateCache['trivialManual'] = contents;
+				}
+				
+				if(currentDataMapping) {
+					currentDataMapping = undefined;
+				}
+				return createDataMappingContent(row);
 			}
+
 
 			/*
 			 * 
 			 */
 			ProcessActivityTableRenderer.prototype.rowHandler = function(row, rowData, dataIndex, scope) {
+				
+				var dataMappings = row.find('[selectorId="'+selectorUUID+'AngularCompile"]');
+				
+				
+				if(dataMappings !== undefined) {
+					bindDataMappingHandler(dataMappings, rowData, scope, $compile);
+					// Bind Hover
+					var hover = dataMappings.attr('sda-hover');
+					
+					if (hover !== undefined) {
+						dataMappings.on('mouseover', function ($event) {
+							dataMappings.find(hover).show();
+						});
+						dataMappings.on('mouseout', function ($event) {
+							dataMappings.find(hover).hide();
+						});
+					}
+				}
+			
+				function bindDataMappingHandler (element, rowData, scope, $compile) {
+					
+					element.on('click', renderOnClick);
+					
+					//Change this element
+					$(window).on('click', resetHandler);
+					
+					function swicthToReadOnly() {
+						if(currentDataMapping.rowData.isDataDirty !== true) {
+							currentDataMapping.dataMappings.html(createDataMappingContent(currentDataMapping.rowData));
+							currentDataMapping = undefined;
+						}
+					}
+					
+					function resetHandler($event) {
+						
+						if(currentDataMapping === undefined) return;
+						try {
+							if($event.target.offsetParent.localName !== 'table') {
+								swicthToReadOnly();
+							} 
+						} catch (e) { /* ignore */ }
+					
+					}
+
+					function renderOnClick ($event) {
+						
+						if(currentDataMapping !== undefined && currentDataMapping.rowData.activityOID === rowData.activityOID) return;
+						
+						if(currentDataMapping !== undefined && currentDataMapping.rowData.activityOID !== rowData.activityOID) {
+							//Switching the previous to read only mode
+							swicthToReadOnly();
+						}
+						
+						scope.rowData = rowData;	 			
+						element.html(
+								$compile(templateCache['trivialManual'])(scope)
+						);
+
+						// apply scope changes
+						sdUtilService.safeApply(scope);
+
+						// set current data mapping
+						currentDataMapping = {
+								dataMappings: element,
+								rowData: rowData
+						};	
+						
+					}
+				}
+				
 				markupCompiler.compile(row, rowData, dataIndex, scope);
 			}
 
