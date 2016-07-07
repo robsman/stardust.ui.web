@@ -12,25 +12,23 @@
 package org.eclipse.stardust.ui.web.modeler.xpdl.edit;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 
 import org.junit.Test;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.model.xpdl.carnot.*;
-import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
 
+/**
+ * Tests creation, modify and delete of data mapping constants.
+ * 
+ * @author Barry.Grotjahn
+ * @version $Revision: $
+ */
 public class TestDataMappingConstants extends RecordingTestcase
 {
-
    @Test
    public void testChangeDataMappingsGeneral() throws Exception
    {
@@ -45,10 +43,14 @@ public class TestDataMappingConstants extends RecordingTestcase
       ActivityType activity = process.getActivity().get(0);
       
       int size = activity.getDataMapping().size();
-      System.err.println("* " + size);
+      assertThat(size, is(2));
       DataMappingType dataMapping1 = activity.getDataMapping().get(0);
-      String dataPath = dataMapping1.getDataPath();
-      System.err.println("* " + dataPath);
+      String dataPath1 = dataMapping1.getDataPath();
+      assertThat(dataPath1, is("(String) hnas dampf"));
+      
+      DataMappingType dataMapping2 = activity.getDataMapping().get(1);
+      String dataPath2 = dataMapping2.getDataPath();
+      assertThat(dataPath2, is("(String) hnas dampf2"));
 
       requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/changeDataMappingConstants2.txt");
@@ -56,28 +58,12 @@ public class TestDataMappingConstants extends RecordingTestcase
       replay(requestStream, "changeDataMappingConstants2", true);
       
       size = activity.getDataMapping().size();
-      System.err.println("* " + size);
-      DataMappingType dataMapping2 = activity.getDataMapping().get(0);
-      String dataPath2 = dataMapping2.getDataPath();
-      System.err.println("* " + dataPath2);
+      assertThat(size, is(1));
+      dataMapping2 = activity.getDataMapping().get(0);
+      dataPath2 = dataMapping2.getDataPath();
+      assertThat(dataPath2, is("(Integer) 66"));
       
-      
-      
-      //saveReplayModel("C:/development/");
-
-      /*
-      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "DatamappingProcess","Datamapping Process");
-      ActivityType activity = process.getActivity().get(0);
-      */
-
-      /*
-      List<DataMappingType> dataMappings = activity.getDataMapping();
-      assertThat(dataMappings, is(not(nullValue())));
-      assertThat(dataMappings.size(), is(6));
-      */
-
-      saveReplayModel("C:/tmp/");
-      
+      //saveReplayModel("C:/tmp/");      
    }
    
    protected boolean includeConsumerModel()
