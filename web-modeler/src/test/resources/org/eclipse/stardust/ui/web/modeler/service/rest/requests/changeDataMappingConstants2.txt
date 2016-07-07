@@ -1,0 +1,2 @@
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"33","changes":{"properties":[],"direction":"IN","name":"constant datamapping","id":"constant_datamapping","dataMappingConstantType":"Integer","dataMappingConstantValue":66}}]}
+{"commandId":"datamapping.delete","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"32","changes":{"uuid":["00000000-0000-0000-0000-000000000085"]}}]}
