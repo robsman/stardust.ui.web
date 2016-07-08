@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -47,7 +46,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
    public static final String PARTICIPANT_KEY_SEPRATOR = "_";
    public static final Logger trace = LogManager.getLogger(ParticipantWorklistCacheManager.class);
 
-   private Map<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> participantWorklists;
+   private Map<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> participantWorklists = new LinkedHashMap<ParticipantInfoWrapper, ParticipantWorklistCacheEntry>();
    
    private Map<String, ParticipantInfo> participantInfoMap;
    /**
@@ -71,8 +70,9 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
     */
    public void reset()
    {
-      participantWorklists = new LinkedHashMap<ParticipantInfoWrapper, ParticipantWorklistCacheEntry>();
+	  trace.debug("Reseting ParticipantWorklistCache: Started...."); 
       ParticipantInfo worklistOwner = null;
+      Map<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> participantWorklists = new LinkedHashMap<ParticipantInfoWrapper, ParticipantWorklistCacheEntry>();
       try
       {
          Map<String, List<Worklist>> worklistMap = WorklistUtils.getWorklist_anyForUser();
@@ -124,12 +124,16 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
                }
             }
          }
+         
+         this.participantWorklists = participantWorklists;
       }
       catch (Exception e)
       {
          ExceptionHandler.handleException(e, "Error occurred while retrieving worklist",
                MessageDisplayMode.CUSTOM_MSG_OPTIONAL);
       }
+      
+      trace.debug("Reseting ParticipantWorklistCache: Completed.");
    }
 
    /**
@@ -202,9 +206,18 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
     */
    public WorklistQuery getWorklistQuery(ParticipantInfo participantInfo, String userParticipantId)
    {
-      WorklistQuery worklistQuery = participantWorklists.get(
-            new ParticipantInfoWrapper(participantInfo, userParticipantId)).getWorklistQuery();
-      return (WorklistQuery) QueryUtils.getClonedQuery(worklistQuery);
+      ParticipantInfoWrapper piw = new ParticipantInfoWrapper(participantInfo, userParticipantId);
+      ParticipantWorklistCacheEntry pwce = participantWorklists.get(piw);
+      if (pwce != null)
+      {
+         WorklistQuery worklistQuery = pwce.getWorklistQuery();
+         return (WorklistQuery) QueryUtils.getClonedQuery(worklistQuery);
+      }
+      else
+      {
+         trace.debug(participantInfo.getQualifiedId() + " with " + userParticipantId + "does not exist in the cache");
+         return null;
+      }
    }
    
    /**
