@@ -76,7 +76,11 @@
 						var elems = row.find(selector);
 						if (elems !== undefined && elems.length > 0) {
 							for (var i = 0; i < elems.length; i++) {
-								handlerFunc(elems[i], rowData, attr);
+								try {
+									handlerFunc(elems[i], rowData, attr);
+								} catch (e) {
+									trace.error('Could not handle :' + selector + ' for row: ' + dataIndex, e);
+								}
 							}
 						}
 					}
@@ -201,28 +205,32 @@
 					if (element === undefined || element.attr('sda-repeat') === undefined)
 						return;
 
+					var repeatedHtml = '';
+
 					var repeat = element.attr('sda-repeat');
-					element.removeAttr('sda-repeat');
 
 					var parts = repeat.split(' ');
 					var loopVar = parts[0];
-
 					var repeatExpr = parts[2];
+
 					var repeatValue = evaluate(repeatExpr, {rowData: rowData});
+					if(repeatValue != undefined && repeatValue != null) {
+						element.removeAttr('sda-repeat'); // Remove now and add it later
 
-					var repeatedHtml = '';
-					var html = element.get(0).outerHTML;
-					var keys = Object.keys(repeatValue);
-					if (keys && keys.length > 0) {
-						for (var key = 0; key < keys.length; key++) {
-							var loopHtml = '' + html;
+						var html = element.get(0).outerHTML;
+						var searchVal = new RegExp(eval('/' + loopVar + './g'));
+						var keys = Object.keys(repeatValue);
+						if (keys && keys.length > 0) {
+							for (var key = 0; key < keys.length; key++) {
+								var newVal = repeatExpr + '[\'' + keys[key] + '\'].';
 
-							var searchVal = new RegExp(eval('/' + loopVar + './g'));
-							var newVal = repeatExpr + '[\'' + keys[key] + '\'].';
-							loopHtml = loopHtml.replace(searchVal, newVal);
+								var loopHtml = html.replace(searchVal, newVal);
 
-							repeatedHtml += loopHtml + '\n';
+								repeatedHtml += loopHtml + '\n';
+							}
 						}
+
+						element.attr('sda-repeat', repeat); // Add it back
 					}
 
 					element.replaceWith(repeatedHtml);
@@ -274,7 +282,7 @@
 						try {
 							trace.log('Adding to Parser Cache for expression: ' + expr);
 							parserCache[expr] = $parse(expr);
-						} catch(e) {
+						} catch (e) {
 							trace.error('Could not parse expression:' + expr, e);
 							parserCache[expr] = null;
 						}
