@@ -531,7 +531,7 @@
 					var renderer = bCol.attr('sda-renderer');
 					if (renderer) {
 						colDef.rendererParser = $parse(renderer);
-					} else {
+					} else if (colDef.contents == '') {
 						var contents = getDefaultContent(colDef);
 						colDef.contents = '{{' + contents + '}}';
 						colDef.defaultContentsParser = $parse(contents);
@@ -757,10 +757,14 @@
 						};
 					} else { // Default Renderer
 						return function (data, type, row) {
-							return col.defaultContentsParser(elemScope, {
-								rowData : row,
-								colData : colDef
-							});
+							if (col.defaultContentsParser) {
+								return col.defaultContentsParser(elemScope, {
+									rowData : row,
+									colData : colDef
+								});
+							} else {
+								return data;
+							}
 						};
 					}
 				} else {

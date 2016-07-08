@@ -30,6 +30,7 @@
 	function ProcessActivityTableRendererService($parse, $compile, $filter, sdLoggerService, sgI18nService, sdMimeTypeService, sdMarkupCompilerService, sdUtilService) {
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdProcessActivityTableRendererService');
 		var templateCache = {};
+
 		/*
 		 * 
 		 */
@@ -44,13 +45,6 @@
 			var markupCompiler = sdMarkupCompilerService.create(uniqueId);
 			var selectorUUID = "AT-"+(Math.floor(Math.random() * 9000) + 1000);
 			var currentDataMapping;
-
-			/*
-			 * 
-			 */
-			ProcessActivityTableRenderer.prototype.defaultRenderer = function(col, row, contents) {
-				return contents;
-			}
 
 			/*
 			 * 

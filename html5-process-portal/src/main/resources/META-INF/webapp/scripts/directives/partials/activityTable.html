@@ -143,8 +143,7 @@
 			sda-no-angular-row-handler="activityTableCtrl.renderers.rowHandler(row, rowData, dataIndex, scope)"
 			sda-no-angular-draw-handler="activityTableCtrl.renderers.drawHandler(table, scope)">
 			<tr>
-				<td sda-exporter="rowData.activity.name" style="white-space: nowrap;"
-					sda-renderer="activityTableCtrl.renderers.defaultRenderer(col, row, contents)">
+				<td sda-exporter="rowData.activity.name" style="white-space: nowrap;">
 					<div sda-if="activityTableCtrl.isWorklistMode();"> 
 						<span sda-if="!rowData.isCaseInstance">
 							<a sda-if="rowData.activatable || rowData.showResubmitLink" href="#" aid="PP-ActivityTable-activate"
@@ -225,8 +224,7 @@
 					</div>
 				</td>
 
-				<td sda-exporter="activityTableCtrl.getDescriptorExportText(rowData.descriptorValues)"
-					sda-renderer="activityTableCtrl.renderers.defaultRenderer(col, row, contents)">
+				<td sda-exporter="activityTableCtrl.getDescriptorExportText(rowData.descriptorValues)">
 					<table sda-if="rowData.descriptorValues != undefined">
 						<tr sda-repeat="desc in rowData.descriptorValues" sda-repeat-if="desc.value != ''">
 							<td style="white-space: nowrap;" sda-repeat-if="!desc.isDocument">
@@ -282,7 +280,7 @@
 					</div>
 				</td>
 				
-				<td sda-renderer="activityTableCtrl.renderers.defaultRenderer(col, row, contents)">
+				<td>
 					<div style="text-align: right; white-space: nowrap;">
 						<button sda-click="bpmCommon.stopEvent($event); activityTableCtrl.$openProcessDetails(rowData);" aid="PP-ActivityTable-OpenProcessDetailsAction"
 							sda-title="processportal.toolbars-workflowActions-tooltip-processContextExplorer" class="button-link tbl-tool-link">
