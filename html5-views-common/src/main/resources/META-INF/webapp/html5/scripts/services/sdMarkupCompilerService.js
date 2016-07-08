@@ -173,7 +173,7 @@
 					if (element === undefined || element.attr('sda-if') === undefined)
 						return;
 
-					var value = evaluate(element.attr('sda-if'), rowData);
+					var value = evaluate(element.attr('sda-if'), {rowData: rowData});
 					if (value !== true) {
 						element.remove();
 					}
@@ -187,7 +187,7 @@
 					if (element === undefined || element.attr('sda-repeat-if') === undefined)
 						return;
 
-					var value = evaluate(element.attr('sda-repeat-if'), rowData);
+					var value = evaluate(element.attr('sda-repeat-if'), {rowData: rowData});
 					if ( value !== true ) {
 						element.remove();
 					}

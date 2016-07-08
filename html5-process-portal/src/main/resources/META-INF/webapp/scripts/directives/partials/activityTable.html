@@ -227,7 +227,7 @@
 
 				<td sda-exporter="activityTableCtrl.getDescriptorExportText(rowData.descriptorValues)"
 					sda-renderer="activityTableCtrl.renderers.defaultRenderer(col, row, contents)">
-					<table>
+					<table sda-if="rowData.descriptorValues != undefined">
 						<tr sda-repeat="desc in rowData.descriptorValues" sda-repeat-if="desc.value != ''">
 							<td style="white-space: nowrap;" sda-repeat-if="!desc.isDocument">
 								<span sda-bind="desc.key"></span>:
