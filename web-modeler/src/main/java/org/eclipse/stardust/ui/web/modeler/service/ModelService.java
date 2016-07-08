@@ -29,6 +29,8 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
@@ -40,7 +42,9 @@ import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
@@ -236,9 +240,14 @@ public class ModelService
             {
                if (model instanceof ModelType)
                {
+                  String failureException = AttributeUtil.getAttributeValue((IExtensibleElement) model, ModelerConstants.FAILURE_EXCEPTION);
+                  if(StringUtils.isNotEmpty(failureException))
+                  {
+                     throw new PublicException(failureException);
+                  }
+                  
                   ExternalReferenceUtils.fixExternalReferences(models,
                         (ModelType) model);
-
                }
 
                JsonObject modelJson = modelRepository.getModelBinding(model)

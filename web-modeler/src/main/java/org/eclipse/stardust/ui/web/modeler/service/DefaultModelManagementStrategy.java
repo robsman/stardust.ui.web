@@ -17,7 +17,9 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
@@ -184,12 +186,18 @@ public class DefaultModelManagementStrategy extends
           }
           else
           {
+             
              // use just the most basic XPDL representation, rest will be handled
              // directly from native format (e.g. BPMN2)
              internalModel = BpmModelBuilder.newBpmModel()
                    .withIdAndName(descriptor.id,
                          !isEmpty(descriptor.name) ? descriptor.name : descriptor.id)
                    .build();
+             
+             if(internalModel != null && descriptor.failureException != null)
+             {
+                AttributeUtil.setAttribute(internalModel, ModelerConstants.FAILURE_EXCEPTION, descriptor.failureException.getMessage());
+             }
           }
        }
 
