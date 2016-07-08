@@ -181,7 +181,7 @@
 			 * 
 			 */
 			ProcessActivityTableRenderer.prototype.descriptorRenderer = function(col, row, contents) {
-				var obj = row.descriptorValues[col.field];
+				var obj = row.descriptorValues ? row.descriptorValues[col.field] : undefined;
 				var html = '';
 				if (obj && obj.isDocument && obj.documents) {
 					for (var indx = 0; indx < obj.documents.length; indx++) {

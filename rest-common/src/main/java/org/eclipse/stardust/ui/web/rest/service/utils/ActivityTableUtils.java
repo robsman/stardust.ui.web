@@ -992,30 +992,34 @@ public class ActivityTableUtils
                   processDefinition, true ,true);
 
          }
-
-         Map<String, DescriptorDTO>  descriptors= new LinkedHashMap<String, DescriptorDTO>();
-         for (Object descriptor : processDescriptorsList)
-         {
-            if( descriptor instanceof ProcessDocumentDescriptor) {
-               ProcessDocumentDescriptor desc = (ProcessDocumentDescriptor) descriptor;
-
-               List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
-
-               for (DocumentInfo documentInfo : desc.getDocuments()) {
-                  DocumentDTO documentDTO = new DocumentDTO();
-                  documentDTO.name = documentInfo.getName();
-                  documentDTO.uuid = documentInfo.getId();
-                  documentDTO.contentType = (MimeTypesHelper.detectMimeType(documentInfo.getName(), null).getType());
-                  documents.add(documentDTO);
-               }
-
-               DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), true, documents);
-               descriptors.put(desc.getId(), descriptorDto);
-            }else{
-               ProcessDescriptor desc = (ProcessDescriptor) descriptor;
-               DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null);
-               descriptors.put(desc.getId(), descriptorDto);
-            }
+         
+         Map<String, DescriptorDTO>  descriptors = null;
+         if(null != processDescriptorsList && processDescriptorsList.size() > 0) {
+        	 descriptors= new LinkedHashMap<String, DescriptorDTO>();
+	    
+	         for (Object descriptor : processDescriptorsList)
+	         {
+	            if( descriptor instanceof ProcessDocumentDescriptor) {
+	               ProcessDocumentDescriptor desc = (ProcessDocumentDescriptor) descriptor;
+	
+	               List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
+	
+	               for (DocumentInfo documentInfo : desc.getDocuments()) {
+	                  DocumentDTO documentDTO = new DocumentDTO();
+	                  documentDTO.name = documentInfo.getName();
+	                  documentDTO.uuid = documentInfo.getId();
+	                  documentDTO.contentType = (MimeTypesHelper.detectMimeType(documentInfo.getName(), null).getType());
+	                  documents.add(documentDTO);
+	               }
+	
+	               DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), true, documents);
+	               descriptors.put(desc.getId(), descriptorDto);
+	            }else{
+	               ProcessDescriptor desc = (ProcessDescriptor) descriptor;
+	               DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null);
+	               descriptors.put(desc.getId(), descriptorDto);
+	            }
+	         }
          }
          return descriptors;
       }
