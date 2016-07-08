@@ -37,6 +37,10 @@ public class CommandHandlerRegistry
             {
                return handler;
             }
+            else
+            {
+               System.err.println("");
+            }
          }
          catch (Exception e)
          {
