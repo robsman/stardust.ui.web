@@ -141,7 +141,7 @@
 			sdUtilService.safeApply(scope);
 		};
 
-		this.renderers = sdProcessActivityTableRendererService.create();
+		this.renderers = sdProcessActivityTableRendererService.create('ActivityTable');
 		
 		// Expose controller as a whole on to scope
 		scope.activityTableCtrl = this;

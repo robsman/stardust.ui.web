@@ -33,15 +33,15 @@
 		/*
 		 * 
 		 */
-		ProcessActivityTableRendererService.prototype.create = function() {
-			return new ProcessActivityTableRenderer();
+		ProcessActivityTableRendererService.prototype.create = function(uniqueId) {
+			return new ProcessActivityTableRenderer(uniqueId);
 		}
 
 		/*
 		 * 
 		 */
-		function ProcessActivityTableRenderer() {
-			var markupCompiler = sdMarkupCompilerService.create();
+		function ProcessActivityTableRenderer(uniqueId) {
+			var markupCompiler = sdMarkupCompilerService.create(uniqueId);
 			var selectorUUID = "AT-"+(Math.floor(Math.random() * 9000) + 1000);
 			var currentDataMapping;
 

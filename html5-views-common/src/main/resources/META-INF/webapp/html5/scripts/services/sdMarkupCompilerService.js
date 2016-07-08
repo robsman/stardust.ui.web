@@ -29,19 +29,29 @@
 	 */
 	function MarkupCompilerService($parse, sdLoggerService, sgI18nService) {
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdMarkupCompilerService');
+		var globalParserCache = {};
 
 		/*
 		 * 
 		 */
-		MarkupCompilerService.prototype.create = function() {
-			return new MarkupCompiler();
+		MarkupCompilerService.prototype.create = function(uniqueId) {
+			return new MarkupCompiler(uniqueId);
 		}
 
 		/*
 		 * 
 		 */
-		function MarkupCompiler() {
-			var parserCache = {};
+		function MarkupCompiler(uniqueId) {
+			var parserCache;
+
+			if (uniqueId) {
+				if (!globalParserCache[uniqueId]) {
+					globalParserCache[uniqueId] = {};
+				}
+				parserCache = globalParserCache[uniqueId];
+			} else {
+				parserCache = {};
+			}
 
 			/*
 			 * 
