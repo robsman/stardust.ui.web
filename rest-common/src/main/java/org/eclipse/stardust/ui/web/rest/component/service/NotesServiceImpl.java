@@ -106,7 +106,7 @@ public class NotesServiceImpl implements NotesService
             // Process level notes
             NoteDTO noteDTO = new NoteDTO(note, userAttributesCacheManager);
             noteDTO.noteNumber = noteList.indexOf(note) + 1;
-            noteDTO.scopeType = ProcessInstanceUtils.getProcessLabel(processInstance);
+            noteDTO.scopeType = ProcessInstanceUtils.getProcessLabelWithoutOid(processInstance);
 
             noteDTOList.add(noteDTO);
          }
@@ -153,7 +153,7 @@ public class NotesServiceImpl implements NotesService
       NotesResultDTO notesResultDTO = new NotesResultDTO();
       notesResultDTO.list = noteDTOList;
       notesResultDTO.totalCount = noteDTOList.size();
-      notesResultDTO.label = ProcessInstanceUtils.getProcessLabel(processInstance);
+      notesResultDTO.label = ProcessInstanceUtils.getProcessLabelWithoutOid(processInstance);
       return notesResultDTO;
 
    }

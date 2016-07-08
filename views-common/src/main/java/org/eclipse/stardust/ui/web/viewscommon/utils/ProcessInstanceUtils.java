@@ -536,6 +536,21 @@ public class ProcessInstanceUtils
       }
       return "";
    }
+   
+   /**
+    * @param instance
+    * @return localized process name without OID appended
+    */
+   public static String getProcessLabelWithoutOid(ProcessInstance instance)
+   {
+      if (null != instance)
+      {
+         StringBuilder processLabel = new StringBuilder(I18nUtils.getProcessName(ProcessDefinitionUtils
+               .getProcessDefinition(instance.getModelOID(), instance.getProcessID())));
+         return processLabel.toString();
+      }
+      return "";
+   }
 
    /**
     * @param instance
