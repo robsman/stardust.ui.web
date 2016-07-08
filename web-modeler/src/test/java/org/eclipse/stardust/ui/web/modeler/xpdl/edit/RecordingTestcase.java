@@ -65,6 +65,9 @@ public class RecordingTestcase
    protected String CONSUMER_MODEL_ID = "ConsumerModel";
    protected String UPGRADE_MODEL_ID = "UpgradeModel";
 
+   protected String FAILED_MODEL_ID = "Payroll_QA";
+   
+   
    protected byte[] consumerModelModelBytes;
 
    @Resource
@@ -99,7 +102,8 @@ public class RecordingTestcase
 
    protected ModelType consumerModel;
    protected ModelType upgradeModel;
-
+   protected ModelType failedModel;
+   
    protected String modelLocation = "../../service/rest/";
 
    protected List<TestResponse> testResponses = new ArrayList<TestResponse>();
@@ -198,6 +202,14 @@ public class RecordingTestcase
             eObjectUUIDMapper.map(i.next());
          }
       }      
+      if (includeFailedModel())
+      {
+         eObjectUUIDMapper.map(failedModel);
+         for (Iterator<EObject> i = failedModel.eAllContents(); i.hasNext();)
+         {
+            eObjectUUIDMapper.map(i.next());
+         }
+      }            
    }
 
    protected void replaySimple(String command, String testScenarioName, String parameter, boolean performResponseCallback)
@@ -420,9 +432,12 @@ public class RecordingTestcase
       final Document upgradeModel = Mockito.mock(Document.class);
       Mockito.when(upgradeModel.getId()).thenReturn(UPGRADE_MODEL_ID);
       Mockito.when(upgradeModel.getName()).thenReturn(UPGRADE_MODEL_ID + ".xpdl");
+
+      final Document failedModel = Mockito.mock(Document.class);
+      Mockito.when(failedModel.getId()).thenReturn(FAILED_MODEL_ID);
+      Mockito.when(failedModel.getName()).thenReturn(FAILED_MODEL_ID + ".xpdl");
             
       Folder modelsFolder = Mockito.mock(Folder.class);
-
       if (includeConsumerModel())
       {
          if (includeProviderModel2())
@@ -440,6 +455,10 @@ public class RecordingTestcase
       {
          Mockito.when(modelsFolder.getDocuments()).thenReturn(asList(upgradeModel));         
       }
+      else if (includeFailedModel())
+      {
+         Mockito.when(modelsFolder.getDocuments()).thenReturn(asList(failedModel));         
+      }      
       else
       {
          Mockito.when(modelsFolder.getDocuments()).thenReturn(asList(providerModel));
@@ -524,6 +543,25 @@ public class RecordingTestcase
                   }
                }
             });      
+      
+      Mockito.when(dmsService.retrieveDocumentContent(failedModel.getId())).thenAnswer(
+            new Answer<byte[]>()
+            {
+               @Override
+               public byte[] answer(InvocationOnMock invocation) throws Throwable
+               {
+                  InputStream isModel = getClass().getResourceAsStream(
+                        modelLocation + failedModel.getName());
+                  try
+                  {
+                     return toByteArray(isModel);
+                  }
+                  finally
+                  {
+                     closeQuietly(isModel);
+                  }
+               }
+            });            
    }
 
    @Before
@@ -559,6 +597,11 @@ public class RecordingTestcase
    }
 
    protected boolean includeUpgradeModel()
+   {
+      return false;
+   }
+
+   protected boolean includeFailedModel()
    {
       return false;
    }
