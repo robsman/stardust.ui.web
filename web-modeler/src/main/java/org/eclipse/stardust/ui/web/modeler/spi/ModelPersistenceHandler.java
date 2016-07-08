@@ -22,16 +22,27 @@ public interface ModelPersistenceHandler<T extends EObject>
    static class ModelDescriptor<T extends EObject>
    {
       public final String id;
-
       public final String name;
 
       public final T model;
 
+      public final Exception failureException;
+      
+      
       public ModelDescriptor(String id, String name, T  model)
       {
          this.id = id;
          this.name = name;
          this.model = model;
+         failureException = null;
       }
+      
+      public ModelDescriptor(String id, String name, Exception  ex)
+      {
+         this.id = id;
+         this.name = name;
+         this.model = null;
+         failureException = ex;
+      }      
    }
 }

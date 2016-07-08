@@ -5,16 +5,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.stardust.ui.web.common.log.LogManager;
-import org.eclipse.stardust.ui.web.common.log.Logger;
-import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerModelManager;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import org.eclipse.stardust.common.error.PublicException;
+import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerModelManager;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 
 @Service
 @Scope("singleton")
@@ -47,11 +49,22 @@ public class XpdlPersistenceHandler implements ModelPersistenceHandler<ModelType
             WebModelerModelManager modelMgr = new WebModelerModelManager(strategy);
             modelMgr.load(URI.createURI(contentName), modelContent);
             ModelType xpdlModel = modelMgr.getModel();
-            return new ModelDescriptor<ModelType>(xpdlModel.getId(), xpdlModel.getName(), xpdlModel);
+            
+            if(xpdlModel != null)
+            {
+               return new ModelDescriptor<ModelType>(xpdlModel.getId(), xpdlModel.getName(), xpdlModel);
+               
+            }
+            else
+            {
+               trace.warn("Failed loading XPDL model.");               
+               return new ModelDescriptor<ModelType>(contentName, contentName, new PublicException("Failed loading XPDL model."));               
+            }
          }
          catch (IOException ioe)
          {
             trace.warn("Failed loading XPDL model.", ioe);
+            return new ModelDescriptor<ModelType>(contentName, contentName, ioe);            
          }
       }
       return null;
