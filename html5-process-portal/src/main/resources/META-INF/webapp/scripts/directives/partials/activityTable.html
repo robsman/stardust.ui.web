@@ -226,7 +226,15 @@
 				</td>
 
 				<td sda-exporter="activityTableCtrl.getDescriptorExportText(rowData.descriptorValues)"
-					sda-renderer="activityTableCtrl.renderers.descriptorsRenderer(col, row, contents)">
+					sda-renderer="activityTableCtrl.renderers.defaultRenderer(col, row, contents)">
+					<table>
+						<tr sda-repeat="desc in rowData.descriptorValues" sda-repeat-if="desc.value != ''">
+							<td style="white-space: nowrap;" sda-repeat-if="!desc.isDocument">
+								<span sda-bind="desc.key"></span>:
+							</td>
+							<td style="white-space: normal;" sda-repeat-if="!desc.isDocument" sda-bind="desc.value"></td>
+						</tr>
+					</table>
 				</td>
 				
 				<td sda-field="resubmissionTime" sda-data-type="dateTime" ng-if="activityTableCtrl.showResubmissionTime()">

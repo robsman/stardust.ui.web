@@ -47,21 +47,14 @@
 			 * 
 			 */
 			MarkupCompiler.prototype.compile = function(row, rowData, dataIndex, scope) {
-				// Binding actions - <a> and <buttons>
-				var actions = row.find("[sda-click]");
-				for (var i = 0; i < actions.length; i++) {
-					bindAction(actions[i], rowData);
-				}
-
-				// Binding on change events for <select>
-				var selects = row.find("select[sda-on-change]");
-				for (var i = 0; i < selects.length; i++) {
-					bindSelect(selects[i], rowData);
-				}
 
 				handleAttribute('[sda-if]', handleSdaIf); // One time processing of sda-if
+				handleAttribute('[sda-repeat]', handleSdaRepeat); // One time processing of sda-repeat
+				handleAttribute('[sda-repeat-if]', handleSdaRepeatIf); // One time processing of sda-repeat-if
 				handleAttribute('[sda-bind]', handleSdaBind); // One time processing of sda-bind
 				handleAttribute('[sda-bind-i18n]', handleSdaI18n); // One time processing of sda-bind-i18n
+				handleAttribute('[sda-click]', bindAction); // One time processing of sda-click
+				handleAttribute('select[sda-on-change]', bindSelect); // One time processing of sda-on-change
 				handleAttribute('[sda-class]', handleSdaAttribute, 'sda-class'); // One time processing of sda-class
 				handleAttribute('[sda-style]', handleSdaAttribute, 'sda-style'); // One time processing of sda-style
 
@@ -152,7 +145,7 @@
 				function handleSdaDisabled(element, rowData) {
 					var disabled = false;
 					if(element.attr('sda-disabled') != undefined) {
-						disabled = evaluate(element.attr('sda-disabled'), rowData);
+						disabled = evaluate(element.attr('sda-disabled'), {rowData: rowData});
 					}
 
 					if (disabled == true) {
@@ -171,9 +164,58 @@
 						return;
 
 					var value = evaluate(element.attr('sda-if'), rowData);
+					if (value !== true) {
+						element.remove();
+					}
+				}
+
+				/*
+				 * 
+				 */
+				function handleSdaRepeatIf(element, rowData) {
+					element = jQuery(element);
+					if (element === undefined || element.attr('sda-repeat-if') === undefined)
+						return;
+
+					var value = evaluate(element.attr('sda-repeat-if'), rowData);
 					if ( value !== true ) {
 						element.remove();
 					}
+				}
+
+				/*
+				 * At the moment only handling simple expression: "loopVar in collection"
+				 */
+				function handleSdaRepeat(element, rowData) {
+					element = jQuery(element);
+					if (element === undefined || element.attr('sda-repeat') === undefined)
+						return;
+
+					var repeat = element.attr('sda-repeat');
+					element.removeAttr('sda-repeat');
+
+					var parts = repeat.split(' ');
+					var loopVar = parts[0];
+
+					var repeatExpr = parts[2];
+					var repeatValue = evaluate(repeatExpr, {rowData: rowData});
+
+					var repeatedHtml = '';
+					var html = element.get(0).outerHTML;
+					var keys = Object.keys(repeatValue);
+					if (keys && keys.length > 0) {
+						for (var key = 0; key < keys.length; key++) {
+							var loopHtml = '' + html;
+
+							var searchVal = new RegExp(eval('/' + loopVar + './g'));
+							var newVal = repeatExpr + '[\'' + keys[key] + '\'].';
+							loopHtml = loopHtml.replace(searchVal, newVal);
+
+							repeatedHtml += loopHtml + '\n';
+						}
+					}
+
+					element.replaceWith(repeatedHtml);
 				}
 
 				/*
@@ -184,7 +226,7 @@
 					if (element === undefined || element.attr('sda-bind') === undefined)
 						return;
 
-					var value = evaluate(element.attr('sda-bind'), rowData) || '';
+					var value = evaluate(element.attr('sda-bind'), {rowData: rowData}) || '';
 					element.html(value);
 				}
 
@@ -209,7 +251,7 @@
 					if (element === undefined || element.attr(attr) === undefined)
 						return;
 
-					var value = evaluate(element.attr(attr), rowData) || '';
+					var value = evaluate(element.attr(attr), {rowData: rowData}) || '';
 					var attrKey = attr.substring('sda-'.length);
 					element.attr(attrKey, value);
 				}
@@ -217,7 +259,7 @@
 				/*
 				 * 
 				 */
-				function evaluate(expr, rowData) {
+				function evaluate(expr, locals) {
 					if (parserCache[expr] == undefined) {
 						try {
 							trace.log('Adding to Parser Cache for expression: ' + expr);
@@ -233,9 +275,7 @@
 
 					if (parser) {
 						try {
-							value = parser(scope, {
-								rowData: rowData
-							});
+							value = parser(scope, locals);
 						} catch (e) {
 							trace.error('Error while running parser function for expression:' + expr, e);
 						}
