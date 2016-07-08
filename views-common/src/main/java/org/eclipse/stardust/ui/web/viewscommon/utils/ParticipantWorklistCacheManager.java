@@ -71,6 +71,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
    public void reset()
    {
 	  trace.debug("Reseting ParticipantWorklistCache: Started...."); 
+	  
       ParticipantInfo worklistOwner = null;
       Map<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> participantWorklists = new LinkedHashMap<ParticipantInfoWrapper, ParticipantWorklistCacheEntry>();
       try
@@ -215,7 +216,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       }
       else
       {
-         trace.debug(participantInfo.getQualifiedId() + " with " + userParticipantId + "does not exist in the cache");
+         trace.warn(participantInfo.getQualifiedId() + " with " + userParticipantId + "does not exist in the cache");
          return null;
       }
    }
