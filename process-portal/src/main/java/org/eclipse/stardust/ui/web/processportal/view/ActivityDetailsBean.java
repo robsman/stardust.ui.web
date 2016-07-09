@@ -1503,11 +1503,11 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       ActivityInstance ai = activityInstance;
       IActivityInteractionController interactionController = getInteractionController(ai.getActivity());
-
+      ActivityInstance newAi = null;
       if (ownershipStatusOnSave || keepOwnership)
       {
          ownershipStatusOnSave = false;
-         ActivityInstance newAi = ActivityInstanceUtils.suspendToUserWorklist(ai,
+          newAi = ActivityInstanceUtils.suspendToUserWorklist(ai,
                interactionController.getContextId(ai), outData);
          if (!closeView) // No need to set the AI if view is closing
          {
@@ -1516,12 +1516,13 @@ public class ActivityDetailsBean extends UIComponentBean
       }
       else if (suspendToParticipant)
       {
-         this.activityInstance = ActivityInstanceUtils.suspend(ai, new ContextData(
+    	  newAi = ActivityInstanceUtils.suspend(ai, new ContextData(
                interactionController.getContextId(ai), outData));
+    	  this.activityInstance = newAi;
       }
       else
       {
-         ActivityInstance newAi = ActivityInstanceUtils.suspendToDefaultPerformer(ai,
+          newAi = ActivityInstanceUtils.suspendToDefaultPerformer(ai,
                interactionController.getContextId(ai), outData);
          if (!closeView) // No need to set the AI if view is closing
          {
@@ -1529,7 +1530,7 @@ public class ActivityDetailsBean extends UIComponentBean
          }
       }
 
-      if (closeView)
+      if (null != newAi && closeView)
       {
          skipViewEvents = true;
          // TODO move to controller?
