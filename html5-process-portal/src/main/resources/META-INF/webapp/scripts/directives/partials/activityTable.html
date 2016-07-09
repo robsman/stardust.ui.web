@@ -269,7 +269,20 @@
 				
 				<td sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-data-type="{{descCol.dataType}}" 
 					sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])"
-					sda-renderer="activityTableCtrl.renderers.descriptorRenderer(col, row, contents)">
+					sda-renderer="activityTableCtrl.renderers.descriptorRenderer(col, row, contents)" >
+					<div class="typeDocument">
+						<span class="noWrap"> <a href="#"
+							sda-click="activityTableCtrl.openDocumentsView('_documentId_')">
+								<i class="pi-lg spacing-right _documentIcon_"> </i> _documentName_
+						</a>
+						</span><br/>
+					</div>
+					<div class="typeLink">
+						<a href="_linkValue_" title="_linkValue_" target="_blank">_linkText_</a>
+					</div>
+					<div class="typeText">
+						<div class="align-center">_value_</div>
+					</div>
 				</td>
 				
 				<td sda-column="TRIVIAL_DATA" sda-renderer="activityTableCtrl.renderers.trivialDataRenderer(col, row, contents)">

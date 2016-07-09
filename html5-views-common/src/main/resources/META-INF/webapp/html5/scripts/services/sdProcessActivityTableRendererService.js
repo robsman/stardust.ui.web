@@ -177,27 +177,41 @@
 			ProcessActivityTableRenderer.prototype.descriptorRenderer = function(col, row, contents) {
 				var obj = row.descriptorValues ? row.descriptorValues[col.field] : undefined;
 				var html = '';
+				var cellTemplate  = getCellTemplateMarkup(col, contents, ["typeDocument","typeLink","typeText"]);
+								
+
 				if (obj && obj.isDocument && obj.documents) {
+					var docTemplate = cellTemplate.typeDocument;
+					
 					for (var indx = 0; indx < obj.documents.length; indx++) {
 						var document = obj.documents[indx];
-						var icon = sdMimeTypeService.getIcon(document.contentType);
+						var documentName = document.name;
+						var icon = sdMimeTypeService
+						.getIcon(document.contentType);
 						var documentId = document.uuid;
-						
-						html += '<span class="noWrap">'+
-									'<a href="#" sda-click="activityTableCtrl.openDocumentsView(\''+documentId+'\')">'+
-									 '<i class="pi-lg spacing-right '+icon+'"> </i> '+
-									 document.name+ '</a>'+
-								'</span><br/>';
+
+						html += docTemplate.replace('_documentName_',
+								documentName).replace('_documentIcon_', icon)
+								.replace('_documentId_', documentId);
+
 					}
 				} else if (obj && obj.isLink) {
-					html = '<a href="' + obj.value + '" title="' + obj.value+ '" target="_blank">' + obj.linkText + 
-							'</a>'
+					var linkTemplate = cellTemplate.typeLink;
+					html = linkTemplate.replace('_linkValue_',obj.value).replace('_linkText_',obj.linkText);
 				} else if (col.dataType === 'DATE') {
-					html =  obj != undefined ? $filter('sdDateFilter')(obj.value) : '';
+					var docTemplate = cellTemplate.typeText;
+					var value = obj != undefined ? $filter('sdDateFilter')(
+							obj.value) : undefined;
+					if (value) {
+						html = docTemplate.replace('_value_', value);
+					}
+
 				} else {
-					html = obj != undefined ? '<div class="align-center">'+ obj.value+ '</div>'  : ''
+					var docTemplate = cellTemplate.typeText;
+					if (obj && obj.value) {
+						html = docTemplate.replace('_value_', obj.value);
+					}
 				}
-				
 				return html;
 			}
 
@@ -208,11 +222,9 @@
 				var content = '';
 				
 				if(row.dataMappings && row.dataMappings.length > 0) {
-					content = '<div class="tma-row tma-read-only" selectorId="AngularCompile" sda-hover="#'+selectorUUID+row.activityOID+'-editFlag">\n';
-					
-					var indicator = '<i class="pi tma-edit-flag pi-edit pi-lg" id="'+selectorUUID+row.activityOID+'-editFlag" style="display:none;"> </i>';
+					var indicator = '<i class="pi worklist-data-edit-flag pi-edit pi-lg" id="'+selectorUUID+row.activityOID+'-editFlag" style="display:none;"> </i>';
 					content += '<div class="right">'+indicator +'</div>\n';
-					content += '<table><tbody>';
+					content += '<table class="worklist-data-read-only"><tbody>';
 					
 					for(var i=0; i < row.dataMappings.length; i++) {
 						var item = row.dataMappings[i];
@@ -234,7 +246,7 @@
 						content += '<td style="white-space: nowrap;">'+value+'</td>';
 						content += '</tr>';
 					}
-					content += '</tbody></table></div>';
+					content += '</tbody></table>';
 				}
 				return content;
 			}
@@ -251,7 +263,10 @@
 				if(currentDataMapping) {
 					currentDataMapping = undefined;
 				}
-				return createDataMappingContent(row);
+				var dataMappingContent = createDataMappingContent(row);
+				var content = '<div class="worklist-data-row" selectorId="AngularCompile" sda-hover="#'+selectorUUID+row.activityOID+'-editFlag">\n';
+				content += dataMappingContent + '</div>'
+				return content;
 			}
 
 
