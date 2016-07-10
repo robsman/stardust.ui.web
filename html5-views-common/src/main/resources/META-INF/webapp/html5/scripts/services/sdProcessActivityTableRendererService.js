@@ -270,19 +270,18 @@
 			}
 
 
-			/*
+			/**
 			 * 
 			 */
-			ProcessActivityTableRenderer.prototype.rowHandler = function(row, rowData, dataIndex, scope) {
-				
+			function dataMappingHandler(row, rowData, dataIndex, scope) {
 				var dataMappings = row.find('[selectorId="AngularCompile"]');
-				
-				
-				if(dataMappings !== undefined) {
+
+
+				if (dataMappings !== undefined) {
 					bindDataMappingHandler(dataMappings, rowData, scope, $compile);
 					// Bind Hover
 					var hover = dataMappings.attr('sda-hover');
-					
+
 					if (hover !== undefined) {
 						dataMappings.on('mouseover', function ($event) {
 							dataMappings.find(hover).show();
@@ -292,44 +291,45 @@
 						});
 					}
 				}
-			
-				function bindDataMappingHandler (element, rowData, scope, $compile) {
-					
+
+
+				function bindDataMappingHandler(element, rowData, scope, $compile) {
+
 					element.on('click', renderOnClick);
-					
+
 					//Change this element
 					$(window).on('click', resetHandler);
-					
+
 					function swicthToReadOnly() {
-						if(currentDataMapping.rowData.isDataDirty !== true) {
+						if (currentDataMapping.rowData.isDataDirty !== true) {
 							currentDataMapping.dataMappings.html(createDataMappingContent(currentDataMapping.rowData));
 							currentDataMapping = undefined;
 						}
 					}
-					
+
 					function resetHandler($event) {
-						
-						if(currentDataMapping === undefined) return;
+
+						if (currentDataMapping === undefined) return;
 						try {
-							if($event.target.offsetParent.localName !== 'table') {
+							if ($event.target.offsetParent.localName !== 'table') {
 								swicthToReadOnly();
-							} 
+							}
 						} catch (e) { /* ignore */ }
-					
+
 					}
 
-					function renderOnClick ($event) {
-						
-						if(currentDataMapping !== undefined && currentDataMapping.rowData.activityOID === rowData.activityOID) return;
-						
-						if(currentDataMapping !== undefined && currentDataMapping.rowData.activityOID !== rowData.activityOID) {
+					function renderOnClick($event) {
+
+						if (currentDataMapping !== undefined && currentDataMapping.rowData.activityOID === rowData.activityOID) return;
+
+						if (currentDataMapping !== undefined && currentDataMapping.rowData.activityOID !== rowData.activityOID) {
 							//Switching the previous to read only mode
 							swicthToReadOnly();
 						}
-						
-						scope.rowData = rowData;	 			
+
+						scope.rowData = rowData;
 						element.html(
-								$compile(templateCache['trivialManual'])(scope)
+							$compile(templateCache['trivialManual'])(scope)
 						);
 
 						// apply scope changes
@@ -337,12 +337,21 @@
 
 						// set current data mapping
 						currentDataMapping = {
-								dataMappings: element,
-								rowData: rowData
-						};	
-						
+							dataMappings: element,
+							rowData: rowData
+						};
+
 					}
 				}
+			}
+
+
+			/*
+			 * 
+			 */
+			ProcessActivityTableRenderer.prototype.rowHandler = function(row, rowData, dataIndex, scope) {
+				
+				dataMappingHandler(row, rowData, dataIndex, scope);
 				
 				markupCompiler.compile(row, rowData, dataIndex, scope);
 			}
