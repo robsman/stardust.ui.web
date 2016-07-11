@@ -29,7 +29,8 @@
 	 */
 	function ProcessActivityTableRendererService($parse, $compile, $filter, sdLoggerService, sgI18nService, sdMimeTypeService, sdMarkupCompilerService, sdUtilService) {
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdProcessActivityTableRendererService');
-		var templateCache = {};
+		var globalTemplateCache = {};
+
 
 		/*
 		 * 
@@ -37,11 +38,30 @@
 		ProcessActivityTableRendererService.prototype.create = function(uniqueId) {
 			return new ProcessActivityTableRenderer(uniqueId);
 		}
+		
+		/**
+		 * 
+		 */
+		function getTemplateCache(uniqueId) {
+			var templateCache;
+			
+			if (uniqueId) {
+				if (!globalTemplateCache[uniqueId]) {
+					globalTemplateCache[uniqueId] = {};
+				}
+				templateCache = globalTemplateCache[uniqueId];
+			} else {
+				templateCache = {};
+			}
+			
+			return templateCache;
+		}
 
 		/*
 		 * 
 		 */
 		function ProcessActivityTableRenderer(uniqueId) {
+			var templateCache = getTemplateCache(uniqueId);
 			var markupCompiler = sdMarkupCompilerService.create(uniqueId);
 			var selectorUUID = "AT-"+(Math.floor(Math.random() * 9000) + 1000);
 			var currentDataMapping;
