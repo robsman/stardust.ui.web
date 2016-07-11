@@ -21,8 +21,8 @@ public class DecoratorApplicationUtils
       return applicationType != null && "decoratorApp".equals(applicationType.getId());
    }
 
-   public static void addExternalReference(
-         ApplicationType application, ModelBuilderFacade modelBuilderFacade)
+   public static void addExternalReference(ApplicationType application,
+         ModelBuilderFacade modelBuilderFacade)
    {
       String elementId = AttributeUtil.getAttributeValue(application,
             "stardust:application::decorator::elementId");
@@ -31,27 +31,32 @@ public class DecoratorApplicationUtils
       String modelId = AttributeUtil.getAttributeValue(application,
             "stardust:application::decorator::modelId");
       ModelType consumerModel = ModelUtils.findContainingModel(application);
-      int beginIndex = modelId.length() + 1;
-      ModelType providerModel =null;
-      if (StringUtils.isNotEmpty(elementType) && elementType.equalsIgnoreCase("application")
-            )
+      if (StringUtils.isNotEmpty(modelId))
       {
-         ApplicationType decoratedApplication = modelBuilderFacade.getApplication(modelId,
-               elementId.substring(beginIndex));
+         int beginIndex = modelId.length() + 1;
+         ModelType providerModel = null;
+         if (StringUtils.isNotEmpty(elementType)
+               && elementType.equalsIgnoreCase("application"))
+         {
+            ApplicationType decoratedApplication = modelBuilderFacade
+                  .getApplication(modelId, elementId.substring(beginIndex));
             providerModel = ModelUtils.findContainingModel(decoratedApplication);
-           
-      }else if (StringUtils.isNotEmpty(elementType) && elementType.equalsIgnoreCase("process"))
-      {
-         ProcessDefinitionType decoratedProcess = modelBuilderFacade.getProcessDefinition(modelId,
-               elementId.substring(beginIndex));
+
+         }
+         else if (StringUtils.isNotEmpty(elementType)
+               && elementType.equalsIgnoreCase("process"))
+         {
+            ProcessDefinitionType decoratedProcess = modelBuilderFacade
+                  .getProcessDefinition(modelId, elementId.substring(beginIndex));
             providerModel = ModelUtils.findContainingModel(decoratedProcess);
-      }
-      
-      List<ModelType> models = new ArrayList<ModelType>();
-      models.add(providerModel);
-      if (!ExternalReferenceUtils.isModelReferenced(consumerModel, models))
-      {
-         ExternalReferenceUtils.updateReferences(consumerModel, providerModel);
+         }
+
+         List<ModelType> models = new ArrayList<ModelType>();
+         models.add(providerModel);
+         if (!ExternalReferenceUtils.isModelReferenced(consumerModel, models))
+         {
+            ExternalReferenceUtils.updateReferences(consumerModel, providerModel);
+         }
       }
    }
 }

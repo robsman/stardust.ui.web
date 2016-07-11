@@ -93,18 +93,19 @@
                            <td><select id="availableModelsInput"
                               ng-model="overlayPanel.modelId"
                               ng-change="overlayPanel.modelIdChanged()">
-                                 <option value=null ng-selected="(overlayPanel.modelId=='' || overlayPanel.modelId==null)?true:false">{{overlayPanel.i18nLabels('none.title')}}</option>
+                                 <option value="" ng-selected="(overlayPanel.modelId=='' || overlayPanel.modelId==null)?true:false">{{overlayPanel.i18nLabels('none.title')}}</option>
                                  <option ng-repeat="model in overlayPanel.getAvailableModels()" value="{{model.id}}">{{model.name}}</option>
                            </select></td>
                         </tr>
                         <tr ng-show="overlayPanel.modelId != null ? true : false">
                            <td><label for="availableElements">Applications /
                                  Process Interface</label></td>
-                           <td><select id="availableElements"
+                           <td>
+                           <select id="availableElements"
                               ng-model="overlayPanel.eltId"
                               ng-change="overlayPanel.elementChanged()">
-                                 <option value=null
-                                    ng-selected="(overlayPanel.eltId=='' || overlayPanel.eltId==null)?true:false">{{overlayPanel.i18nLabels('none.title')}}</option>
+                                 <option value=""
+                                    ng-selected="{{(overlayPanel.eltId=='' || overlayPanel.eltId==null)?true:false}}">{{overlayPanel.i18nLabels('none.title')}}</option>
                                  <optgroup label="Applications"
                                     ng-show="overlayPanel.getAvailableElements().applications.length > 0?true:false">
                                     <option
@@ -206,13 +207,13 @@
                                  <div
                                     ng-show="ap.primitiveDataType =='Timestamp'? true : false">
 
-									<input type="text" name="dateField" sd-date-picker
+                           <input type="text" name="dateField" sd-date-picker
                                        ng-init="ap.attributes = ap.attributes || {};"
                                        ng-model="ap.attributes['carnot:engine:defaultValue']"
                                        ng-change="overlayPanel.valueChanged(ap)"
-										sda-date-format="yy/mm/dd"/>
-									<div ng-show="subForm.dateField.$error.validate" class="msg-error">{{i18n('html5-common.date-error')}}
-									</div>
+                              sda-date-format="yy/mm/dd"/>
+                           <div ng-show="subForm.dateField.$error.validate" class="msg-error">{{i18n('html5-common.date-error')}}
+                           </div>
                                  </div>
                               </td>
                            </tr>
