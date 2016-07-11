@@ -122,8 +122,8 @@
 
 					var cellContents = jQuery('<div>' + contents + '</div>');
 					for(var i = 0; i < childClasses.length; i++) {
-						var html = cellContents.find('.' + childClasses[i]).html().trim();
-						templateCache[col.field][childClasses[i]] = html;
+						var html = cellContents.find('.' + childClasses[i]).html() || ''; 
+						templateCache[col.field][childClasses[i]] = html.trim();
 					}
 				}
 
