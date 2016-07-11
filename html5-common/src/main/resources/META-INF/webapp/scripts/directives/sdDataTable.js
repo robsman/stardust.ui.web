@@ -710,6 +710,7 @@
 					mData: colDataContents(col),
 					mRender: colRenderer(col),
 					sDefaultContent: '',
+					bVisible: col.visible,
 					bSortable: col.sortable
 				});
 			});
@@ -721,7 +722,7 @@
 				return function(row, type, set) {
 					var ret;
 
-					if (type === 'display' || type === 'type') {
+					if (type === 'display') {
 						ret = col.contents;
 					}
 
@@ -749,6 +750,10 @@
 	
 					if (col.rendererParser) { // Custom Renderer
 						return function (data, type, row) {
+							if (!checkForInvokingRenderer(col, type)) {
+								return '';
+							}
+
 							return col.rendererParser(elemScope, {
 								col: colDef,
 								row: row,
@@ -757,6 +762,10 @@
 						};
 					} else { // Default Renderer
 						return function (data, type, row) {
+							if (!checkForInvokingRenderer(col, type)) {
+								return '';
+							}
+
 							if (col.defaultContentsParser) {
 								return col.defaultContentsParser(elemScope, {
 									rowData : row,
@@ -770,6 +779,16 @@
 				} else {
 					return undefined;
 				}
+			}
+
+			/*
+			 * 
+			 */
+			function checkForInvokingRenderer(col, type) {
+				if (!firstInitiaizingDraw && type == 'display' && col.visible) {
+					return true;
+				}
+				return false;
 			}
 		}
 
