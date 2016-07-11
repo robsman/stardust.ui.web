@@ -144,7 +144,7 @@
 		var deferred = _q.defer();
 		var self = this;
 
-		var benchmarkPresent = data.benchmark.value > 0 ;
+		var benchmarkPresent = data.benchmark ? data.benchmark.value > 0 : false;
 		if(benchmarkPresent){
 
 			_sdProcessInstanceService.getBenchmarkDetailsProcess(data.benchmark.oid, self.process.qualifiedId).then(function(data){ 
@@ -179,7 +179,9 @@
 			durations[process.id]  = {expectedDuration : process.expectedDuration,activities: {}};
 
 			angular.forEach(process.activities,function(activity){
-				durations[process.id].activities[activity.id] = activity.expectedDuration;
+				durations[process.id].activities[activity.id] = {
+						expectedDuration : activity.expectedDuration
+				};
 			}); 
 		});
 		self.expectedDurations = durations;
@@ -205,7 +207,7 @@
 	 */
 	Controller.prototype.getExpectedDurationForActivity = function(pQid, aid){
 		var self = this;
-		if(self.expectedDurations && self.expectedDurations[pQid]) {
+		if (self.expectedDurations && self.expectedDurations[pQid] && self.expectedDurations[pQid].activities[aid]) {
 			return self.expectedDurations[pQid].activities[aid].expectedDuration;
 		}
 		return 0;
@@ -262,7 +264,7 @@
 				}
 
 			}else {
-				if(value.benchmark.color){
+				if(value.benchmark && value.benchmark.color){
 					color = value.benchmark.color;
 				} else{
 					color =  self.getBarColor(value.status.value,type, false)
@@ -821,31 +823,7 @@
 		this.onTimeFrameChange();
 	}
 	
-	/**
-	 * 
-	 */
-	Controller.prototype.calculateGridLines = function(timeFrame, data){
-		this.currentTimeLine[timeFrame] = data.delay + data.completed + 220;
-		if(data.inflight) {
-			this.estimatedEndTimeLine[timeFrame] = data.delay + data.completed + data.inflight+220;
-		}
-	}
 	
-	/**
-	 * 
-	 */
-	Controller.prototype.determineAppropriateTimeFrame = function(data){
-		
-		if(  (data.endTime - data.startTime) < ONE_HOUR_IN_MIILS  ){
-			this.selected.timeFrame = "minutes";
-		}else if((data.endTime - data.startTime) < ONE_DAY_IN_MIILS) {
-			this.selected.timeFrame = "hours";
-		}else{
-			this.selected.timeFrame = "days";
-		}
-		this.onTimeFrameChange();
-	}
-
 
 	/**
 	 * 

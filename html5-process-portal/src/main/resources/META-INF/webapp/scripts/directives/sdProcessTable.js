@@ -20,7 +20,8 @@
 			'sdProcessTable',
 			[ '$parse', '$q', '$timeout', '$filter', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService',
 					'sgI18nService', 'sdPreferenceService', 'sdProcessInstanceService', 'sdProcessDefinitionService',
-					'sdStatusService', 'sdPriorityService', 'sdDialogService', 'sdCommonViewUtilService','sdLoggedInUserService',
+					'sdStatusService', 'sdPriorityService', 'sdDialogService', 'sdCommonViewUtilService',
+					'sdLoggedInUserService','sdProcessActivityTableRendererService',
 					ProcessTableDirective ]);
 
 	/*
@@ -28,7 +29,7 @@
 	 */
 	function ProcessTableDirective($parse, $q, $timeout, $filter, sdUtilService, sdViewUtilService, sdLoggerService,
 			sgI18nService, sdPreferenceService, sdProcessInstanceService, sdProcessDefinitionService, sdStatusService,
-			sdPriorityService, sdDialogService, sdCommonViewUtilService, sdLoggedInUserService) {
+			sdPriorityService, sdDialogService, sdCommonViewUtilService, sdLoggedInUserService, sdProcessActivityTableRendererService) {
 
 		//Defaults
 		var DEFAULT_VALUES = {
@@ -58,7 +59,8 @@
 		 */
 		function ProcessTableCompiler(scope, element, attr, ctrl) {
 			var self = this;
-
+			this.renderers = sdProcessActivityTableRendererService.create('ProcessTable');
+			   
 			/*
 			 * 
 			 */
@@ -399,14 +401,22 @@
 			/*
 			 *
 			 */
-			ProcessTableCompiler.prototype.registerNewPriority = function(oid, value) {
+			ProcessTableCompiler.prototype.registerNewPriority = function(oid) {
 				var self = this;
+				event.stopPropagation();
+				
+				var highlightClazz = "change-highlight";
+				
+				var elem = event.target;
+				var value = parseInt(elem.selectedOptions[0].value);
+				var higlightElem = elem.parentElement;
+				
 				if (self.originalPriorities[oid] != value) {
 					self.changedPriorities[oid] = value;
-				} else {
-					if (angular.isDefined(self.changedPriorities[oid])) {
-						delete self.changedPriorities[oid];
-					}
+					higlightElem.classList.add(highlightClazz); 
+				} else if (angular.isDefined(self.changedPriorities[oid])) {
+					delete self.changedPriorities[oid];
+					higlightElem.classList.remove(highlightClazz)
 				}
 			};
 
@@ -443,7 +453,6 @@
 				});
 
 				sdPriorityService.savePriorityChanges(requestData).then(
-
 				function(successResult) {
 					angular.forEach(successResult.success, function(data) {
 						data['item'] = processMap[data.OID];
@@ -451,11 +460,8 @@
 					angular.forEach(successResult.failure, function(data) {
 						data['item'] = processMap[data.OID];
 					});
-					self.updatePriorityNotification.visible = true;
-					self.updatePriorityNotification.result = successResult;
+				
 					self.refresh();
-					sdViewUtilService.syncLaunchPanels();
-
 				}, function(failureResult) {
 					trace.error("Error occured in updating the priorities : ", failureResult);
 				});
@@ -565,6 +571,7 @@
 				}
 
 				this.showAbortProcessDialog = true;
+				this.safeApply();
 			}
 
 			/*
@@ -592,6 +599,7 @@
 			 */
 			ProcessTableCompiler.prototype.openJoinDialog = function() {
 				this.showJoinProcessDialog = true;
+				this.safeApply();
 			}
 
 			/*
@@ -615,6 +623,7 @@
 			 */
 			ProcessTableCompiler.prototype.openSwitchDialog = function() {
 				this.showSwitchProcessDialog = true;
+				this.safeApply();
 			}
 
 			/*
@@ -638,6 +647,7 @@
 				}
 
 				self.showAttachToCaseDialog = true;
+				self.safeApply();
 			}
 
 			/*
@@ -677,6 +687,7 @@
 				}
 
 				self.showCreateCaseDialog = true;
+				self.safeApply();
 			}
 
 			/*
@@ -707,6 +718,7 @@
 					}
 				}
 				self.popoverDirective.show(event,151);
+				this.safeApply();
 			}
 
 			/*
