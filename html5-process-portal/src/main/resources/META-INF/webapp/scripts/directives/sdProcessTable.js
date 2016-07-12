@@ -460,8 +460,10 @@
 					angular.forEach(successResult.failure, function(data) {
 						data['item'] = processMap[data.OID];
 					});
-				
+					self.updatePriorityNotification.visible = true;
+					self.updatePriorityNotification.result = successResult;
 					self.refresh();
+					self.safeApply();			
 				}, function(failureResult) {
 					trace.error("Error occured in updating the priorities : ", failureResult);
 				});

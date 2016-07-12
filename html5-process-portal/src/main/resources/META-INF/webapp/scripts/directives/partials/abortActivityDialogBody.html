@@ -1,6 +1,6 @@
 <div class="modal-body">
 	<div ng-if="abortActivityCtrl.abortActivity.isPromptRequired">
-		<div style="margin-left:10px;" ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-headerMsg-prompt')"></div>
+		<div  class="abort-header-message" ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-headerMsg-prompt')"></div>
 		<div class="abort-activity-form-content">
 			<div class="radio">
 				<input type="radio" name="abortActivity" value="SubHierarchy" ng-model="abortActivityCtrl.abortActivity.scope" /> 

@@ -118,7 +118,7 @@
 				sda-no-angular-row-handler="processTableCtrl.renderers.rowHandler(row, rowData, dataIndex, scope)"
 				sda-no-angular-draw-handler="processTableCtrl.renderers.drawHandler(table, scope)">
 			<tr>
-				<td sda-exporter="rowData.processName">
+				<td sda-exporter="rowData.processName" class="noWrap">
 					<span class="spacing-right">
 							<span sda-title="{{i18n('business-control-center-messages.common-tooltip-process')}}"
 								sda-if="!rowData.caseInstance && rowData.oid == rowData.processInstanceRootOID" >
@@ -137,7 +137,7 @@
 					</span>
 					<a  href="#" aid="PP-ProcessTable-OpenProcessHistory"
 						sda-click="bpmCommon.stopEvent($event); processTableCtrl.openProcessHistory(rowData);"
-						class="button-link tbl-tool-link"> <span class="noWrap" sda-bind="rowData.processName"></span>
+						class="button-link tbl-tool-link"> <span  sda-bind="rowData.processName"></span>
 					</a>
 				</td>
 				<td sda-data-type="int" sda-field="oid"></td>
@@ -171,17 +171,17 @@
 				<td sda-exporter="processTableCtrl.getDescriptorExportText(rowData.descriptorValues)">
 					<table sda-if="rowData.descriptorValues != undefined">
 						<tr sda-repeat="desc in rowData.descriptorValues" sda-repeat-if="desc.value != ''">
-							<td style="white-space: nowrap;" sda-repeat-if="!desc.isDocument">
-								<span sda-bind="desc.key"></span>:
+							<td class="noWrap" sda-repeat-if="!desc.isDocument">
+								<span sda-bind="desc.key"></span>
 							</td>
-							<td style="white-space: normal;" sda-repeat-if="!desc.isDocument" sda-bind="desc.value"></td>
+							<td sda-repeat-if="!desc.isDocument" class="noWrap">: <span class="spacing-right" sda-bind="desc.value"> </span></td>
 						</tr>
 					</table>
 					<!--<div sd-editor-template></div>-->
 				</td>
-				<td sda-field="startingUser"></td>
+				<td sda-field="startingUser" class="align-center"></td>
 				<td sda-field="startTime" sda-data-type="dateTime"></td>
-				<td sda-field="duration" style="text-align: center; white-space: nowrap;"></td>
+				<td sda-field="duration"  class="align-center noWrap"></td>
 				<td sda-field="status.label"></td>
 				<td sda-field="processInstanceRootOID" sda-data-type="int"></td>
 				<td sda-field="endTime" sda-data-type="dateTime"></td>
@@ -269,6 +269,13 @@
 	    sda-scope="this" 
 	    sda-template="plugins/html5-process-portal/scripts/directives/partials/abortProcessNotification.html">
    </div>
+   
+   	<div sd-dialog="processTableCtrl.updatePriorityNotificationDlg"
+		sda-show="processTableCtrl.updatePriorityNotification.visible"
+		sda-type="custom" sda-title="{{i18n('views-common-messages.common-notification-title')}}"
+		sda-scope="this" 
+		sda-template="plugins/html5-process-portal/scripts/directives/partials/updateProcessPriorityNotification.html">
+	</div>
 	
 	<span sd-popover="processTableCtrl.popoverDirective" id="abortMenu">
 		<div class="popover-body">

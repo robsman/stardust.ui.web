@@ -1,11 +1,11 @@
 <div class="sd-abort-noti-dlg">
 	<div class="modal-body">
 		<div id="infoSign" class="notification-icon">
-			<i ng-if="joinProcessController.joinProcess.joinCompleted"  class="pi pi-information-circle pi-lg"></i>
-			<i ng-if="!joinProcessController.joinProcess.joinCompleted"  class="pi msg-error pi-lg pi-deny"></i>
+			<i ng-if="joinProcessController.joinProcess.joinCompleted"  class="pi pi-information-circle pi-2x"></i>
+			<i ng-if="!joinProcessController.joinProcess.joinCompleted"  class="pi msg-error pi-2x pi-deny"></i>
 		</div>
 		
-		<div id="notificationBody" class="notification-body">
+		<div id="notificationBody" class="notification-body left">
 			<div ng-if="joinProcessController.joinProcess.joinCompleted">
 				<div>
 					<span ng-bind-html="joinProcessController.joinProcess.notificationMsg"></span>

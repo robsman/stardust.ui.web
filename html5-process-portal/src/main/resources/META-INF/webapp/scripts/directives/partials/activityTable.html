@@ -143,7 +143,7 @@
 			sda-no-angular-row-handler="activityTableCtrl.renderers.rowHandler(row, rowData, dataIndex, scope)"
 			sda-no-angular-draw-handler="activityTableCtrl.renderers.drawHandler(table, scope)">
 			<tr>
-				<td sda-exporter="rowData.activity.name" style="white-space: nowrap;">
+				<td sda-exporter="rowData.activity.name" class="noWrap">
 					<div sda-if="activityTableCtrl.isWorklistMode();"> 
 						<span sda-if="!rowData.isCaseInstance">
 							<a sda-if="rowData.activatable || rowData.showResubmitLink" href="#" aid="PP-ActivityTable-activate"
@@ -227,10 +227,10 @@
 				<td sda-exporter="activityTableCtrl.getDescriptorExportText(rowData.descriptorValues)">
 					<table sda-if="rowData.descriptorValues != undefined">
 						<tr sda-repeat="desc in rowData.descriptorValues" sda-repeat-if="desc.value != ''">
-							<td style="white-space: nowrap;" sda-repeat-if="!desc.isDocument">
+							<td class="noWrap" sda-repeat-if="!desc.isDocument">
 								<span sda-bind="desc.key"></span>:
 							</td>
-							<td style="white-space: normal;" sda-repeat-if="!desc.isDocument" sda-bind="desc.value"></td>
+							<td sda-repeat-if="!desc.isDocument" class="noWrap">: <span class="spacing-right" sda-bind="desc.value"> </span></td>
 						</tr>
 					</table>
 				</td>
@@ -243,7 +243,7 @@
 				
 				<td sda-field="lastModification" sda-data-type="dateTime">
 				</td>
-				<td sda-field="duration" style="text-align: center; white-space: nowrap;">
+				<td sda-field="duration" class="noWrap align-center">
 				</td>
 				
 				<td sda-field="lastPerformer" ng-if ="activityTableCtrl.isWorklistMode();">

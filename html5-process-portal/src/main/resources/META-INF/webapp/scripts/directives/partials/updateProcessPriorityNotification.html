@@ -1,7 +1,7 @@
 <div class="confirmation-contents modal-body">
-	<div ng-hide="activityTableCtrl.updatePriorityNotification.error">
+	<div ng-hide="processTableCtrl.updatePriorityNotification.error">
 		<div
-			ng-show="activityTableCtrl.updatePriorityNotification.result.success.length > 0">
+			ng-show="processTableCtrl.updatePriorityNotification.result.success.length > 0">
 			
 			<div >{{i18n('views-common-messages.views-processTable-savePriorities-status')}}  {{i18n('views-common-messages.views-processTable-savePriorities-successMsg')}}  </div>
 			</br>
@@ -14,7 +14,7 @@
 				</thead>
 				<tbody>  
 					<tr
-						ng-repeat="result in activityTableCtrl.updatePriorityNotification.result.success">
+						ng-repeat="result in processTableCtrl.updatePriorityNotification.result.success">
 						<td ng-bind="result.item"></td>
 						<td ng-bind="result.message"></td>
 					</tr>
@@ -24,7 +24,7 @@
 		</div>
 		
 		<div
-			ng-show="activityTableCtrl.updatePriorityNotification.result.failure.length > 0">
+			ng-show="processTableCtrl.updatePriorityNotification.result.failure.length > 0">
 			
 			<div >{{i18n('views-common-messages.views-processTable-savePriorities-status')}}  {{i18n('views-common-messages.views-processTable-savePriorities-failureMsg')}}  </div>
 			</br>
@@ -37,7 +37,7 @@
 				</thead>
 				<tbody>  
 					<tr
-						ng-repeat="result in activityTableCtrl.updatePriorityNotification.result.failure">
+						ng-repeat="result in processTableCtrl.updatePriorityNotification.result.failure">
 						<td ng-bind="result.item"></td>
 						<td ng-bind="result.message"></td>
 					</tr>
@@ -50,7 +50,7 @@
 	<div class="button-pane cf" >
 		<div class="button-alignment">
 			<div class="right">
-				<button class="button" ng-click="activityTableCtrl.updatePriorityNotificationDlg.close()">{{i18n('views-common-messages.common-close')}}</button>
+				<button class="button" ng-click="processTableCtrl.updatePriorityNotificationDlg.close()">{{i18n('views-common-messages.common-close')}}</button>
 			</div>
 		</div>
 	</div>

@@ -2,9 +2,9 @@
 	<div ng-hide="activityTableCtrl.notification.error">
 		<div
 			ng-show="activityTableCtrl.notification.result.success.length > 0">
-			<div class="abort-activity-notication-message"
+			<div class="abort-notication-message"
 				ng-bind="i18n('views-common-messages.views-common-activity-abortActivity-success')"></div>
-			<table class="table-bordered">
+			<table class="table-bordered table">
 				<tr
 					ng-repeat="activity in activityTableCtrl.notification.result.success">
 					<td  class="abort-activity-cell-message">{{activity.name}} (#{{activity.OID}})</td>
@@ -14,9 +14,9 @@
 		</div>
 		<div
 			ng-show="activityTableCtrl.notification.result.failure.length > 0">
-			<div class="abort-activity-notication-message"
+			<div class="abort-notication-message"
 				ng-bind="i18n('views-common-messages.views-common-activity-abortActivity-failure')"></div>
-			<table class="table-bordered">
+			<table class="table-bordered table">
 				<tr 
 					ng-repeat="activity in activityTableCtrl.notification.result.failure">
 						<td  class="abort-activity-cell-message">{{activity.name}} (#{{activity.OID}})</td>
