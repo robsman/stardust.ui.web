@@ -1384,6 +1384,8 @@
 			delete self.changedPriorities[activityOID];
 			higlightElem.classList.remove(highlightClazz)
 		}
+		
+		self.safeApply();
 	};
 
 

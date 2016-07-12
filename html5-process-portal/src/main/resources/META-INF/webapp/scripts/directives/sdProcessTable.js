@@ -418,6 +418,8 @@
 					delete self.changedPriorities[oid];
 					higlightElem.classList.remove(highlightClazz)
 				}
+				
+				self.safeApply();
 			};
 
 			/*
