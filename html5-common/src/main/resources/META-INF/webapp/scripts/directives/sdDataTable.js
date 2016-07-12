@@ -33,6 +33,7 @@
 
 	var EXPORT_LIMIT = 10000;
 	var EXPORT_BATCH_SIZE = 250;
+	var ACTION_TAG_NAMES = ["INPUT", "BUTTON", "A", "SELECT", "I"];
 	
 	/*
 	 * 
@@ -2135,13 +2136,37 @@
 				setRowSelection(sel);	
 			}
 		}
+		
+		
+		/**
+		 * 
+		 */
+		function isActionableElement(elem) {
+			if (ACTION_TAG_NAMES.indexOf(elem.tagName) !== -1) {
+				return true;
+			}
+
+			for (var i = 0; i < ACTION_TAG_NAMES.length; i++) {
+				if ($(elem).closest(ACTION_TAG_NAMES[i]).length > 0) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 
 		/*
 		 * 
 		 */
 		function enableRowSelection() {
 			if (rowSelectionMode) {
-				theTable.find('> tbody').on('click', '> tr', function() {
+				theTable.find('> tbody').on('click', '> tr', function(event) {
+					
+					if (isActionableElement(event.target)) {
+						event.stopPropagation();
+						return;
+					}
+					
 					var count = getPageDataCount();
 					if (count > 0) {
 						processRowSelection(this);

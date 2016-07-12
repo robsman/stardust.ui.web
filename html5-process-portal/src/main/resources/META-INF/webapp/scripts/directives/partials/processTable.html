@@ -136,7 +136,7 @@
 							</span>
 					</span>
 					<a  href="#" aid="PP-ProcessTable-OpenProcessHistory"
-						sda-click="bpmCommon.stopEvent($event); processTableCtrl.openProcessHistory(rowData);"
+						sda-click="processTableCtrl.openProcessHistory(rowData);"
 						class="button-link tbl-tool-link"> <span  sda-bind="rowData.processName"></span>
 					</a>
 				</td>
@@ -147,8 +147,10 @@
 						<i sda-class="'pi pi-flag pi-lg priority-flag-' + rowData.priority.name"></i>						
 					</div>
 					<div class="popover"> 
-						<span><b sda-bind-i18n="views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name"></b>: </span>
-						<span sda-bind="rowData.priority.label"></span>
+						<span class="noWrap">
+							<span><b sda-bind-i18n="views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name"></b>: </span>
+							<span sda-bind="rowData.priority.label"></span>
+						</span>
 					</div>
 					<div class="editMode">
 						<div class="change-higlight-container">
@@ -163,9 +165,11 @@
 					<div class="flag">
 						<i class="pi pi-flag pi-lg" sda-style="'color: ' + rowData.benchmark.color"></i>						
 					</div>
-					<div class="popover"> 
-						<span><b sda-bind-i18n="views-common-messages.views-processTable-benchmark-tooltip-categoryLabel"></b>: </span>
-						<span sda-bind="rowData.benchmark.label"></span>
+					<div class="popover">
+						<span class="noWrap"> 
+							<span><b sda-bind-i18n="views-common-messages.views-processTable-benchmark-tooltip-categoryLabel"></b>: </span>
+							<span sda-bind="rowData.benchmark.label"></span>
+						</span>
 					</div>
 				</td>
 				<td sda-exporter="processTableCtrl.getDescriptorExportText(rowData.descriptorValues)">
@@ -207,12 +211,12 @@
 				</td>
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
-						<button sda-click="bpmCommon.stopEvent($event); processTableCtrl.openProcessHistory(rowData);" aid="PP-ProcessTable-OpenProcessHistoryAction"
+						<button sda-click="processTableCtrl.openProcessHistory(rowData);" aid="PP-ProcessTable-OpenProcessHistoryAction"
 							sda-title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
 							<i class="pi pi-process pi-lg"></i>
 						</button>
 						
-						<button sda-click="bpmCommon.stopEvent($event); processTableCtrl.openAbortDialog(rowData);"
+						<button sda-click="processTableCtrl.openAbortDialog(rowData);"
 						    sda-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortAction"
 							sda-title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-tool-link tbl-tool-joined-link">
 							<i class="pi pi-process-abort pi-lg" ></i>
@@ -221,7 +225,7 @@
 						<!-- abort menu -->
 						<button class="button-link tbl-tool-link" sda-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortPopoverAction"
 						    sda-title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
-							sda-click="processTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);">
+							sda-click="processTableCtrl.openAbortPopover($event, rowData);">
 							<i class="pi pi-menu-dropdown"></i>
 						</button>
 						
@@ -236,11 +240,11 @@
 						<!-- View chart -->
 						<button class="button-link tbl-tool-link"   aid="PP-ProcessTable-OpenGrantChart"
 							sda-title="{{i18n('business-control-center-messages.views-processSearchView-tooltip-viewGanttChart')}}"
-							sda-click="processTableCtrl.openChart(rowData); bpmCommon.stopEvent($event);">
+							sda-click="processTableCtrl.openChart(rowData); ">
 							<i class="pi pi-gantt-chart pi-lg" ></i>
 						</button>
 						
-						<button sda-click="bpmCommon.stopEvent($event); processTableCtrl.openNotes(rowData);"
+						<button sda-click="processTableCtrl.openNotes(rowData);"
 						    aid="PP-ProcessTable-OpenNotes"
 							sda-title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
 							<i class="pi pi-notes-empty pi-lg" sda-if ="rowData.notesCount === 0" ></i>
