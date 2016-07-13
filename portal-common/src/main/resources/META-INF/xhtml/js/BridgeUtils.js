@@ -981,7 +981,14 @@ if (!window["BridgeUtils"].View) {
 					
 					ret.height = jQuery(".sg-sidebar-content-well", sidebar).outerHeight() - 3;
 					if (ret.visible) {
-						ret.left = jQuery(".sg-sidebar-content", sidebar).offset().left;
+						// On FF & IE offset().left call is geting incorrect value.
+						// So adding FF & IE specific fix with constant values.
+						if (BridgeUtils.Util.isFF() || BridgeUtils.Util.isIE()) {
+							ret.left = ret.pinned ? 1 : 34;
+						} else {
+							ret.left = jQuery(".sg-sidebar-content", sidebar).offset().left;
+						}
+
 						if (ret.pinned) {
 							ret.width = jQuery(".sg-sidebar-content-well", sidebar).outerWidth();
 						} else {
