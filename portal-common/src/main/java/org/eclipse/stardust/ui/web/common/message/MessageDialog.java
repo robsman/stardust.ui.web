@@ -50,6 +50,8 @@ public class MessageDialog extends PopupDialog
    private PortalUiController portalUiController;
    private MessageDialogHandler callbackHandler;
 
+   private Boolean forceFromLaunchPanels;
+
    /**
     * 
     */
@@ -63,16 +65,28 @@ public class MessageDialog extends PopupDialog
    public void openPopup()
    {
 	   String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
-	   if (StringUtils.isNotEmpty(viewId))
-	   {
-		   if (viewId.endsWith("/portalSingleViewLaunchPanelsOnly.xhtml"))
-		   {
-			   fromlaunchPanels = true;
-		   }
-	   }
 	   
+	   if (null == forceFromLaunchPanels && StringUtils.isNotEmpty(viewId))
+      {
+         if (viewId.endsWith("/portalSingleViewLaunchPanelsOnly.xhtml"))
+         {
+            fromlaunchPanels = true;
+         }
+      }
+	   else if(forceFromLaunchPanels == true) 
+	   {
+	      fromlaunchPanels = true;
+	   } 
+	   
+	   forceFromLaunchPanels = null;
 	   super.openPopup();
    }
+   
+   public void setForceFromLaunchPanels()
+   {
+      forceFromLaunchPanels = true;
+   }
+   
 
    /**
     * @return

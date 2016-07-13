@@ -1436,6 +1436,11 @@ public class ActivityDetailsBean extends UIComponentBean
          {
             if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND, null))
             {
+               if (closeView)
+               {
+                  MessageDialog.getInstance().setForceFromLaunchPanels();
+               }
+
                // close synchronously
                if (keepOwnership)
                {
@@ -1548,6 +1553,10 @@ public class ActivityDetailsBean extends UIComponentBean
       ActivityInstance ai = activityInstance;
       IActivityInteractionController interactionController = getInteractionController(ai.getActivity());
 
+      if (closeView)
+      {
+         MessageDialog.getInstance().setForceFromLaunchPanels();
+      }
       if (ownershipStatusOnSave || keepOwnership)
       {
          ownershipStatusOnSave = false;
