@@ -120,23 +120,23 @@
 			<tr>
 				<td sda-exporter="rowData.processName" class="noWrap">
 					<span class="spacing-right">
-							<span sda-title="{{i18n('business-control-center-messages.common-tooltip-process')}}"
+							<span sda-title="business-control-center-messages.common-tooltip-process"
 								sda-if="!rowData.caseInstance && rowData.oid == rowData.processInstanceRootOID" >
 								<i class="pi pi-lg pi-root-process"></i>
 							</span>
 							<span style="border: none;"
-								sda-title="{{i18n('business-control-center-messages.common-tooltip-subProcess')}}"
+								sda-title="business-control-center-messages.common-tooltip-subProcess"
 								sda-if="!rowData.caseInstance && rowData.oid != rowData.processInstanceRootOID" >
 									<i class="pi pi-lg pi-process"></i>
 							</span>
 							<span style="border: none;"
-								sda-title="{{i18n('business-control-center-messages.common-tooltip-case')}}"
+								sda-title="business-control-center-messages.common-tooltip-case"
 								sda-if="rowData.caseInstance" >
 									<i class="pi pi-case pi-lg"></i>
 							</span>
 					</span>
-					<a  href="#" aid="PP-ProcessTable-OpenProcessHistory"
-						sda-click="processTableCtrl.openProcessHistory(rowData);"
+					<a  href="#" aid="PP-ProcessTable-OpenProcessHistory" 
+						sda-click="processTableCtrl.openProcessHistory(rowData);" 
 						class="button-link tbl-tool-link"> <span  sda-bind="rowData.processName"></span>
 					</a>
 				</td>
@@ -212,25 +212,25 @@
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
 						<button sda-click="processTableCtrl.openProcessHistory(rowData);" aid="PP-ProcessTable-OpenProcessHistoryAction"
-							sda-title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
+							sda-title="processportal.toolbars-workflowActions-tooltip-processContextExplorer" class="button-link tbl-tool-link">
 							<i class="pi pi-process pi-lg"></i>
 						</button>
 						
 						<button sda-click="processTableCtrl.openAbortDialog(rowData);"
 						    sda-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortAction"
-							sda-title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-tool-link tbl-tool-joined-link">
+							sda-title="processportal.toolbars-workflowActions-tooltip-abort" class="button-link tbl-tool-link tbl-tool-joined-link">
 							<i class="pi pi-process-abort pi-lg" ></i>
 						</button>
 						
 						<!-- abort menu -->
 						<button class="button-link tbl-tool-link" sda-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortPopoverAction"
-						    sda-title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
+						    sda-title="views-common-messages.views-abortProcess-menu-tooltip"
 							sda-click="processTableCtrl.openAbortPopover($event, rowData);">
 							<i class="pi pi-menu-dropdown"></i>
 						</button>
 						
 						<button sda-click="processTableCtrl.recoverProcess(this, rowData)" aid="PP-ProcessTable-RecoverAction"
-						    sda-title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
+						    sda-title="views-common-messages.common-tooltip-recover" 
 							sda-disabled="!rowData.enableRecover" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
 				            <div class="pi-badge">
 				                <i class="pi pi-recover pi-lg"></i>
@@ -239,20 +239,20 @@
 						
 						<!-- View chart -->
 						<button class="button-link tbl-tool-link"   aid="PP-ProcessTable-OpenGrantChart"
-							sda-title="{{i18n('business-control-center-messages.views-processSearchView-tooltip-viewGanttChart')}}"
+							sda-title="business-control-center-messages.views-processSearchView-tooltip-viewGanttChart"
 							sda-click="processTableCtrl.openChart(rowData); ">
 							<i class="pi pi-gantt-chart pi-lg" ></i>
 						</button>
 						
 						<button sda-click="processTableCtrl.openNotes(rowData);"
 						    aid="PP-ProcessTable-OpenNotes"
-							sda-title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
+							sda-title="processportal.toolbars-workflowActions-tooltip-notes" class="button-link tbl-tool-link">
 							<i class="pi pi-notes-empty pi-lg" sda-if ="rowData.notesCount === 0" ></i>
 							<i class="pi pi-notes pi-lg" sda-if ="rowData.notesCount > 0" ></i>
 						</button>
 
 						<button sda-click="processTableCtrl.openProcessDocumentsPopover(rowData, $event);" aid="PP-ProcessTable-OpenProcessDocuments"
-							sda-title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
+							sda-title="processportal.toolbars-workflowActions-tooltip-processDocuments" class="button-link tbl-tool-link">
 							<i class="pi pi-process-documents pi-lg"></i>
 						</button>
 					</div>
