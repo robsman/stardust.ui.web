@@ -51,7 +51,11 @@ define(
         	node.attr(nodeConfig.attr);
         }
 
-        jQuery("<a href='#'>" + nodeConfig.data + "</a>").appendTo(node);
+        var modelLink = jQuery("<a href='#'>" + nodeConfig.data + "</a>");
+        if (nodeConfig.attr.error) {
+        	modelLink.attr('title', nodeConfig.attr.error);
+        }        
+        modelLink.appendTo(node);
 
         if (parentNode) {
           var parentSelector = jQuery(parentNode);
@@ -147,7 +151,8 @@ define(
           attr : {
             "id" : this.model.uuid,
             "rel" : "erroredModel",
-            "elementId" : this.model.id
+            "elementId" : this.model.id,
+            "error": this.model.error
           },
           data : this.model.id
         }, parent);
