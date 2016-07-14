@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.carnot.util.VariableContextHelper;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ClassLoaderProvider;
@@ -34,6 +35,10 @@ public final class ModelingSession
    private String ownerId;
 
    private String ownerName;
+   
+   private String commandId;
+   
+   private VariableContextHelper variableContextHelper;
 
    private Map<String, Object> sessionAtributes = null;
 
@@ -73,6 +78,16 @@ public final class ModelingSession
    public String getId()
    {
       return editingSession.getId();
+   }
+   
+   public String getCommandId()
+   {
+      return this.commandId;
+   }
+   
+   public void setCommandId(String commandId)
+   {
+      this.commandId = commandId;
    }
 
    public String getOwnerId()
@@ -162,6 +177,25 @@ public final class ModelingSession
    public EditingSession getSession()
    {
       return editingSession;
+   }
+   
+   public VariableContextHelper variableContextHelper()
+   {
+      if (variableContextHelper == null)
+      {
+         this.variableContextHelper = new VariableContextHelper();
+      }
+      return variableContextHelper;
+   }
+   
+   public void resetVariableContext()
+   {
+      if (variableContextHelper != null)
+      {
+         variableContextHelper.clear();
+         variableContextHelper = null;
+      }
+
    }
 
    /**

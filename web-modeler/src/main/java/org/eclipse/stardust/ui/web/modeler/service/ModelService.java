@@ -218,6 +218,7 @@ public class ModelService
       {
          if (reload)
          {
+            currentSession().resetVariableContext();
             TypeDeclarationUtils.clearExternalSchemaCache();
          }
          Map<String, ModelType> models = getModelManagementStrategy().getModels(reload);

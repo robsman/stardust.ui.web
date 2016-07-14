@@ -100,6 +100,7 @@ public class ModelerSessionController
          EObject model = modelRepository.findModel(jto.modelId);
          ModelBinding<EObject> modelBinding = modelRepository.getModelBinding(model);
          marshaller = modelBinding.getMarshaller();
+         currentSession.setCommandId(jto.commandId);
       }
       else
       {
@@ -125,6 +126,7 @@ public class ModelerSessionController
       finally
       {
          marshaller.done();
+         currentSession().setCommandId(null);
       }
 
       if (change.wasFailure())

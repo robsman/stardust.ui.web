@@ -3379,7 +3379,14 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       JsonArray variablesJson = new JsonArray();
 
-      VariableContext variableContext = new VariableContext();
+      VariableContextHelper variableContextHelper = this.getModelingSession().variableContextHelper();
+      
+      VariableContext variableContext = variableContextHelper.getContext(model);
+      if (variableContext == null)
+      {
+         variableContextHelper.createContext(model);
+         variableContext = variableContextHelper.getContext(model);  
+      }
 
       variableContext.initializeVariables(model);
       variableContext.refreshVariables(model);
@@ -3657,6 +3664,16 @@ public class ModelElementMarshaller implements ModelMarshaller
    public JsonObject toModelJson(ModelType model, boolean excludeCVs)
    {
       JsonObject modelJson = toModelOnlyJson(model);
+      
+      if (!excludeCVs)
+      {
+         modelJson.add("configVariables", toConfigVariableJson(model));
+      }
+      
+      if (modelingSession.getCommandId() != null && modelingSession.getCommandId().equals("configVariable.update"))
+      {
+         return modelJson;
+      }
 
       if (model.getQualityControl() != null)
       {
@@ -3796,9 +3813,19 @@ public class ModelElementMarshaller implements ModelMarshaller
    {
       JsonArray variablesJson = new JsonArray();
 
-      VariableContext variableContext = new VariableContext();
+      VariableContextHelper variableContextHelper = this.getModelingSession().variableContextHelper();
+      
+      VariableContext variableContext = variableContextHelper.getContext(model);
+      if (variableContext == null)
+      {
+         variableContextHelper.createContext(model);
+         variableContext = variableContextHelper.getContext(model);  
+      }
 
-      variableContext.initializeVariables(model);
+      if (!(modelingSession.getCommandId().equals("configVariable.update") || (modelingSession.getCommandId().equals("configVariable.delete"))))
+      {
+         variableContext.initializeVariables(model);
+      }
 
       for (Iterator<ModelVariable> i = variableContext.getVariables().iterator(); i.hasNext();)
       {
