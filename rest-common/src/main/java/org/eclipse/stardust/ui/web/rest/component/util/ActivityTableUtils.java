@@ -882,6 +882,10 @@ public class ActivityTableUtils
                ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
                      ai.getModelOID(), ai.getProcessDefinitionId());
                dto.processInstance.supportsProcessAttachments = ProcessDefinitionUtils.supportsProcessAttachments(processDefinition);
+              
+               //Internationalization
+               dto.processInstance.processName= I18nUtils.getProcessName(processDefinition);
+               dto.activity.name = I18nUtils.getActivityName(ai.getActivity());
                
                if (mode.equals(MODE.ACTIVITY_TABLE))
                {
@@ -905,7 +909,7 @@ public class ActivityTableUtils
                {
                   dto.activity.name = getCaseName(ai);
                }
-               dto.rootProcessName = ai.getProcessInstance().getRootProcessInstanceName();;
+               dto.rootProcessName = ai.getProcessInstance().getRootProcessInstanceName();
                
                String facet = (String) ai.getActivity().getAttribute("stardust:model:manualActivityFacet");
                dto.isChecklistActivity = false;
