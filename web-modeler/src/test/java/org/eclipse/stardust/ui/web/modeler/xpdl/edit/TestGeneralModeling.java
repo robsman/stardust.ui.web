@@ -41,7 +41,11 @@ public class TestGeneralModeling extends RecordingTestcase
       GenericModelingAssertions.assertRole(providerModel, "ProvidedRole", "ProvidedRole");
 
 
+      this.saveReplayModel("c:/development");
+      
       GenericModelingAssertions.assertTransition(activity1, activity2);
+      
+      
       
 
    }

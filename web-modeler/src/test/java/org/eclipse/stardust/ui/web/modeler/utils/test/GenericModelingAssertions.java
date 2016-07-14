@@ -22,6 +22,8 @@ import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
+import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
@@ -589,6 +591,17 @@ public class GenericModelingAssertions
       }
    }
    
+   public static AttributeType assertConfigVariableAttributeReference(
+         VariableContext context, ModelVariable variable, int refIndex, String value)
+   {
+      List<EObject> references = context.getReferences(variable);
+      EObject element = references.get(refIndex);
+      assertThat(element instanceof AttributeType, is(true));
+      AttributeType attribute = (AttributeType) element;
+      assertThat(attribute.getAttributeValue(), is(value));
+      return attribute;
+   }
+      
    private static Node findValueNodeByLocalName(List<Node> nodes, String annotationName)
    {
       for (Iterator<Node> i = nodes.iterator(); i.hasNext();)
