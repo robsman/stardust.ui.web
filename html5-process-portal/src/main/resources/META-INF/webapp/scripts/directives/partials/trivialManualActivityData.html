@@ -18,9 +18,9 @@
 					ng-if="mapping.typeName == 'java.lang.String'"
 					ng-model="dataCtrl.outData[mapping.id]" /> 
 				<!-- Boolean -->	
-				<input type="checkbox"  aid="PP-TrivialManualActivity-SelectCheckBox"
+				<input type="checkbox"  aid="PP-TrivialManualActivity-SelectCheckBox" 
 					ng-click="bpmCommon.stopEvent($event); "  ng-change="dataCtrl.onChange();"
-					ng-if="mapping.typeName == 'java.lang.Boolean'" ng-model-on-blur
+					ng-if="mapping.typeName == 'java.lang.Boolean'" ng-model-on-blur class="worklist-data-checkbox"
 					ng-model="dataCtrl.outData[mapping.id]"></input>
 				<!-- Integer -->
 				<div ng-if="mapping.typeName == 'java.lang.Integer'">

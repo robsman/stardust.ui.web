@@ -267,6 +267,9 @@
     white-space: nowrap;
 }
 
+.worklist-data-checkbox {
+	margin: 0px 0px 6px 0px !important;
+} 
 .worklist-data-input {
 	background-color: white !important;
 } 
