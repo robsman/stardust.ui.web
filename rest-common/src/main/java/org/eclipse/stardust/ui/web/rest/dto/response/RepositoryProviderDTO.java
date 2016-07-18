@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.dto.response;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.core.DTOAttribute;
 
@@ -45,6 +48,8 @@ public class RepositoryProviderDTO extends AbstractDTO
    
    @DTOAttribute("isAccessControlPolicySupported()")
    public boolean isAccessControlPolicySupported;
+   
+   public Map<String, Serializable> attributesMap;
    
    public RepositoryProviderDTO()
    {}

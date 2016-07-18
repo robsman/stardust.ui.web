@@ -15,8 +15,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -706,6 +708,25 @@ public class RepositoryServiceImpl implements RepositoryService
       {
          RepositoryProviderDTO providerDTO = DTOBuilder.build(repositoryProviderInfo, RepositoryProviderDTO.class);
          providers.add(providerDTO);
+         
+         // add custom attributes
+         Map<String, Serializable> attributesMap = new Hashtable<String, Serializable>();
+         Map<String, Serializable> objectMap = repositoryProviderInfo.getConfigurationTemplate().getAttributes();
+
+         for (Entry<String, Serializable> obj : objectMap.entrySet())
+         {
+            if (obj.getKey().equals(IRepositoryConfiguration.PROVIDER_ID)
+                  || obj.getKey().equals(IRepositoryConfiguration.REPOSITORY_ID))
+            {
+               continue;
+            }
+            else
+            {
+               attributesMap.remove(obj.getKey());
+               attributesMap.put(obj.getKey(), obj.getValue());
+            }
+         }
+         providerDTO.attributesMap = attributesMap;
       }
 
       Collections.sort(providers, new Comparator<RepositoryProviderDTO>()
@@ -718,7 +739,7 @@ public class RepositoryServiceImpl implements RepositoryService
       });
       return providers;
    }
-
+   
    /**
     *
     */
