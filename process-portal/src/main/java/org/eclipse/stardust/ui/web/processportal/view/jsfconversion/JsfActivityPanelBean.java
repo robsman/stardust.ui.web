@@ -29,6 +29,7 @@ import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.util.SessionRendererHelper;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityForm;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
 /**
@@ -52,6 +53,20 @@ public class JsfActivityPanelBean implements IJsfActivityPanelBean, ViewEventHan
          if (null != view)
          {
             ActivityInstance activityInstance = (ActivityInstance) view.getViewParams().get(ActivityInstance.class.getName());
+
+            if (null == activityInstance)
+            {
+               Object aiOid = view.getViewParams().get("oid");
+               if (aiOid instanceof String)
+               {
+                  aiOid = Long.parseLong((String) aiOid);
+               }
+
+               if (aiOid instanceof Number)
+               {
+                  activityInstance = ActivityInstanceUtils.getActivityInstance(((Number) aiOid).longValue());
+               }
+            }
             
             if (null != activityInstance)
             {
