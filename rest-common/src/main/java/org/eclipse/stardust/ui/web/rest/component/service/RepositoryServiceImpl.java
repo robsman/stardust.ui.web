@@ -710,7 +710,7 @@ public class RepositoryServiceImpl implements RepositoryService
          providers.add(providerDTO);
          
          // add custom attributes
-         Map<String, Serializable> attributesMap = new Hashtable<String, Serializable>();
+         Map<String, String> attributesMap = new Hashtable<String, String>();
          Map<String, Serializable> objectMap = repositoryProviderInfo.getConfigurationTemplate().getAttributes();
 
          for (Entry<String, Serializable> obj : objectMap.entrySet())
@@ -722,8 +722,7 @@ public class RepositoryServiceImpl implements RepositoryService
             }
             else
             {
-               attributesMap.remove(obj.getKey());
-               attributesMap.put(obj.getKey(), obj.getValue());
+               attributesMap.put(obj.getKey(), obj.getValue() == null ? "" : obj.getValue().toString());
             }
          }
          providerDTO.attributesMap = attributesMap;
