@@ -25,7 +25,12 @@
    <context:component-scan base-package="org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup" />
 
 	<!-- From ProcessPortal -->
-
+	<bean id="infinityBpmEventsController"
+		class="org.eclipse.stardust.ui.web.viewscommon.common.controller.JsfBpmEventsController"
+		scope="request">
+		<property name="parentBpmEventsControllerName"
+			value="infinityRequestScopedCustomBpmEventsController" />
+	</bean>
 
 	<bean name="views_common_msgPropsBean"
 		class="org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean"

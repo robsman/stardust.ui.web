@@ -16,6 +16,10 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 
+	<bean name="infinityBpmInteractionsRegistry"
+	class="org.eclipse.stardust.engine.core.interactions.InteractionRegistry"
+	scope="singleton" />
+		
 	<bean name="ippProcessPortalBpmEventController"
 		class="org.eclipse.stardust.ui.web.processportal.EventController"
 		scope="session" destroy-method="destroy" />

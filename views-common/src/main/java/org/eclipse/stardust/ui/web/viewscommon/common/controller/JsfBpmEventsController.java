@@ -22,6 +22,7 @@ import org.eclipse.stardust.ui.event.RefreshEvent;
 import org.eclipse.stardust.ui.event.RefreshEventObserver;
 import org.eclipse.stardust.ui.event.WorklistSelectionEvent;
 import org.eclipse.stardust.ui.event.WorklistSelectionObserver;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 
 
 /**
@@ -392,6 +393,12 @@ public class JsfBpmEventsController implements BpmEventsController
    public void setRefreshEventObservers(List<RefreshEventObserver> refreshEventObservers)
    {
       this.refreshEventObservers = refreshEventObservers;
+   }
+
+   public void setParentBpmEventsControllerName(String parentBpmEventsControllerName)
+   { 
+      parentBpmEventsController = (BpmEventsController) ManagedBeanUtils
+            .getManagedBean(parentBpmEventsControllerName);
    }
 
 //   public UIComponent getCtrlBpmEvents()
