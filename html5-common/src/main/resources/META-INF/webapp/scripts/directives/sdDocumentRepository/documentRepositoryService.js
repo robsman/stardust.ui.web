@@ -501,7 +501,7 @@
 
   };
   
-  documentRepoService.prototype.bindRepository = function(providerId, id, jndiName){
+  documentRepoService.prototype.bindRepository = function(providerId, id, attributeMap){
 
     var deferred = this.$q.defer();
     var url= this.rootUrl + "/bind";
@@ -510,8 +510,9 @@
     data={
       "providerId" : providerId,
       "id" : id,
-      "jndiName" : jndiName
     };
+    
+    data = angular.extend({},attributeMap, data);
 
     this.$http({
       "method" : "PUT",

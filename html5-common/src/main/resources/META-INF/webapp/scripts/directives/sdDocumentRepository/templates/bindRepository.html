@@ -11,24 +11,7 @@
 			
 		</div>
 
-		<label>{{ctrl.textMap.bind.repositorySettings}}</label>
-		<hr style="margin:0;">
-
-
-		<div style="display:inline-flex;">
-			<div style="margin:1em;">
-				<label style="display:inline-table;min-width:55px;">{{ctrl.textMap.bind.id}}</label>
-				<input ng-model="ctrl.boundDialogRepoProvider.beanId" type="text"/>
-			</div>
-
-			<div ng-init= "ctrl.boundDialogRepoProvider.jndiName=ctrl.boundDialogRepoProvider.id + '/newRepo'" style="margin:1em;">
-				<label  style="display:inline-table;min-width:55px;">{{ctrl.textMap.bind.name}}</label>
-				<input ng-model="ctrl.boundDialogRepoProvider.jndiName" type="text"/>
-			</div>
-		</div>
-
-
-		<div style="position:relative;display:inline-block;">
+		<div style="position:relative;display:inline-block;margin-top:1em;">
 
 			<div class="popover-body">
 
@@ -94,7 +77,28 @@
 					</div>
 			</div>
 		</div>
+		
+		<label>{{ctrl.textMap.bind.repositorySettings}}</label>
+		<hr style="margin:0;">
 
+
+		<div>
+		
+			<div style="margin:1em 0 0 1em;display:inline-block;">
+				<label style="display:block;min-width:55px;">{{ctrl.textMap.bind.id}}</label>
+				<input ng-model="ctrl.boundDialogRepoProvider.beanId" type="text"/>
+			</div>
+
+			<div style="margin:1em 0 0 1em;display:inline-block;" 
+				 ng-repeat ="key in ctrl.getObjectKeys(ctrl.boundDialogRepoProvider.attributesMap)">
+				<label style="display:block;min-width:55px;">
+					{{key}}
+				</label>
+				<input ng-model="ctrl.boundDialogRepoProvider.attributesMap[key]" type="text"/>
+			</div>
+			
+		</div>
+		
 	</div><!--modal body end-->
 
 	<div class="modal-footer">

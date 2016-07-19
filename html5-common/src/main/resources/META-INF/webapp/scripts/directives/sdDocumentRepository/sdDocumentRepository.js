@@ -60,10 +60,13 @@
     //Async retrieve repo providers.
     this.getRepositoryProviders()
     .then(function(providers){
+    	
       that.repositoryProviders = providers;
+      
       if(providers.length > 0){
         that.boundDialogRepoProvider = providers[0];
       }
+      
     });
 
   }
@@ -162,12 +165,22 @@
 
     return;
   };
-
+  
+  /**
+   * Given an object return the keys representing the properties of that object as an array.
+   * This is designed to allow ngRepeat to sort hash maps when iterating over a property collection.
+   * @param obj
+   * @returns
+   */
+  docRepoController.prototype.getObjectKeys = function(obj){
+	  return obj? Object.keys(obj).sort():[];
+  }
+  
   docRepoController.prototype.getTextMap = function(i18n){
 
     textMap = {};
     textMap.rename = i18n.translate("views.genericRepositoryView.treeMenuItem.rename");
-    textMap.delete = i18n.translate("views.genericRepositoryView.treeMenuItem.delete");
+    textMap["delete"] = i18n.translate("views.genericRepositoryView.treeMenuItem.delete");
     textMap.createSubFolder = i18n.translate("views.genericRepositoryView.treeMenuItem.createSubFolder");
     textMap.createNewTextFile = i18n.translate("views.genericRepositoryView.treeMenuItem.createNewTextFile");
     textMap.uploadFile = i18n.translate("views.genericRepositoryView.treeMenuItem.uploadFile");
@@ -183,7 +196,7 @@
     textMap.bindRepo = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.bindRepo");
     textMap.properties = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.properties");
     textMap.makeDefault = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.makeDefault");
-    textMap.default = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.default");
+    textMap["default"] = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.default");
     textMap.repoRoot = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.root");
     textMap.quickSearch = i18n.translate("views.genericRepositoryView.quickSearch");
     textMap.newFile= i18n.translate("views.genericRepositoryView.newFile.name");
@@ -209,7 +222,7 @@
     textMap.bind.writable = i18n.translate("views.bindRepositoryDialog.provider.capabilities.writable");
     textMap.bind.availableProviders = i18n.translate("views.bindRepositoryDialog.repositorySettings.availableProviders");
     textMap.bind.repositorySettings = i18n.translate("views.bindRepositoryDialog.repositorySettings");
-    textMap.bind.id = i18n.translate("views.bindRepositoryDialog.provider.id");
+    textMap.bind.id = i18n.translate("views.bindRepositoryDialog.repository.id").replace(":","");
     textMap.bind.name = i18n.translate("views.bindRepositoryDialog.provider.name");
     textMap.bind.provider = i18n.translate("views.bindRepositoryDialog.provider");
     textMap.unbind = {};
@@ -1077,12 +1090,12 @@
     
     if(res===true){
 
-      if(jndiName && id && providerId){
+      if( id && providerId){
 
-        that.documentService.bindRepository(providerId,id,jndiName)
+        that.documentService.bindRepository(providerId,id,that.boundDialogRepoProvider.attributesMap)
         .then(function(boundRepo){
           that.bindRepoDialog.close();
-          //TODO:refresh tree as we need the uuid etc.
+          //refresh tree as we need the uuid etc.
           that.refreshRepositories();
           
         })
