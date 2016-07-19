@@ -1107,8 +1107,7 @@
       }
       else{
         this.errorMessage = "";
-        if(!jndiName){this.errorMessage = this.textMap.bindErrorJndiName;}
-        else if(!providerId){this.errorMessage = this.textMap.bindErrorProviderId;}
+        if(!providerId){this.errorMessage = this.textMap.bindErrorProviderId;}
         else if(!id){this.errorMessage = this.textMap.bindErrorRepoId;}
         this.errorDialog.open();
       }
