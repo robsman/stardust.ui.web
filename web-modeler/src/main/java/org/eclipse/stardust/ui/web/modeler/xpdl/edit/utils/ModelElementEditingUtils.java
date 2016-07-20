@@ -186,7 +186,8 @@ public class ModelElementEditingUtils
          for (DataMappingType mapping : activity.getDataMapping())
          {
             // (fh) ??? why not comparing data with data ?
-            if (mapping.getData().getId()
+            if (mapping.getData() != null
+                  && mapping.getData().getId()
                   .equals(data.getId()))
             {
                mappings.add(mapping);

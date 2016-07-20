@@ -743,6 +743,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             DataMappingType dm = i.next();
             if (dm.getData() != null
+                  && dataMapping.getData() != null
                   && dm.getData().getId().equals(dataMapping.getData().getId()))
             {
                dataMappings.add(dm);
@@ -758,7 +759,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                   .hasNext();)
             {
                DataMappingType dm = i.next();
-               if (dm.getData() != null)
+               if (dm.getData() != null && dataMapping.getData() != null)
                {
                   if (dm.getData().getId() != null)
                   {
@@ -894,7 +895,9 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
                .getActivity().getDataMapping())
          {
-            if (dataMapping.getData().getId()
+            if (dataMapping.getData() != null 
+                  && dataMapping.getData() != null
+                  && dataMapping.getData().getId()
                   .equals(dataFlowConnection.getDataSymbol().getData().getId()))
             {
                dataMappings.add(dataMapping);

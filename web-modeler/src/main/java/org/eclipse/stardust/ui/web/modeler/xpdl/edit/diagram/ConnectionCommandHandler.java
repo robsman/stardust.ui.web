@@ -399,7 +399,8 @@ public class ConnectionCommandHandler
             for (DataMappingType dataMappingType : dataMappingConnection
                   .getActivitySymbol().getActivity().getDataMapping())
             {
-               if (dataMappingType.getData().getId()
+               if (dataMappingType.getData() != null 
+                     && dataMappingType.getData().getId()
                      .equals(dataMappingConnection.getDataSymbol().getData().getId()))
                {
                   dataMapping.add(dataMappingType);
