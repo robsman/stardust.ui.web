@@ -39,5 +39,21 @@
          </plugin>
       </plugins>
    </build>
+   <profiles>
+      <profile>
+        <id>license-report</id>
+        <build>
+          <resources>
+            <resource>
+               <directory>${project.build.directory}/generated-sources/license</directory>
+               <excludes>
+                  <exclude>META-INF/**</exclude>
+               </excludes>
+            </resource>
+          </resources>
+        </build>
+      </profile>
+   </profiles>
+
 </project>
 
