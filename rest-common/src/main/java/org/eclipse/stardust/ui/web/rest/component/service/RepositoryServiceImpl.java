@@ -37,6 +37,7 @@ import org.eclipse.stardust.engine.core.repository.jcr.JcrVfsRepositoryConfigura
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryConfiguration;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryProviderInfo;
+import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.component.cachemanager.UserAttributesCacheManager;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
@@ -112,7 +113,8 @@ public class RepositoryServiceImpl implements RepositoryService
       // add trailing slash if it does not exist
       // necessary as in case of few iod environments the trailing slash is being truncated by server resulting into error
       // e.g. url services/rest/portal/folders/%7Burn:repositoryId:System%7D//
-      if (folderId.length() != 1 && folderId.charAt(folderId.length() - 1) != SLASH.charAt(0))
+      String resourceId = RepositoryIdUtils.stripRepositoryId(folderId);
+      if (StringUtils.isEmpty(resourceId))
       {
          folderId = folderId + SLASH;
       }
