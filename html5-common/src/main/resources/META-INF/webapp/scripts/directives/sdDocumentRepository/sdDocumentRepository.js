@@ -632,7 +632,7 @@
     var repoId;
 
     //property tied to the upload dialog directive must be updated
-    repoId = folder.uuid.split("}{")[0] + "}";
+    repoId = this.parseRepositoryID(folder.uuid);
     this.selectedFolderPath = repoId + "/" + folder.path;
 
     //supplying an ID here (which is tied the dialog via an attribute binding)
@@ -723,6 +723,10 @@
 
   };
   
+  docRepoController.prototype.parseRepositoryID = function(uuid){
+     return repoId = uuid.split("}")[0] + "}";    
+  }
+
   docRepoController.prototype.openFileSecuritySettingsDialog = function(documentItem){
 
     var that = this;
@@ -749,7 +753,7 @@
     this.documentVersionTarget=null;
 
     //property tied to the upload dialog directive must be updated
-    repoId = targetFolder.uuid.split("}{")[0] + "}";
+    repoId = this.parseRepositoryID(targetFolder.uuid);
     this.selectedFolderPath = repoId + "/" + targetFolder.path;
 
     //If this folder hasnt been expanded/loaded then we will need to do that
@@ -896,7 +900,7 @@
     var parentPath;
     var repoId;
 
-    repoId= parentFolderNode.uuid.split("}{")[0] + "}";
+    repoId= this.parseRepositoryID(parentFolderNode.uuid);
     parentPath = repoId + "/" + parentFolderNode.path;
     name = this.textMap.newFile + " " + name;
 
