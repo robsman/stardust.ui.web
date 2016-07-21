@@ -244,7 +244,9 @@
 					if (element === undefined || element.attr('sda-bind') === undefined)
 						return;
 
-					var value = evaluate(element.attr('sda-bind'), {rowData: rowData}) || '';
+					var value = evaluate(element.attr('sda-bind'), {rowData: rowData});
+					value = (value === undefined || value == null) ? '' : value;
+					
 					element.html(value);
 				}
 
