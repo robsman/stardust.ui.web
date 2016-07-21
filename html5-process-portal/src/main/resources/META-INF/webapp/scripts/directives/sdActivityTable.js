@@ -457,6 +457,7 @@
 	    	});
 	    	self.processesToAbort = processesToAbort;
 	    	self.popoverDirective.show(event,151);
+	    	this.safeApply();
 	    };
 
 	    /*
@@ -476,6 +477,7 @@
 	     */
 	    self.openJoinDialog = function() {
 	    	self.showJoinProcessDialog = true;
+	    	self.safeApply();
 	    };
 
 	    /*

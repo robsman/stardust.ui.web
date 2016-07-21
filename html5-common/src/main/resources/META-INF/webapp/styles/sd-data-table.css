@@ -103,6 +103,11 @@
 	padding: 0px;
 }
 
+.tbl-action-joined-link {
+	margin-left: -6px;
+	padding: 0px;
+}
+
 
 .tbl-row {
    border-bottom: solid 1px #ddd;
