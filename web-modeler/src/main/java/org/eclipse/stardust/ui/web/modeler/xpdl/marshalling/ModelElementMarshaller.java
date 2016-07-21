@@ -1219,7 +1219,7 @@ public class ModelElementMarshaller implements ModelMarshaller
          
          if (null != dataMappingsJson)
          {
-            activityJson.add(ModelerConstants.DATAMAPPINGS_PROPERTY, dataMappingsJson);
+            activityJson.add(ModelerConstants.CONSTANTS_DATAMAPPINGS_PROPERTY, dataMappingsJson);
          }         
       }
 
