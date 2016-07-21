@@ -1197,6 +1197,30 @@ public class ModelElementMarshaller implements ModelMarshaller
                attributes.addProperty(PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, formula);
             }
          }
+         
+         JsonArray dataMappingsJson = null;         
+         for (DataMappingType dataMapping : activity.getDataMapping())
+         {
+            boolean isConstant = dataMapping.getData() == null 
+                  && StringUtils.isNotEmpty(dataMapping.getDataPath()) 
+                  && StringUtils.isEmpty(dataMapping.getApplicationAccessPoint());
+                        
+            if (null == dataMappingsJson)
+            {
+               dataMappingsJson = new JsonArray();
+            }
+
+            if(isConstant)
+            {
+               JsonObject dataMappingJson = toDataMappingJson(dataMapping);
+               dataMappingsJson.add(dataMappingJson);
+            }
+         }         
+         
+         if (null != dataMappingsJson)
+         {
+            activityJson.add(ModelerConstants.DATAMAPPINGS_PROPERTY, dataMappingsJson);
+         }         
       }
 
       EventHandlerType eventHandler = EventMarshallingUtils
