@@ -60,6 +60,7 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.repository.DocumentRepositoryFolderNames;
+import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.DocumentAnnotations;
@@ -607,6 +608,45 @@ public class DocumentMgmtUtility
    }
    
    /**
+    * @param folderId
+    * @param folderPath
+    * @return
+    */
+   public static Folder createFoldersUsingId(String folderId, String folderPath)
+   {
+      Folder folder = getDocumentManagementService().getFolder(folderId, Folder.LOD_NO_MEMBERS);
+
+      if (null == folder)
+      {         
+         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
+               "views.myDocumentsTreeView.folderNotFound"));
+      }
+
+      FolderInfo folderInfo;
+      Folder parentFolder = folder;
+      String[] paths = folderPath.split("/");
+      for (String path : paths)
+      {
+         if (StringUtils.isNotEmpty(path))
+         {
+            Folder childFolder = getFolder(parentFolder, path, Folder.LOD_LIST_MEMBERS);
+            if (childFolder == null)
+            {
+               folderInfo = DmsUtils.createFolderInfo(path);
+               parentFolder = getDocumentManagementService().createFolder(parentFolder.getId(), folderInfo);
+            }
+            else
+            {
+               parentFolder = childFolder;
+            }
+         }
+      }
+      
+      return parentFolder;
+   }
+   
+   
+   /**
     * @param folderPath
     * @param detailLevel
     * @return
@@ -961,25 +1001,28 @@ public class DocumentMgmtUtility
          getDocumentManagementService().removeDocument(document.getId());
       }
    }
-
+   
    
    /**
-    * @param partitionFolderPath
+    * @param parentFolderId
     * @param bytes
     * @param merge
     * @return
     * @throws Exception
     */
-   public static Map<String, Set<String>> importFolderFromZip(String partitionFolderPath, byte[] bytes, boolean merge)
+   public static Map<String, Set<String>> importFolderFromZip(String parentFolderId, byte[] bytes, boolean merge)
          throws Exception
    {
-      // safeguard the root folder
-      if (ROOT_FOLDER_PATH.equals(partitionFolderPath))
+      // To be more robust, it is assumed that parentFolderId would always be id, not path
+
+      String resourceId = RepositoryIdUtils.stripRepositoryId(parentFolderId);
+      
+      if (StringUtils.isEmpty(resourceId))
       {
          throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
                "views.genericRepositoryView.replaceRootFolderWarning"));
       }
-
+      
       Map<String, Set<String>> result = new HashMap<String, Set<String>>();
       Set<String> added = new TreeSet<String>();
       Set<String> updated = new TreeSet<String>();
@@ -988,8 +1031,7 @@ public class DocumentMgmtUtility
 
       // open the zip file stream
       ZipInputStream stream = new ZipInputStream(new ByteArrayInputStream(bytes));
-      Folder parentFolder = DocumentMgmtUtility.createFolderIfNotExists(partitionFolderPath, Folder.LOD_LIST_MEMBERS);
-      partitionFolderPath = parentFolder.getPath() + "/";
+      Folder parentFolder = DocumentMgmtUtility.createFolderIfNotExists(parentFolderId, Folder.LOD_LIST_MEMBERS);
 
       // if it is clean and create fresh
       if (!merge)
@@ -1011,31 +1053,30 @@ public class DocumentMgmtUtility
             // TODO (ab) how else we can see that this is a folder and not a file
             // (determining this
             // based on the size is dangerous because files also can be empty!
-            if ((relativeEntryPath.endsWith("/") || relativeEntryPath.endsWith("\\")))
+            if (relativeEntryPath.endsWith("/"))
             {
                // this is only an empty folder, create it
                relativeEntryPath = relativeEntryPath.substring(0, relativeEntryPath.length() - 1);
-               createFolderIfNotExists(partitionFolderPath + relativeEntryPath);
+               createFoldersUsingId(parentFolder.getId(), relativeEntryPath);
             }
             else
             {
                // this is a file, put it as a document
-               String folderPath = partitionFolderPath;
                String documentName = relativeEntryPath;
+               Folder subFolder = parentFolder;
                if (relativeEntryPath.contains("/"))
                {
-                  folderPath = partitionFolderPath + relativeEntryPath.substring(0, relativeEntryPath.lastIndexOf('/'));
+                  String folderPath = relativeEntryPath.substring(0, relativeEntryPath.lastIndexOf('/'));
+                  subFolder = createFoldersUsingId(parentFolder.getId(), folderPath);
                   documentName = relativeEntryPath.substring(relativeEntryPath.lastIndexOf('/') + 1);
                }
-               
-               Folder folder = createFolderIfNotExists(folderPath);
                // TODO (CRNT-10654) can not use upload servlet here if content size
                // exceeds threshold
                // (carnot.properties "Carnot.Configuration.ContentStreamingThreshold")
                // since the base url of the dms-content servlet is unknown
                byte[] documentContent = readEntryData(stream);
 
-               Document document = getDocumentManagementService().getDocument(folder.getPath() + "/" + documentName);
+               Document document = getDocument(subFolder, documentName);
 
                if (document == null || !merge)
                {
@@ -1044,7 +1085,7 @@ public class DocumentMgmtUtility
                   docInfo.setContentType(MimeTypesHelper.detectMimeType(documentName, null).getType());
 
                   // use default encoding, should not be a problem
-                  document = getDocumentManagementService().createDocument(folder.getId(), docInfo, documentContent,
+                  document = getDocumentManagementService().createDocument(subFolder.getId(), docInfo, documentContent,
                         null);
                   added.add(document.getPath());
                }
@@ -1065,7 +1106,7 @@ public class DocumentMgmtUtility
 
       return result;
    }
-   
+  
    /**
     * Recursive function to load/create folders based on the zip file information
     * 
