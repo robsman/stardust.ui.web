@@ -31,6 +31,7 @@
       <documentation.dir>../../documentation</documentation.dir>
       <bpm.doc.path>${documentation.dir}/org.eclipse.stardust.docs.analyst</bpm.doc.path>
       <enduser.doc.path>${documentation.dir}/org.eclipse.stardust.docs.enduser</enduser.doc.path>
+      <examples.path>../../examples/tutorials/document-triage/target/classes</examples.path>
       
       <project.build.sourceEncoding>iso-8859-1</project.build.sourceEncoding>
    </properties>
@@ -150,7 +151,13 @@
                      </copy>
  
                      <!-- copy end user doc -->
-                     <!-- copy images without filtering -->
+                     <!-- copy reference document request model -->
+                     <copy todir="${build.src.portaldoc}/execution-clients/predefined-models" >
+                        <fileset dir="${examples.path}">
+                           <include name="**/*.xpdl"/>
+                        </fileset>
+                     </copy>
+                     <!-- copy images and other source files without filtering -->
                      <copy todir="${build.src.portaldoc}" >
                         <fileset dir="${enduser.doc.path}/html/handbooks">
                            <include name="**/*.xsd"/>
