@@ -221,8 +221,9 @@ public class ReportingServiceBean
     * @return preference data
     */
    public JsonObject getPreferenceData()
-   {    
-      JsonObject preferenceData = CriticalityUtilities.getPreferenceData(new AdministrationServiceImpl());
+   {
+      AdministrationService as = getServiceFactory().getService(AdministrationService.class);
+      JsonObject preferenceData = CriticalityUtilities.getPreferenceData(as);
 
       JsonArray criticalitiesArray = preferenceData.get("criticality").getAsJsonArray();
       List<Criticality> criticalities = new ArrayList<Criticality>();
