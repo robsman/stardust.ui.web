@@ -23,8 +23,6 @@ import java.util.TimeZone;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.ui.web.common.log.LogManager;
-import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataMapping;
@@ -47,6 +45,8 @@ import org.eclipse.stardust.engine.core.struct.IXPathMap;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataXPathUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
@@ -1009,6 +1009,10 @@ public class DescriptorFilterUtils
             {
                value = getDateValue((Date) dataPathValue, dataClass);
             }
+            if (dataPathValue instanceof Calendar)
+            {
+               value = getDateValue((Date) dataPathValue, dataClass);
+            }
             else if (dataPathValue instanceof String)
             {
                Date dateValue = DateUtils.parseDateTime(dataPathValue.toString());
@@ -1061,7 +1065,7 @@ public class DescriptorFilterUtils
          Calendar cal = Calendar.getInstance();
          cal.clear();
          cal.setTime(value);
-         valueToSet = cal;
+         valueToSet = cal.getTime();
       }
       return valueToSet;
    }
