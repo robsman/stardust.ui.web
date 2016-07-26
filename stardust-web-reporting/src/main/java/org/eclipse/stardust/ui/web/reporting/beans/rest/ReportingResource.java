@@ -4,7 +4,6 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
-import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -65,7 +64,7 @@ public class ReportingResource
    {
       try
       {
-         return Response.ok(reportingService.getModelData(new Locale(reportingService.getLanguage(httpRequest))).toString(), MediaType.APPLICATION_JSON_TYPE).build();
+         return Response.ok(reportingService.getModelData().toString(), MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
