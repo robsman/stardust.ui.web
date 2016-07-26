@@ -52,7 +52,6 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
 import org.eclipse.stardust.engine.api.runtime.*;
-import org.eclipse.stardust.engine.core.runtime.beans.AdministrationServiceImpl;
 import org.eclipse.stardust.engine.core.runtime.beans.BpmRuntimeEnvironment;
 import org.eclipse.stardust.engine.core.runtime.beans.interceptors.PropertyLayerProviderInterceptor;
 import org.eclipse.stardust.engine.core.runtime.scheduling.SchedulingFactory;
@@ -62,7 +61,6 @@ import org.eclipse.stardust.reporting.rt.mapping.ReportDefinition;
 import org.eclipse.stardust.reporting.rt.mapping.ReportRequest;
 import org.eclipse.stardust.reporting.rt.service.ReportFormat;
 import org.eclipse.stardust.reporting.rt.service.ReportingService;
-import org.eclipse.stardust.reporting.rt.util.CriticalityUtilities;
 import org.eclipse.stardust.reporting.rt.util.JsonMarshaller;
 import org.eclipse.stardust.reporting.rt.util.ReportUtilities;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
@@ -78,6 +76,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
+import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils.DataPathMetadata;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
@@ -224,41 +223,24 @@ public class ReportingServiceBean
    {
       AdministrationService as = getServiceFactory().getService(AdministrationService.class);
       JsonObject preferenceData = CriticalityUtilities.getPreferenceData(as);
-
-      JsonArray criticalitiesArray = preferenceData.get("criticality").getAsJsonArray();
+      
       List<Criticality> criticalities = new ArrayList<Criticality>();
-
-      for (int i = 0; i < criticalitiesArray.size(); i++)
+      
+      int index = 1;
+      for (CriticalityCategory criticalityCategory : criticalityPrefs)
       {
-         JsonObject category = criticalitiesArray.get(i).getAsJsonObject();
-
-         CriticalityCategory critCat = new CriticalityCategory();
-         critCat.setRangeFrom(category.get("rangeFrom").getAsInt());
-         critCat.setRangeTo(category.get("rangeTo").getAsInt());
-         critCat.setLabel(category.get("name").getAsString());
-
-         String categoryId = category.get("id").getAsString();
-         //Reporting still don't support "All" and "Undefined" Criticality Category so filtering them out. CRNT-33822       
-         if (!(categoryId.equals("All") || categoryId.equals("Undefined")))
-         {
-            if (categoryId.equals("Low"))
-            {
-               criticalities.add(new Criticality(critCat, 1));
-            }
-            else if (categoryId.equals("Medium"))
-            {
-               criticalities.add(new Criticality(critCat, 2));
-            }
-            else if (categoryId.equals("High"))
-            {
-               criticalities.add(new Criticality(critCat, 3));
-            }
-         }
+         criticalities.add(new Criticality(criticalityCategory, index++));
       }
 
       JsonObject preferencesJson = new JsonObject();
-      preferencesJson.add("criticality", gson.toJsonTree(criticalities));
+
+      // temporary commented - uncomment it when CRNT-33822 is resolved
+      /*CriticalityCategory cat = CriticalityConfigurationUtil.getUndefinedCriticalityCategory();
+      cat.setName("Undefined"); //TODO I18n
+      criticalityList.add(cat);*/
       
+      preferencesJson.add("criticality", gson.toJsonTree(criticalities));
+
       //Favorite Reports
       ArrayList<String> favoriteReportList = new ArrayList<String>();
       HashMap<String, String> favoriteReportsMap = RepositoryUtility.getFavoriteReports();
@@ -266,8 +248,11 @@ public class ReportingServiceBean
       {
          favoriteReportList.add(docIdName.getKey());
       }
+      
       preferencesJson.add("favoriteReports", gson.toJsonTree(favoriteReportList));
-            
+      
+      //add other preferences here
+      
       return preferencesJson;
    }
 
