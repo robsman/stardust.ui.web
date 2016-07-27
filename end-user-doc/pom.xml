@@ -31,10 +31,19 @@
       <documentation.dir>../../documentation</documentation.dir>
       <bpm.doc.path>${documentation.dir}/org.eclipse.stardust.docs.analyst</bpm.doc.path>
       <enduser.doc.path>${documentation.dir}/org.eclipse.stardust.docs.enduser</enduser.doc.path>
-      <examples.path>../../examples/tutorials/document-triage/target/classes</examples.path>
-      
+
       <project.build.sourceEncoding>iso-8859-1</project.build.sourceEncoding>
    </properties>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.eclipse.stardust.examples</groupId>
+         <artifactId>document-triage</artifactId>
+         <version>${project.version}</version>
+         <type>zip</type>
+         <scope>provided</scope>
+      </dependency>
+   </dependencies>
 
    <build>
       <resources>
@@ -91,6 +100,24 @@
             <configuration>
                <skipSource>true</skipSource>
             </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+               <execution>
+                  <phase>generate-resources</phase>
+                  <goals>
+                     <goal>unpack-dependencies</goal>
+                  </goals>
+                  <configuration>
+                     <includeArtifactIds>document-triage</includeArtifactIds>
+                     <useSubDirectoryPerArtifact>true</useSubDirectoryPerArtifact>
+                     <stripClassifier>true</stripClassifier>
+                     <stripVersion>true</stripVersion>
+                  </configuration>
+               </execution>
+            </executions>
          </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -153,7 +180,7 @@
                      <!-- copy end user doc -->
                      <!-- copy reference document request model -->
                      <copy todir="${build.src.portaldoc}/execution-clients/predefined-models" >
-                        <fileset dir="${examples.path}">
+                        <fileset dir="${project.build.directory}/dependency/document-triage-zip/dat">
                            <include name="**/*.xpdl"/>
                         </fileset>
                      </copy>
