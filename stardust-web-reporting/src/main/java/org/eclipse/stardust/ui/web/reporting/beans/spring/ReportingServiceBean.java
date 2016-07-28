@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.reporting.beans.spring;
 
-import static org.eclipse.stardust.common.StringUtils.isEmpty;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +27,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -41,8 +40,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
-import org.eclipse.stardust.ui.web.common.log.LogManager;
-import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
@@ -50,9 +47,15 @@ import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
-import org.eclipse.stardust.engine.api.runtime.*;
-import org.eclipse.stardust.engine.core.runtime.beans.BpmRuntimeEnvironment;
-import org.eclipse.stardust.engine.core.runtime.beans.interceptors.PropertyLayerProviderInterceptor;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
+import org.eclipse.stardust.engine.api.runtime.DmsUtils;
+import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
+import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.core.runtime.scheduling.SchedulingFactory;
 import org.eclipse.stardust.engine.core.runtime.scheduling.SchedulingRecurrence;
 import org.eclipse.stardust.reporting.rt.ReportParameter;
@@ -61,6 +64,8 @@ import org.eclipse.stardust.reporting.rt.mapping.ReportRequest;
 import org.eclipse.stardust.reporting.rt.service.ReportFormat;
 import org.eclipse.stardust.reporting.rt.service.ReportingService;
 import org.eclipse.stardust.reporting.rt.util.JsonMarshaller;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
@@ -205,12 +210,13 @@ public class ReportingServiceBean
    *
    * @return
    */
-   public JsonObject getModelData()
+   public JsonObject getModelData(Locale locale)
    {      
       try
       {
          JsonObject resultJson = new JsonObject();
          JsonObject processesJson = new JsonObject();
+         JsonObject descriptorsJson = new JsonObject();
          JsonObject benchmarksJson = new JsonObject();
 
          resultJson.add("processDefinitions", processesJson);
@@ -242,7 +248,7 @@ public class ReportingServiceBean
                {
                   Data data = model.getData(dataPath.getData());
                   String descriptorId = dataPath.getId() + ":" + data.getQualifiedId();
-                  if ( !isEmpty(dataPath.getAccessPath()))
+                  if ( !StringUtils.isEmpty(dataPath.getAccessPath()))
                   {
                      descriptorId += ":" + dataPath.getAccessPath();
                   }
@@ -364,14 +370,14 @@ public class ReportingServiceBean
       {
       }
    }
-
+   
    /**
     * @return preference data
     */
    public JsonObject getPreferenceData()
    {
-      AdministrationService as = getServiceFactory().getService(AdministrationService.class);
-      JsonObject preferenceData = CriticalityUtilities.getPreferenceData(as);
+      // criticality
+      List<CriticalityCategory> criticalityPrefs = CriticalityConfigurationUtil.getCriticalityCategoriesList();
       
       List<Criticality> criticalities = new ArrayList<Criticality>();
       
@@ -404,6 +410,7 @@ public class ReportingServiceBean
       
       return preferencesJson;
    }
+
 
    /**
     *

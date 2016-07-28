@@ -1,12 +1,10 @@
 package org.eclipse.stardust.ui.web.reporting.beans.rest;
 
 import java.net.URLEncoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -26,9 +24,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.Base64;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.reporting.rt.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
-import org.eclipse.stardust.reporting.rt.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.ReportingServiceBean;
 import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
@@ -36,7 +34,6 @@ import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 /**
  *
@@ -64,7 +61,7 @@ public class ReportingResource
    {
       try
       {
-         return Response.ok(reportingService.getModelData().toString(), MediaType.APPLICATION_JSON_TYPE).build();
+         return Response.ok(reportingService.getModelData(new Locale(reportingService.getLanguage(httpRequest))).toString(), MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
