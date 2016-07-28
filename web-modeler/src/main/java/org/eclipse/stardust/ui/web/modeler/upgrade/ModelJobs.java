@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.stardust.common.config.CurrentVersion;
 import org.eclipse.stardust.ui.web.modeler.upgrade.jobs.M3_1_0from1_0_0UpgradeJob;
 import org.eclipse.stardust.ui.web.modeler.upgrade.jobs.R9_0_0from7_0_0UpgradeJob;
+import org.eclipse.stardust.ui.web.modeler.upgrade.jobs.R9_2_0from9_0_0UpgradeJob;
 
 /**
  * @author Barry.Grotjahn
@@ -42,6 +43,7 @@ public class ModelJobs
          else
          {
             jobs.add(new R9_0_0from7_0_0UpgradeJob());
+            jobs.add(new R9_2_0from9_0_0UpgradeJob());
          }
       }
 
