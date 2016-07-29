@@ -457,8 +457,8 @@
 											class="msg-error">{{i18n('html5-common.converter-number-error')}} </div>
 									</div>
 								</td>
-
-								<td ng-if="descCol.dataType =='DATE'">
+								
+								<td ng-if="descCol.dataType =='DATETIME'">
 									<table cellspacing="2" cellpadding="2"
 										style="white-space: nowrap;">
 										<tr>
@@ -490,6 +490,39 @@
 
 									</table>
 								</td>
+								<td ng-if="descCol.dataType =='DATE'">
+									<table cellspacing="2" cellpadding="2"
+										style="white-space: nowrap;">
+										<tr>
+											<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-first')}}</label></td>
+											<td><div sd-date-time-condensed sda-date-type="'date'" id="from"
+												name="from{{$index}}"
+												ng-model="procSearchViewCtrl.selected[descCol.id].from"
+												ng-model-onblur
+												aid="BCC-ProcSrch-Descriptors-FromDate" />
+											</td>
+										</tr>
+										<tr>
+											<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-last')}}</label></td>
+											<td><div sd-date-time-condensed sda-date-type="'date'" id="to"
+												name="to{{$index}}"
+												ng-model="procSearchViewCtrl.selected[descCol.id].to"
+												ng-model-onblur
+												aid="BCC-ProcSrch-Descriptors-ToDate" />
+											</td>
+										</tr>
+										<tr>
+											<td></td>
+											<td>
+												<div ng-show="!procSearchViewCtrl.checkDateRangeValidity(procSearchViewCtrl.selected[descCol.id].from, procSearchViewCtrl.selected[descCol.id].to)" class="msg-error">
+													{{i18n('portal-common-messages.common-filterPopup-betweenFilter-message-rangeNotValid')}}
+												</div>
+										  </td>
+										</tr>
+
+									</table>
+								</td>
+								
 								<td></td>
 							</tr>
 						</table>

@@ -1815,7 +1815,8 @@ public class ProcessInstanceUtils
                value = new NumberRange(from, to);
             }
             // Date type desc
-            else if (descriptor.getValue().type.equals(ColumnDataType.DATETIME.toString()))
+            else if (descriptor.getValue().type.equals(ColumnDataType.DATETIME.toString())
+                  || descriptor.getValue().type.equals(ColumnDataType.DATE.toString()))
             {
                Long from = ((RangeDTO) descriptor.getValue().value).from;
                Long to = ((RangeDTO) descriptor.getValue().value).to;
@@ -2313,6 +2314,7 @@ public class ProcessInstanceUtils
 
             }
             else if (ColumnDataType.DATETIME.toString().equals(descriptorColumnDTO.type)
+                  || ColumnDataType.DATE.toString().equals(descriptorColumnDTO.type)
                   || ColumnDataType.NUMBER.toString().equals(descriptorColumnDTO.type))
             {
                filterDTO = new Gson().fromJson(descriptorColumnsFilterJson.get(id),

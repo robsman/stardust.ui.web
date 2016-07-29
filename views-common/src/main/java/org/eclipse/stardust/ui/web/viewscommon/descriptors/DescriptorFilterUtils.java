@@ -201,6 +201,15 @@ public class DescriptorFilterUtils
                {
                   dataPathMD.sortable = false;
                }
+               
+               // Calendar is primitive but does not support filtering and sorting except BusinessDate
+               if (Calendar.class.equals(mappedType))
+               {
+                  if (!PredefinedConstants.BUSINESS_DATE.equals(data.getId()))
+                  {
+                     dataPathMD = new DataPathMetadata(false, false);
+                  }
+               }
             }
          }
       }
@@ -705,9 +714,29 @@ public class DescriptorFilterUtils
    {
       String dataId = getData(dataPath).getQualifiedId();
       DataFilter dataFilter = null;
-
-      Date fromDateValue = dateRange.getFromDateValue();
-      Date toDateValue = dateRange.getToDateValue();
+      Serializable fromDateValue = dateRange.getFromDateValue();
+      Serializable toDateValue = dateRange.getToDateValue();
+      
+      if (PredefinedConstants.BUSINESS_DATE.equals(dataPath.getData()))
+      {
+         dataId = PredefinedConstants.BUSINESS_DATE;
+         Calendar cal = Calendar.getInstance();
+         if (dateRange.getFromDateValue() != null)
+         {
+            cal.setTime(dateRange.getFromDateValue());
+            cal.set(Calendar.HOUR_OF_DAY, 00);
+            cal.set(Calendar.MINUTE, 0);
+            fromDateValue = cal;
+         }
+         if (dateRange.getToDateValue() != null)
+         {
+            cal = Calendar.getInstance();
+            cal.setTime(dateRange.getToDateValue());
+            cal.set(Calendar.HOUR_OF_DAY, 24);
+            cal.set(Calendar.MINUTE, 0);
+            toDateValue = cal;
+         }
+      }
 
       if (fromDateValue != null && toDateValue != null)
       {

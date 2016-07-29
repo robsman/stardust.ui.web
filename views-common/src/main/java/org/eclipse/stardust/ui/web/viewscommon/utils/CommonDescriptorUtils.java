@@ -1395,11 +1395,11 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
    {
       if (dataPath.getAttribute(HIDE_TIME) != null)
       {
-         Boolean hideTime = (Boolean) dataPath.getAttribute(HIDE_TIME);
-         if (hideTime || PredefinedConstants.BUSINESS_DATE.equals(dataPath.getData()))
-         {
-            return true;
-         }
+         return (Boolean) dataPath.getAttribute(HIDE_TIME);
+      }
+      if (PredefinedConstants.BUSINESS_DATE.equals(dataPath.getData()))
+      {
+         return true;
       }
       
       return false;

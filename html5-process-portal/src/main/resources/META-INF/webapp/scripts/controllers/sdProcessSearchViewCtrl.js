@@ -413,7 +413,7 @@
 			var selectedProcDefIds = getSelectedProcDefIds(this.procSrchProcessSelected);
 			var self = this;
 			_sdProcessSearchService
-					.getCommonDescriptors(selectedProcDefIds, false)
+					.getCommonDescriptors(selectedProcDefIds, true)
 					.then(
 							function(commonDescriptors) {
 								angular
@@ -513,10 +513,11 @@
 								obj['from'] = this.selected[this.descritorCols[index].id];
 								obj['to'] = this.selected[this.descritorCols[index].id];
 							}
-						}else if (this.descritorCols[index].dataType == "DATE") {
-							obj['from'] = this.selected[this.descritorCols[index].id].from;
-							obj['to'] = this.selected[this.descritorCols[index].id].to;
-						}else if (this.descritorCols[index].dataType == "LIST") {
+            } else if ((this.descritorCols[index].dataType == "DATE")
+                    || this.descritorCols[index].dataType == "DATETIME") {
+              obj['from'] = this.selected[this.descritorCols[index].id].from;
+              obj['to'] = this.selected[this.descritorCols[index].id].to;
+            }else if (this.descritorCols[index].dataType == "LIST") {
 							if(!_sdUtilService.isEmpty(this.selected[this.descritorCols[index].id])) {
 								obj['textSearch'] = this.selected[this.descritorCols[index].id];
 							}
