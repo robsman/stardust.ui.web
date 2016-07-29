@@ -726,14 +726,16 @@ public class DescriptorFilterUtils
             cal.setTime(dateRange.getFromDateValue());
             cal.set(Calendar.HOUR_OF_DAY, 00);
             cal.set(Calendar.MINUTE, 0);
+            System.out.println(cal.getTime().toLocaleString());
             fromDateValue = cal;
          }
          if (dateRange.getToDateValue() != null)
          {
             cal = Calendar.getInstance();
             cal.setTime(dateRange.getToDateValue());
-            cal.set(Calendar.HOUR_OF_DAY, 24);
-            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
             toDateValue = cal;
          }
       }
