@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import org.eclipse.stardust.common.CollectionUtils;
@@ -31,8 +32,6 @@ import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.ui.web.common.log.LogManager;
-import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.DataPathDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
@@ -53,7 +52,10 @@ import org.eclipse.stardust.engine.core.struct.StructuredDataXPathUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.core.struct.XPathAnnotations;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
@@ -74,7 +76,6 @@ import org.eclipse.stardust.ui.web.viewscommon.spi.descriptor.ISemanticalDescrip
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
 
-
 /**
  * @author yogesh.manware
  * 
@@ -83,6 +84,8 @@ public class CommonDescriptorUtils
 {
    private static final Logger trace = LogManager.getLogger(CommonDescriptorUtils.class);
    
+   public static final String USE_SERVER_TIME_ZONE = PredefinedConstants.USE_SERVERTIME;
+   public static final String HIDE_TIME = "stardust:model:dateTimeDescriptor:hideTime";
    
    /**
     * Returns process instance's descriptors list taking workflow configurations into
@@ -417,18 +420,18 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                      if(null != text && StringUtils.isNotEmpty(text.toString()))
                      {
                         processDescriptor = new ProcessDescriptor(entry.getKey(), I18nUtils.getDataPathName(entry.getValue()),
-                              formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType()), true);   
+                              formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType(), dataPathDetails), true);   
                      }
                      else
                      {
                         processDescriptor = new ProcessDescriptor(entry.getKey(), I18nUtils.getDataPathName(entry.getValue()),
-                              formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType()));
+                              formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType(), dataPathDetails));
                      }
                   }
                   else
                   {
                      processDescriptor = new ProcessDescriptor(entry.getKey(), I18nUtils.getDataPathName(entry.getValue()),
-                           formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType()));
+                           formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType(), dataPathDetails));
                   }
                   processDescriptors.add(processDescriptor);  
                }
@@ -874,26 +877,55 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
     * @param dateType
     * @return
     */
-   public static String formatDescriptorValue(Object valueObj, String dateType)
+   public static String formatDescriptorValue(Object valueObj, String dateType, DataPath dp)
    {
       String value = "";
       if (valueObj instanceof Date || valueObj instanceof Calendar)
       {
-         Date dateValue = valueObj instanceof Calendar ? ((Calendar) valueObj).getTime() : (Date) valueObj;
-
          if (StringUtils.isNotEmpty(dateType))
          {
             if (dateType.equalsIgnoreCase(ProcessPortalConstants.DATE_TYPE))
             {
-               value = DateUtils.formatDate((Date) valueObj, java.util.TimeZone.getDefault());
+               if (valueObj instanceof Calendar && isUseServerSideTime(dp))
+               {
+                  // calendar contain the original timezone
+                  TimeZone tz = ((Calendar) valueObj).getTimeZone();
+                  valueObj = ((Calendar) valueObj).getTime();
+                  value = DateUtils.formatDate((Date) valueObj, tz);
+               }
+               else
+               {
+                  value = DateUtils.formatDate((Date) valueObj, PortalApplication.getInstance().getTimeZone());
+               }
             }
             else if (dateType.equalsIgnoreCase(ProcessPortalConstants.TIMESTAMP_TYPE))
             {
-               value = DateUtils.formatDateTime(dateValue);
+               TimeZone tz = PortalApplication.getInstance().getTimeZone();
+               
+               if (valueObj instanceof Calendar)
+               {
+                  // calendar contain the original timezone
+                  if (isUseServerSideTime(dp))
+                  {
+                     tz = ((Calendar) valueObj).getTimeZone();
+                  }
+
+                  valueObj = ((Calendar) valueObj).getTime();
+               }
+               
+               if (isHideTime(dp))
+               {
+                  value = DateUtils.formatDate((Date) valueObj, tz);
+               }
+               else
+               {
+                  value = DateUtils.format((Date) valueObj, DateUtils.getDateTimeFormat(), tz);
+               }
             }
          }
          if (StringUtils.isEmpty(value))
          {
+            Date dateValue = valueObj instanceof Calendar ? ((Calendar) valueObj).getTime() : (Date) valueObj;
             value = DateUtils.formatDateTime(dateValue);
          }
       }
@@ -1207,7 +1239,7 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
             // Read the DataPath Id key value from descriptorList 
             
             processDescriptor = new ProcessDescriptor(dp.getId(), I18nUtils.getDataPathName(dp), formatDescriptorValue(val, dp
-                  .getMappedType().toString()));
+                  .getMappedType().toString(), dp));
             processDescriptors.add(processDescriptor);
          }
       }
@@ -1334,18 +1366,18 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                   if(null != text && StringUtils.isNotEmpty(text.toString()))
                   {
                      processDescriptor = new ProcessDescriptor(dataPathDetails.getId(), I18nUtils.getDataPathName(dataPathDetails),
-                           formatDescriptorValue(descriptors.get(key), dmWrapper.getType()), true);   
+                           formatDescriptorValue(descriptors.get(key), dmWrapper.getType(), dataPathDetails), true);   
                   }
                   else
                   {
                      processDescriptor = new ProcessDescriptor(dataPathDetails.getId(), I18nUtils.getDataPathName(dataPathDetails),
-                           formatDescriptorValue(descriptors.get(key), dmWrapper.getType()));
+                           formatDescriptorValue(descriptors.get(key), dmWrapper.getType(), dataPathDetails));
                   }
                }
                else
                {
                   processDescriptor = new ProcessDescriptor(dataPathDetails.getId(), I18nUtils.getDataPathName(dataPathDetails),
-                        formatDescriptorValue(descriptors.get(key), dmWrapper.getType()));
+                        formatDescriptorValue(descriptors.get(key), dmWrapper.getType(), dataPathDetails));
                }
                processDescriptors.add(processDescriptor);  
 
@@ -1353,5 +1385,41 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
          }
       }
       return processDescriptors;
+   }
+  
+   /**
+    * @param dataPath
+    * @return
+    */
+   public static boolean isHideTime(DataPath dataPath)
+   {
+      if (dataPath.getAttribute(HIDE_TIME) != null)
+      {
+         Boolean hideTime = (Boolean) dataPath.getAttribute(HIDE_TIME);
+         if (hideTime || PredefinedConstants.BUSINESS_DATE.equals(dataPath.getData()))
+         {
+            return true;
+         }
+      }
+      
+      return false;
+   }
+
+   /**
+    * @param dataPath
+    * @return
+    */
+   public static boolean isUseServerSideTime(DataPath dataPath)
+   {
+      if (dataPath.getAttribute(USE_SERVER_TIME_ZONE) != null)
+      {
+         Boolean useServerSideTime = (Boolean) dataPath.getAttribute(USE_SERVER_TIME_ZONE);
+         if (useServerSideTime || PredefinedConstants.BUSINESS_DATE.equals(dataPath.getData()))
+         {
+            return true;
+         }
+      }
+      
+      return false;
    }
 }

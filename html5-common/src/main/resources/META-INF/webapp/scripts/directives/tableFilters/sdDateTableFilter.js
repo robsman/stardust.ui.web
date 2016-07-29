@@ -31,14 +31,14 @@
 						'<tr>' +
 							'<td><label class="label-item">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-first\')}}</label></td>' +
 							'<td>' +
-								'<div sd-date-time-condensed ng-model="filterData.from" id="from" name="from" ng-model-onblur> </div>' +
+								'<div sd-date-time-condensed sda-date-type="dateType" ng-model="filterData.from" id="from" name="from" ng-model-onblur> </div>' +
 								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.validate">{{i18n(\'html5-common.date-time-error\')}}</div>' +
 							'</td>' +
 						'</tr>' +
 						'<tr>' +
 							'<td><label class="label-item">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-last\')}}</label></td>' +
 							'<td>' +
-        							'<div sd-date-time-condensed ng-model="filterData.to" id="to" name="to" ng-model-onblur> </div>' +
+        							'<div sd-date-time-condensed sda-date-type="dateType" ng-model="filterData.to" id="to" name="to" ng-model-onblur> </div>' +
         							'<div class="msg-error" ng-show="filterForm[\'to\'].$error.validate">{{i18n(\'html5-common.date-time-error\')}}</div>' +
 							'</td>' +
 						'</tr>' +
@@ -46,6 +46,8 @@
 					'<div class="msg-error" ng-show="filterForm.$error.range">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-message-rangeNotValid\')}}</div>' +
 				'</form>',
 			link: function(scope, element, attr, ctrl) {
+			  
+			  scope.dateType = attr.sdaDateType;
 				/*
 				 * 
 				 */
@@ -59,17 +61,17 @@
 						} else {
 							if (!sdUtilService.isEmpty(scope.filterData.from) && !sdUtilService.isEmpty(scope.filterData.to)) {
 								if (scope.filterData.from <= scope.filterData.to) {
-									scope.setFilterTitle(formatDate(scope.filterData.from) + ' - ' + formatDate(scope.filterData.to));
+									scope.setFilterTitle(formatDate(scope.filterData.from, scope.dateType) + ' - ' + formatDate(scope.filterData.to, scope.dateType));
 									return true;
 								} else {
 									scope.filterForm.$error.range = true;
 								}
 							} else {
 								if (!sdUtilService.isEmpty(scope.filterData.from)) {
-									scope.setFilterTitle('> ' + formatDate(scope.filterData.from));
+									scope.setFilterTitle('> ' + formatDate(scope.filterData.from, scope.dateType));
 									delete scope.filterData.to;
 								} else {
-									scope.setFilterTitle('< ' + formatDate(scope.filterData.to));
+									scope.setFilterTitle('< ' + formatDate(scope.filterData.to, scope.dateType));
 									delete scope.filterData.from;
 								}
 								return true;
@@ -109,10 +111,13 @@
 				/*
 				 * 
 				 */
-				function formatDate(mills) {
-				    var date = new Date(mills);
-				    var angularDateFilter = $filter('sdDateTimeFilter');
-				    return angularDateFilter(date);
+				function formatDate(mills, dateType) {
+			    var date = new Date(mills);
+          var angularDateFilter = $filter('sdDateTimeFilter');
+          if (dateType == 'date') {
+            angularDateFilter = $filter('sdDateFilter');
+          }
+			    return angularDateFilter(date);
 				}
 			}
 		};

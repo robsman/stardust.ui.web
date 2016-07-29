@@ -47,6 +47,7 @@ import org.eclipse.stardust.ui.web.rest.dto.builder.DocumentTypeDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.util.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.rest.util.DescriptorColumnUtils.ColumnDataType;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.springframework.stereotype.Component;
@@ -151,6 +152,15 @@ public class ProcessDefinitionService
 	         DescriptorColumnDTO descriptorColumn = new DescriptorColumnDTO(descriptorId,
 	               I18nUtils.getDataPathName(dataPath), type, detailedType, sortable, filterable);
 	         descriptorColumns.add(descriptorColumn);
+	         
+	         if (columnType == ColumnDataType.DATETIME)
+             {
+                if (CommonDescriptorUtils.isHideTime(dataPath))
+                {
+                   descriptorColumn.detailedType = ColumnDataType.DATE.toString();
+                   descriptorColumn.type = ColumnDataType.DATE.toString();
+                }
+             }
 	      }
 	      return descriptorColumns;
 

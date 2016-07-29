@@ -29,7 +29,7 @@ public class DescriptorColumnUtils
 		}
 		if (Date.class.equals(mappedType) || Calendar.class.equals(mappedType))
 		{
-			return ColumnDataType.DATE;
+			return ColumnDataType.DATETIME;
 		}
 		else if (determineNumberDataType(mappedType) != null)
 		{
@@ -87,6 +87,7 @@ public class DescriptorColumnUtils
       STRING,
       NUMBER,
       DATE,
+      DATETIME,
       BOOLEAN,
       DOCUMENT,
       LIST,

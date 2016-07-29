@@ -197,7 +197,8 @@
 					sda-fixed="{{activityTableCtrl.isDefinedFixed(descCol.id, false)}}">
 					<div sda-filter-template ng-if="descCol.filterable">
 						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-table-filter></div></div>
-						<div ng-if="colData.dataType =='DATE'"><div sd-date-table-filter></div></div>
+						<div ng-if="colData.dataType =='DATETIME'"><div sd-date-table-filter sda-date-type="datetime"></div></div>
+						<div ng-if="colData.dataType =='DATE'"><div sd-date-table-filter sda-date-type="date"></div></div>
 						<div ng-if="colData.dataType =='BOOLEAN'"><div sd-boolean-table-filter></div></div>
 						<div ng-if="colData.dataType =='STRING'"><div sd-text-search-table-filter></div></div>
 					</div>

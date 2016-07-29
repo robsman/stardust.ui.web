@@ -93,6 +93,7 @@ public class ColumnPreference implements Serializable
    
    protected List<ColumnPreference> children = new ArrayList<ColumnPreference>();
    protected Integer totalLeafCount;
+   protected boolean useServerTimeZone = false; //applicable to calendar type only
 
    /**
     * @param columnName
@@ -483,6 +484,11 @@ public class ColumnPreference implements Serializable
       return columnDataType;
    }
    
+   public void setColumnDataType(ColumnDataType type)
+   {
+      columnDataType = type;
+   }
+   
    public ColumnRenderType getColumnRenderType()
    {
       return columnRenderType;
@@ -566,5 +572,15 @@ public class ColumnPreference implements Serializable
    public void setEscape(boolean escape)
    {
       this.escape = escape;
+   }
+
+   public boolean isUseServerTimeZone()
+   {
+      return useServerTimeZone;
+   }
+
+   public void setUseServerTimeZone(boolean userServerTimeZone)
+   {
+      this.useServerTimeZone = userServerTimeZone;
    }
 }

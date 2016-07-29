@@ -45,11 +45,19 @@
 			scope : {
 				selectedDateTime : '=ngModel',
 				defaultAdj : '@sdaDefaultAdjustment',
-				autoIdPrefix : '@sdaAidPrefix'
+				autoIdPrefix : '@sdaAidPrefix',
+				dateType : '=sdaDateType'
 			},
 			require : 'ngModel',
 			link : function(scope, elem, attr, ngModelCtrl) {
 
+			  scope.hideTime = function(){
+			    if(scope.dateType == 'date'){
+			      return true;
+			    }
+			    return false;
+			  }
+			  
 				scope.ctrl.ngModelCtrl = ngModelCtrl;
 				scope.ctrl.dateElem = $("input[sd-date-picker]",elem);
 
@@ -88,7 +96,7 @@
 								'type="text" sd-date-picker ng-model-onblur sda-milliseconds="true" '+
 								'id="selectDate" name="selectDate" ng-change="ctrl.updateView(ctrl.selectedDate,ctrl.timeComponent)" ' +
 								'ng-model="ctrl.selectedDate" aid="{{ctrl.aidDate}}" / >'+
-							'<input class="time-part" ' +
+							'<input class="time-part" ng-hide="hideTime()" ' +
 								'ng-blur="ctrl.updateView(ctrl.selectedDate,ctrl.timeComponent);ctrl.isDirty = true" ' +
 								'ng-keydown="ctrl.keyMonitor($event)" ' +
 								'ng-model="ctrl.timeComponent" ' +

@@ -31,6 +31,8 @@
 							'{{descriptorCtrl.descriptorValue.value}}<\/div>'+
 						'<div ng-if="descriptorCtrl.dataType == \'DATE\' "> ' +
 						'{{descriptorCtrl.descriptorValue.value | sdDateFilter}}<\/div>'+
+            '<div ng-if="descriptorCtrl.dataType == \'DATETIME\' "> ' +
+            '{{descriptorCtrl.descriptorValue.value | sdDateTimeFilter}}<\/div>'+
 						'<div ng-if="(descriptorCtrl.dataType == \'STRING\' && !descriptorCtrl.descriptorValue.isLink) || descriptorCtrl.dataType == \'BOOLEAN\' ">'+
 							'{{descriptorCtrl.descriptorValue.value}}'+
 						'<\/div>'+

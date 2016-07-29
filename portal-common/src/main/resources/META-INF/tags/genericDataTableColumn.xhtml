@@ -36,19 +36,23 @@
 		<!-- ********** DATE COLUMN ********** -->
 		<c:if test="#{item.columnDataType eq 'DATE'}">
 			<ice:outputText value="#{row[property]}" rendered="#{item.columnRenderType eq 'READ_ONLY'}">
-				<f:convertDateTime
+			<f:converter converterId="customDateTimeConverter" />
+			<f:attribute name="useServerTimeZone" value="#{item.useServerTimeZone}"/>
+				<!-- <f:convertDateTime
 					pattern="#{columnPref.columnFormatter}"
 					locale="#{ippPortalApp.localeObject}"
-					timeZone="#{ippPortalApp.timeZone}" />
+					timeZone="#{ippPortalApp.timeZone}" /> -->
 			</ice:outputText>
 		</c:if>
 		
 		<c:if test="#{item.columnDataType eq 'DATE_WITHOUT_TIME'}">
 			<ice:outputText value="#{row[property]}" rendered="#{item.columnRenderType eq 'READ_ONLY'}">
-				<f:convertDateTime
+			<f:converter converterId="customDateConverter" />
+			<f:attribute name="useServerTimeZone" value="#{item.useServerTimeZone}"/>
+				<!-- <f:convertDateTime
 					pattern="#{columnPref.columnFormatter}"
 					locale="#{ippPortalApp.localeObject}"
-					timeZone="#{ippPortalApp.systemTimeZone}" />
+					timeZone="#{ippPortalApp.systemTimeZone}" /> -->
 			</ice:outputText>
 		</c:if>
 

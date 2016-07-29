@@ -32,6 +32,8 @@ import com.icesoft.faces.component.selectinputdate.SelectInputDate;
  */
 public class CustomDateTimeConverter extends DateTimeConverter implements Serializable
 {
+   public static final String USE_SERVER_TIME_ZONE = "useServerTimeZone";
+   
    /**
     * 
     */
@@ -88,8 +90,18 @@ public class CustomDateTimeConverter extends DateTimeConverter implements Serial
       {
          return super.getAsString(arg0, arg1, arg2);
       }
-      else if(arg2 instanceof Calendar)
+      else if (arg2 instanceof Calendar)
       {
+         Object useServerTimeZoneObj = arg1.getAttributes().get(USE_SERVER_TIME_ZONE);
+         if (useServerTimeZoneObj != null)
+         {
+            Boolean useServerTimeZone = (Boolean) useServerTimeZoneObj;
+            if (useServerTimeZone.equals(true))
+            {
+               setTimeZone(((Calendar) arg2).getTimeZone());
+            }
+         }
+         
          return super.getAsString(arg0, arg1, ((Calendar) arg2).getTime());
       }
       return null;

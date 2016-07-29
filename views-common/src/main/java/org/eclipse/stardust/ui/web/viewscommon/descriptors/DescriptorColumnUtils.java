@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.viewscommon.descriptors;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -135,11 +136,15 @@ public class DescriptorColumnUtils
             ColumnDataType columnType = determineColumnType(dataPath);
             // double and float are not sortable
             boolean sortable = DescriptorFilterUtils.isDataSortable(dataPath);
-            
-            ColumnPreference descriptorColumn = new ColumnPreference(descriptorId,
-                  "descriptorValues." + descriptorId + "", columnType, I18nUtils.getDataPathName(dataPath), false, sortable);
+
+            ColumnPreference descriptorColumn = new ColumnPreference(descriptorId, "descriptorValues." + descriptorId
+                  + "", columnType, I18nUtils.getDataPathName(dataPath), false, sortable);
             descriptorColumn.setEscape(false);
             descriptorColumns.add(descriptorColumn);
+            if (columnType.equals(ColumnDataType.DATE) || columnType.equals(ColumnDataType.DATE_WITHOUT_TIME))
+            {
+               descriptorColumn.setUseServerTimeZone(CommonDescriptorUtils.isUseServerSideTime(dataPath));
+            }
          }
       }
       return descriptorColumns;
@@ -382,12 +387,16 @@ public class DescriptorColumnUtils
       {
          return ColumnDataType.BOOLEAN;
       }
-      if (Date.class.equals(mappedType))
+      if (Date.class.equals(mappedType) || Calendar.class.equals(mappedType))
       {
          GenericDataMapping mapping = new GenericDataMapping(dataPath);
          DataMappingWrapper dmWrapper = new DataMappingWrapper(mapping, null, false);
          if (ProcessPortalConstants.TIMESTAMP_TYPE.equals(dmWrapper.getType()))
          {
+            if (CommonDescriptorUtils.isHideTime(dataPath))
+            {
+               return ColumnDataType.DATE_WITHOUT_TIME;
+            }
             return ColumnDataType.DATE;
          }
          else
