@@ -45,7 +45,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
    public static final String BEAN_ID = "ippParticipantWorklistCacheManager";
    public static final Logger trace = LogManager.getLogger(ParticipantWorklistCacheManager.class);
 
-   private Map<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> participantWorklists;
+   private Map<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> participantWorklists = null;
    
    private Map<ParticipantInfoDTO, ParticipantInfo> participantInfoMap;
    
@@ -71,9 +71,9 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
    public void reset()
    {
       trace.debug("Reseting ParticipantWorklistCache");
-      participantWorklists = new LinkedHashMap<ParticipantInfoWrapper, ParticipantWorklistCacheEntry>();
-      participantInfoMap = new LinkedHashMap<ParticipantInfoDTO, ParticipantInfo>();
       ParticipantInfo worklistOwner = null;
+      Map<ParticipantInfoDTO, ParticipantInfo> participantInfoCacheMap = new LinkedHashMap<ParticipantInfoDTO, ParticipantInfo>();
+      Map<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> participantWorklists = new LinkedHashMap<ParticipantInfoWrapper, ParticipantWorklistCacheEntry>();
       try
       {
          Map<String, List<Worklist>> worklistMap = WorklistUtils.getWorklist_anyForUser();
@@ -92,7 +92,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
                         new ParticipantWorklistCacheEntry(worklist.getTotalCount(), WorklistUtils
                               .createWorklistQuery(worklistOwner), WorklistUtils.getAllUserAssignedActivities(),
                               worklist.getTotalCountThreshold(), entry.getKey()));
-                  addParticipantInfoToCache( new ParticipantInfoDTO(worklistOwner.getQualifiedId()), worklistOwner);
+                  participantInfoCacheMap.put(new ParticipantInfoDTO(worklistOwner.getQualifiedId()), worklistOwner);
                }
                else
                {
@@ -108,27 +108,32 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
                         && null != ((OrganizationInfo) worklistOwner).getDepartment())
                   {
                      OrganizationInfo organization = (OrganizationInfo) worklistOwner;
-                     addParticipantInfoToCache( new ParticipantInfoDTO(worklistOwner.getQualifiedId(), organization.getDepartment().toString()), worklistOwner);
+                     
+                     participantInfoCacheMap.put(new ParticipantInfoDTO(worklistOwner.getQualifiedId(), organization.getDepartment().toString()), worklistOwner);
                   }
                   else if (worklistOwner instanceof RoleInfo
                         && null != ((RoleInfo) worklistOwner).getDepartment())
                   {
                      RoleInfo role = (RoleInfo) worklistOwner;
-                     addParticipantInfoToCache( new ParticipantInfoDTO(worklistOwner.getQualifiedId(), role.getDepartment().toString()), worklistOwner);
+                     participantInfoCacheMap.put(new ParticipantInfoDTO(worklistOwner.getQualifiedId(), role.getDepartment().toString()), worklistOwner);
                   }
                   else
                   {
-                     addParticipantInfoToCache( new ParticipantInfoDTO(worklistOwner.getQualifiedId()), worklistOwner);
+                     participantInfoCacheMap.put(new ParticipantInfoDTO(worklistOwner.getQualifiedId()), worklistOwner);
                   }
                }
             }
          }
+         
+         this.participantInfoMap = participantInfoCacheMap;
+         this.participantWorklists = participantWorklists;
       }
       catch (Exception e)
       {
          ExceptionHandler.handleException(e, "Error occurred while retrieving worklist",
                MessageDisplayMode.CUSTOM_MSG_OPTIONAL);
       }
+      trace.debug("Reseting ParticipantWorklistCache: Completed.");
    }
 
    /**
@@ -201,9 +206,20 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
     */
    public WorklistQuery getWorklistQuery(ParticipantInfo participantInfo, String userParticipantId)
    {
-      WorklistQuery worklistQuery = participantWorklists.get(
-            new ParticipantInfoWrapper(participantInfo, userParticipantId)).getWorklistQuery();
-      return (WorklistQuery) QueryUtils.getClonedQuery(worklistQuery);
+      System.out.println(participantWorklists.keySet().size());
+      
+      ParticipantInfoWrapper piw = new ParticipantInfoWrapper(participantInfo, userParticipantId);
+      ParticipantWorklistCacheEntry pwce = participantWorklists.get(piw);
+      if (pwce != null)
+      {
+         WorklistQuery worklistQuery = pwce.getWorklistQuery();
+         return (WorklistQuery) QueryUtils.getClonedQuery(worklistQuery);
+      }
+      else
+      {
+         trace.warn(participantInfo.getQualifiedId() + " with " + userParticipantId + "does not exist in the cache");
+         return null;
+      }
    }
    
    /**
@@ -323,19 +339,6 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       return participantInfoMap.get(participantDTO);
    }
 
-   /**
-    * @param participantDTO
-    * @param participantInfo
-    */
-   private void addParticipantInfoToCache(ParticipantInfoDTO participantDTO,
-         ParticipantInfo participantInfo)
-   {
-      if (null == participantInfoMap)
-      {
-         participantInfoMap = new LinkedHashMap<ParticipantInfoDTO, ParticipantInfo>();
-      }
-      participantInfoMap.put(participantDTO, participantInfo);
-   }
    
    /**
     *
