@@ -57,7 +57,7 @@
 					</div>
 				</div>
 				<!-- Money -->
-				<div  ng-if="mapping.typeName == 'java.lang.Double' || mapping.typeName == 'java.lang.Long'">
+				<div  ng-if="mapping.typeName == 'java.lang.Double'">
 					<input name="doubleField{{$index}}" ng-class="{'worklist-data-input': true, 'worklist-data-input-highlighted': trivialFieldsForm.doubleField{{$index}}.$invalid}"
 						ng-model-on-blur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
 						ng-change="dataCtrl.onChange();" aid="PP-TrivialManualActivity-EnterDouble"
