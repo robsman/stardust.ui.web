@@ -2098,9 +2098,10 @@ public class ProcessInstanceUtils
     */
    private BenchmarkDTO getProcessBenchmark(ProcessInstance processInstance)
    {
-      BenchmarkDTO dto = new BenchmarkDTO();
+      BenchmarkDTO dto = null;
       if (null != processInstance.getBenchmarkResult())
       {
+         dto = new BenchmarkDTO();
          dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
                .getBenchmarkColor(processInstance);
          dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
@@ -2119,7 +2120,7 @@ public class ProcessInstanceUtils
    {
       if (processInstance != null && processDefinition != null)
       {
-         List<ProcessDescriptor> processDescriptorsList = CollectionUtils.newList();
+         List<ProcessDescriptor> processDescriptorsList = null;
 
          ModelCache modelCache = ModelCache.findModelCache();
          Model model = modelCache.getModel(processInstance.getModelOID());
@@ -2144,7 +2145,7 @@ public class ProcessInstanceUtils
          }
       }
 
-      return new LinkedHashMap<String, DescriptorDTO>();
+      return null;
    }
 
    /*

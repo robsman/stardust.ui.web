@@ -256,6 +256,11 @@ span.heading{
 	clear: both;
 }
 
+.noWrap {
+	white-space: nowrap;
+}
+
+
 /************** COMMON CLASSES *****************/
 .section {
 	border-bottom: solid 1px #ddd;

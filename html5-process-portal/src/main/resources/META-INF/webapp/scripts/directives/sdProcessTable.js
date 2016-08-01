@@ -21,6 +21,7 @@
 			[ '$parse', '$q', '$timeout', '$filter', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService',
 					'sgI18nService','sdProcessInstanceService', 'sdProcessDefinitionService',
 					'sdStatusService', 'sdPriorityService', 'sdDialogService', 'sdCommonViewUtilService','sdLoggedInUserService',
+					'sdProcessActivityTableRendererService',
 					ProcessTableDirective ]);
 
 	/*
@@ -28,7 +29,8 @@
 	 */
 	function ProcessTableDirective($parse, $q, $timeout, $filter, sdUtilService, sdViewUtilService, sdLoggerService,
 			sgI18nService, sdProcessInstanceService, sdProcessDefinitionService, sdStatusService,
-			sdPriorityService, sdDialogService, sdCommonViewUtilService, sdLoggedInUserService) {
+			sdPriorityService, sdDialogService, sdCommonViewUtilService, sdLoggedInUserService, 
+			sdProcessActivityTableRendererService) {
 
 		//Defaults
 		var DEFAULT_VALUES = {
@@ -58,9 +60,7 @@
 		 */
 		function ProcessTableCompiler(scope, element, attr, ctrl) {
 			var self = this;
-
-
-
+			this.renderers = sdProcessActivityTableRendererService.create('ProcessTable');
 
 			/*
 			 *
@@ -75,7 +75,7 @@
 			ProcessTableCompiler.prototype.initialize = function(attr, scope) {
 				var self = this;
 				var scopeToUse = scope.$parent;
-
+				this.scope = scope;
 				// Define data
 				this.processList = {};
 				this.dataTable = null; // Handle to data table instance, to be set later
@@ -401,15 +401,25 @@
 			/*
 			 *
 			 */
-			ProcessTableCompiler.prototype.registerNewPriority = function(oid, value) {
+			ProcessTableCompiler.prototype.registerNewPriority = function(oid) {
 				var self = this;
+				event.stopPropagation();
+				
+				var highlightClazz = "change-highlight";
+				
+				var elem = event.target;
+				var value = parseInt(elem.selectedOptions[0].value);
+				var higlightElem = elem.parentElement;
+				
 				if (self.originalPriorities[oid] != value) {
 					self.changedPriorities[oid] = value;
-				} else {
-					if (angular.isDefined(self.changedPriorities[oid])) {
-						delete self.changedPriorities[oid];
-					}
+					higlightElem.classList.add(highlightClazz); 
+				} else if (angular.isDefined(self.changedPriorities[oid])) {
+					delete self.changedPriorities[oid];
+					higlightElem.classList.remove(highlightClazz)
 				}
+				
+				self.safeApply();
 			};
 
 			/*
@@ -446,21 +456,22 @@
 
 				sdPriorityService.savePriorityChanges(requestData).then(
 
-				function(successResult) {
-					angular.forEach(successResult.success, function(data) {
-						data['item'] = processMap[data.OID];
-					});
-					angular.forEach(successResult.failure, function(data) {
-						data['item'] = processMap[data.OID];
-					});
-					self.updatePriorityNotification.visible = true;
-					self.updatePriorityNotification.result = successResult;
-					self.refresh();
-					sdViewUtilService.syncLaunchPanels();
+						function(successResult) {
+							angular.forEach(successResult.success, function(data) {
+								data['item'] = processMap[data.OID];
+							});
+							angular.forEach(successResult.failure, function(data) {
+								data['item'] = processMap[data.OID];
+							});
+							self.updatePriorityNotification.visible = true;
+							self.updatePriorityNotification.result = successResult;
+							self.refresh();
+							sdViewUtilService.syncLaunchPanels();
+							self.safeApply();		
 
-				}, function(failureResult) {
-					trace.error("Error occured in updating the priorities : ", failureResult);
-				});
+						}, function(failureResult) {
+							trace.error("Error occured in updating the priorities : ", failureResult);
+						});
 			};
 
 			/*
@@ -472,28 +483,32 @@
 				}
 				return false;
 			};
-			
-			ProcessTableCompiler.prototype.isAbortandStartDisabled = function() {
-			  if(this.processesToAbort.length == 1){
-			    return !this.processesToAbort[0].enableTerminate;  
-			  }else{
-			    return this.processesToAbort.length < 1;
-			  }
-      };
 
-      ProcessTableCompiler.prototype.isAbortandJoinDisabled = function() {
-        if(this.processesToAbort.length == 1){
-          return !this.processesToAbort[0].enableTerminate;  
-        }else{
-          return this.processesToAbort.length != 1;
-        }
-      };
-      
+			/**
+			 * 
+			 */
+			ProcessTableCompiler.prototype.isAbortandStartDisabled = function() {
+				if(this.processesToAbort.length == 1){
+					return !this.processesToAbort[0].enableTerminate;  
+				}else{
+					return this.processesToAbort.length < 1;
+				}
+			};
+
+		      ProcessTableCompiler.prototype.isAbortandJoinDisabled = function() {
+		    	  if(this.processesToAbort.length == 1){
+		    		  return !this.processesToAbort[0].enableTerminate;  
+		    	  }else{
+		    		  return this.processesToAbort.length != 1;
+		    	  }
+		      };
+
 			/*
 			 *
 			 */
 			ProcessTableCompiler.prototype.openNotes = function(rowItem) {
 				sdCommonViewUtilService.openNotesViewHTML5(rowItem.oid, rowItem.processName, true);
+				self.safeApply();
 			};
 
 			/*
@@ -740,8 +755,10 @@
 			// Also added to force a digest so that our popover opens correctly
 			// otherwise we can get caught with an empty popover that is waiting
 			// for a digest to display its template.
-			ProcessTableCompiler.prototype.openActionsPopover = function(){
-				return true;
+			ProcessTableCompiler.prototype.openActionsPopover = function () {
+				if (!$($event.target).hasClass("actions-popover")) return;
+				self.currentRow = rowItem;
+				self.renderers.showProcessActionsPopover($event, this.scope);
 			}
 			
 			/*
@@ -773,12 +790,29 @@
 			// Expose controller as a whole on to scope
 			scope.processTableCtrl = self;
 		}
+		
+		/*
+		 *
+		 */
+		ProcessTableCompiler.prototype.openActionsMenu = function($event, rowItem) {
+			var self = this;
+			if(!$($event.target).hasClass("actions-popover")) return;
+			self.currentRow = rowItem;
+			self.renderers.showProcessActionsPopover($event, this.scope);
+		}
 
 		/**
-		 * TODO - check if duplication in ActivityTableCompiler can be avoided
+		 * 
 		 */
-		ProcessTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem, $event) {
+		ProcessTableCompiler.prototype.openProcessDocumentsPopover = function($event, rowItem) {
 			var self = this;
+			
+			if(!$($event.target).hasClass("document-popover")) return;
+
+			self.processPopover = {
+					data: rowItem
+			}
+			var documentsPopover = self.renderers.openProcessDocumentsPopover($event, this.scope);
 
 			self.processPopover = {
 					data : rowItem
@@ -798,8 +832,7 @@
 
 				rowItem.contentLoaded = true;
 				self.processPopover.data = rowItem;
-				self.processDocumentsPopover.visible = true;
-
+				documentsPopover.showDocuments()
 			});
 		};
 

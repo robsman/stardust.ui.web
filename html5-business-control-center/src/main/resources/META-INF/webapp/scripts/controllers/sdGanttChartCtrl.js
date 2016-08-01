@@ -145,7 +145,7 @@
 		var deferred = _q.defer();
 		var self = this;
 
-		var benchmarkPresent = data.benchmark.value > 0;
+		var benchmarkPresent = data.benchmark ? data.benchmark.value > 0 : false;
 		if (benchmarkPresent) {
 
 			_sdProcessInstanceService.getBenchmarkDetailsByBenchmarkOid(data.benchmark.oid).then(function(data) {
@@ -264,7 +264,7 @@
 			}
 
 		} else {
-			if (value.benchmark.color) {
+			if(value.benchmark && value.benchmark.color) {
 				color = value.benchmark.color;
 			} else {
 				color = self.getBarColor(value.status.value, type, false);

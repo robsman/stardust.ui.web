@@ -1,0 +1,57 @@
+<div class="confirmation-contents modal-body">
+	<div ng-hide="processTableCtrl.updatePriorityNotification.error">
+		<div
+			ng-show="processTableCtrl.updatePriorityNotification.result.success.length > 0">
+			
+			<div >{{i18n('views-common-messages.views-processTable-savePriorities-status')}}  {{i18n('views-common-messages.views-processTable-savePriorities-successMsg')}}  </div>
+			</br>
+			<table  class="table table-bordered">
+				<thead>
+					<tr>
+						<th ng-bind="i18n('views-common-messages.common-notification-selectedItems')"></th>
+						<th ng-bind="i18n('views-common-messages.common-notification-actionStatus')"></th>
+					</tr>
+				</thead>
+				<tbody>  
+					<tr
+						ng-repeat="result in processTableCtrl.updatePriorityNotification.result.success">
+						<td ng-bind="result.item"></td>
+						<td ng-bind="result.message"></td>
+					</tr>
+				</tbody>
+			</table>
+			</br>
+		</div>
+		
+		<div
+			ng-show="processTableCtrl.updatePriorityNotification.result.failure.length > 0">
+			
+			<div >{{i18n('views-common-messages.views-processTable-savePriorities-status')}}  {{i18n('views-common-messages.views-processTable-savePriorities-failureMsg')}}  </div>
+			</br>
+			<table  class="table table-bordered">
+				<thead>
+					<tr>
+						<th ng-bind="i18n('views-common-messages.common-notification-selectedItems')"></th>
+						<th ng-bind="i18n('views-common-messages.common-notification-actionStatus')"></th>
+					</tr>
+				</thead>
+				<tbody>  
+					<tr
+						ng-repeat="result in processTableCtrl.updatePriorityNotification.result.failure">
+						<td ng-bind="result.item"></td>
+						<td ng-bind="result.message"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="modal-footer">
+	<div class="button-pane cf" >
+		<div class="button-alignment">
+			<div class="right">
+				<button class="button" ng-click="processTableCtrl.updatePriorityNotificationDlg.close()">{{i18n('views-common-messages.common-close')}}</button>
+			</div>
+		</div>
+	</div>
+</div>

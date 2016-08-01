@@ -19,19 +19,19 @@
 
 	angular.module('bpm-common').directive(
 			'sdActivityTable',
-			[ '$parse', '$q', 'sdEnvConfigService', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService',
-			  'sdWorklistService', 'sdActivityInstanceService', 'sdProcessInstanceService', 'sdProcessDefinitionService',
-			  'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter', 'sgI18nService',
-			  '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService','sdWorklistConstants', '$sce',
+			[ '$parse', '$q', '$filter', '$timeout', '$sce', 'sdEnvConfigService', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService',
+			  'sdWorklistService', 'sdActivityInstanceService', 'sdProcessInstanceService', 'sdProcessDefinitionService','sdCriticalityService', 
+			  'sdStatusService', 'sdPriorityService','sgI18nService','sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService','sdWorklistConstants',
+			  'sdProcessActivityTableRendererService',
 			  ActivityTableDirective ]);
 
 	/*
 	 *
 	 */
-	function ActivityTableDirective($parse, $q, sdEnvConfigService, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService,
+	function ActivityTableDirective($parse, $q, $filter, $timeout, $sce, sdEnvConfigService, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService,
 			sdWorklistService, sdActivityInstanceService, sdProcessInstanceService, sdProcessDefinitionService, sdCriticalityService,
-			sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout, sdLoggedInUserService,
-			sdDialogService, sdCommonViewUtilService, sdWorklistConstants, $sce) {
+			sdStatusService, sdPriorityService, sgI18nService, sdLoggedInUserService,sdDialogService, sdCommonViewUtilService, sdWorklistConstants, 
+			sdProcessActivityTableRendererService) {
 
 		var trace = sdLoggerService.getLogger('bpm-common.sdActivityTable');
 
@@ -236,7 +236,9 @@
 			ActivityTableCompiler.prototype.safeApply = function() {
 				sdUtilService.safeApply(scope);
 			};
-
+			
+			this.renderers = sdProcessActivityTableRendererService.create('ActivityTable');
+			
 			// Expose controller as a whole on to scope
 			scope.activityTableCtrl = this;
 			sdUtilService.addFunctionProxies(scope.activityTableCtrl);
@@ -249,8 +251,6 @@
 		ActivityTableCompiler.prototype.trustAsHtml = function(htmlStr) {
 			return $sce.trustAsHtml(htmlStr);
 		};
-
-
 
 
 		/*
@@ -279,12 +279,6 @@
 			this.preferenceId = "";
 
 			this.registerMethods(attr, scope, $filter, element);
-
-			this.actionsPopoverTemplateUrl =
-				this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/activityActionsPopover.html');
-
-			this.openDocumentTemplateUrl =
-				this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/documentPopoverActivityTable.html');
 
 			this.abortMenuTemplateUrl =
 				this.prependBaseUrl('plugins/html5-process-portal/scripts/directives/partials/abortActivityMenuPopover.html');
@@ -355,6 +349,8 @@
 
 			//Refreshing when Item is activated //remove on completion of server push
 			this.refreshHandler = $parse(attr.sdaAutoRefresh);
+			
+			this.initialFilter =  getPreFilters(scope);
 
 			if (attr.sdaSelection) {
 				var assignable = $parse(attr.sdaSelection).assign;
@@ -472,11 +468,14 @@
 			/**
 			 *
 			 */
-			this.changeFormStatus = function(rowId) {
+			this.changeFormStatus = function(rowData) {
 				var self = this;
+				var rowId = rowData.activityOID;
 				if (this.dirtyDataForms.indexOf(rowId) == -1) {
 					this.dirtyDataForms.push(rowId);
 				}
+				
+				rowData.isDataDirty = true;
 
 				// Auto select dirty rows
 				var selectedRows = self.dataTable.getSelection();
@@ -539,7 +538,6 @@
 					processesToAbort.push(item.processInstance);
 				});
 				self.processesToAbort = processesToAbort;
-
 			};
 
 			/*
@@ -594,7 +592,6 @@
 			 */
 			self.openDefaultDelegationDialog = function(rowItems) {
 				var self = this;
-
 				var options = {
 						title : sgI18nService.translate('views-common-messages.common-confirm', 'Confirm'),
 						dialogActionType : 'YES_NO'
@@ -634,7 +631,6 @@
 				this.activate( rowItem.activityOID, interactionAware).then(
 						function(result) {
 							sdCommonViewUtilService.openActivityView(rowItem.activityOID, null, (rowItem.trivial ? self.cachedQuery : undefined), result);
-							self.refresh();
 						},
 						function(result) {
 							trace.error("Error in activating worklist item : ",rowItem.activityOID,".Error : ",  result.failure[0].message);
@@ -689,7 +685,6 @@
 							sdDialogService.error(scope, message, options)
 						} else {
 							sdCommonViewUtilService.openActivityView(rowItem.activityOID);
-							methodScope.refresh();
 						}
 					});
 		};
@@ -1052,7 +1047,6 @@
 		 *
 		 */
 		ActivityTableCompiler.prototype.activateItem = function(rowItem) {
-
 			if(rowItem.showResubmitLink){
 				trace.debug("Openinig resubmission confirmation for ",rowItem.activityOID);
 				this.showResubmissionConfirmation(rowItem);
@@ -1077,7 +1071,6 @@
 		 */
 		ActivityTableCompiler.prototype.openRelocationDialog = function(rowItem) {
 			var self = this;
-
 			sdActivityInstanceService.getRelocationTargets(rowItem.activityOID).then(function(targets) {
 				self.relocation = {
 					rowItem : rowItem,
@@ -1123,18 +1116,31 @@
 			self.showNoRelocationTargetsDialog = false;
 			self.showRelocationDialog = false;
 		};
+		
+		/*
+		 *
+		 */
+		ActivityTableCompiler.prototype.openActionsMenu = function($event, rowItem) {
+			var self = this;
+			if(!$($event.target).hasClass("actions-popover")) return;
+			self.currentRow = rowItem;
+			self.renderers.showActivityActionsPopover($event, this.scope);
+		}
 
 		/*
 		 *
 		 */
-		ActivityTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem) {
+		ActivityTableCompiler.prototype.openProcessDocumentsPopover = function($event, rowItem) {
 			var self = this;
+			
+			if(!$($event.target).hasClass("document-popover")) return;
 
 			self.processPopover = {
 					data: rowItem
 			}
+			var documentsPopover = self.renderers.openActivityDocumentsPopover($event, this.scope);
+			
 			rowItem.contentLoaded = false;
-
 			var promise1 = sdProcessInstanceService.getProcessInstanceDocuments(rowItem.processInstance.oid).then(
 					function(dataPathValues) {
 						rowItem.supportsProcessAttachments = rowItem.processInstance.supportsProcessAttachments;
@@ -1158,7 +1164,7 @@
 			$q.all([promise1, promise2]).then(function() {
 				rowItem.contentLoaded = true;
 				self.processPopover.data = rowItem;
-				self.processPopover.showDocumentPopover = true;
+				documentsPopover.showDocuments();
 			});
 		}
 
@@ -1291,6 +1297,8 @@
 		ActivityTableCompiler.prototype.isTrivialDataValid = function(activities) {
 			var valid = true;
 			angular.forEach(activities, function(activity) {
+				activity.isTrivialDataValid = activity.isTrivialDataValid === undefined 
+												? true : activity.isTrivialDataValid;
 				valid = valid && (activity.isTrivialDataValid == true)
 			});
 
@@ -1417,7 +1425,6 @@
 		 * @param rowItem
 		 */
 		ActivityTableCompiler.prototype.openCompleteDialog = function(rowItem) {
-
 			var self = this;
 			var CONFIRMATION_TYPE_SINGLE = 'single';
 			var CONFIRMATION_TYPE_GENERIC = 'generic';
@@ -1599,15 +1606,24 @@
 		};
 
 		/*
-		 *
+		 * 
 		 */
-		ActivityTableCompiler.prototype.registerNewPriority = function(activityOID, value) {
+		ActivityTableCompiler.prototype.registerNewPriority = function(activityOID) {
 			var self = this;
-
+			event.stopPropagation();
+			
+			var highlightClazz = "change-highlight";
+			
+			var elem = event.target;
+			var value = parseInt(elem.selectedOptions[0].value);
+			var higlightElem = elem.parentElement;
+			
 			if (self.originalPriorities[activityOID] != value) {
 				self.changedPriorities[activityOID] = value;
+				higlightElem.classList.add(highlightClazz); 
 			} else if (angular.isDefined(self.changedPriorities[activityOID])) {
 				delete self.changedPriorities[activityOID];
+				higlightElem.classList.remove(highlightClazz)
 			}
 		};
 
@@ -1638,7 +1654,9 @@
 				});
 				self.updatePriorityNotification.visible = true;
 				self.updatePriorityNotification.result = successResult;
-				self.refresh();
+				$timeout(function() {
+					self.refresh();
+				});
 
 			}, function(failureResult) {
 				trace.error("Error occured in updating the priorities : ", failureResult);
@@ -1870,7 +1888,7 @@
 		/**
 		 *
 		 */
-		ActivityTableCompiler.prototype.getColumnNamesByMode = function getColumnNamesByMode(value) {
+		ActivityTableCompiler.prototype.getColumnNamesByMode = function (value) {
 			if (angular.isUndefined(value)) {
 				return value;
 			}
@@ -1953,5 +1971,21 @@
 			cols.eq(from).detach().insertBefore(cols.eq(to));
 		});
 	}
+	
+	 /**
+     * 
+     */
+    function getPreFilters(scope) { 
+    	var initialFilters = null;
+    	if(scope.panel.params.custom) {
+    		try {
+    			initialFilters =angular.fromJson(scope.panel.params.custom.filters);
+    			 
+    		} catch (e) {
+				trace.error("Unable to parse filters : ",scope.panel.params.custom.filters,e);
+			}
+    	}
+    	return initialFilters;
+    }
 
 })();

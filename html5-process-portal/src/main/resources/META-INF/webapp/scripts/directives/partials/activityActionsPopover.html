@@ -1,7 +1,6 @@
-<div style="min-width:120px;" class="menu-list">
-
+<div style="min-width:120px;min-height :100px;" class="menu-list">
 	<div class="menu-container"
-	     ng-click="activityTableCtrl.$openProcessDetails(rowData);"
+	     ng-click="activityTableCtrl.$openProcessDetails(activityTableCtrl.currentRow);"
 		 aid="PP-ActivityTable-OpenProcessDetailsAction"
 		 ng-if="::activityTableCtrl.isActionButtonVisible('processDetails')">
 
@@ -17,9 +16,9 @@
 
 	<div class="menu-container"
 	     ng-if="::(activityTableCtrl.isActivityTableMode() && activityTableCtrl.isActionButtonVisible('activate'))"
-	     ng-click="(!rowData.activatable || rowData.isCaseInstance) || activityTableCtrl.$activateItem(rowData);"
+	     ng-click="(!activityTableCtrl.currentRow.activatable || activityTableCtrl.currentRow.isCaseInstance) || activityTableCtrl.$activateItem(activityTableCtrl.currentRow);"
 		 aid="PP-ActivityTable-ActivateAction"
-		 ng-disabled="!rowData.activatable || rowData.isCaseInstance">
+		 ng-disabled="!activityTableCtrl.currentRow.activatable || activityTableCtrl.currentRow.isCaseInstance">
 
 		<i title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}"
 		   class="pi pi-activate pi-lg button-link tbl-tool-link">
@@ -34,7 +33,7 @@
 	<div class="menu-container"
 	     ng-if="::(activityTableCtrl.defaultDelegateEnabled && activityTableCtrl.isActionButtonVisible('delegate'))"
 	     aid="PP-ActivityTable-DefaultDelegateAction"
-		 href="#" ng-click="activityTableCtrl.$openDefaultDelegationDialog([rowData]);">
+		 href="#" ng-click="activityTableCtrl.$openDefaultDelegationDialog([activityTableCtrl.currentRow]);">
 
 		<i title="{{i18n('views-common-messages.common-toolTip-delegateToDefaultPerformer')}}"
 		   class="pi pi-user pi-lg button-link tbl-toolbar-item tbl-tool-link">
@@ -50,8 +49,8 @@
 	     sda-column-type="TRIVIAL_DATA"
 	     ng-if="::(activityTableCtrl.isWorklistMode() && activityTableCtrl.isActionButtonVisible('complete'))"
 	     aid="PP-ActivityTable-CompleteAction"
-		 ng-disabled="(rowData.dataMappings == undefined) || !rowData.activatable || !rowData.isTrivialDataValid"
-		 ng-click="((rowData.dataMappings == undefined) || !rowData.activatable || !rowData.isTrivialDataValid) || activityTableCtrl.$openCompleteDialog(rowData);">
+		 ng-disabled="(activityTableCtrl.currentRow.dataMappings == undefined) || !activityTableCtrl.currentRow.activatable || !activityTableCtrl.currentRow.isTrivialDataValid"
+		 ng-click="((activityTableCtrl.currentRow.dataMappings == undefined) || !activityTableCtrl.currentRow.activatable || !activityTableCtrl.currentRow.isTrivialDataValid) || activityTableCtrl.$openCompleteDialog(activityTableCtrl.currentRow);">
 
 		<i title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}"
 		   class="pi pi-activity-complete pi-lg button-link tbl-tool-link">
@@ -64,10 +63,10 @@
 	</div>
 
 	<div class="menu-container"
-	     ng-click="(!rowData.delegable || rowData.defaultCaseActivity) || activityTableCtrl.$openDelegateDialog(rowData);"
+	     ng-click="(!activityTableCtrl.currentRow.delegable || activityTableCtrl.currentRow.defaultCaseActivity) || activityTableCtrl.$openDelegateDialog(activityTableCtrl.currentRow);"
 	     aid="PP-ActivityTable-DelegateAction"
 	     ng-if="::activityTableCtrl.isActionButtonVisible('delegate')"
-		 ng-disabled="!rowData.delegable || rowData.defaultCaseActivity">
+		 ng-disabled="!activityTableCtrl.currentRow.delegable || activityTableCtrl.currentRow.defaultCaseActivity">
 
 		<i title="{{i18n('processportal.toolbars-workflowActions-tooltip-delegate')}}"
 		   class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
@@ -84,15 +83,15 @@
 		 class="button-link tbl-tool-link">
 
 		<i class="pi pi-activity-abort pi-lg"
-			ng-click="(!rowData.abortActivity || rowData.defaultCaseActivity) || activityTableCtrl.$openAbortDialog(rowData);"
+			ng-click="(!activityTableCtrl.currentRow.abortActivity || activityTableCtrl.currentRow.defaultCaseActivity) || activityTableCtrl.$openAbortDialog(activityTableCtrl.currentRow);"
 	     	aid="PP-ActivityTable-AbortAction"
 	     	ng-if="::activityTableCtrl.isActionButtonVisible('abort')"
-		 	ng-disabled="!rowData.abortActivity || rowData.defaultCaseActivity"
+		 	ng-disabled="!activityTableCtrl.currentRow.abortActivity || activityTableCtrl.currentRow.defaultCaseActivity"
 		 	title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}"
 		 	ng-class="{'tbl-tool-joined-link' : activityTableCtrl.isActivityTableMode()}">
 		</i>
 
-		<span ng-click="activityTableCtrl.$openAbortDialog(rowData);">
+		<span ng-click="activityTableCtrl.$openAbortDialog(activityTableCtrl.currentRow);">
 			{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}
 		</span>
 
@@ -100,21 +99,21 @@
 		   style="position: relative;left: calc(100% - 25px);"
 		   ng-if="::(activityTableCtrl.isActivityTableMode() && activityTableCtrl.isActionButtonVisible('abort'))"
 	       aid="PP-ActivityTable-AbortPopoverAction"
-		   ng-disabled="!rowData.abortProcess || rowData.isCaseInstance"
+		   ng-disabled="!activityTableCtrl.currentRow.abortProcess || activityTableCtrl.currentRow.isCaseInstance"
 		   sd-popover
 		   sda-template="activityTableCtrl.abortMenuTemplateUrl"
 		   sda-placement ="bottom-right auto"
-		   ng-click="(!rowData.abortProcess || rowData.isCaseInstance) || activityTableCtrl.openAbortPopover(rowData);"
+		   ng-click="(!activityTableCtrl.currentRow.abortProcess || activityTableCtrl.currentRow.isCaseInstance) || activityTableCtrl.openAbortPopover(activityTableCtrl.currentRow);"
 		   class="pi pi-menu-dropdown button-link tbl-tool-link">
 		</i>
 
 	</div>
 
 	<div class="menu-container"
-	     ng-click="!(rowData.relocationEligible) || activityTableCtrl.openRelocationDialog(rowData);"
+	     ng-click="!(activityTableCtrl.currentRow.relocationEligible) || activityTableCtrl.openRelocationDialog(activityTableCtrl.currentRow);"
 		 aid="PP-ActivityTable-OpenRelocationDialogAction"
 		 ng-if="::activityTableCtrl.isActionButtonVisible('relocate')"
-	 	 ng-disabled="!(rowData.relocationEligible)">
+	 	 ng-disabled="!(activityTableCtrl.currentRow.relocationEligible)">
 
 		<i title="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}"
 		   class="pi pi-rotate-right pi-lg button-link tbl-tool-link">

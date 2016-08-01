@@ -3,7 +3,7 @@
 
 
 	<div class="menu-container" 
-	     ng-click="processTableCtrl.openProcessHistory(rowData);" 
+	     ng-click="processTableCtrl.openProcessHistory(processTableCtrl.currentRow);" 
 	     aid="PP-ProcessTable-OpenProcessHistoryAction">
 
 		<i  title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" 
@@ -18,30 +18,29 @@
 
 	<div class="menu-container"  
 	     aid="PP-ProcessTable-AbortAction">
-
-		<i	ng-click="!rowData.enableTerminate || processTableCtrl.openAbortDialog(rowData);"  
+		<i	ng-click="!processTableCtrl.currentRow.enableTerminate || processTableCtrl.openAbortDialog(processTableCtrl.currentRow);"  
 			title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" 
 		   	class="pi pi-process-abort pi-lg button-link tbl-tool-link tbl-tool-joined-link" >
 		</i>
 
 		<i  sd-popover sda-template="processTableCtrl.abortProcessPopover.url"
 		    sda-placement="auto bottom-right"
-			ng-click="processTableCtrl.openAbortPopover(rowData);"
+			ng-click="processTableCtrl.openAbortPopover(processTableCtrl.currentRow);"
 			title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}" 
 			style="position: relative;left: calc(100% - 25px);"
 			class="pi pi-menu-dropdown button-link tbl-tool-link">
 		</i>
 
-		<span ng-click="!rowData.enableTerminate || processTableCtrl.openAbortDialog(rowData);">
+		<span ng-click="!processTableCtrl.currentRow.enableTerminate || processTableCtrl.openAbortDialog(processTableCtrl.currentRow);">
 			{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}
 		</span>
 
 	</div>
 
 	<div class="menu-container"  
-	     ng-click="!rowData.enableRecover || processTableCtrl.recoverProcess(this, rowData)" 
+	     ng-click="!processTableCtrl.currentRow.enableRecover || processTableCtrl.recoverProcess(this, processTableCtrl.currentRow)" 
 	     aid="PP-ProcessTable-RecoverAction"
-		 ng-disabled="!rowData.enableRecover">
+		 ng-disabled="!processTableCtrl.currentRow.enableRecover">
 
 	    <div title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
 	         class="pi-badge">
@@ -58,7 +57,7 @@
 	<!-- View chart -->
 	<div class="menu-container"   
 	     aid="PP-ProcessTable-OpenGrantChart"
-		 ng-click="processTableCtrl.openChart(rowData); ">
+		 ng-click="processTableCtrl.openChart(processTableCtrl.currentRow); ">
 
 		<i class="pi pi-gantt-chart pi-lg button-link tbl-tool-link" 
 		   title="{{i18n('business-control-center-messages.views-processSearchView-tooltip-viewGanttChart')}}">

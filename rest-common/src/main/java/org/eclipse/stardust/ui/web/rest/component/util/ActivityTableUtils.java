@@ -1060,11 +1060,14 @@ public class ActivityTableUtils
     */
    public static BenchmarkDTO getBenchmarkForActivity(ActivityInstance ai)
    {
-      BenchmarkDTO dto = new BenchmarkDTO();
+      BenchmarkDTO dto = null;
       if (null != ai.getBenchmarkResult())
       {
-         dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkColor(ai);
-         dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkLabel(ai);
+         dto = new BenchmarkDTO();
+         dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils
+               .getBenchmarkColor(ai);
+         dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils
+               .getBenchmarkLabel(ai);
          dto.value = ai.getBenchmarkResult().getCategory();
       }
       return dto;

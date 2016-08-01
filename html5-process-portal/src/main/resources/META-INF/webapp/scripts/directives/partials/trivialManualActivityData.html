@@ -1,9 +1,9 @@
-<table>
+<table class="worklist-data-edit-mode">
 	<tbody ng-form="trivialFieldsForm">
 		<tr ng-repeat="mapping in dataCtrl.dataMappings">
-			<td style="white-space: nowrap;">{{mapping.name}} <span ng-show="mapping.isMandatory" style="color: #990000">*</span></td>
-			<td >
-				<div class="tma-row">
+			<td style="white-space: nowrap;"><span ng-bind="mapping.name"></span><span ng-show="mapping.isMandatory" style="color: #990000">*</span></td>
+			<td>
+				<div class="worklist-data-row">
 				<!-- Enum -->
 				<select ng-if="mapping.isEnum" aid="PP-TrivialManualActivity-SelectEnum"
 				  ng-change="dataCtrl.onChange();"
@@ -14,22 +14,22 @@
 				</select>
 				<!--Text -->
 				<input type="text" name="textField{{$index}}"
-					ng-class="{'tma-input': true, 'tma-input-highlighted': (trivialFieldsForm.textField{{$index}}.$invalid)}"
+					ng-class="{'worklist-data-input': true, 'worklist-data-input-highlighted': (trivialFieldsForm.textField{{$index}}.$invalid)}"
 					ng-change="dataCtrl.onChange();" aid="PP-TrivialManualActivity-EnterText"
 					ng-if="mapping.typeName == 'java.lang.String'"
 					ng-required="mapping.isMandatory"
 					ng-model="dataCtrl.outData[mapping.id]" />
 				<!-- Boolean -->
 				<input type="checkbox" name="booleanField{{$index}}"
-					ng-class="{'tma-input': true, 'tma-input-highlighted': (trivialFieldsForm.booleanField{{$index}}.$invalid)}"
+					ng-class="{'worklist-data-input': true, 'worklist-data-input-highlighted': (trivialFieldsForm.booleanField{{$index}}.$invalid)}"
 					ng-change="dataCtrl.onChange();" aid="PP-TrivialManualActivity-SelectCheckBox"
 					ng-if="mapping.typeName == 'java.lang.Boolean'" ng-model-on-blur
 					ng-required="mapping.isMandatory"
 					ng-model="dataCtrl.outData[mapping.id]"></input>
 				<!-- Integer -->
 				<div ng-if="mapping.typeName == 'java.lang.Integer'">
-					<input name="integerField{{$index}}" class="tma-input" sd-validate="integer" ng-model-on-blur aid="PP-TrivialManualActivity-EnterInteger"
-						ng-class="{'tma-input': true, 'tma-input-highlighted': trivialFieldsForm.integerField{{$index}}.$invalid}"
+					<input name="integerField{{$index}}" class="worklist-data-input" sd-validate="integer" ng-model-on-blur aid="PP-TrivialManualActivity-EnterInteger"
+						ng-class="{'worklist-data-input': true, 'worklist-data-input-highlighted': trivialFieldsForm.integerField{{$index}}.$invalid}"
 						ng-change="dataCtrl.onChange();"
 						ng-required="mapping.isMandatory"
 						type="number" ng-model="dataCtrl.outData[mapping.id]" />
@@ -57,8 +57,8 @@
 					</div>
 				</div>
 				<!-- Money -->
-				<div  ng-if="mapping.typeName == 'java.lang.Double'">
-					<input name="doubleField{{$index}}" ng-class="{'tma-input': true, 'tma-input-highlighted': trivialFieldsForm.doubleField{{$index}}.$invalid}"
+				<div  ng-if="mapping.typeName == 'java.lang.Double' || mapping.typeName == 'java.lang.Long'">
+					<input name="doubleField{{$index}}" ng-class="{'worklist-data-input': true, 'worklist-data-input-highlighted': trivialFieldsForm.doubleField{{$index}}.$invalid}"
 						ng-model-on-blur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
 						ng-change="dataCtrl.onChange();" aid="PP-TrivialManualActivity-EnterDouble"
 						ng-required="mapping.isMandatory"

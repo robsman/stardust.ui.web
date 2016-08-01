@@ -222,162 +222,201 @@
 
 				<th sda-name="actions"  sda-exportable="false" sda-filterable="false"  sda-sortable="false"
 				 sda-fixed="{{activityTableCtrl.isDefinedFixed('actions', true)}}">
-				</th>
+				</th> 
 			</tr>
 		</thead>
-		<tbody>
+		
+		<tbody sda-no-angular-body="true"
+			sda-no-angular-row-handler="activityTableCtrl.renderers.rowHandler(params)"
+			sda-no-angular-draw-handler="activityTableCtrl.renderers.drawHandler(params)">
 			<tr>
-				<td sda-exporter="rowData.activity.name" style="white-space: nowrap;">
-					<div ng-if="activityTableCtrl.isWorklistMode();">
-						<span ng-if="!rowData.isCaseInstance">
-							<a ng-if="rowData.activatable || rowData.showResubmitLink" href="#" aid="PP-ActivityTable-activate"
-							  ng-click="activityTableCtrl.$activateItem(rowData);"
-								title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link">
-								{{rowData.activity.name}}
+				<td sda-exporter="rowData.activity.name" class="noWrap">
+					<div sda-if="activityTableCtrl.isWorklistMode();"> 
+						<span sda-if="!rowData.isCaseInstance">
+							<a sda-if="rowData.activatable || rowData.showResubmitLink" href="#" aid="PP-ActivityTable-activate"
+							  sda-click="activityTableCtrl.$activateItem(rowData);"
+								sda-title="processportal.views-worklistPanel-tooltip-openActivity" class="button-link tbl-tool-link"
+								sda-bind="rowData.activity.name">
 							</a>
-							 <span ng-if="!rowData.activatable && !rowData.showResubmitLink" ng-bind="rowData.activity.name"> </span>
+							<span sda-if="!rowData.activatable && !rowData.showResubmitLink" sda-bind="rowData.activity.name"></span> 
 						 </span>
-						 <span ng-if="rowData.isCaseInstance">
-							 <a  href="#" aid="PP-ActivityTable-activate"
-								  ng-click="activityTableCtrl.$openProcessDetails(rowData);"
-									title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link">
-								{{rowData.activity.name}}
+						 <span sda-if="rowData.isCaseInstance">
+							 <a href="#" aid="PP-ActivityTable-activate"
+								sda-click="activityTableCtrl.$openProcessDetails(rowData);"
+								sda-title="processportal.views-worklistPanel-tooltip-openActivity" class="button-link tbl-tool-link"
+								sda-bind="rowData.activity.name">
 							</a>
 						 </span>
-						<span ng-if="rowData.qualityAssuranceState">
-							<span ng-if="rowData.qualityAssuranceState ==='IS_REVISED'">
+						<span sda-if="rowData.qualityAssuranceState"> 
+							<span sda-if="rowData.qualityAssuranceState ==='IS_REVISED'"> 
 								 <i class="pi pi-revised" style="margin-left: 2px;"></i>
-							</span>
-							<span ng-if="rowData.qualityAssuranceState === 'IS_QUALITY_ASSURANCE'">
+							</span> 
+							<span sda-if="rowData.qualityAssuranceState === 'IS_QUALITY_ASSURANCE'">
 								 <i class="pi pi-clock" style="margin-left: 2px;"></i>
 							</span>
 						</span>
 					</div>
-
-					<div ng-if="activityTableCtrl.isActivityTableMode();">
-						<a href="#" ng-click="activityTableCtrl.$openProcessDetails(rowData);" aid="PP-ActivityTable-OpenProcessDetails"
-							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
-							{{rowData.activity.name}}
+					
+					<div sda-if="activityTableCtrl.isActivityTableMode();">
+						<a href="#" sda-click="activityTableCtrl.$openProcessDetails(rowData);" aid="PP-ActivityTable-OpenProcessDetails"
+							sda-title="processportal.toolbars-workflowActions-tooltip-processContextExplorer" class="button-link tbl-tool-link"
+							sda-bind="rowData.activity.name">
 						</a>
 					</div>
 				</td>
 
 				<td sda-data-type="int">
 				</td>
-
-				<td sda-data-type="int" sda-exporter="rowData.criticality.label + ' (' + rowData.criticality.value + ')'">
-					<div sd-activity-criticality sda-criticality="rowData.criticality"></div>
-				</td>
-
-				<td sda-data-type="int" sda-exporter="rowData.priority.label">
-					<div ng-if = "!activityTableCtrl.priorityEditable" sd-process-priority sda-priority="rowData.priority" sda-editable="activityTableCtrl.priorityEditable">
+				
+				<td sda-data-type="int" sda-exporter="rowData.criticality.label + ' (' + rowData.criticality.value + ')'"
+					sda-renderer="activityTableCtrl.renderers.criticalityRenderer(col, row, contents)">
+					<div class="flag">
+						<i sda-class="'pi pi-flag pi-lg spacing-right criticality-flag-' + rowData.criticality.color"></i>
 					</div>
-					<div ng-if = "activityTableCtrl.priorityEditable" sd-process-priority sda-priority="rowData.priority" sda-editable="activityTableCtrl.priorityEditable"
-					    sda-available-priorities ="activityTableCtrl.availablePriorities" sda-on-change ="activityTableCtrl.registerNewPriority( rowData.activityOID, rowData.priority.value)"
-					    sda-value-changed="activityTableCtrl.isPriorityChangedForRow(rowData.activityOID);">
+					<div class="popover"> 
+						<span class="noWrap">
+							<span><b sda-bind-i18n="views-common-messages.processHistory-activityTable-criticalityTooltip-criticality"></b>: </span>
+							<span sda-bind="rowData.criticality.label"></span>
+							<br/>
+							<span><b sda-bind-i18n="views-common-messages.processHistory-activityTable-criticalityTooltip-value"></b>: </span>
+							<span sda-bind="rowData.criticality.value"></span>
+						</span>
 					</div>
 				</td>
-
-				<td style="text-align: center;" sda-exporter="rowData.benchmark.label">
-					<div sd-benchmark-category sda-value="rowData.benchmark"> </div>
+					
+				<td sda-data-type="int" sda-exporter="rowData.priority.label"  
+					sda-renderer="activityTableCtrl.renderers.priorityRenderer(col, row, contents, activityTableCtrl.isWorklistMode(), activityTableCtrl.availablePriorities)">
+					<div class="flag">
+						<i sda-class="'pi pi-flag pi-lg priority-flag-' + rowData.priority.name"></i>						
+					</div>
+					<div class="popover"> 
+						<span class="noWrap">
+							<span><b sda-bind-i18n="views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name"></b>: </span>
+							<span sda-bind="rowData.priority.label"></span>
+						</span>
+					</div>
+					<div class="editMode">
+						<div class="change-higlight-container">
+							<select class="activity-table-priority-combo" sda-on-change="activityTableCtrl.registerNewPriority(rowData.activityOID)">
+				   	   			__OPTIONS__	
+				   	   		</select>
+			   	   		</div>
+					</div>
+				</td>
+				
+				<td style="text-align: center;" sda-exporter="rowData.benchmark.label"
+					sda-renderer="activityTableCtrl.renderers.benchmarkRenderer(col, row, contents)">
+					<div class="flag">
+						<i class="pi pi-flag pi-lg" sda-style="'color: ' + rowData.benchmark.color"></i>						
+					</div>
+					<div class="popover"> 
+						<span class="noWrap">
+							<span><b sda-bind-i18n="views-common-messages.views-processTable-benchmark-tooltip-categoryLabel"></b>: </span>
+							<span sda-bind="rowData.benchmark.label"></span>
+						</span>
+					</div>
 				</td>
 
 
 				<td sda-exporter="activityTableCtrl.getDescriptorExportText(rowData.descriptorValues)">
-					<table>
-						<tr ng-repeat="desc in rowData.descriptorValues">
-							<td ng-if ="!desc.isDocument" style="white-space: nowrap;">{{desc.key}}:</td>
-							<td ng-if ="!desc.isDocument && !desc.isLink" style="white-space: normal;">{{desc.value}}</td>
-							<td ng-if ="desc.isLink" style="white-space: normal;"><a href="{{desc.value}}" target="_blank">{{desc.linkText}}</a></td>
+					<table sda-if="rowData.descriptorValues != undefined">
+						<tr sda-repeat="desc in rowData.descriptorValues" sda-repeat-if="desc.value != ''">
+							<td class="noWrap" sda-repeat-if="!desc.isDocument">
+								<span sda-bind="desc.key"></span>
+							</td>
+							<td sda-repeat-if="!desc.isDocument" class="noWrap">: <span class="spacing-right" sda-bind="desc.value"> </span></td>
 						</tr>
 					</table>
-					<div sd-editor-template></div>
 				</td>
 
 				<td sda-field="resubmissionTime" sda-data-type="dateTime" ng-if="activityTableCtrl.showResubmissionTime()">
 				</td>
-
+				
 				<td sda-field="startTime" sda-data-type="dateTime">
 				</td>
-
+				
 				<td sda-field="lastModification" sda-data-type="dateTime">
 				</td>
-
-				<td sda-field="duration" style="text-align: center; white-space: nowrap;">
+				
+				<td sda-field="duration" class="noWrap align-center">
 				</td>
 
 				<td sda-field="lastPerformer" ng-if ="activityTableCtrl.isWorklistMode();">
 				</td>
-
+				
 				<td sda-field="processInstance.processName">
 				</td>
-
+				
 				<td ng-if ="activityTableCtrl.isActivityTableMode();" sda-data-type="int" sda-field="processInstance.oid">
 				</td>
-
+				
 				<td sda-field="status.label">
 				</td>
-
+				
 				<td sda-field="assignedTo">
 				</td>
 
 				<td sda-field="completedBy" ng-if ="activityTableCtrl.isActivityTableMode();">
 				</td>
-
+				
 				<td ng-if ="activityTableCtrl.isActivityTableMode();"  sda-field="participantPerformer">
 				</td>
 
-				<td sda-column-type="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-data-type="{{descCol.dataType}}"
-					sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])">
-					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.field]" sda-data-type ="colData.dataType"> </div>
+				<td sda-column-type="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-data-type="{{descCol.dataType}}" 
+					sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])"
+					sda-renderer="activityTableCtrl.renderers.descriptorRenderer(col, row, contents)" >
+					<div class="typeDocument">
+						<span class="noWrap"> <a href="#"
+							sda-click="activityTableCtrl.openDocumentsView('_documentId_')">
+								<i class="pi-lg spacing-right _documentIcon_"> </i> _documentName_
+						</a>
+						</span><br/>
+					</div>
+					<div class="typeLink">
+						<a href="_linkValue_" title="_linkValue_" target="_blank">_linkText_</a>
+					</div>
+					<div class="typeText">
+						<div class="align-center">_value_</div>
+					</div>
 				</td>
 
 				<td sda-field="rootProcessName" ng-if ="activityTableCtrl.isWorklistMode();">
 				</td>
 
-				<td sda-column-type="TRIVIAL_DATA">
+				<td sda-column-type="TRIVIAL_DATA" sda-renderer="activityTableCtrl.renderers.trivialDataRenderer(col, row, contents)">
 					<div ng-if="rowData.dataMappings">
-						<div sd-trivial-manual-activity-data sda-data-mappings="rowData.dataMappings"
-							sda-out-data="rowData.inOutData" sda-on-change=activityTableCtrl.changeFormStatus(rowData.activityOID)>
-						</div>
+							<div sd-trivial-manual-activity-data sda-data-mappings="rowData.dataMappings"
+								sda-out-data="rowData.inOutData" sda-on-change="activityTableCtrl.changeFormStatus(rowData)">
+							</div>
 					</div>
 				</td>
 
-				<td sda-column-type="ACTIONS">
+			 <td sda-column-type="ACTIONS">
 					<div style="text-align: right; white-space: nowrap;">
-
-						<button ng-click="activityTableCtrl.$openNotes(rowData);" aid="PP-ActivityTable-OpenNotesAction"  ng-if="::activityTableCtrl.isActionButtonVisible('notes')"
-						   	    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
-								title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
-								<i class="pi pi-notes-empty pi-lg" ng-if ="rowData.notesCount === 0"></i>
-								<i class="pi pi-notes pi-lg" ng-if ="rowData.notesCount > 0 "></i>
-						</button>
-
-						<button ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"  ng-if="::activityTableCtrl.isActionButtonVisible('processDocuments')"
-						        title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}"
-						        sd-popover
-						        sda-trigger="none"
-						        aid="PP-ActivityTable-OpenProcessDocuments"
-						        sda-is-open="activityTableCtrl.processPopover.showDocumentPopover && rowData.activityOID == activityTableCtrl.processPopover.data.activityOID"
-						        sda-template="activityTableCtrl.openDocumentTemplateUrl"
-						        sda-action-type="processDocuments"
-						        sda-placement ="left auto"
-						        ng-click="activityTableCtrl.openProcessDocumentsPopover(rowData)"
-						        class="button-link tbl-tool-link">
-	  		  					<i class="pi pi-process-documents pi-lg"></i>
-						</button>
-
-						<button sd-popover
-								sda-placement="auto left-top"
-								aid="PP-ActivityTable-OpenActionsPopover"
-								title="{{i18n('processportal.toolbars-workflowActions-tooltip-actions')}}"
-						        sda-template="activityTableCtrl.actionsPopoverTemplateUrl"
-						        class="button-link tbl-tool-link">
-						        <i class="pi pi-actions pi-lg"></i>
-						</button>
-
+						 	 <button sda-click="activityTableCtrl.$openNotes(rowData);" aid="PP-ActivityTable-OpenNotesAction"  
+							 		 sda-if="activityTableCtrl.isActionButtonVisible('notes')"
+							   	     sda-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
+									 sda-title="processportal.toolbars-workflowActions-tooltip-notes" class="button-link tbl-tool-link">
+										<i class="pi pi-notes-empty pi-lg" sda-if ="rowData.notesCount === 0"></i>
+										<i class="pi pi-notes pi-lg" sda-if ="rowData.notesCount > 0 "></i>
+							</button>
+							
+							<button sda-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"  
+							  		sda-if="activityTableCtrl.isActionButtonVisible('processDocuments')"
+							        aid="PP-ActivityTable-OpenProcessDocuments"
+							        sda-action-type="processDocuments" 
+							        sda-click="activityTableCtrl.openProcessDocumentsPopover($event, rowData)"
+							        class="button-link tbl-tool-link">
+		  		  						<i class="pi pi-process-documents pi-lg document-popover" sda-title="processportal.toolbars-workflowActions-tooltip-processDocuments"></i>
+							</button>
+							
+							<button sda-click="activityTableCtrl.openActionsMenu($event, rowData)"
+								    class="button-link tbl-tool-link" sda-title="processportal.toolbars-workflowActions-tooltip-actions" >
+										<i class="pi pi-actions pi-lg actions-popover" sda-title="processportal.toolbars-workflowActions-tooltip-actions"  
+										    aid="PP-ActivityTable-OpenActionsPopover"></i>
+							</button>
 					</div>
-				</td>
+				</td> 
 			</tr>
 		</tbody>
 	</table>
@@ -447,5 +486,5 @@
 			sda-height="70px"
 			sda-aid-prefix="RelocationDialog-confirm">
 		</div>
-
+		
 </div>
