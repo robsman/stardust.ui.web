@@ -351,6 +351,14 @@ public class ModelElementMarshaller implements ModelMarshaller
                   AttributeUtil.getBooleanValue(dataPath,
                         PredefinedConstants.USE_SERVERTIME));
          }
+         
+         if (AttributeUtil.getAttribute(dataPath,
+               PredefinedConstants.HIDE_TIME) != null)
+         {
+            dataPathJson.addProperty(ModelerConstants.DESCRIPTOR_HIDE_TIME,
+                  AttributeUtil.getBooleanValue(dataPath,
+                        PredefinedConstants.HIDE_TIME));
+         }                          
                  
       }
 

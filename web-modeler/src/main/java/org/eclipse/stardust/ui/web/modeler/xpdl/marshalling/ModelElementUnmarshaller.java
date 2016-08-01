@@ -1390,7 +1390,15 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                   dataPathJson.get(ModelerConstants.DESCRIPTOR_USE_SERVERTIME)
                         .getAsBoolean());
          }
-                  
+         
+         if (hasNotJsonNull(dataPathJson, ModelerConstants.DESCRIPTOR_HIDE_TIME))
+         {
+            AttributeUtil.setBooleanAttribute(dataPathType,
+                  PredefinedConstants.HIDE_TIME,
+                  dataPathJson.get(ModelerConstants.DESCRIPTOR_HIDE_TIME)
+                        .getAsBoolean());
+         }
+                     
          newDataPaths.add(dataPathType);
       }
       processDefinition.getDataPath().clear();
