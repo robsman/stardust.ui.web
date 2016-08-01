@@ -726,7 +726,6 @@ public class DescriptorFilterUtils
             cal.setTime(dateRange.getFromDateValue());
             cal.set(Calendar.HOUR_OF_DAY, 00);
             cal.set(Calendar.MINUTE, 0);
-            System.out.println(cal.getTime().toLocaleString());
             fromDateValue = cal;
          }
          if (dateRange.getToDateValue() != null)
