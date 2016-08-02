@@ -17,7 +17,7 @@
 		'use strict';
 
 	angular.module('bpm-common').directive('sdDataTable',
-			['$parse', '$q', '$compile', '$timeout', 'sgI18nService', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService','sdPortalConfigurationService','sdDialogService',
+			['$parse', '$q', '$compile', '$timeout', '$filter','sgI18nService', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService','sdPortalConfigurationService','sdDialogService',
 			 DataTableDirective]);
 
 		var trace;
@@ -40,7 +40,7 @@
 		/*
 		 *
 		 */
-		function DataTableDirective($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdLoggerService, sdPreferenceService, sdPortalConfigurationService, sdDialogService) {
+		function DataTableDirective($parse, $q, $compile, $timeout, $filter, sgI18nService, sdUtilService, sdLoggerService, sdPreferenceService, sdPortalConfigurationService, sdDialogService) {
 			trace = sdLoggerService.getLogger('bpm-common.sdDataTable');
 
 			return {
@@ -53,7 +53,7 @@
 					return {
 						post: function(scope, element, attr, ctrl) {
 							var dataTableCompiler = new DataTableCompiler(
-								$parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService,
+								$parse, $q, $compile, $timeout, $filter, sgI18nService, sdUtilService, sdPreferenceService,
 								scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService);
 						}
 					};
@@ -106,7 +106,7 @@
 		/*
 		 *
 		 */
-		function DataTableCompiler($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService,
+		function DataTableCompiler($parse, $q, $compile, $timeout, $filter, sgI18nService, sdUtilService, sdPreferenceService,
 			scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService) {
 
 			var TOOLBAR_TEMPLATE =
@@ -202,7 +202,8 @@
 		var myScope = scope;
 		var sdData = ctrl[0];
 		var treeTable = false, treeTableData, treeData, noAngularComplaintBody, noAngularRowHandlerParser, noAngularDrawHandlerParser;
-		var tableInLocalMode, initialized, firstLoad, firstInitiaizingDraw = true;
+		var tableInLocalMode, initialized,firstInitiaizingDraw = true;
+		var savedFiltersLoaded = false;
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
@@ -1030,9 +1031,8 @@
 					theTable = element;
 					theTable.addClass('tbl');
 				}
-
 				/*
-				 *
+				 * 
 				 */
 				function buildDataTable() {
 					var dtOptions = {};
@@ -1410,7 +1410,7 @@
 						ret.aaData = [];
 
 						callback(ret);
-						firstLoad = true;
+						loadInitialState();
 						return;
 					}
 
@@ -1436,10 +1436,12 @@
 							params.filters[colName] = angular.copy(filterScope.$$filterData);
 						}
 					}
-
-					if (firstLoad) {
+					
+					 //TsavedFiltersLoadedif intialFilters and saved filters can use the same code after requirement for creating filter title from data is done.
+					
+					if (!savedFiltersLoaded && !isIntialFilterApplied()) {
 						loadSavedState(params);
-						firstLoad = false;
+						savedFiltersLoaded = true;
 					}
 
 					if (jQuery.isEmptyObject(params.filters)) {
@@ -1477,111 +1479,6 @@
 					}, function(error) {
 						showErrorOnUI(error);
 					});
-				}
-
-				/**
-				 *
-				 */
-				function getSavedTableState() {
-					if (tableStateValue === false && enableStateSave) {
-						tableStateValue = undefined;
-						var pScope = 'USER';
-						var preferenceDelegate = getPreferenceDelegate(pScope);
-
-						if (preferenceDelegate.store) {
-							var preferenceName = preferenceDelegate.store.marshalName(pScope, preferenceDelegate.name) + stateSuffixForPreference;
-							var filterAndSortOrder = preferenceDelegate.store.getValue(preferenceName)
-							if (filterAndSortOrder) {
-								tableStateValue = JSON.parse(filterAndSortOrder);
-							}
-						}
-					}
-					return tableStateValue;
-				}
-
-				/**
-				 *
-				 */
-				function isColumnAttributesSaved() {
-					// !! ensures a falsy value for undefined
-					saveColumnAttributes = !!getSavedTableState()
-					return saveColumnAttributes;
-				}
-
-				/**
-				 *
-				 */
-				function loadSavedState(params) {
-					var filterAndSortOrder = getSavedTableState();
-					if (filterAndSortOrder) {
-						var updateFilters = loadSavedColumnFilters(params, filterAndSortOrder.filters);
-						var updateSortOrder = loadSavedSortOrder(params, filterAndSortOrder.order);
-
-						//Update the stored state in case the columns are missing.
-						if (updateFilters || updateSortOrder) {
-							storeTableState();
-						}
-					}
-
-				}
-
-				/**
-				 *
-				 */
-				function loadSavedSortOrder(params, savedOrder) {
-					var dtOrder = [];
-
-					var updateStateRequired = false;
-
-					if (savedOrder) {
-						var orderBy = savedOrder;
-						if (orderBy) {
-							if (!angular.isArray(orderBy)) {
-								orderBy = [orderBy];
-							}
-
-							for (var i in orderBy) {
-								var columnInfo = columnsInfoByDisplayOrder[orderBy[i].name];
-								if (columnInfo) {
-									dtOrder.push([columnInfo.index, orderBy[i].dir == 'asc' ? 'asc' : 'desc']);
-								} else {
-									updateStateRequired = true;
-								}
-							}
-						}
-					}
-
-					if (dtOrder.length == 0) {
-						dtOrder.push([0, 'asc']);
-					}
-
-					if (!updateStateRequired) {
-						params.order = angular.copy(savedOrder);
-						theDataTable.fnSettings().aaSorting = dtOrder;
-					}
-					return updateStateRequired;
-				}
-
-				/**
-				 *
-				 */
-
-				function loadSavedColumnFilters(params, savedFilters) {
-					var updateStateRequired = false;
-
-					for (var colName in savedFilters) {
-						var filter = angular.copy(savedFilters[colName]);
-						if (columnFilters[colName]) {
-							columnFilters[colName].filter.scope().$$filterTitle = angular.copy(filter.title);
-							delete filter.title;
-							columnFilters[colName].filter.scope().$$filterData = filter;
-							params.filters[colName] = filter;
-						} else {
-							updateStateRequired = true;
-						}
-					}
-
-					return updateStateRequired;
 				}
 
 				/*
@@ -2973,6 +2870,244 @@
 						};
 					}
 				}
+
+				/**
+				 * Saved filters for worklist
+				 */
+				function getSavedTableState () {
+					if (tableStateValue === false && enableStateSave) {
+						tableStateValue = undefined;
+						var pScope = 'USER';
+						var preferenceDelegate = getPreferenceDelegate(pScope);
+
+						if (preferenceDelegate.store) {
+							var preferenceName = preferenceDelegate.store.marshalName(pScope, preferenceDelegate.name)
+							+ stateSuffixForPreference;
+							var filterAndSortOrder = preferenceDelegate.store.getValue(preferenceName)
+							if (filterAndSortOrder) {
+								tableStateValue = JSON.parse(filterAndSortOrder);
+							}
+						}
+					}
+					return tableStateValue;
+				}
+
+				/**
+				 *
+				 */
+				function isColumnAttributesSaved () {
+					// !! ensures a falsy value for undefined
+					saveColumnAttributes = !!getSavedTableState()
+					return saveColumnAttributes;
+				}
+
+				/**
+				 *
+				 */
+				function loadSavedState (params) {
+					var filterAndSortOrder = getSavedTableState();
+					if (filterAndSortOrder) {
+						var updateFilters = loadSavedColumnFilters(params, filterAndSortOrder.filters);
+						var updateSortOrder = loadSavedSortOrder(params, filterAndSortOrder.order);
+
+						// Update the stored state in case the columns are missing.
+						if (updateFilters || updateSortOrder) {
+							storeTableState();
+						}
+					}
+
+				}
+
+				/**
+				 *
+				 */
+				function loadSavedSortOrder (params, savedOrder) {
+					var dtOrder = [];
+
+					var updateStateRequired = false;
+
+					if (savedOrder) {
+						var orderBy = savedOrder;
+						if (orderBy) {
+							if (!angular.isArray(orderBy)) {
+								orderBy = [orderBy];
+							}
+
+							for ( var i in orderBy) {
+								var columnInfo = columnsInfoByDisplayOrder[orderBy[i].name];
+								if (columnInfo) {
+									dtOrder.push([columnInfo.index, orderBy[i].dir == 'asc' ? 'asc' : 'desc']);
+								} else {
+									updateStateRequired = true;
+								}
+							}
+						}
+					}
+
+					if (dtOrder.length == 0) {
+						dtOrder.push([0, 'asc']);
+					}
+
+					if (!updateStateRequired) {
+						params.order = angular.copy(savedOrder);
+						theDataTable.fnSettings().aaSorting = dtOrder;
+					}
+					return updateStateRequired;
+				}
+
+				/**
+				 *
+				 */
+
+				function loadSavedColumnFilters (params, savedFilters) {
+					var updateStateRequired = false;
+
+					for ( var colName in savedFilters) {
+						var filter = angular.copy(savedFilters[colName]);
+						if (columnFilters[colName]) {
+							columnFilters[colName].filter.scope().$$filterTitle = angular.copy(filter.title);
+							delete filter.title;
+							columnFilters[colName].filter.scope().$$filterData = filter;
+							params.filters[colName] = filter;
+						} else {
+							updateStateRequired = true;
+						}
+					}
+
+					return updateStateRequired;
+				}
+				/**
+				 * End saved filters for worklist
+				 */
+
+				/**
+				 * Initial filters for worklist
+				 */
+				function isIntialFilterApplied () {
+					return attr.sdaInitialFilters != undefined && attr.sdaInitialFilters != '';
+				}
+
+				/**
+				 * 
+				 */
+				function getInitialFilters () {
+					if (isIntialFilterApplied()) {
+						var initFiltersGetter = $parse(attr.sdaInitialFilters);
+						var initFilters = initFiltersGetter(elemScope);
+						return initFilters;
+					}
+					return null;
+				}
+
+				/**
+				 * 
+				 */
+				function loadInitialState ( ) {
+					var intialFilters = getInitialFilters();
+					if (intialFilters) {
+						loadInitialFilterState(intialFilters);
+					}
+				}
+
+				/**
+				 * 
+				 */
+				function validateFilter (colName, filter, dataType) {
+					if (dataType == "STRING") {
+						if (angular.isUndefined(filter.textSearch)) {
+							trace.error("Expected 'textSearch' attr in the filter for column " + colName
+									+ ".Not applying filter")
+									return false;
+						}
+					} else if (dataType == "NUMBER" || dataType == "DATE") {
+						if (!(angular.isDefined(filter.from) || angular.isDefined(filter.to))) {
+							trace.error("Expected 'from'/ 'to' attr in the filter for column " + colName
+									+ ".Not applying filter")
+									return false;
+						}
+					} else if (dataType == "BOOLEAN") {
+						if (angular.isUndefined(filter.equals)) {
+							trace.error("Expected 'equals' attr in the filter for column " + colName + ".Not applying filter")
+							return false;
+						}
+					}
+					return true;
+				}
+
+				/**
+				 * 
+				 */
+				function loadInitialFilterState (filters) {
+					for ( var colName in filters) {
+						var filter = angular.copy(filters[colName]);
+						if (columnFilters[colName]) {
+							var scope = columnFilters[colName].filter.scope();
+							var filterValid = validateFilter(colName, filter, scope.colData.dataType);
+							if (filterValid) {
+								scope.$$filterTitle = getFilterTitle(filter, scope.colData.dataType);
+								scope.$$filterData = filter;
+							}
+						} else {
+							trace.error(colName + " is a invalid filter.");
+						}
+					}
+				}
+
+				/**
+				 * 
+				 */
+				function getFilterTitle (filter, dataType) {
+					var title = "";
+
+					if (filter.from || filter.to) {
+						var from, to;
+						if (dataType == "DATE") {
+							from = filter.from ? formatDate(filter.from) : filter.from;
+							to = filter.to ? formatDate(filter.to) : filter.to;
+						} else {
+							from = filter.from;
+							to = filter.to;
+						}
+						title = formatRangeTitle(from, to);
+					} else if (filter.textSearch) {
+						title = filter.textSearch;
+					} else if (angular.isDefined(filter.equals)) {
+						title = filter.equals;
+					}
+					return title;
+				}
+
+				/**
+				 * 
+				 */
+				function formatRangeTitle (from, to) {
+					var title = "";
+					if (from || to) {
+						if (from && to) {
+							title = from + " - " + to;
+						} else {
+							if (from) {
+								title = '> ' + from;
+							} else {
+								title = '< ' + to;
+							}
+						}
+					}
+
+					return title;
+				}
+
+				/*
+				 * 
+				 */
+				function formatDate (mills) {
+					var date = new Date(mills);
+					var angularDateFilter = $filter('sdDateTimeFilter');
+					return angularDateFilter(date);
+				}
+				/***************************************************************************************************************
+				 * End Initial filters for worklist
+				 */
 
 				/*
 				 * Scope API

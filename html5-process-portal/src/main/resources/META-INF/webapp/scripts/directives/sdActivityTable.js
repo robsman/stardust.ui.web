@@ -343,14 +343,14 @@
 				this.initialSelection = attr.sdaInitialSelection;
 			}
 
+			this.initialFilter =  getPreFilters(scope);
+
 			this.fetchIntialTableRequirements(element, attr);
 			this.fetchAvailableStates();
 			this.fetchAvailablePriorities();
 
 			//Refreshing when Item is activated //remove on completion of server push
 			this.refreshHandler = $parse(attr.sdaAutoRefresh);
-			
-			this.initialFilter =  getPreFilters(scope);
 
 			if (attr.sdaSelection) {
 				var assignable = $parse(attr.sdaSelection).assign;
@@ -1979,7 +1979,7 @@
     	var initialFilters = null;
     	if(scope.panel.params.custom) {
     		try {
-    			initialFilters =angular.fromJson(scope.panel.params.custom.filters);
+    			initialFilters = angular.fromJson(scope.panel.params.custom.filters);
     			 
     		} catch (e) {
 				trace.error("Unable to parse filters : ",scope.panel.params.custom.filters,e);
