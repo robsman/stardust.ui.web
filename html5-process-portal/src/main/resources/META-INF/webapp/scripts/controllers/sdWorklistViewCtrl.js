@@ -120,6 +120,7 @@
 		if(params.participantQId) {
 				query.participantQId = params.participantQId;
 				query.departmentQId = params.departmentQId;
+				query.userId =	params.userId;
 		} else if (params.processQId) {
 				query.processQId = params.processQId;
 		} else if (params.pInstanceOids) {

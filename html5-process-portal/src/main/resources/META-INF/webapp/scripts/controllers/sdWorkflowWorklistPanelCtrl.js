@@ -19,7 +19,7 @@
 			[ 'sdWorkflowWorklistService', 'sdLoggerService', 'sdViewUtilService',
 					'sdI18nService', 'sdActivityInstanceService', 'sdDialogService', 'sdCommonViewUtilService',
 					'$scope', 'sgPubSubService', 'sdSidebarService', '$timeout', 'sdUtilService',
-					'sdWorkflowOverviewService' , WorkflowWorklistPanelCtrl ]);
+					'sdWorkflowOverviewService' , 'sdLoggedInUserService', WorkflowWorklistPanelCtrl ]);
 	var _sdWorkflowWorklistService;
 	var _sdViewUtilService;
 	var trace;
@@ -32,13 +32,14 @@
 	var _sdUtilService;
 	var _sgPubSubService;
 	var _sdWorkflowOverviewService;
+	var _sdLoggedInUserService;
 	/**
 	 *
 	 */
 	function WorkflowWorklistPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService,
 			sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService,
 			$scope, sgPubSubService, sdSidebarService, $timeout, sdUtilService,
-			sdWorkflowOverviewService) {
+			sdWorkflowOverviewService, sdLoggedInUserService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowWorklistPanelCtrl');
 		_sdWorkflowWorklistService = sdWorkflowWorklistService;
 		_sdViewUtilService = sdViewUtilService;
@@ -51,9 +52,11 @@
 		_sdUtilService = sdUtilService;
 		_sgPubSubService = sgPubSubService;
 		_sdWorkflowOverviewService = sdWorkflowOverviewService;
+		_sdLoggedInUserService = sdLoggedInUserService;
+		
 		this.showEmptyWorklists = false;
-
 		this.collapsePanelHandle = null;
+		
 		var self = this;
 
 		_sgPubSubService.subscribe('sdRefreshLaunchPanel', function() {
@@ -209,7 +212,12 @@
 			};
 
 			if(!data.valueItem.participantQId) {
-				params['type'] = "personal";
+				// If its the logged in user.
+				if(_sdLoggedInUserService.getUserInfo().id == data.valueItem.id) {
+					params['type'] = 'personal'
+				} else {
+					params['type'] = "user";
+				}
 			}
 			_sdViewUtilService.openView("worklistPanel", "id=" + data.valueItem.viewKey, params);
 

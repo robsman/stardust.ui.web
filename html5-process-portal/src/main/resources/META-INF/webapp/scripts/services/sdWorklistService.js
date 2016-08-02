@@ -99,8 +99,11 @@
 			   }
 		   } else if (query.participantQId) {
 			   restUrl = restUrl  + ":type";
-			   urlTemplateParams.type = "participant";
+			 
+			   var userParams = "userId="+query.userId;
+			   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, userParams);
 			   
+			   urlTemplateParams.type = "participant";
 			   postData.participantQId = query.participantQId;
 			   
 			   if(query.departmentQId) {
