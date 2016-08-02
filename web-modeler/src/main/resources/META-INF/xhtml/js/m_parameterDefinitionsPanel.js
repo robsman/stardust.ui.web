@@ -137,6 +137,9 @@ define(
 					m_utils.jQuerySelect(this.options.scope
 		                     + "label[for='useServerTimeInput']").text(
 		                              m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.dataPath.useServerTimeInput"));
+	         m_utils.jQuerySelect(this.options.scope
+                   + "label[for='hideTimeInput']").text(
+                            m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.dataPath.hideTimeInput"));
 					m_utils.jQuerySelect(this.options.scope
                         + "label[for='dataTypeSelect']").text(
                                  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.dataType"));
@@ -184,6 +187,8 @@ define(
 							+ " #parameterDefinitionLinkTextInput");
 					this.useServerTimeInput = m_utils.jQuerySelect(this.options.scope + " #useServerTimeInput");
 					this.useServerTimeLabel = m_utils.jQuerySelect(this.options.scope + "label[for='useServerTimeInput']")
+					this.hideTimeInput = m_utils.jQuerySelect(this.options.scope + " #hideTimeInput");
+          this.hideTimeLabel = m_utils.jQuerySelect(this.options.scope + "label[for='hideTimeInput']")
 					
 					this.addParameterDefinitionButton = m_utils.jQuerySelect(this.options.scope
 							+ " #addParameterDefinitionButton");
@@ -389,7 +394,7 @@ define(
 												event.data.panel.currentFocusInput = null;
 											}
 
-											event.data.panel.resetUseServerTimeIfNotSupported(event.data.panel.currentParameterDefinition);
+											event.data.panel.resetTimeAttributesIfNotSupported(event.data.panel.currentParameterDefinition);
 											
 											event.data.panel.submitChanges();
 										});
@@ -472,6 +477,20 @@ define(
 										event.data.panel.submitChanges();
 									}
 								});
+						this.hideTimeInput
+            .change(
+                {
+                  panel : this
+                },
+                function(event) {
+                  if (event.data.panel.currentParameterDefinition != null) {
+                    event.data.panel.currentParameterDefinition.attributes = event.data.panel.currentParameterDefinition.attributes ? event.data.panel.currentParameterDefinition.attributes
+                        : {};
+                    event.data.panel.currentParameterDefinition.hideTime = event.data.panel.hideTimeInput.prop("checked");
+                    event.data.panel.submitChanges();
+                  }
+                });
+						
 					}
 
 					if (this.options.supportsDataMappings) {
@@ -499,7 +518,7 @@ define(
 												event.data.panel.setAutoCompleteMatches(event.data.panel.currentParameterDefinition); 
 												event.data.panel.currentFocusInput = null;
 
-												event.data.panel.resetUseServerTimeIfNotSupported(event.data.panel.currentParameterDefinition);
+												event.data.panel.resetTimeAttributesIfNotSupported(event.data.panel.currentParameterDefinition);
 												
 												event.data.panel
 														.submitChanges();
@@ -1164,6 +1183,16 @@ define(
 							this.useServerTimeInput.hide();
 							this.useServerTimeLabel.hide();
 						}
+						
+						if (this.parameterSupportsHidetime(this.currentParameterDefinition)) {
+              this.hideTimeInput.prop("checked", this.currentParameterDefinition.hideTime ? this.currentParameterDefinition.hideTime : false);
+              this.hideTimeInput.show();
+              this.hideTimeLabel.show();
+            } else {
+              this.hideTimeInput.prop("checked", false);
+              this.hideTimeInput.hide();
+              this.hideTimeLabel.hide();
+            }
 					}
 
 					if (this.scopeModel && this.scopeModel.isReadonly()
@@ -1198,10 +1227,13 @@ define(
 			          
 				};
 				
-				ParameterDefinitionsPanel.prototype.resetUseServerTimeIfNotSupported = function(parameterDefinition) {
+				ParameterDefinitionsPanel.prototype.resetTimeAttributesIfNotSupported = function(parameterDefinition) {
 					if (!this.parameterSupportsUseServertime(parameterDefinition)) {
 						parameterDefinition.useServerTime = false;
 					}
+					if (!this.parameterSupportsHidetime(parameterDefinition)) {
+	            parameterDefinition.hideTime = false;
+	        }
 				}
 				
 				ParameterDefinitionsPanel.prototype.parameterSupportsUseServertime = function(parameterDefinition) {
@@ -1209,13 +1241,26 @@ define(
 						var data = m_model.findData(parameterDefinition.dataFullId);
 						// TODO - check condition
 						if (parameterDefinition.descriptor && data 
-								&& data.dataType === "primitive" && data.primitiveDataType == 'Timestamp') {
+								&& data.dataType === "primitive" && data.primitiveDataType == 'Calendar') {
 							return true;
 						}
 					}
-					
 					return false;
 				};
+				
+				ParameterDefinitionsPanel.prototype.parameterSupportsHidetime = function(parameterDefinition) {
+          if (parameterDefinition.dataFullId) {
+            var data = m_model.findData(parameterDefinition.dataFullId);
+            // TODO - check condition
+            if (parameterDefinition.descriptor && data 
+                && data.dataType === "primitive"
+                && (data.primitiveDataType == 'Timestamp' || data.primitiveDataType == 'Calendar')) {
+              return true;
+            }
+          }
+          return false;
+        };
+				
 
 				ParameterDefinitionsPanel.prototype.isPredefinedAccessPoint = function(currentParameterDefinition) {
 					if (!currentParameterDefinition || (currentParameterDefinition.attributes && currentParameterDefinition.attributes["stardust:predefined"]))
