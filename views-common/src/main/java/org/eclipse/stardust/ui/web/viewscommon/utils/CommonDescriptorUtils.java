@@ -85,7 +85,7 @@ public class CommonDescriptorUtils
    private static final Logger trace = LogManager.getLogger(CommonDescriptorUtils.class);
    
    public static final String USE_SERVER_TIME_ZONE = PredefinedConstants.USE_SERVERTIME;
-   public static final String HIDE_TIME = "stardust:model:dateTimeDescriptor:hideTime";
+   public static final String HIDE_TIME = PredefinedConstants.HIDE_TIME;
    
    /**
     * Returns process instance's descriptors list taking workflow configurations into
@@ -1397,11 +1397,6 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
       {
          return (Boolean) dataPath.getAttribute(HIDE_TIME);
       }
-      if (PredefinedConstants.BUSINESS_DATE.equals(dataPath.getData()))
-      {
-         return true;
-      }
-      
       return false;
    }
 
@@ -1413,13 +1408,8 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
    {
       if (dataPath.getAttribute(USE_SERVER_TIME_ZONE) != null)
       {
-         Boolean useServerSideTime = (Boolean) dataPath.getAttribute(USE_SERVER_TIME_ZONE);
-         if (useServerSideTime || PredefinedConstants.BUSINESS_DATE.equals(dataPath.getData()))
-         {
-            return true;
-         }
+         return (Boolean) dataPath.getAttribute(USE_SERVER_TIME_ZONE);
       }
-      
       return false;
    }
 }

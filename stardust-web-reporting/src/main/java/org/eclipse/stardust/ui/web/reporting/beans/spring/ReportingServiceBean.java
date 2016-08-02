@@ -23,6 +23,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -1229,12 +1230,16 @@ public class ReportingServiceBean
    {
       Class mappedType = dataPath.getMappedType();
 
-      if (Date.class.equals(mappedType))
+      if (Date.class.equals(mappedType) || Calendar.class.equals(mappedType))
       {
          GenericDataMapping mapping = new GenericDataMapping(dataPath);
          DataMappingWrapper dmWrapper = new DataMappingWrapper(mapping, null, false);
          if (ProcessPortalConstants.TIMESTAMP_TYPE.equals(dmWrapper.getType()))
          {
+            if (CommonDescriptorUtils.isHideTime(dataPath))
+            {
+               return DataTypes.DATE;
+            }
             return DataTypes.TIMESTAMP;
          }
          else

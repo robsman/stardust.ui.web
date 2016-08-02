@@ -970,6 +970,11 @@ if (!window.bpm.portal.AngularAdapter) {
 							dateFormat = attrs.dateFormat;
 						}
 						
+						var hideTime = false;
+						if(attrs.sdaHideTime == "true"){
+						  hideTime = true;
+            }
+						
 						var datePickerProperties
 						if (attrs.datePickerProperties) {
 							datePickerProperties = scope.$eval(attrs.datePickerProperties); 
@@ -993,9 +998,12 @@ if (!window.bpm.portal.AngularAdapter) {
 								showMonthAfterYear: datePickerProperties.showMonthAfterYear,
 								yearSuffix: datePickerProperties.yearSuffix,
 								onSelect : function(datetext) {
-									var d = new Date(); // for now
-							        datetext = datetext + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ":000";
-							        this.value = datetext;
+								     if(!hideTime){
+								       var d = new Date(); // for now
+	                      datetext = datetext + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ":000"; 
+								     } 
+
+								     this.value = datetext;
 							        controller.$setViewValue(datetext);
 									scope.$apply(function () {
 									   controller.$setViewValue(datetext);
