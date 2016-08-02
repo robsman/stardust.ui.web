@@ -1940,6 +1940,22 @@
 				+ errorToShow;
 			jQuery('<pre class="tbl-error">' + errorMessage + '</pre>').insertBefore(element);
 		};
+		
+		 /**
+	     * 
+	     */
+	    function getPreFilters(scope) { 
+	    	var initialFilters = null;
+	    	if(scope.panel.params.custom) {
+	    		try {
+	    			initialFilters = angular.fromJson(scope.panel.params.custom.filters);
+	    			 
+	    		} catch (e) {
+					trace.error("Unable to parse filters : ",scope.panel.params.custom.filters,e);
+				}
+	    	}
+	    	return initialFilters;
+	    }
 
 		return directiveDefObject;
 	}
@@ -1972,20 +1988,5 @@
 		});
 	}
 	
-	 /**
-     * 
-     */
-    function getPreFilters(scope) { 
-    	var initialFilters = null;
-    	if(scope.panel.params.custom) {
-    		try {
-    			initialFilters = angular.fromJson(scope.panel.params.custom.filters);
-    			 
-    		} catch (e) {
-				trace.error("Unable to parse filters : ",scope.panel.params.custom.filters,e);
-			}
-    	}
-    	return initialFilters;
-    }
 
 })();
