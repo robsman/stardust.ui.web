@@ -1237,7 +1237,7 @@
 			}
 			var activitiesData = [];
 			angular.forEach(selectedItems, function(item) {
-				if (item.dataMappings) {
+				if (item.dataMappings && item.trivial) {
 					activitiesData.push(item.activityOID);
 				}
 			});

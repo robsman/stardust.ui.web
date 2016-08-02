@@ -12,7 +12,7 @@
 			ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-generic')"></div>
 	</div>
 	<div ng-show="activityTableCtrl.completeDialog.confirmationType == 'dataMapping'">
-		<div class="panel-validation-summary-bar" ng-show="!rowData.isTrivialDataValid">
+		<div class="panel-validation-summary-bar" ng-show="activityTableCtrl.isTrivialDataValid === false">
 			<span class="fa fa-exclamation-triangle panel-validation-summary-bar-img"></span>
 			<span class="panel-validation-summary-bar-text">{{i18n('html5-common.form-invalid-error-message')}}</span>
 		</div>	
@@ -28,7 +28,7 @@
 <div class="modal-footer">
 	<div class="button-pane cf" >
 		<div class="button-alignment">
-		  	<button class="button" ng-disabled="rowData.isTrivialDataValid !== true" ng-click="closeThisDialog();activityTableCtrl.completeAll()">{{activityTableCtrl.completeAllDialog.confirmLabel}}</button>
+		  	<button class="button" ng-disabled="activityTableCtrl.isTrivialDataValid === false" ng-click="closeThisDialog();activityTableCtrl.completeAll()">{{activityTableCtrl.completeAllDialog.confirmLabel}}</button>
 		    <button class="button" ng-click="closeThisDialog()">{{activityTableCtrl.completeAllDialog.cancelLabel}}</button>
 		</div>
     </div>

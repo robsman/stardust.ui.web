@@ -55,7 +55,7 @@
     	  if (scope.rowData) {
     		  scope.rowData.isTrivialDataValid = valid;
     	  } else {
-    		  scope.isTrivialDataValid = valid;
+    		  scope.activityTableCtrl.isTrivialDataValid = valid;
     	  }
       });
    }

@@ -49,8 +49,8 @@
 	     sda-column-type="TRIVIAL_DATA"
 	     ng-if="::(activityTableCtrl.isWorklistMode() && activityTableCtrl.isActionButtonVisible('complete'))"
 	     aid="PP-ActivityTable-CompleteAction"
-		 ng-disabled="(activityTableCtrl.currentRow.dataMappings == undefined) || !activityTableCtrl.currentRow.activatable || !activityTableCtrl.currentRow.isTrivialDataValid"
-		 ng-click="((activityTableCtrl.currentRow.dataMappings == undefined) || !activityTableCtrl.currentRow.activatable || !activityTableCtrl.currentRow.isTrivialDataValid) || activityTableCtrl.$openCompleteDialog(activityTableCtrl.currentRow);">
+		 ng-disabled="(activityTableCtrl.currentRow.dataMappings == undefined) || !activityTableCtrl.currentRow.activatable || (activityTableCtrl.currentRow.isTrivialDataValid === false)"
+		 ng-click="((activityTableCtrl.currentRow.dataMappings == undefined) || !activityTableCtrl.currentRow.activatable || (activityTableCtrl.currentRow.isTrivialDataValid === false) ) || activityTableCtrl.$openCompleteDialog(activityTableCtrl.currentRow);">
 
 		<i title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}"
 		   class="pi pi-activity-complete pi-lg button-link tbl-tool-link">
