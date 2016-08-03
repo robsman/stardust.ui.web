@@ -128,11 +128,19 @@ public class FilterAttributesDTO implements Serializable
       {
          query = ProcessInstanceQuery.findInState(ProcessInstanceState.Interrupted);
       }
+      else if (state == ProcessActivityUtils.PROCESS_INSTANCE_STATE_ABORTING)
+      {
+         query = ProcessInstanceQuery.findInState(ProcessInstanceState.Aborting);
+      }
+      else if (state == ProcessActivityUtils.PROCESS_INSTANCE_STATE_HALTING)
+      {
+         query = ProcessInstanceQuery.findInState(ProcessInstanceState.Halting);
+      }
       else
       {
          query = ProcessInstanceQuery.findInState(new ProcessInstanceState[] {
                ProcessInstanceState.Active, ProcessInstanceState.Completed, ProcessInstanceState.Interrupted,
-               ProcessInstanceState.Aborted, ProcessInstanceState.Aborting});
+               ProcessInstanceState.Aborted, ProcessInstanceState.Aborting,  ProcessInstanceState.Aborting,  ProcessInstanceState.Halting});
       }
       FilterAndTerm filter = query.getFilter().addAndTerm();
 

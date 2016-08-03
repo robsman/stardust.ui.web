@@ -95,41 +95,53 @@
 
 		this.processStates = [
 				{
-					"value" : "1",
+					"value" : 0,
 					"label" : sgI18nService
 							.translate('business-control-center-messages.views-processSearchView-chooseProcess-options-alive-label'),
 					"name" : "Alive"
 				},
 				{
-					"value" : "2",
-					"label" : sgI18nService
-							.translate('business-control-center-messages.views-processSearchView-chooseProcess-options-completed-label'),
-					"name" : "Completed"
-				},
-				{
-					"value" : "3",
+					"value" : 1,
 					"label" : sgI18nService
 							.translate('business-control-center-messages.views-processSearchView-chooseProcess-options-aborted-label'),
 					"name" : "Aborted"
 				},
 				{
-					"value" : "4",
+					"value" : 2,
+					"label" : sgI18nService
+							.translate('business-control-center-messages.views-processSearchView-chooseProcess-options-completed-label'),
+					"name" : "Completed"
+				},
+				{
+					"value" : 3,
 					"label" : sgI18nService
 							.translate('business-control-center-messages.views-processSearchView-chooseProcess-options-interrupted-label'),
 					"name" : "Interrupted"
 				},
 				{
-					"value" : "5",
+					"value" : 4,
+					"label" : sgI18nService.translate('views-common-messages.views-processTable-statusFilter-aborting'),
+					"name" : "Aborting"
+				},
+				{
+					"value" : 5,
+					"label" : sgI18nService.translate('views-common-messages.views-processTable-statusFilter-halting'),
+					"name" : "Halting"
+				},
+				{
+					"value" : 6,
 					"label" : sgI18nService
 							.translate('business-control-center-messages.views-processSearchView-chooseProcess-options-halted-label'),
 					"name" : "Halted"
 				},
 				{
-					"value" : "6",
+					"value" : 7,
 					"label" : sgI18nService
 							.translate('business-control-center-messages.views-processSearchView-chooseProcess-options-all-label'),
 					"name" : "All"
-				} ];
+				},
+
+		];
 
 		this.descBoolOptions = [
 				{

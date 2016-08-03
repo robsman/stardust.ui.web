@@ -79,17 +79,14 @@ public class ProcessActivityUtils
       PROCESSES, ACTIVITIES
    }
 
-   public final static int PROCESS_INSTANCE_STATE_ALIVE = 1;
-
+   public final static int PROCESS_INSTANCE_STATE_ALIVE = 0;
+   public final static int PROCESS_INSTANCE_STATE_ABORTED = 1;
    public final static int PROCESS_INSTANCE_STATE_COMPLETED = 2;
-
-   public final static int PROCESS_INSTANCE_STATE_ABORTED = 3;
-
-   public final static int PROCESS_INSTANCE_STATE_INTERRUPTED = 4;
-   
-   public final static int PROCESS_INSTANCE_STATE_HALTED = 5;
-
-   public final static int PROCESS_INSTANCE_STATE_ALL = 6;
+   public final static int PROCESS_INSTANCE_STATE_INTERRUPTED = 3;
+   public final static int PROCESS_INSTANCE_STATE_ABORTING = 4;
+   public final static int PROCESS_INSTANCE_STATE_HALTING = 5;
+   public final static int PROCESS_INSTANCE_STATE_HALTED = 6;
+   public final static int PROCESS_INSTANCE_STATE_ALL = 7;
 
    public static final int ALL_PRIORITIES = -9999;
 
@@ -442,6 +439,15 @@ public class ProcessActivityUtils
       else if (filterAttributesDTO.getState() == PROCESS_INSTANCE_STATE_HALTED)
       {
          query = ProcessInstanceQuery.findInState(ProcessInstanceState.Halted);
+      }
+      
+      else if (filterAttributesDTO.getState() == ProcessActivityUtils.PROCESS_INSTANCE_STATE_ABORTING)
+      {
+         query = ProcessInstanceQuery.findInState(ProcessInstanceState.Aborting);
+      }
+      else if (filterAttributesDTO.getState() == ProcessActivityUtils.PROCESS_INSTANCE_STATE_HALTING)
+      {
+         query = ProcessInstanceQuery.findInState(ProcessInstanceState.Halting);
       }
       else
       {
