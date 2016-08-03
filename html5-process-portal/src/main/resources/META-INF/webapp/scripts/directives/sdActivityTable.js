@@ -1122,7 +1122,7 @@
 		 */
 		ActivityTableCompiler.prototype.openActionsMenu = function($event, rowItem) {
 			var self = this;
-			if(!$($event.target).hasClass("actions-popover")) return;
+			if(!jQuery($event.target).hasClass("actions-popover")) return;
 			self.currentRow = rowItem;
 			self.renderers.showActivityActionsPopover($event, this.scope);
 		}
@@ -1133,7 +1133,7 @@
 		ActivityTableCompiler.prototype.openProcessDocumentsPopover = function($event, rowItem) {
 			var self = this;
 			
-			if(!$($event.target).hasClass("document-popover")) return;
+			if(!jQuery($event.target).hasClass("document-popover")) return;
 
 			self.processPopover = {
 					data: rowItem

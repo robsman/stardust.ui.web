@@ -485,6 +485,8 @@
 			ProcessActivityTableRenderer.prototype.drawHandler = function(params) {
 				var table = params.table;
 				var self = this;
+				var containsDataColumn = templateCache['trivialManual']!== undefined;
+				
 				// Timeout makes loading of page appear faster
 				window.setTimeout(function() {
 
@@ -507,7 +509,51 @@
 								}
 							});
 							
-							self.worklistDataResetHandler(e);
+							if(containsDataColumn) {
+								self.worklistDataResetHandler(e);
+							}
+							
+						});
+					} else {
+						trace.log('Couldnt register click handler on the view.');
+					}
+				});
+			}
+			
+			/*
+			 * 
+			 */
+			ProcessActivityTableRenderer.prototype.hasClass = function(params) {
+				var table = params.table;
+				var self = this;
+				var containsDataColumn = templateCache['trivialManual']!== undefined;
+				
+				// Timeout makes loading of page appear faster
+				window.setTimeout(function() {
+
+					jQuery("[data-toggle=table-popover]", table).popover({
+						html: true,
+						content: function() {
+							var content = jQuery(this).attr('data-popover-content');
+							return jQuery(content).html();
+						}
+					});
+					
+					var currentView = jQuery(table).closest(".sg-selected");
+
+					if(currentView.parent().hasClass("sg-view-panel")) {
+						currentView.off('click').on('click', function (e) {
+							jQuery('.document-popover.popover-open,.actions-popover.popover-open', table).each(function () {
+								if (!jQuery(this).is(e.target) && jQuery(this).has(e.target).length === 0 && jQuery('.popover').has(e.target).length === 0) {
+									jQuery(this).removeClass("popover-open")
+									jQuery(this).popover('destroy');
+								}
+							});
+							
+							if(containsDataColumn) {
+								self.worklistDataResetHandler(e);
+							}
+							
 						});
 					} else {
 						trace.log('Couldnt register click handler on the view.');
