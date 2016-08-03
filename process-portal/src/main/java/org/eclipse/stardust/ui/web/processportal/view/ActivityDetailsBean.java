@@ -516,8 +516,8 @@ public class ActivityDetailsBean extends UIComponentBean
                ActivityInstance ai = ActivityInstanceUtils.getActivityInstance(activityInstance
                      .getOID());
                
-               // State is Application & Current Performer is Same
-               if (ActivityInstanceState.Application == ai.getState()
+               // State is Application or Halted & Current Performer is Same
+               if ((ActivityInstanceState.Application == ai.getState() || ActivityInstanceState.Halted == ai.getState())
                      && ai.getCurrentPerformer().getId().equals(activityInstance.getCurrentPerformer().getId()))
                {
                   // Valid
