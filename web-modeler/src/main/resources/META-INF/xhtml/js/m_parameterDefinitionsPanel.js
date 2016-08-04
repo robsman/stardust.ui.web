@@ -789,11 +789,11 @@ define(
 					if (this.dataTypeSelector
 							&& data.dataType === this.dataTypeSelector.dataTypeSelect
 									.val()) {
-  					if (data.dataType === m_constants.PRIMITIVE_DATA_TYPE
-  					       && (data.primitiveDataType === this.dataTypeSelector.primitiveDataTypeSelect.val() || ((data.primitiveDataType == "Calendar") && (this.dataTypeSelector.primitiveDataTypeSelect
-                  .val() == "Timestamp")))) {
-  					  return true
-						} else if (data.dataType === m_constants.STRUCTURED_DATA_TYPE
+					  if (data.dataType === m_constants.PRIMITIVE_DATA_TYPE
+		                && data.primitiveDataType === this.dataTypeSelector.primitiveDataTypeSelect
+		                    .val()) {
+		              return true
+					  } else if (data.dataType === m_constants.STRUCTURED_DATA_TYPE
 								&& data.structuredDataTypeFullId === this.dataTypeSelector.structuredDataTypeSelect
 										.val()) {
 							return true

@@ -235,6 +235,7 @@ define(
 					dataTypes.push({type: "long", name: m_i18nUtils.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.long")});
 					dataTypes.push({type: "double", name: m_i18nUtils.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.double")});
 					dataTypes.push({type: "Timestamp", name: m_i18nUtils.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.timestamp")});
+          dataTypes.push({type: "Calendar", name: m_i18nUtils.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender")});
 					
 					var self = this;
 					jQuery.each(m_utils.convertToSortedArray(dataTypes, "name", true), function() {
@@ -560,7 +561,7 @@ define(
 				 */
 				DataTypeSelector.prototype.isSupportedPrimitiveDataType = function(
 						primitiveDataType) {
-					var supportedPrimitiveTypes = ["String", "boolean", "int", "long", "double", "Timestamp", "Enumeration" ];
+					var supportedPrimitiveTypes = ["String", "boolean", "int", "long", "double", "Timestamp", "Calendar", "Enumeration" ];
 
 					if (primitiveDataType
 							&& supportedPrimitiveTypes.indexOf(primitiveDataType) > -1) {
