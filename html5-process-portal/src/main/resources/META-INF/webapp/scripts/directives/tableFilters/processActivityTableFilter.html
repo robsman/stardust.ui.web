@@ -1,5 +1,5 @@
-<label
-	margin-bottom: 0px; ng-bind="i18n('views-common-messages.views-activityTable-processes-title')"></label>
+<label style="margin-bottom: 0px;" ng-if="filterCtrl.filterType ==='activity'"
+	 ng-bind="i18n('views-common-messages.views-activityTable-processes-title')"></label>
 <div>
 	<button class="button-link" aid="PP-ProcessActivityFilter-Toggle-Aux-Process"
 		title="{{filterCtrl.showAuxillaryProcess ? i18n('views-common-messages.processHistory-processTable-hideAuxiliaryProcess') :
@@ -10,7 +10,8 @@
 	</button>
 </div>
 <div>
-  <select ng-if="true" style="height: 75px; min-width: 200px; max-width: 350px;" name="processes" aid="PP-ProcessActivityFilter-Selector-Process"
+<!--Conditional style for process and activity filter  -->
+  <select ng-if="true" ng-style="{ 'height' : (filterCtrl.filterType ==='activity') ? '75px' : '110px' }" style="min-width: 200px; max-width: 350px;" name="processes" aid="PP-ProcessActivityFilter-Selector-Process"
   		  ng-model="filterData.processes" multiple 
           ng-change="filterCtrl.updateProcess()" ng-init="filterData.processes = filterData.processes || ['-1']">
          <option title="{{process.name}}"
@@ -20,8 +21,9 @@
 
 </div>
 <div ng-show="filterCtrl.filterType ==='activity'">
-	<br /> <label
-		margin-bottom: 0px; ng-bind="i18n('views-common-messages.views-activityTable-activities-title')"></label>
+	<br />
+	 <label style="margin-bottom: 0px;"
+		 ng-bind="i18n('views-common-messages.views-activityTable-activities-title')"></label>
 	<div>
 		<button class="button-link" aid="PP-ProcessActivityFilter-Toggle-Aux-Activity"
 			title="{{filterCtrl.showAuxillaryActivity ? i18n('views-common-messages.processHistory-processTable-hideAuxiliaryActivities') :

@@ -18,8 +18,8 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.event.PerspectiveEvent;

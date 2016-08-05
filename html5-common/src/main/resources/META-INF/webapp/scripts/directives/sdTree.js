@@ -815,13 +815,14 @@
 	            //Monitor our template input field for the enter key and blur that element when detected
 	            scope.keyMonitor= function(e){
 	                if(e.which===13 && e.target.blur){
-
 	                	e.stopImmediatePropagation();
 	                	e.preventDefault();
 	                	e.stopPropagation();
 	                	e.target.blur();
 	                }
-	                else{scope.md = false;}
+	                else{
+	                	scope.md = false; //mouse down = false
+	                }
 	             };
 	             
 	            //Create our own local allowEdit so we dont shadow the parents value
@@ -866,7 +867,6 @@
 	            //on the parent TreeNode directive to communicate back to the 
 	            //users controller.
 	            scope.invokeCallback = function(name,e){
-	            	
 	              if(e && e.preventDefault){
 	                e.preventDefault();
 	                e.stopImmediatePropagation();
@@ -968,12 +968,12 @@
 	                //can expect the new value and resolve/reject it as needed.
 	                //Requires resolution.
 	                case 'node-rename-commit':
-	                
+	                  var currentTime =  Math.round(Date.now()/1000);
 	                  //filter duplicates caused by user commiting an event with the enter key.
-	                  if(scope.lastRenameCommit && scope.lastRenameCommit.timeStamp === e.timeStamp){
+	                  if(scope.lastRenameCommit && scope.lastRenameCommit === currentTime){
 	                  	return;
 	                  }
-	                  scope.lastRenameCommit = e;
+	                  scope.lastRenameCommit = currentTime;
 
 	                  if(inputElem && inputElem.value && inputElem.value.trim().length >0){
 	                	  data.newValue=inputElem.value;
@@ -989,6 +989,7 @@
 	                  .catch(function(){
 	                    //Reset to the initial value which is still in our span elem
 	                    inputElem.value=spanElem.innerText;
+	                    rootCtrl.api.setNodeIcon(that.nodeId, "");
 	                  }).
 	                  finally(function(){
 	                    //always toggle edit mode off regardless.

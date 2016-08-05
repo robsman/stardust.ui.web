@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdDelegateActivityDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService',
+	angular.module('workflow-ui').directive('sdDelegateActivityDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService',
 	                                                                    DelegateActivityDialogDirective]);
 
 	var trace;
@@ -215,8 +215,6 @@
 							
 							return;
 						}
-						
-						sdViewUtilService.syncLaunchPanels();
 
 						if (angular.isDefined(self.onConfirm)) {
 							self.onConfirm();

@@ -27,8 +27,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.Base64;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.reporting.rt.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.ReportingServiceBean;

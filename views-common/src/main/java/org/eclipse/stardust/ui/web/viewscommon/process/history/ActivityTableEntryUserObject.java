@@ -130,7 +130,7 @@ public class ActivityTableEntryUserObject extends NodeUserObject
 
       if ("ActivityActive".equals(type) || "Resubmission".equals(type) || "ActivitySuspended".equals(type)
             || "ActivityInterrupted".equals(type) || "ActivityAborted".equals(type) || "AbortingActivity".equals(type)
-            || "ActivityHalted".equals(type) || "HaltingActivity".equals(type))
+            || "ActivityHalted".equals(type))
       {
          type = "StateChange";
       }

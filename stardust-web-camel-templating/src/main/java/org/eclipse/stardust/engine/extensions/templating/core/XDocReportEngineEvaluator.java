@@ -14,13 +14,12 @@ import org.apache.poi.xwpf.converter.pdf.PdfOptions;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.velocity.VelocityContext;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.extensions.templating.imageprovider.HttpImageProvider;
 import org.eclipse.stardust.engine.extensions.templating.imageprovider.JCRImageProvider;
 import org.eclipse.stardust.engine.extensions.templating.imageprovider.LocalImageProvider;
 import org.eclipse.stardust.engine.extensions.velocity.tool.UserServiceTool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
 import fr.opensagres.xdocreport.document.images.ByteArrayImageProvider;
@@ -34,7 +33,7 @@ import fr.opensagres.xdocreport.template.formatter.NullImageBehaviour;
 
 public class XDocReportEngineEvaluator
 {
-   protected final Logger log = LoggerFactory.getLogger(getClass());
+   private final Logger logger = LogManager.getLogger(XDocReportEngineEvaluator.class);
 
    private static XDocReportRegistry docRegistry;
    private static IXWPFConverter<PdfOptions> pdfConverter;
@@ -47,6 +46,9 @@ public class XDocReportEngineEvaluator
 
    private IContext loadContext(VelocityContext customVelocityContext)
    {
+      if(logger.isDebugEnabled())
+         logger.debug("-->loadContext velocityContext="+customVelocityContext.toString());
+      
       IContext context = null;
       Map<String, Object> contextMap = new HashMap<String, Object>();
 
@@ -56,6 +58,8 @@ public class XDocReportEngineEvaluator
       }
       context = new org.eclipse.stardust.engine.extensions.templating.component.XDocVelocityContext(
             customVelocityContext);
+      if(logger.isDebugEnabled())
+         logger.debug("<--loadContext");
       return context;
    }
 
@@ -64,6 +68,8 @@ public class XDocReportEngineEvaluator
                throws ServiceException
    // throws IOException, XDocReportException
    {
+      if(logger.isDebugEnabled())
+         logger.debug("-->evaluate");
       try
       {
          IContext context = loadContext(customVelocityContext);
@@ -89,8 +95,8 @@ public class XDocReportEngineEvaluator
          {
             if (context.get(key) != null)
             {
-               if (log.isDebugEnabled())
-                  log.debug("entry <" + key
+               if (logger.isDebugEnabled())
+                  logger.debug("entry <" + key
                         + "> exits alreay in the context and will be overriden.");
             }
             context.put(key, parameters.get(key));
@@ -111,7 +117,7 @@ public class XDocReportEngineEvaluator
             }
             catch (RuntimeException re)
             {
-               log.warn("Failed to retrieve or initialize user context.", re);
+               logger.warn("Failed to retrieve or initialize user context.", re);
             }
          }
 
@@ -126,17 +132,23 @@ public class XDocReportEngineEvaluator
             pdfConverter.convert(document, pdfOut, options);
             pdfIs.close();
             pdfOut.close();
+            if(logger.isDebugEnabled())
+               logger.debug("<--evaluate");
             return pdfOut.toByteArray();
          }
          // out.close();
+         if(logger.isDebugEnabled())
+            logger.debug("<--evaluate");
          return out.toByteArray();
       }
       catch (IOException e)
       {
+         logger.error("<--evaluate",e);
          throw new ServiceException(e);
       }
       catch (XDocReportException e)
       {
+         logger.error("<--evaluate",e);
          throw new ServiceException(e);
       }
    }

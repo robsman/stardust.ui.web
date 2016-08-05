@@ -11,10 +11,13 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.CommonsLogLogChute;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.extensions.velocity.component.CamelVelocityDelegateClassLoader;
 
 public class VelocityEngineEvaluator
 {
+   private final Logger logger = LogManager.getLogger(VelocityEngineEvaluator.class);
    private VelocityEngine velocityEngine;
 
    public VelocityEngineEvaluator(ClassResolver resolver)
@@ -24,10 +27,14 @@ public class VelocityEngineEvaluator
 
    public StringWriter evaluate(String content, Context velocityContext)
    {
+      if(logger.isDebugEnabled())
+         logger.debug("-->evaluate: content:"+content+", velocityContext:"+velocityContext.toString());
       StringWriter buffer = new StringWriter();
       String logTag = getClass().getName();
       Reader reader = new StringReader(content);
       velocityEngine.evaluate(velocityContext, buffer, logTag, reader);
+      if(logger.isDebugEnabled())
+         logger.debug("<--evaluate");
       return buffer;
    }
 

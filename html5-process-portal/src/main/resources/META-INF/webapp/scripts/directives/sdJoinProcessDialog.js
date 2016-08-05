@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdJoinProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService', '$sce', 
+	angular.module('workflow-ui').directive('sdJoinProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService', '$sce',
 	                                                               '$filter','sgI18nService',
 	                                                                    JoinProcessDialogDirective]);
 

@@ -14,7 +14,7 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common').directive('sdDescriptorContent', [ DesciptorContentDirective]);
+	angular.module('workflow-ui').directive('sdDescriptorContent', [ DesciptorContentDirective]);
 
 	/*
 	 * 
@@ -28,7 +28,7 @@
 				type : '=sdaDataType'
 			},
 			template : '<div ng-if="descriptorCtrl.dataType ==\'NUMBER\' ">'+
-							'{{descriptorCtrl.descriptorValue.value | number}}<\/div>'+
+							'{{descriptorCtrl.descriptorValue.value}}<\/div>'+
 						'<div ng-if="descriptorCtrl.dataType == \'DATE\' "> ' +
 						'{{descriptorCtrl.descriptorValue.value | sdDateFilter}}<\/div>'+
 						'<div ng-if="(descriptorCtrl.dataType == \'STRING\' && !descriptorCtrl.descriptorValue.isLink) || descriptorCtrl.dataType == \'BOOLEAN\' ">'+
@@ -43,6 +43,9 @@
 										'sda-mime-type="document.contentType" sda-document-id="document.uuid">' +
 									'<\/div>'+
 								'<\/div>'+
+						'<\/div>'+
+						'<div style="text-align:left;" ng-if="descriptorCtrl.dataType == \'LIST\' && !descriptorCtrl.descriptorValue.isDocument">'+
+							'{{descriptorCtrl.descriptorValue.value}}'+
 						'<\/div>',
 			controller : [ '$scope', '$parse', '$attrs', DesciptorContentController ]
 		};

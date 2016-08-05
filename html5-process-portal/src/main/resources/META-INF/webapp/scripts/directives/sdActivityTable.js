@@ -355,9 +355,6 @@
 
 			//Refreshing when Item is activated //remove on completion of server push
 			this.refreshHandler = $parse(attr.sdaAutoRefresh);
-			ActivityTableCompiler.prototype.registerRefresh = function(){
-				this.refreshHandler(scopeToUse);
-			}
 
 			if (attr.sdaSelection) {
 				var assignable = $parse(attr.sdaSelection).assign;
@@ -415,6 +412,14 @@
 					}
 				});
 			}
+		};
+		
+		
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.registerRefresh = function(){
+			this.refreshHandler(this.scope.$parent);
 		};
 
 
@@ -541,12 +546,12 @@
 			 *
 			 */
 			self.joinCompleted = function(result) {
-				self.refresh();
 				if (angular.isDefined(result)) {
 					if (angular.isDefined(result)) {
 						sdCommonViewUtilService.openProcessInstanceDetailsView(result,true);
 					}
 				}
+				self.refresh();
 			};
 
 			/*
@@ -561,7 +566,7 @@
 			 *
 			 */
 			self.switchCompleted = function(result) {
-				self.refresh();
+				
 				if (angular.isDefined(result)) {
 					var name  =  sgI18nService.translate('views-common-messages.views-switchProcessDialog-worklist-title');
 					var params = {
@@ -571,6 +576,7 @@
 					}
 					sdViewUtilService.openView('worklistPanel', 'id='+new Date().getTime(), params, true);
 				}
+				self.refresh();
 			};
 
 			/*
@@ -1279,6 +1285,18 @@
 			return false;
 		}
 
+		/**
+		 *
+		 */
+		ActivityTableCompiler.prototype.isTrivialDataValid = function(activities) {
+			var valid = true;
+			angular.forEach(activities, function(activity) {
+				valid = valid && (activity.isTrivialDataValid == true)
+			});
+
+			return valid;
+		};
+
 		ActivityTableCompiler.prototype.completeAll = function() {
 			var self = this;
 			var STATUS_PARTIAL_SUCCESS = 'partialSuccess';
@@ -1401,14 +1419,14 @@
 		ActivityTableCompiler.prototype.openCompleteDialog = function(rowItem) {
 
 			var self = this;
-			var CONFIRMATION_TYPE_SINGLE = 'single'
-				var CONFIRMATION_TYPE_GENERIC = 'generic'
-					var CONFIRMATION_TYPE_DATAMAPPING = 'dataMapping'
+			var CONFIRMATION_TYPE_SINGLE = 'single';
+			var CONFIRMATION_TYPE_GENERIC = 'generic';
+			var CONFIRMATION_TYPE_DATAMAPPING = 'dataMapping';
 
-						self.completeAllDialog = {
-					confirmLabel : sgI18nService.translate('portal-common-messages.common-yes', 'Yes'),
-					cancelLabel : sgI18nService.translate('portal-common-messages.common-no', 'No'),
-					title : sgI18nService.translate('processportal.views-completeActivityDialog-title', 'Confirm')
+			self.completeAllDialog = {
+				confirmLabel : sgI18nService.translate('portal-common-messages.common-yes', 'Yes'),
+				cancelLabel : sgI18nService.translate('portal-common-messages.common-no', 'No'),
+				title : sgI18nService.translate('processportal.views-completeActivityDialog-title', 'Confirm')
 			};
 
 			self.selectedActivity = [];
@@ -1448,9 +1466,24 @@
 						self.completeAllDialog.cancelLabel = sgI18nService.translate(
 								'views-common-messages.common-cancel', 'Cancel');
 						self.completeAllDialog.title = firstItem.activity.name;
-					} else {
-
+					} else if (this.isTrivialDataValid(selectedItems)) {
 						self.completeDialog.confirmationType = CONFIRMATION_TYPE_GENERIC;
+					} else {
+						self.showCompleteDialog = false;
+						var options = {
+							title : sgI18nService
+									.translate(
+											'processportal.views-completeAll-validationErrorDialog-title',
+											'Data Validation Error')
+						};
+						sdDialogService
+								.error(
+										this.scope,
+										sgI18nService
+												.translate(
+														'processportal.views-completeAll-validationErrorDialog-message',
+														'Data validation failed. Check that you have entered a value for all required fields, and then all entered values are the correct type.'),
+										options);
 					}
 				}
 			}

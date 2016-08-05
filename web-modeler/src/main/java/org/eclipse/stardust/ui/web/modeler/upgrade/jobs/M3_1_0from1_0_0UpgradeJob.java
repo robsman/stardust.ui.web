@@ -19,8 +19,8 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Version;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.defaults.DefaultElementsInitializer;
 import org.eclipse.stardust.model.xpdl.builder.spi.ModelInitializer;
 import org.eclipse.stardust.model.xpdl.carnot.*;

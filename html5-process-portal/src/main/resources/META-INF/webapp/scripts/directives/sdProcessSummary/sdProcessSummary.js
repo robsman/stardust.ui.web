@@ -21,7 +21,7 @@
 
 (function() {
 
-  var app = angular.module('bpm-common.directives');
+  var app = angular.module('workflow-ui');
 
   // register a directive
   app.directive("sdProcessSummary", [
@@ -67,6 +67,19 @@
       return false;
     }
   }
+  
+  /**
+   * 
+   * @param key
+   * @returns
+   */
+  ProcessSummaryController.prototype.getI18n = function(key) {
+    if (this.$scope.$root.sdI18n) {
+      return this.$scope.$root.sdI18n(key);
+    } else {
+      return key;
+    }
+  }  
 
   ProcessSummaryController.prototype.toggleProcessSelection = function(flowElement) {
     var index = this.expandedProcessOids.indexOf(flowElement.processOid_);

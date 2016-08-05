@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.camel.impl.DefaultCamelContext;
 import org.eclipse.stardust.engine.extensions.templating.core.RequestHandler;
 import org.eclipse.stardust.engine.extensions.templating.core.ServiceException;
 import org.eclipse.stardust.engine.extensions.templating.core.TemplatingRequest;
@@ -29,7 +30,7 @@ public class TestClasspathTemplatingHandler
 
    private static TemplatingRequest requestForTestClasspathTextPdf;
 
-   private static RequestHandler handler=new RequestHandler();
+   private static RequestHandler handler=new RequestHandler(new DefaultCamelContext());
 
    @BeforeClass
    public static void beforeClass()

@@ -19,8 +19,8 @@ import javax.ws.rs.core.Response.Status;
 
 import com.google.gson.*;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 
 // TODO Reuse already available marshaller; this is copy and paste
 

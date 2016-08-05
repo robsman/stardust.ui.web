@@ -11,7 +11,7 @@
 
 (function(){
 
-	var mod = angular.module("bpm-common.directives");
+	var mod = angular.module("viewscommon-ui");
 
 	/*Service Implementation*/
 	sdPartTreeSerivce.$inject = ["$q", "$http", "sdUtilService"];

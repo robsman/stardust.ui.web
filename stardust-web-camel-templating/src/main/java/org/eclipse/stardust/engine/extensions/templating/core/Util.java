@@ -3,9 +3,8 @@ package org.eclipse.stardust.engine.extensions.templating.core;
 import static org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils.REPOSITORY_ID_PREFIX;
 
 import org.eclipse.stardust.common.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.CredentialProvider;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
@@ -14,7 +13,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
 public class Util
 {
-   private final static Logger log = LoggerFactory.getLogger(Util.class);
+   private final static Logger log = LogManager.getLogger(Util.class);
 
    /**
     * return portal session factory

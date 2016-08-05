@@ -16,7 +16,7 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common').directive(
+	angular.module('workflow-ui').directive(
 			'sdProcessTable',
 			[ '$parse', '$q', '$timeout', '$filter', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService',
 					'sgI18nService','sdProcessInstanceService', 'sdProcessDefinitionService',
@@ -472,7 +472,23 @@
 				}
 				return false;
 			};
+			
+			ProcessTableCompiler.prototype.isAbortandStartDisabled = function() {
+			  if(this.processesToAbort.length == 1){
+			    return !this.processesToAbort[0].enableTerminate;  
+			  }else{
+			    return this.processesToAbort.length < 1;
+			  }
+      };
 
+      ProcessTableCompiler.prototype.isAbortandJoinDisabled = function() {
+        if(this.processesToAbort.length == 1){
+          return !this.processesToAbort[0].enableTerminate;  
+        }else{
+          return this.processesToAbort.length != 1;
+        }
+      };
+      
 			/*
 			 *
 			 */

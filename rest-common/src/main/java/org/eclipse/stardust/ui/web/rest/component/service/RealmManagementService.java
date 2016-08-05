@@ -5,8 +5,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.error.AccessForbiddenException;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.UserRealm;
 import org.eclipse.stardust.ui.web.rest.component.util.RealmManagementUtils;
 import org.springframework.stereotype.Component;

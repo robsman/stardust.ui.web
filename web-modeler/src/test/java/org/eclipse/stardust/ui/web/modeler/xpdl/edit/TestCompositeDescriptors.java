@@ -68,11 +68,11 @@ public class TestCompositeDescriptors extends RecordingTestcase
       JsonObject issue4 = validation.get(6).getAsJsonObject();
       JsonObject issue5 = validation.get(7).getAsJsonObject();
       
-      GenericModelingAssertions.assertJsonHasKeyValue(issue1,"message=Composite descriptor 'FirstOne' has a circular dependency.");
-      GenericModelingAssertions.assertJsonHasKeyValue(issue2,"message=Composite descriptor 'FirstOne' refers to a non existing data path '%{Hello}'.");
-      GenericModelingAssertions.assertJsonHasKeyValue(issue3,"message=Composite descriptor 'SecondOne' has a circular dependency.");
-      GenericModelingAssertions.assertJsonHasKeyValue(issue4,"message=Composite descriptor 'ThirdOne' refers to a non existing data path '%{Hello}'.");
-      GenericModelingAssertions.assertJsonHasKeyValue(issue5,"message=Composite descriptor 'ForthOne' has a circular dependency.");            
+      GenericModelingAssertions.assertJsonHasKeyValue(issue1,"message=Composite / Link descriptor 'FirstOne' has a circular dependency.");
+      GenericModelingAssertions.assertJsonHasKeyValue(issue2,"message=Composite / Link descriptor 'FirstOne' refers to a non existing data path '%{Hello}'.");
+      GenericModelingAssertions.assertJsonHasKeyValue(issue3,"message=Composite / Link descriptor 'SecondOne' has a circular dependency.");
+      GenericModelingAssertions.assertJsonHasKeyValue(issue4,"message=Composite / Link descriptor 'ThirdOne' refers to a non existing data path '%{Hello}'.");
+      GenericModelingAssertions.assertJsonHasKeyValue(issue5,"message=Composite / Link descriptor 'ForthOne' has a circular dependency.");            
    }
    
    @Test
@@ -104,11 +104,11 @@ public class TestCompositeDescriptors extends RecordingTestcase
       JsonObject issue7 = validation.get(9).getAsJsonObject();
       
       GenericModelingAssertions.assertJsonHasKeyValue(issue1,"message=Referenced descriptor '%{InvoiceId}' does not specify a Data Path.");
-      GenericModelingAssertions.assertJsonHasKeyValue(issue2,"message=Composite descriptor 'Composite3Levels' has a circular dependency.");
+      GenericModelingAssertions.assertJsonHasKeyValue(issue2,"message=Composite / Link descriptor 'Composite3Levels' has a circular dependency.");
       GenericModelingAssertions.assertJsonHasKeyValue(issue3,"message=Referenced descriptor '%{InvoiceId}' does not specify a Data Path.");
       GenericModelingAssertions.assertJsonHasKeyValue(issue4,"message=Referenced descriptor '%{InvoiceId}' does not specify a Data Path.");
-      GenericModelingAssertions.assertJsonHasKeyValue(issue5,"message=Composite descriptor 'CircularStart' has a circular dependency.");
-      GenericModelingAssertions.assertJsonHasKeyValue(issue6,"message=Composite descriptor 'CircularEnd' has a circular dependency.");
+      GenericModelingAssertions.assertJsonHasKeyValue(issue5,"message=Composite / Link descriptor 'CircularStart' has a circular dependency.");
+      GenericModelingAssertions.assertJsonHasKeyValue(issue6,"message=Composite / Link descriptor 'CircularEnd' has a circular dependency.");
       GenericModelingAssertions.assertJsonHasKeyValue(issue7,"message=Link descriptor 'ErrorLink' contains invalid URL: 'htp://InvalidURL'");
 
       

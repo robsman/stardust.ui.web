@@ -16,11 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.DocumentAnnotations;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.Identifiable;
@@ -30,6 +27,8 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
@@ -37,10 +36,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.TIFFDocumentHolder;
-
-import com.icesoft.faces.context.effects.JavascriptContext;
 
 
 /**
@@ -363,6 +359,9 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
       String publishSaveMsg = "window.parent.EventHub.events.publish('VIEW_CLOSING', '" + docId + "');";
       PortalApplication.getInstance().addEventScript(publishSaveMsg);
       DOC_ID_VS_DOC_MAP.remove(docId);
+      SessionSharedObjectsMap sharedObjectsMap = SessionSharedObjectsMap.getCurrent();
+      sharedObjectsMap.removeObject(docId);
+      
       closeIframe();
    }
    

@@ -21,6 +21,7 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtil
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -33,8 +34,6 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DepartmentInfoDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.OrganizationInfoDetails;
@@ -69,6 +68,8 @@ import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssu
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.BenchmarkDTO;
@@ -108,7 +109,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils.Participan
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -179,7 +179,7 @@ public class ActivityTableUtils
     */
    public static void addFilterCriteria(Query query, DataTableOptionsDTO options)
    {
-
+      
       WorklistFilterDTO filterDTO = (WorklistFilterDTO) options.filter;
 
       if (filterDTO == null)
@@ -190,6 +190,10 @@ public class ActivityTableUtils
       FilterAndTerm filter = query.getFilter().addAndTerm();
 
       boolean worklistQuery = query instanceof WorklistQuery;
+      
+      List<String> processFilter = null;
+      List<String> processFilterForProcessCol = null;
+      List<String> processFilterForActivityCol = null;
 
       // Activity ID
       if (null != filterDTO.activityOID)
@@ -315,23 +319,27 @@ public class ActivityTableUtils
       // Activities Filter
       if (null != filterDTO.activityName)
       {
-
          if (!CollectionUtils.isEmpty(filterDTO.activityName.activities))
          {
             FilterOrTerm or = filter.addOrTerm();
+            processFilterForActivityCol = new ArrayList<String>();
             
                for (String activityUniqueString : filterDTO.activityName.activities)
                {
                   //Using a separator as DTO builder doesn't support List inside another List.
+                  //The whole string represent process QId and activity QId
                   if(activityUniqueString.contains(ACTIVITY_STRING_SEPRATOR) && !activityUniqueString.contains("-1"))
                   {
                      String pQId = activityUniqueString.substring(0, activityUniqueString.indexOf(ACTIVITY_STRING_SEPRATOR));
                      String aQId = activityUniqueString.substring(activityUniqueString.indexOf(ACTIVITY_STRING_SEPRATOR) + 3, activityUniqueString.length());
-
                      or.add(ActivityFilter.forAnyProcess(aQId));
+                     
+                     if(!processFilterForActivityCol.contains(pQId)) 
+                     {
+                        processFilterForActivityCol.add(pQId);
+                     }
                   }
-            }
-            
+               }
          }
 
          if (!CollectionUtils.isEmpty(filterDTO.activityName.processes))
@@ -346,6 +354,7 @@ public class ActivityTableUtils
             }
          }
       }
+      
       // Process Filter
       if (null != filterDTO.processName)
       {
@@ -356,8 +365,22 @@ public class ActivityTableUtils
             {
                or.add(new ProcessDefinitionFilter(processQId, false));
             }
+            
+            processFilterForProcessCol = filterDTO.processName.processes; 
          }
       }
+      
+      // If Process is selected in both columns - Process Definition & Activity Name
+      // Then Activity Name column takes precedence
+      if (null != processFilterForActivityCol)
+      {
+         processFilter = processFilterForActivityCol;
+      }
+      else if (null != processFilterForProcessCol)
+      {
+         processFilter = processFilterForProcessCol;
+      }
+      
    // Root Process Filter
       if (null != filterDTO.rootProcessName)
       {
@@ -376,26 +399,28 @@ public class ActivityTableUtils
          FilterOrTerm or = filter.addOrTerm();
          for (ParticipantDTO participant : filterDTO.assignedTo.participants)
          {  
-
-            if(ParticipantType.USER.toString().equals( participant.type) ){
-
+            if(ParticipantType.USER.toString().equals( participant.type) )
+            {
                or.add(new org.eclipse.stardust.engine.api.query.PerformingUserFilter( Long.valueOf( participant.OID)));
             } 
             else if (ParticipantType.ROLE.toString().endsWith( participant.type))
             {
                RoleInfoDetails roleInfo = new RoleInfoDetails(participant.qualifiedId);
                or.add(org.eclipse.stardust.engine.api.query.PerformingParticipantFilter.forParticipant(roleInfo));                        
-            }else if(ParticipantType.ORGANIZATION.toString().equals( participant.type)){
-
+            }
+            else if(ParticipantType.ORGANIZATION.toString().equals( participant.type)) 
+            {
                OrganizationInfoDetails organizationInfo = new OrganizationInfoDetails(participant.qualifiedId);
                or.add(org.eclipse.stardust.engine.api.query.PerformingParticipantFilter.forParticipant(organizationInfo));     
-            }else if(ParticipantSearchComponent.PerformerTypeUI.Department.name().equals(participant.type)){
-
+            }
+            else if(ParticipantSearchComponent.PerformerTypeUI.Department.name().equals(participant.type))
+            {
                DepartmentInfo departmentInfo = new DepartmentInfoDetails(participant.OID, participant.id, participant.name, participant.runtimeOrganizationOid);
                or.add(org.eclipse.stardust.engine.api.query.ParticipantAssociationFilter.forDepartment(departmentInfo));
             }
          }
       }
+      
       //Completed By
       if ( null != filterDTO.completedBy)
       {
@@ -415,8 +440,9 @@ public class ActivityTableUtils
             or.add(DataFilter.isEqual(filterDTO.businessObject.dataId, filterDTO.businessObject.primaryKey, id));
          }
       }
-      addDescriptorFilters(query, filterDTO);
+      addDescriptorFilters(query, filterDTO, processFilter);
    }
+
 
    /**
     * Add descriptor policy
@@ -433,23 +459,86 @@ public class ActivityTableUtils
          query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
       }
    }
+   
+   /**
+    * 
+    * @param processFilter
+    * @param descFilterMap
+    * @return
+    */
+   public static Collection<DataPath> getRelevantDataPaths(List<String> processFilter,
+         Map<String, DescriptorFilterDTO> descFilterMap)
+   {
+      Collection<DataPath> dataPaths = null;
+      Map<String, Map<String, DataPath>> allFilterableDescriptorsByProcess = CommonDescriptorUtils
+            .getAllDescriptorsByProcess(true);
+
+      // Computing relevant data paths
+      if (descFilterMap.size() > 0)
+      {
+         for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap
+               .entrySet())
+         {
+            String dataId = descriptor.getKey();
+            if (null != processFilter)
+            {
+               for (String processQId : processFilter)
+               {
+                  Map<String, DataPath> procDescriptors = allFilterableDescriptorsByProcess
+                        .get(processQId);
+                  if (null != procDescriptors && procDescriptors.containsKey(dataId))
+                  {
+                     dataPaths = procDescriptors.values();
+
+                     if (trace.isDebugEnabled())
+                     {
+                        trace.debug("Descriptor Filtering:: Using Descriptors from Process: "
+                              + processQId
+                              + ", because of filtering on dataId: "
+                              + dataId);
+                     }
+
+                     break;
+                  }
+               }
+            }
+
+         }
+      }
+
+      if (null == dataPaths)
+      {
+         Map<String, DataPath> descriptors = ProcessDefinitionUtils
+               .getAllDescriptors(false);
+         dataPaths = descriptors.values();
+
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Descriptor Filtering:: Using Descriptors from Default Process, because of filtering on dataId: ");
+         }
+      }
+
+      return dataPaths;
+   }
 
    /**
     * Add filter on descriptor columns .
+    * 
     * @param query
     * @param worklistDTO
     */
-   public static void addDescriptorFilters(Query query, WorklistFilterDTO worklistDTO)
+   public static void addDescriptorFilters(Query query, WorklistFilterDTO worklistDTO,
+         List<String> processFilter)
    {
-
       Map<String, DescriptorFilterDTO> descFilterMap = worklistDTO.descriptorFilterMap;
 
       if (null != descFilterMap)
       {
+         Collection<DataPath> dataPaths = getRelevantDataPaths(processFilter,
+               descFilterMap);
 
-         Map<String, DataPath> descriptors = ProcessDefinitionUtils.getAllDescriptors(false);
          GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel
-               .create(descriptors.values());
+               .create(dataPaths);
          filterModel.setFilterEnabled(true);
 
          for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap
@@ -461,7 +550,7 @@ public class ActivityTableUtils
             // Boolean type desc
             if (descriptor.getValue().type.equals(ColumnDataType.BOOLEAN.toString()))
             {
-               value = ((BooleanDTO)descriptor.getValue().value).equals;
+               value = ((BooleanDTO) descriptor.getValue().value).equals;
             }
             // String type desc
             else if (descriptor.getValue().type.equals(ColumnDataType.STRING.toString()))
@@ -495,7 +584,6 @@ public class ActivityTableUtils
          DescriptorFilterUtils.applyFilters(query, filterModel);
       }
    }
-
 
    /**
     * @param query

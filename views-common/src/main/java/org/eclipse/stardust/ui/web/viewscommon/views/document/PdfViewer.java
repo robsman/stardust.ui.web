@@ -11,12 +11,10 @@
 package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
 import org.eclipse.stardust.ui.web.common.app.View;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.pdf.viewer.PdfDocumentHandler;
-
 
 /**
  * @author Yogesh.Manware
@@ -74,6 +72,8 @@ public class PdfViewer implements IDocumentViewer
       if (null != pdfDocumentHandler.getCurrentDocumentState())
       {
          pdfDocumentHandler.getCurrentDocumentState().closeDocument();
+         SessionSharedObjectsMap sharedObjectsMap = SessionSharedObjectsMap.getCurrent();
+         sharedObjectsMap.removeObject(pdfDocumentHandler.getDocumentId());
       }
    }
 

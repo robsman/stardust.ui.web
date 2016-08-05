@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.html5.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -129,6 +130,11 @@ public class ResourceDependencyUtils
                   }
                }
 
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("Discovered Dependency: " + resDep.getPluginId());
+               }
+
                resourceDependencies.add(resDep);
             }
             else
@@ -141,23 +147,53 @@ public class ResourceDependencyUtils
             trace.error("Unexpected error in processing dependency descriptor for: " + rInfo, e);
          }
       }
-      
+
       // Sort based on plugin interdependency
-      final List<String> targetOrder = new ArrayList<String>();
+
+      // Dependency Hierarchy represented in another way
+      // Map of parent Plugin Id verses all Plugin Ids which depend on it
+      Map<String, List<String>> depsByParent = new HashMap<String, List<String>>();
       for (ResourceDependency resDep : resourceDependencies)
       {
-         int index = targetOrder.indexOf(resDep.getPluginId());
-         if (index == -1)
-         {
-            targetOrder.add(resDep.getPluginId());
-            index = targetOrder.indexOf(resDep.getPluginId());
-         }
-
          for (String parentPlugin : resDep.getPortalPlugins())
          {
-            if (!targetOrder.contains(parentPlugin))
+            if (!depsByParent.containsKey(parentPlugin))
             {
-               targetOrder.add(index, parentPlugin);
+               depsByParent.put(parentPlugin, new ArrayList<String>());
+            }
+
+            depsByParent.get(parentPlugin).add(resDep.getPluginId());
+         }
+      }
+
+      // Get the entry set and sort it based on interdependency 
+      List<Entry<String, List<String>>> newOrder = new ArrayList<Map.Entry<String,List<String>>>(depsByParent.entrySet());
+
+      Collections.sort(newOrder, new Comparator<Entry<String, List<String>>>()
+      {
+         public int compare(Entry<String, List<String>> firstEntry, Entry<String, List<String>> secondEntry)
+         {
+            boolean secondDependsOnFirst = firstEntry.getValue().contains(secondEntry.getKey());
+            boolean firstDependsOnSecond = secondEntry.getValue().contains(firstEntry.getKey());
+
+            return secondDependsOnFirst == true ? -1 : firstDependsOnSecond == true ? 1 : 0;
+         }
+      });
+
+      // Flatten out dependency order
+      final List<String> targetOrder = new ArrayList<String>();
+      for (Entry<String, List<String>> entry : newOrder)
+      {
+         if (!targetOrder.contains(entry.getKey()))
+         {
+            targetOrder.add(entry.getKey());
+         }
+
+         for (String value : entry.getValue())
+         {
+            if (!targetOrder.contains(value))
+            {
+               targetOrder.add(value);
             }
          }
       }
@@ -167,6 +203,7 @@ public class ResourceDependencyUtils
          trace.debug("Dependency descriptors sorted by interdependency: " + targetOrder);
       }
 
+      // Now Sort the actual dependency list 
       Collections.sort(resourceDependencies, new Comparator<ResourceDependency>()
       {
          public int compare(ResourceDependency rd1, ResourceDependency rd2)

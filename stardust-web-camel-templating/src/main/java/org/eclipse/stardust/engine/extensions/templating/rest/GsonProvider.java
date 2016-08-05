@@ -14,6 +14,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.extensions.json.GsonHandler;
 import org.eclipse.stardust.engine.extensions.templating.core.TemplatingRequest;
 
@@ -21,8 +23,7 @@ import org.eclipse.stardust.engine.extensions.templating.core.TemplatingRequest;
 @Consumes(MediaType.APPLICATION_JSON)
 public class GsonProvider implements MessageBodyReader<TemplatingRequest>
 {
-   private final GsonHandler gson = new GsonHandler();
-
+   private final Logger logger = LogManager.getLogger(GsonProvider.class);
    @Override
    public boolean isReadable(Class< ? > type, Type genericType, Annotation[] annotations,
          MediaType mediaType)
@@ -37,11 +38,18 @@ public class GsonProvider implements MessageBodyReader<TemplatingRequest>
          MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
                throws IOException, WebApplicationException
    {
+      GsonHandler gson = new GsonHandler();
       InputStreamReader streamReader = new InputStreamReader(entityStream, "UTF-8");
       Map<String, Object> requestMap = (Map<String, Object>) gson.fromJson(streamReader,
             Object.class);
+      if(logger.isDebugEnabled()){
+         logger.debug("-->readFrom: Request : "+streamReader.toString()+", Request Map:"+requestMap.toString());
+      }
       TemplatingRequest request = new TemplatingRequest();
       request.fromMap(requestMap);
+      if(logger.isDebugEnabled()){
+         logger.debug("<--readFrom"+request);
+      }
       return request;
    }
 }

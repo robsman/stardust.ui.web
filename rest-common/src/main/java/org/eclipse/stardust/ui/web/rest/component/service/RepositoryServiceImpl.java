@@ -77,6 +77,7 @@ public class RepositoryServiceImpl implements RepositoryService
    private static final String REPOSITORY_ID = "id";
    private static String DOCUMENTS = "documents";
    private static String FOLDERS = "folders";
+   private static String SLASH = "/";
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
@@ -103,17 +104,19 @@ public class RepositoryServiceImpl implements RepositoryService
    {
       if (StringUtils.isEmpty(folderId))
       {
-         folderId = "/";
+         folderId = SLASH;
       }
 
-      // remove the trailing slash if it exist
-      if (folderId.length() != 1 && folderId.charAt(folderId.length() - 1) == '/')
+      // add trailing slash if it does not exist
+      // necessary as in case of few iod environments the trailing slash is being truncated by server resulting into error
+      // e.g. url services/rest/portal/folders/%7Burn:repositoryId:System%7D//
+      if (folderId.length() != 1 && folderId.charAt(folderId.length() - 1) != SLASH.charAt(0))
       {
-         folderId = folderId.substring(0, folderId.length() - 1);
+         folderId = folderId + SLASH;
       }
 
       // remove unwanted slashes
-      folderId = folderId.replaceAll("//", "/");
+      folderId = folderId.replaceAll("//", SLASH);
 
       // fetching of children information may be time consuming, may need to be
       // parameterized later

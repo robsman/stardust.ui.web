@@ -42,8 +42,8 @@ import com.google.gson.*;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
@@ -74,6 +74,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
+import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.DecoratorApplicationUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.WebServiceApplicationUtils;
 
@@ -844,6 +845,16 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          AttributeUtil.setAttribute(dataMapping, PredefinedConstants.MANDATORY_DATA_MAPPING, null);
       }
+      
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATAMAPPING_CONSTANT_TYPE)
+         && hasNotJsonNull(dataMappingJson, ModelerConstants.DATAMAPPING_CONSTANT_VALUE))
+      {
+         String constantType = dataMappingJson.get(ModelerConstants.DATAMAPPING_CONSTANT_TYPE).getAsString();
+         String constantValue = dataMappingJson.get(ModelerConstants.DATAMAPPING_CONSTANT_VALUE).getAsString();     
+         String constantExpression = "(" + constantType + ") " + constantValue; 
+         
+         dataMapping.setDataPath(constantExpression);
+      }
    }
 
    /**
@@ -1277,6 +1288,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject processDefinitionJson)
    {
       List<DataPathType> newDataPaths = new ArrayList<DataPathType>();
+      
 
       JsonArray dataPathes = processDefinitionJson.get(
             ModelerConstants.DATA_PATHES_PROPERTY).getAsJsonArray();
@@ -1289,6 +1301,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                .getAsString();
          String dataPathName = dataPathJson.get(ModelerConstants.NAME_PROPERTY)
                .getAsString();
+         
+         DataPathType oldDataPath = XPDLFinderUtils.findDataPath(processDefinition, dataPathID);
 
          DataPathType dataPathType = getModelBuilderFacade().createDataPath();
 
@@ -1306,13 +1320,18 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             dataPathType.setName("PROCESS_ATTACHMENTS");
          }
 
-         if (StringUtils.isNotEmpty(dataPathName)
-               && !dataPathName.equals(dataPathType.getName())
-               && !dataPathID.equals("PROCESS_ATTACHMENTS"))
+
+         if (oldDataPath == null || !dataPathName.equals(oldDataPath.getName())) 
          {
-            dataPathID = (NameIdUtilsExtension.createIdFromName(null,
-                  (IIdentifiableElement) dataPathType, dataPathName));
+            if (StringUtils.isNotEmpty(dataPathName)
+                  && !dataPathName.equals(dataPathType.getName())
+                  && !dataPathID.equals("PROCESS_ATTACHMENTS"))
+            {
+               dataPathID = (NameIdUtilsExtension.createIdFromName(null,
+                     (IIdentifiableElement) dataPathType, dataPathName));
+            }            
          }
+         
 
          dataPathType.setId(dataPathID);
          dataPathType.setName(dataPathName);
@@ -1374,7 +1393,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       processDefinition.getDataPath().clear();
       processDefinition.getDataPath().addAll(newDataPaths);
    }
-
+   
    public void updateProcessInterfaceImplementation(ProcessDefinitionType processDefinition,
          JsonObject processDefinitionJson)
    {
@@ -2107,7 +2126,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject eventSymbolJson)
    {
       JsonObject eventJson = eventSymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-
+      
       updateNodeSymbol(eventSymbol, eventSymbolJson);
 
       if (null == eventJson)
@@ -2314,6 +2333,16 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          if (null != eventHandler)
          {
             EventMarshallingUtils.bindEvent(eventHandler, eventSymbol);
+         }
+         
+         if (hostActivity != null && (hostActivity.getActivitySymbols() == null
+               || hostActivity.getActivitySymbols().isEmpty()))
+         {
+            if (hasNotJsonNull(eventJson, ModelerConstants.NAME_PROPERTY))
+            {
+               String name = extractAsString(eventJson, ModelerConstants.NAME_PROPERTY);
+               hostActivity.setName(name);
+            }
          }
       }
    }
@@ -2788,6 +2817,10 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
                }
             }
+         }
+         
+         if(DecoratorApplicationUtils.isDecoratorApplication(application)){
+            DecoratorApplicationUtils.addExternalReference(application, getModelBuilderFacade() );
          }
       }
    }

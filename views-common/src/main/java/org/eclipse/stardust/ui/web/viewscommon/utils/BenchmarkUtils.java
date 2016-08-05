@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifactQuery;
 import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifacts;
 import org.eclipse.stardust.engine.api.runtime.DeployedRuntimeArtifact;

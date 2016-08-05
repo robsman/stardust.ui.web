@@ -142,23 +142,16 @@
 						value="processInstanceOID=#{row.processInstanceOID}&amp;processInstanceName=#{row.processInstanceName}" />
 				</ice:commandLink>
 
-
 				<ice:commandLink actionListener="#{bean.terminateProcess}"
-					disabled="#{not row.enableTerminate}" onclick="Event.stop(event);" styleClass="pi-cmdLnk">
+										  onclick="Event.stop(event);" styleClass="pi-cmdLnk">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsTerminate"
 						standAlone="false" />
 					<ice:outputText
-						title="#{views_common_msgPropsBean['common.tooltip.terminate']}" styleClass="#{row.enableTerminate? '' : 'iceCmdBtn-dis'} pi pi-process-abort pi-lg" style="padding-right: 0px;"/>
+						title="#{views_common_msgPropsBean['common.tooltip.terminate']}" styleClass="pi pi-process-abort pi-lg" style="padding-right: 0px;"/>
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
-				<!-- Rendered when process termination is not allowed -->
-				<ice:panelGroup rendered="#{!(row.enableTerminate)}">
-					<pc:automationTag value="auto-COM-ProcTbl-ActionsTerminateMenu"
-						standAlone="false" />
-					<ice:outputText styleClass="iceCmdBtn-dis pi pi-menu-dropdown pi-sm" />
-				</ice:panelGroup>
 				<!-- Rendered when process termination is allowed -->
-				<ice:panelGroup rendered="#{(row.enableTerminate)}">
+				<ice:panelGroup>
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsTerminateMenu"
 						standAlone="false" />
 					<c:set var="processInstance" value="#{row.processInstance}" />

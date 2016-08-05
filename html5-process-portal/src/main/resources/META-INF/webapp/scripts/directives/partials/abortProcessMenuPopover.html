@@ -1,6 +1,6 @@
 <div style="min-width: 130px">
 	<div>
-		<button ng-disabled="processTableCtrl.processesToAbort.length < 1"
+		<button ng-disabled="processTableCtrl.isAbortandStartDisabled()"
 			ng-click="processTableCtrl.openSwitchDialog(false)"
 			aid="PP-ProcessTable-AbortAndStart"
 			class="button-link tbl-toolbar-item tbl-tool-link"
@@ -9,7 +9,7 @@
 		</button>
 	</div>
 	<div>
-		<button ng-disabled="processTableCtrl.processesToAbort.length != 1"
+		<button ng-disabled="processTableCtrl.isAbortandJoinDisabled()"
 			ng-click="processTableCtrl.openJoinDialog()"
 			aid="PP-ProcessTable-AbortAndJoin"
 			class="button-link tbl-toolbar-item tbl-tool-link"
@@ -18,7 +18,7 @@
 		</button>
 	</div>
 	<div>
-		<button ng-disabled="processTableCtrl.processesToAbort.length < 1"
+		<button
 			ng-click="processTableCtrl.openSwitchDialog(true)"
 			aid="PP-ProcessTable-AbortAndStart"
 			class="button-link tbl-toolbar-item tbl-tool-link"

@@ -22,8 +22,8 @@ import java.util.Set;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.Pair;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
@@ -301,6 +301,11 @@ public class TypedDocumentsUtil
                   }
                }
             }
+            else
+            {
+               trace.error("TypeDeclaration could not be located for document type with id: "
+                     + docType.getDocumentTypeId() + " Schema Location: " + docType.getSchemaLocation());
+            }            
          }
       }
       return label;

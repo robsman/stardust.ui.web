@@ -13,18 +13,19 @@ import org.apache.camel.util.IOHelper;
 import org.apache.camel.util.ResourceHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.extensions.itext.converter.InvalidFormatException;
 import org.eclipse.stardust.engine.extensions.itext.converter.StringToPdfConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import com.lowagie.text.DocumentException;
 
 public class VelocityTemplatesHandler
 {
-   protected final Logger log = LoggerFactory.getLogger(getClass());
+   private final Logger logger = LogManager.getLogger(VelocityTemplatesHandler.class);
 
    private VelocityEngineEvaluator engine;
 
@@ -40,6 +41,9 @@ public class VelocityTemplatesHandler
          boolean convertToPdf, Map<String, Object> parameters, VelocityContext velocityContext)
                throws DocumentException, IOException, InvalidFormatException
    {
+      if(logger.isDebugEnabled()){
+         logger.debug("-->handleClassPathOrRepositoryRequest");
+      }
       if (templateUri.startsWith("classpath"))
       {
          return handleClassPathTemplate(templateUri, format, convertToPdf, parameters, velocityContext);
@@ -71,8 +75,14 @@ public class VelocityTemplatesHandler
          boolean convertToPdf, Map<String, Object> parameters, VelocityContext velocityContext)
                throws DocumentException, IOException, InvalidFormatException
    {
+      if(logger.isDebugEnabled()){
+         logger.debug("-->handleHttpVfsRequest");
+      }
       byte[] response = null;
       registerParametersinVelocityContext(velocityContext,parameters);
+      if(logger.isDebugEnabled()){
+         logger.debug("<--handleHttpVfsRequest");
+      }
       return response;
    }
 
@@ -91,6 +101,9 @@ public class VelocityTemplatesHandler
          boolean convertToPdf, Map<String, Object> parameters, VelocityContext velocityContext)
                throws DocumentException, IOException, InvalidFormatException
    {
+      if(logger.isDebugEnabled()){
+         logger.debug("-->handleRepositoryTemplate templateUri="+templateUri+", format="+format+", convertToPdf="+convertToPdf+", parameters="+parameters.toString());
+      }
       byte[] response = null;
       registerParametersinVelocityContext(velocityContext,parameters);
       ServiceFactory sf = getServiceFactory();
@@ -108,6 +121,9 @@ public class VelocityTemplatesHandler
                buffer.toString().getBytes());
       else
          response = buffer.toString().getBytes();
+      if(logger.isDebugEnabled()){
+         logger.debug("<--handleRepositoryTemplate");
+      }
       return response;
    }
 
@@ -129,6 +145,9 @@ public class VelocityTemplatesHandler
          boolean convertToPdf, Map<String, Object> parameters, VelocityContext velocityContext)
                throws DocumentException, IOException, InvalidFormatException
    {
+      if(logger.isDebugEnabled()){
+         logger.debug("-->handleClassPathTemplate templateUri="+templateUri+", format="+format+", convertToPdf="+convertToPdf+", parameters="+parameters.toString());
+      }
       byte[] response = null;
 
       registerParametersinVelocityContext(velocityContext,parameters);
@@ -141,6 +160,10 @@ public class VelocityTemplatesHandler
                buffer.toString().getBytes());
       else
          response = buffer.toString().getBytes();
+      
+      if(logger.isDebugEnabled()){
+         logger.debug("<--handleClassPathTemplate");
+      }
       return response;
    }
 
@@ -162,6 +185,9 @@ public class VelocityTemplatesHandler
          boolean convertToPdf, Map<String, Object> parameters, VelocityContext velocityContext)
                throws DocumentException, IOException, InvalidFormatException
    {
+      if(logger.isDebugEnabled()){
+         logger.debug("-->handleEmbeddedTemplate content="+content+", format="+format+", convertToPdf="+convertToPdf+", parameters="+parameters);
+      }
       byte[] response;
 
       registerParametersinVelocityContext(velocityContext, parameters);
@@ -172,6 +198,9 @@ public class VelocityTemplatesHandler
                buffer.toString().getBytes());
       else
          response = buffer.toString().getBytes();
+      if(logger.isDebugEnabled()){
+         logger.debug("<--handleEmbeddedTemplate");
+      }
       return response;
    }
 
@@ -180,8 +209,8 @@ public class VelocityTemplatesHandler
       for (String key : parameters.keySet())
       {
          velocityContext.put(key, parameters.get(key));
-         if (log.isDebugEnabled())
-            log.debug("registering " + key + " in velocity context.");
+         if (logger.isDebugEnabled())
+            logger.debug("registering " + key + " in velocity context.");
       }
    }
 
@@ -202,8 +231,8 @@ public class VelocityTemplatesHandler
          templateContent.append(content);
          templateContent.append("#setOutputs()");
       }
-      if (log.isDebugEnabled())
-         log.debug("Template content: " + templateContent);
+      if (logger.isDebugEnabled())
+         logger.debug("Template content: " + templateContent);
       return templateContent;
    }
 }

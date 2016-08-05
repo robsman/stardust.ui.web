@@ -13,8 +13,8 @@ package org.eclipse.stardust.ui.web.viewscommon.login.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.common.security.InvalidPasswordException;
 import org.eclipse.stardust.common.security.InvalidPasswordException.FailureCode;
 import org.eclipse.stardust.engine.api.runtime.PasswordRules;

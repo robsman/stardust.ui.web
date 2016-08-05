@@ -31,8 +31,8 @@ import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.DataPathDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
@@ -190,7 +190,10 @@ public class CommonDescriptorUtils
                                  processAttachment.getContentType()), processAttachment));
                         }
                      }
-                     descriptorValues.put(entry.getKey(), documentList);
+                     
+                     if(CollectionUtils.isNotEmpty(documentList)) {
+                        descriptorValues.put(entry.getKey(), documentList);
+                     }
                   }
                   else if (null != dataDetails && DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
                   {
@@ -499,7 +502,52 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
       DataPath[] descriptors = allDescriptors.toArray(new DataPath[0]);
       return descriptors;
    }
+   
+   /**
+    * It's just a copy of above method getAllDescriptors(List<ProcessDefinition> processes, boolean onlyFilterable)
+    * But returns Process Information as well for DataPath.
+    * This was not necessary if DataPath had method getProcessQualifiedId()    
+    * @param processes
+    * @param onlyFilterable
+    * @return
+    */
+   public static ProcessDataPath[] getAllDescriptorsWithProcessData(List<ProcessDefinition> processes, 
+         boolean onlyFilterable)
+   {
+      List<ProcessDataPath> allDescriptors = new ArrayList<ProcessDataPath>();
+      for (Iterator<ProcessDefinition> iter = processes.iterator(); iter.hasNext();)
+      {
+         ProcessDefinition process = iter.next();
 
+         for (Iterator descrItr = process.getAllDataPaths().iterator(); descrItr
+               .hasNext();)
+         {
+            DataPath path = (DataPath) descrItr.next();
+            if (Direction.IN.equals(path.getDirection()) && path.isDescriptor()
+                  && ((onlyFilterable && DescriptorFilterUtils.isDataFilterable(path)) || !onlyFilterable))
+            {
+               allDescriptors.add(new ProcessDataPath(path, process));
+            }
+         }
+      }
+      ProcessDataPath[] descriptors = allDescriptors.toArray(new ProcessDataPath[0]);
+      return descriptors;
+   }
+
+   /**
+    * @author Subodh.Godbole
+    */
+   public static class ProcessDataPath
+   {
+      public DataPath dataPath;
+      public ProcessDefinition processDefinition;
+
+      public ProcessDataPath(DataPath dataPath, ProcessDefinition processDefinition)
+      {
+         this.dataPath = dataPath;
+         this.processDefinition = processDefinition;
+      }
+   }
  
    /**
     * @param onlyFilterable
@@ -522,8 +570,37 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
       }
       return allDescriptors;
    }
+   
+   
+   /**
+    * This is copy of above method getAllDescriptors(), but it returns descriptors by Process
+    * And not just common descriptors 
+    * @param onlyFilterable
+    * @return
+    */
+   public static Map<String, Map<String, DataPath>> getAllDescriptorsByProcess(boolean onlyFilterable)
+   {
+      List<ProcessDefinition> allProcessDefinitions = ProcessDefinitionUtils.getAllAccessibleProcessDefinitionsfromAllVersions();
+      ProcessDataPath[] descriptorsList = getAllDescriptorsWithProcessData(allProcessDefinitions, onlyFilterable);
 
- 
+      Map<String, Map<String, DataPath>> descriptorsByProcess = new TreeMap<String, Map<String, DataPath>>();
+      for (ProcessDataPath processDataPath : descriptorsList)
+      {
+         if (processDataPath.dataPath.isDescriptor())
+         {
+            if (!descriptorsByProcess.containsKey(processDataPath.processDefinition.getQualifiedId()))
+            {
+               descriptorsByProcess.put(processDataPath.processDefinition.getQualifiedId(),
+                     new TreeMap<String, DataPath>());
+            }
+            descriptorsByProcess.get(processDataPath.processDefinition.getQualifiedId()).put(
+                  processDataPath.dataPath.getId(), processDataPath.dataPath);
+         }
+      }
+
+      return descriptorsByProcess;
+   }
+   
    /**
     * @param process
     * @param onlyFilterable

@@ -49,7 +49,14 @@ public class DocumentVersionDTO extends AbstractDTO
    public DocumentVersionDTO(int version, Document document)
    {
       this.comments = RepositoryUtility.getVersionComment(document);
-      this.versionNo = version;
+      
+      try{
+    	  this.versionNo = Float.parseFloat(document.getRevisionName()); //try to leverage JCR property
+      }
+      catch(NumberFormatException nfe){
+    	  this.versionNo = version; //if JCR property is not a float then use iterator value
+      }
+      
       this.revisionId = document.getRevisionId();
       this.documentName = document.getName();
 

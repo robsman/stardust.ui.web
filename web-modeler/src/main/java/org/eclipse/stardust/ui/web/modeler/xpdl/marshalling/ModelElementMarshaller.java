@@ -32,8 +32,8 @@ import com.google.gson.JsonPrimitive;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
@@ -1916,6 +1916,12 @@ public class ModelElementMarshaller implements ModelMarshaller
             eObjectUUIDMapper().getUUID(eventHandler));
       eventJson.addProperty(ModelerConstants.OID_PROPERTY, eventHandler.getElementOid());
       ModelType model = ModelUtils.findContainingModel(eventHandler);
+      
+      if (model == null)
+      {
+         return null;
+      }
+      
       eventJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
             eObjectUUIDMapper().getUUID(model));
       setContainingModelIdProperty(eventJson, eventHandler);
@@ -2110,13 +2116,19 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       if (model != null)
       {
-         participantFullID = getModelBuilderFacade().createFullId(
-               model,
-               XPDLFinderUtils.findParticipant(
-                     model,
-                     getModelBuilderFacade().getAttributeValue(
-                           getModelBuilderFacade().getAttribute(event,
-                                 PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT))));
+         IModelParticipant participant = XPDLFinderUtils.findParticipant(model,
+               getModelBuilderFacade()
+                     .getAttributeValue(getModelBuilderFacade().getAttribute(event,
+                           PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT)));
+         if (participant != null)
+         {
+            if (participant.eIsProxy()) {
+               URI proxyUri = ((InternalEObject) participant).eProxyURI();
+               ModelType participantModel = ModelUtils.getModelByProxyURI(model, proxyUri);
+               model = participantModel;
+            }
+            participantFullID = getModelBuilderFacade().createFullId(model, participant);
+         }
       }
 
       eventJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, participantFullID);
@@ -3936,40 +3948,23 @@ public class ModelElementMarshaller implements ModelMarshaller
 
             if (null != childParticipant)
             {
-               JsonObject childJson = new JsonObject();
-               childrenArray.add(childJson);
-
-               childJson.addProperty(ModelerConstants.ID_PROPERTY,
-                     childParticipant.getId());
-               childJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                     childParticipant.getName());
-               childJson.addProperty(ModelerConstants.OID_PROPERTY,
-                     childParticipant.getElementOid());
-               childJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                     eObjectUUIDMapper().getUUID(childParticipant));
-               childJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
-                     eObjectUUIDMapper().getUUID(parent));
-               loadDescription(childJson, childParticipant);
-
                if (childParticipant instanceof OrganizationType)
                {
-                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
-                  addChildParticipantsJson(childJson, (OrganizationType) childParticipant);
+                  JsonObject participantJson = toOrganizationJson((OrganizationType) childParticipant);
+                  childrenArray.add(participantJson);
+
+                  addChildParticipantsJson(participantJson, (OrganizationType) childParticipant);
                }
                else if (childParticipant instanceof RoleType)
                {
-                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
+                  JsonObject participantJson = toRoleJson((RoleType) childParticipant);
+                  childrenArray.add(participantJson);
                }
                else if (childParticipant instanceof ConditionalPerformerType)
                {
-                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
+                  JsonObject participantJson = toConditionalPerformerJson((ConditionalPerformerType) childParticipant);
+                  childrenArray.add(participantJson);
                }
-
-               loadDescription(childJson, childParticipant);
-               loadAttributes(childParticipant, childJson);
             }
          }
       }

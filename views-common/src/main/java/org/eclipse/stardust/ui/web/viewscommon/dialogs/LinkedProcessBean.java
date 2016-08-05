@@ -143,8 +143,14 @@ public class LinkedProcessBean
       {
          pi = getRelatedLinkedProcess();
       }
+      else if(null != getInsertedLinkedProcess())
+      {
+         pi = getInsertedLinkedProcess();
+      }
       else
+      {
          pi = getJoinLinkedProcess();
+      }
       Map<String, Object> params = CollectionUtils.newHashMap();
       params.put("processInstanceOID", String.valueOf(pi.getOID()));
       params.put("processInstanceName", pi.getProcessName());

@@ -27,8 +27,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.component.service.WorklistService;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
@@ -414,10 +414,9 @@ public class WorklistResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/worklist-assignments")
-   public Response getWorklistAssignemnt(@QueryParam("showEmptyWorklist") @DefaultValue("false") boolean showEmptyWorklist, 
-         @QueryParam("reload") @DefaultValue("false") boolean reload) throws PortalException
+   public Response getWorklistAssignemnt(@QueryParam("showEmptyWorklist") @DefaultValue("false") boolean showEmptyWorklist) throws PortalException
    {
-   QueryResultDTO result = worklistService.getWorklistAssignemnt(showEmptyWorklist, reload);
+   QueryResultDTO result = worklistService.getWorklistAssignemnt(showEmptyWorklist);
    return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
    }
    

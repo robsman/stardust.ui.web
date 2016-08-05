@@ -14,6 +14,7 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUti
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,8 +26,8 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
@@ -69,7 +70,7 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.rest.util.DescriptorColumnUtils.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.dto.AbortNotificationDTO;
 import org.eclipse.stardust.ui.web.rest.dto.BenchmarkDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
@@ -812,8 +813,8 @@ public class ProcessInstanceUtils
          ProcessInstance srcProcessInstance = getProcessInstance(processInstOID);
 
          // First check the permission
-         if (!AuthorizationUtils.hasAbortPermission(srcProcessInstance) || !isAbortable(srcProcessInstance)
-               || srcProcessInstance.isCaseProcessInstance())
+         if (!pauseParentProcess && (!AuthorizationUtils.hasAbortPermission(srcProcessInstance) || !isAbortable(srcProcessInstance)
+               || srcProcessInstance.isCaseProcessInstance()))
          {
             continue;
          }
@@ -1559,6 +1560,8 @@ public class ProcessInstanceUtils
       {
          return;
       }
+    
+      List<String> processFilter = null;
 
       ProcessTableFilterDTO filterDTO = (ProcessTableFilterDTO) options.filter;
 
@@ -1648,6 +1651,8 @@ public class ProcessInstanceUtils
             {
                or.add(new ProcessDefinitionFilter(processQId, false));
             }
+            
+            processFilter = filterDTO.processName.processes;
          }
       }
       
@@ -1685,7 +1690,7 @@ public class ProcessInstanceUtils
       }
 
       // descriptors Filter
-      addDescriptorFilters(query, filterDTO);
+      addDescriptorFilters(query, filterDTO, processFilter);
 
    }
 
@@ -1712,6 +1717,58 @@ public class ProcessInstanceUtils
          query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
       }
    }
+   
+   /**
+    * 
+    * @param processFilter
+    * @param descFilterMap
+    * @return
+    */
+   public static Collection<DataPath> getRelevantDataPaths(List<String> processFilter,
+         Map<String, DescriptorFilterDTO> descFilterMap)
+   {
+      Map<String, DataPath> descriptors = ProcessDefinitionUtils.getAllDescriptors(false);
+      Map<String, Map<String, DataPath>> allFilterableDescriptorsByProcess = CommonDescriptorUtils
+            .getAllDescriptorsByProcess(true);
+      Collection<DataPath> dataPaths = null;
+
+      for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap.entrySet())
+      {
+         String dataId = descriptor.getKey();
+         if (null != processFilter)
+         {
+            for (String processQId : processFilter)
+            {
+               Map<String, DataPath> procDescriptors = allFilterableDescriptorsByProcess
+                     .get(processQId);
+               if (null != procDescriptors && procDescriptors.containsKey(dataId))
+               {
+                  dataPaths = procDescriptors.values();
+
+                  if (trace.isDebugEnabled())
+                  {
+                     trace.debug("Descriptor Filtering:: Using Descriptors from Process: "
+                           + processQId + ", because of filtering on dataId: " + dataId);
+                  }
+
+                  break;
+               }
+            }
+         }
+      }
+
+      if (null == dataPaths)
+      {
+         dataPaths = descriptors.values();
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Descriptor Filtering:: Using Descriptors from Default Process");
+         }
+      }
+
+      return dataPaths;
+   }
+   
 
    /**
     * Add filter on descriptor columns .
@@ -1719,19 +1776,23 @@ public class ProcessInstanceUtils
     * @param query
     * @param processListFilterDTO
     */
-   public static void addDescriptorFilters(Query query, ProcessTableFilterDTO processListFilterDTO)
+   public static void addDescriptorFilters(Query query,
+         ProcessTableFilterDTO processListFilterDTO, List<String> processFilter)
    {
 
       Map<String, DescriptorFilterDTO> descFilterMap = processListFilterDTO.descriptorFilterMap;
 
       if (null != descFilterMap)
       {
+         Collection<DataPath> dataPaths = getRelevantDataPaths(processFilter,
+               descFilterMap);
 
-         Map<String, DataPath> descriptors = ProcessDefinitionUtils.getAllDescriptors(false);
-         GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel.create(descriptors.values());
+         GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel
+               .create(dataPaths);
          filterModel.setFilterEnabled(true);
 
-         for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap.entrySet())
+         for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap
+               .entrySet())
          {
             Object value = null;
             String key = descriptor.getKey();
@@ -1768,6 +1829,11 @@ public class ProcessInstanceUtils
                   ((DateRange) value).setToDateValue(new Date(to));
                }
             }
+            // Descriptors of type Multi cardinality
+            else if (descriptor.getValue().type.equals(ColumnDataType.LIST.toString()))
+            {
+               value = ((TextSearchDTO) descriptor.getValue().value).textSearch;
+            }
 
             filterModel.setFilterValue(key, (Serializable) value);
          }
@@ -1781,7 +1847,6 @@ public class ProcessInstanceUtils
             trace.error("Error occurred while applying filter to descriptors..", e);
          }
       }
-
    }
 
    /**
@@ -2258,12 +2323,20 @@ public class ProcessInstanceUtils
                filterDTO = new Gson().fromJson(descriptorColumnsFilterJson.get(id),
                      ProcessTableFilterDTO.BooleanDTO.class);
             }
+            else if (ColumnDataType.LIST.toString().equals(descriptorColumnDTO.type))
+            {
+               filterDTO = new Gson().fromJson(descriptorColumnsFilterJson.get(id),
+                     ProcessTableFilterDTO.TextSearchDTO.class);
+
+            }
             descriptorColumnMap.put(id, new DescriptorFilterDTO(descriptorColumnDTO.type, filterDTO));
          }
       }
 
       processListFilterDTO.descriptorFilterMap = descriptorColumnMap;
    }
+   
+   
 
    /**
     * 

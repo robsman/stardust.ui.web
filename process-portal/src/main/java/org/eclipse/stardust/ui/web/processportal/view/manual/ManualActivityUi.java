@@ -117,6 +117,11 @@ public class ManualActivityUi
          {
             path = createSystemDataMapping(dataMapping, manualActivityPath);
          }
+         else if (ModelUtils.isConstantType(getModel(), dataMapping))
+         {
+            //Constants are always of the type primitive
+            path = createPrimitiveDataMapping(dataMapping, manualActivityPath);
+         }
          else if (ModelUtils.isDMSType(getModel(), dataMapping))
          {
             path = createDMSDataMapping(dataMapping, allInMappings, manualActivityPath);
@@ -158,6 +163,7 @@ public class ManualActivityUi
    {
       return manualActivityPath;
    }
+   
 
    /**
     * @param dataMapping

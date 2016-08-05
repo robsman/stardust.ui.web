@@ -1647,23 +1647,16 @@ define(
 //                  title : "Document Request"
 //               }
                ];
-               MailIntegrationOverlay.prototype.getSourceOptions = function(item){
-                   var sourceOptions = [ {
-                          value : "repository",
-                          title : "Document Repository"
-                       }, {
-                          value : "classpath",
-                          title : "Classpath"
-                       }];
-                   if(item.tSource=="data"){
-                   sourceOptions.push({
-                          value : "data",
-                          title : "Data"
-                    });
-                   }
-                   return sourceOptions;
-               };
-                
+               
+               this.defaultSourceOptions=[ {value : "repository",title : "Document Repository"}, {value : "classpath",title : "Classpath"},{value : "data",title : "Data"}];
+               
+               MailIntegrationOverlay.prototype.hideOption= function(srcOpt , templateConf){
+                  if(srcOpt.value != 'data')
+                     return false;
+                  if(templateConf.tSource == 'data')
+                     return false;
+                  return true;
+               }
                /**
                 * invoked when the user click on add button in attchment tab (add template
                 * configuration)

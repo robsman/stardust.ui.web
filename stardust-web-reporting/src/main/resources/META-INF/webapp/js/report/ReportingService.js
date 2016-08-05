@@ -214,7 +214,8 @@ define(
 						name : this.getI18N("reporting.definitionView.activeInstancesOverTime"),
 						type : this.metadata.timestampType,
 						notSupportedAsColumn : true,
-						disableCumulationInterval : true
+						disableCumulationInterval : true,
+						notSupportedAsAutoComplete : true
 				};
 
 				this.metadata.commonTypes.processInstanceProcessingTime = {
@@ -566,10 +567,6 @@ define(
 						interrupted : {
 							id : "Interrupted",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.interrupted")
-						},
-						halting : {
-							id : "Halting",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.halting")
 						},
 						halted : {
 							id : "Halted",

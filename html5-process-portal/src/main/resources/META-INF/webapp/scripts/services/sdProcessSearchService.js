@@ -195,12 +195,6 @@
 		             				name : "Suspended"
 		             			},
 		             			{
-		             				value : 9,
-		             				label : sgI18nService
-		             						.translate('views-common-messages.views-activityTable-statusFilter-halting'),
-		             				name : "Halting"
-		             			},
-		             			{
 		             				value : 10,
 		             				label : sgI18nService
 		             						.translate('views-common-messages.views-activityTable-statusFilter-halted'),

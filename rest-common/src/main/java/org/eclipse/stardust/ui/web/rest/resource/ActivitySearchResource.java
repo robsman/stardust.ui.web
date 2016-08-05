@@ -22,8 +22,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.component.service.ActivitySearchService;
 import org.eclipse.stardust.ui.web.rest.documentation.DTODescription;
 import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;

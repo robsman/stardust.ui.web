@@ -24,8 +24,8 @@ import java.util.TreeSet;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.DocumentFilter;
 import org.eclipse.stardust.engine.api.query.DocumentQuery;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
@@ -295,19 +295,24 @@ public class DocumentSearchUtils
       }
 
       FilterCriterion contentFilter = null, dataFilter = null;
-      if (StringUtils.isNotEmpty(documentSearchRequest.contentLike))
+
+      if (StringUtils.isNotEmpty(documentSearchRequest.contentLike)
+            || StringUtils.isNotEmpty(documentSearchRequest.metaDataLike))
       {
-         contentFilter = DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
-               .escapeIllegalJcrChars(documentSearchRequest.contentLike)));
          FilterOrTerm filterOrTerm = filter.addOrTerm();
-         filterOrTerm.add(contentFilter);
-      }
-      if (StringUtils.isNotEmpty(documentSearchRequest.metaDataLike))
-      {
-         dataFilter = DocumentQuery.META_DATA.any().like(
-               QueryUtils.getFormattedString(Text.escapeIllegalJcrChars(documentSearchRequest.metaDataLike)));
-         FilterOrTerm filterOrTerm = filter.addOrTerm();
-         filterOrTerm.add(dataFilter);
+
+         if (StringUtils.isNotEmpty(documentSearchRequest.contentLike))
+         {
+            contentFilter = DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
+                  .escapeIllegalJcrChars(documentSearchRequest.contentLike)));
+            filterOrTerm.add(contentFilter);
+         }
+         if (StringUtils.isNotEmpty(documentSearchRequest.metaDataLike))
+         {
+            dataFilter = DocumentQuery.META_DATA.any().like(
+                  QueryUtils.getFormattedString(Text.escapeIllegalJcrChars(documentSearchRequest.metaDataLike)));
+            filterOrTerm.add(dataFilter);
+         }
       }
 
       // override filters with table level filters

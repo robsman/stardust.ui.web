@@ -6167,6 +6167,15 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	font-weight: bold;
 }
 
+.abort-menu-drop-down
+{
+	margin: 6px -2px 0px -9px;
+}
+.abort-menu-drop-down-toolbar
+{
+	margin: 0px 0px 0px -10px;
+}
+
 /* *********** Dialogs - START *********** */
 
 .popupDialog {
@@ -9716,10 +9725,9 @@ img[src *='world_go.png'].nodeMenuIcon {
 	border-top: 1px solid #958977;
 	position:fixed;
 	z-index:1;
-	left:42px;
 	top:40px;
 	padding-left:4px;
-	width:306px;
+	width:348px;
 }
 
 .sg-sidebar-opened.sg-sidebar-pinned .perspective-series-wrapper{
@@ -9731,6 +9739,7 @@ img[src *='world_go.png'].nodeMenuIcon {
 /* IE10+ CSS styles go here */
 	.perspective-series-wrapper {
 		top:112px;
+		left:37px;
 	}
 }
 

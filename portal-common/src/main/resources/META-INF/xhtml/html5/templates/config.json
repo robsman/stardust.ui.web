@@ -3,7 +3,6 @@ angular.module('bpm-ui').constant('sgConfig', {
 	"appId": "ipp",
 	"appTitle": "PORTAL_TITLE",
 	"locale": "PORTAL_LOCALE",
-	"preferredLocale" : "browser",
 	"supportedLanguages": [{
 		"value": "PORTAL_LOCALE",
         "label": "PORTAL_LOCALE"

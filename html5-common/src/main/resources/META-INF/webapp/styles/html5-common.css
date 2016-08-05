@@ -42,7 +42,7 @@ a.no-link:active
 	color: #906C37;
 }
 
-.button-link[disabled='disabled'] .sc, 
+.button-link[disabled='disabled'] .sc,
 .button-link[disabled='disabled'] .glyphicon,
 .pi[disabled='disabled'] {
 	color: #A69A88;
@@ -144,6 +144,9 @@ span.heading{
 	padding: 5px 0px 5px 0px;
     white-space: nowrap;
     position:relative;
+    float:right;
+    width:100%;
+    margin-bottom:10px;
 }
 
 .popup-dlg-hdr-txt {
@@ -151,11 +154,12 @@ span.heading{
     color: #009775 ;
 	font-size: 1.36em;
 	text-transform: uppercase;
+	float: left;
+	padding-right: 2px;
 }
 
 .popup-dlg-cls {
-	position:absolute;
-	right:0;
+	float: right;
 	cursor: pointer;
 }
 
@@ -360,7 +364,7 @@ span.heading{
 /********Animations and transitions**************/
 @
 -webkit-keyframes slideLeft {from { margin-left:0;
-	
+
 }
 
 to {
@@ -370,7 +374,7 @@ to {
 }
 @
 -moz-keyframes slideLeft {from { margin-left:0;
-	
+
 }
 
 to {
@@ -380,7 +384,7 @@ to {
 }
 @
 keyframes slideLeft {from { margin-left:0;
-	
+
 }
 
 to {
@@ -527,6 +531,10 @@ button.close {
 	margin-right: 5px;
 }
 
+.spacing-left {
+	margin-left: 3px;
+}
+
 .date-time-picker-meridian {
 	width : 60px;
 	min-width : 60px
@@ -548,10 +556,10 @@ button.close {
 }
 
 .inline-label{
-	display: inline-block; 
-	margin-bottom: 5px; 
-	padding-left: 5px; 
-	vertical-align: text-top; 
+	display: inline-block;
+	margin-bottom: 5px;
+	padding-left: 5px;
+	vertical-align: text-top;
 	color: #708090;"
 }
 
@@ -567,9 +575,9 @@ button.close {
 }
 
 .user-list-decorator{
-	margin-left: 5px; 
-	margin-top: 5px; 
-	overflow: auto; 
+	margin-left: 5px;
+	margin-top: 5px;
+	overflow: auto;
 	height: 100px;
 }
 
@@ -804,7 +812,15 @@ tr.properties-panel-documentRow>td {
 .properties-panel-documentRow{
     font-size: 12px;
     padding: 2px;
+    position:relative;
 }
+
+.properties-panel-documentRow .action-menu{
+    position:absolute;
+    right:0;
+    top:5px;
+}
+
 /*Section for Properties page - end*/
 /******************************************************/
 
@@ -834,6 +850,16 @@ tr.properties-panel-documentRow>td {
 	background:#ffffE0;
 }
 
+.popover-content .menu-list .menu-container[disabled] {
+	opacity: 0.5;
+	cursor:default;
+	background: none;
+}
+
+.popover-content .menu-list .menu-container[disabled] i {
+	cursor:default;
+}
+
 .sd-portal-loading {
   display : none;
 }
@@ -846,19 +872,11 @@ select[disabled="disabled"] {
 /******************************************************/
 /* Put your css in here */
 .process-summary-cell {
-	padding: 3px;
-}
-
-.process-summary-table span {
-  padding: 2px;
+	padding: 3px 2px 3px 2px;
 }
 
 .process-summary-control {
-  width: 15px;	
-}
-
-.process-summary-control td {
-   padding: 3px 0px 3px 10px;	
+  width: 15px;
 }
 
 .process-summary-control :hover {
@@ -874,7 +892,7 @@ select[disabled="disabled"] {
 }
 
 .process-summary-notes{
-  margin: 10px; 
+  margin: 10px;
   border: 1px solid lightgray
 }
 

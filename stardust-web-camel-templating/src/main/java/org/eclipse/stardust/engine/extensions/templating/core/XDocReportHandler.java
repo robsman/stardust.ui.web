@@ -13,6 +13,8 @@ import java.util.Map;
 import org.apache.camel.spi.ClassResolver;
 import org.apache.camel.util.ResourceHelper;
 import org.apache.velocity.VelocityContext;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.extensions.itext.converter.InvalidFormatException;
@@ -23,6 +25,7 @@ import fr.opensagres.xdocreport.core.XDocReportException;
 
 public class XDocReportHandler
 {
+   private final Logger logger = LogManager.getLogger(XDocReportHandler.class);
    private ClassResolver resolver;
 
    public XDocReportHandler(ClassResolver resolver)
@@ -77,6 +80,8 @@ public class XDocReportHandler
          boolean convertToPdf, Map<String, Object> parameters,
          List<FieldMetaData> fieldsMetaData, VelocityContext customVelocityContext) throws ServiceException
    {
+      if(logger.isDebugEnabled())
+         logger.debug("-->handleRepositoryTemplate templateUri="+templateUri+", format="+format+", convertToPdf="+convertToPdf+", parameters="+parameters);
       byte[] response;
       ServiceFactory sf = getServiceFactory();
       DocumentManagementService dms = getDocumentManagementService(sf);
@@ -87,6 +92,8 @@ public class XDocReportHandler
          throw new RuntimeException("File " + templateLocation + " was not found.");
       response = handleInputStreamRequest(new ByteArrayInputStream(content), format,
             convertToPdf, parameters, fieldsMetaData, customVelocityContext);
+      if(logger.isDebugEnabled())
+         logger.debug("<--handleRepositoryTemplate");
       return response;
    }
 
@@ -94,6 +101,8 @@ public class XDocReportHandler
          boolean convertToPdf, Map<String, Object> parameters,
          List<FieldMetaData> fieldsMetaData, VelocityContext customVelocityContext) throws ServiceException
    {
+      if(logger.isDebugEnabled())
+         logger.debug("-->handleClassPathTemplate templateUri="+templateUri+", format="+format+", convertToPdf="+convertToPdf+", parameters="+parameters);
       byte[] response;
       InputStream is;
       try
@@ -102,10 +111,13 @@ public class XDocReportHandler
 
          response = handleInputStreamRequest(is, format, convertToPdf, parameters,
                fieldsMetaData,customVelocityContext);
+         if(logger.isDebugEnabled())
+            logger.debug("<--handleClassPathTemplate");
          return response;
       }
       catch (IOException e)
       {
+         logger.error("<--handleRepositoryTemplate",e);
          throw new ServiceException(e);
       }
    }

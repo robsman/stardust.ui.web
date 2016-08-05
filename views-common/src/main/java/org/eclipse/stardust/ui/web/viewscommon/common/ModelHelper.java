@@ -72,7 +72,14 @@ public class ModelHelper
 
                // Format: RoleName (OrgName? or period separated DeptNames)
                participantlabel.setParticipantName(I18nUtils.getParticipantName(role));
-               setHierarchyDetails(participantlabel, role.getAllSuperOrganizations().get(0), departmentInfo);
+               if (CollectionUtils.isNotEmpty(role.getAllSuperOrganizations()))
+               {
+                  setHierarchyDetails(participantlabel, role.getAllSuperOrganizations().get(0), departmentInfo);
+               }
+               else
+               {
+                  setHierarchyDetails(participantlabel, null, departmentInfo);
+               }
             }
          }
          else

@@ -14,7 +14,7 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdCriticalityIconCountSelector', [ CriticalityIconCountSelector ]);
+   angular.module('workflow-ui').directive('sdCriticalityIconCountSelector', [ CriticalityIconCountSelector ]);
 
    /*
     * 

@@ -17,8 +17,8 @@ import java.util.List;
 import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.common.error.AccessForbiddenException;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.UserGroupQuery;

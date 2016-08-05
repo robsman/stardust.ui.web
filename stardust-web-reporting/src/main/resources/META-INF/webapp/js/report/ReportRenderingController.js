@@ -1442,6 +1442,9 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 	   } else if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) {
 		   tableOptions.aoColumnDefs.push(getColumnDefForDate(selColumn, this.reportingService.dateFormats.minutes));
 	   }
+     if (selectedColumns[selColumn].metadata && selectedColumns[selColumn].metadata.dataPathType == 'Link') {
+      tableOptions.aoColumnDefs.push(getColumnDefForURL(selColumn));
+     }
     }
 
 		
@@ -1748,6 +1751,19 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 					})(dateFormat, col)
 				};
 			};
+			
+			/**
+			 * 
+			 */
+			function getColumnDefForURL(selColumn) {
+        var col = parseInt(selColumn);
+        return {
+          "aTargets" : [col],
+          "mRender": function (data, type, full) {
+             return '<a target="_blank" href="' + data + '">' + data + '</a>';
+          }
+        };
+      };
 			
 			 /**
 			 * To get unique elements and their count.

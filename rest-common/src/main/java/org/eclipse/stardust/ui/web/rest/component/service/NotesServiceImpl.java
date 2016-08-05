@@ -29,13 +29,13 @@ import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.component.cachemanager.UserAttributesCacheManager;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
-import org.eclipse.stardust.ui.web.rest.component.util.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.dto.NoteDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotesResultDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.NoteEvent;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -54,9 +54,6 @@ public class NotesServiceImpl implements NotesService
    @Resource
    private ActivityInstanceUtils activityInstanceUtils;
 
-   @Resource(name = "ProcessInstanceUtilsREST")
-   private ProcessInstanceUtils processInstanceUtils;
-   
    @Resource
    UserAttributesCacheManager userAttributesCacheManager;
    
@@ -80,7 +77,7 @@ public class NotesServiceImpl implements NotesService
     */
    private NotesResultDTO getNotes(long processInstanceOid, boolean asc, boolean onlyProcesLevelNotes)
    {
-      ProcessInstance processInstance = processInstanceUtils.getProcessInstance(processInstanceOid);
+      ProcessInstance processInstance = ProcessInstanceUtils.getProcessInstance(processInstanceOid, true);
 
       if (processInstance == null)
       {
@@ -92,7 +89,7 @@ public class NotesServiceImpl implements NotesService
       {
          List<Long> oids = new ArrayList<Long>();
          oids.add(processInstance.getScopeProcessInstanceOID());
-         scopeProcessInstance = processInstanceUtils.getProcessInstances(oids, true, false).get(0);
+         scopeProcessInstance = ProcessInstanceUtils.getProcessInstances(oids, true, false).get(0);
       }
 
       ProcessInstanceAttributes attributes = scopeProcessInstance.getAttributes();
@@ -109,7 +106,7 @@ public class NotesServiceImpl implements NotesService
             // Process level notes
             NoteDTO noteDTO = new NoteDTO(note, userAttributesCacheManager);
             noteDTO.noteNumber = noteList.indexOf(note) + 1;
-            noteDTO.scopeType = processInstanceUtils.getProcessLabel(processInstance);
+            noteDTO.scopeType = ProcessInstanceUtils.getProcessLabelWithoutOid(processInstance);
 
             noteDTOList.add(noteDTO);
          }
@@ -156,7 +153,7 @@ public class NotesServiceImpl implements NotesService
       NotesResultDTO notesResultDTO = new NotesResultDTO();
       notesResultDTO.list = noteDTOList;
       notesResultDTO.totalCount = noteDTOList.size();
-      notesResultDTO.label = processInstanceUtils.getProcessLabel(processInstance);
+      notesResultDTO.label = ProcessInstanceUtils.getProcessLabelWithoutOid(processInstance);
       return notesResultDTO;
 
    }
@@ -166,17 +163,17 @@ public class NotesServiceImpl implements NotesService
    {
       if (!StringUtils.isEmpty(noteText) && (noteText.trim().length() > 0))
       {
-         ProcessInstance processInstance = processInstanceUtils.getProcessInstance(processInstanceOid);
+         ProcessInstance processInstance = ProcessInstanceUtils.getProcessInstance(processInstanceOid);
 
          ProcessInstance scopeProcessInstance = null;
          if (processInstance.getOID() != processInstance.getScopeProcessInstanceOID())
          {
-            scopeProcessInstance = processInstanceUtils
-                  .getProcessInstance(processInstance.getScopeProcessInstanceOID());
+            scopeProcessInstance = ProcessInstanceUtils
+                  .getProcessInstance(processInstance.getScopeProcessInstanceOID(), true, false);
          }
          else
          {
-            scopeProcessInstance = processInstanceUtils
+            scopeProcessInstance = ProcessInstanceUtils
                   .getProcessInstance(processInstance.getScopeProcessInstanceOID());
          }
 
@@ -185,7 +182,7 @@ public class NotesServiceImpl implements NotesService
 
          serviceFactoryUtils.getWorkflowService().setProcessInstanceAttributes(attributes);
 
-         scopeProcessInstance = processInstanceUtils.getProcessInstance(scopeProcessInstance.getOID());
+         scopeProcessInstance = ProcessInstanceUtils.getProcessInstance(scopeProcessInstance.getOID());
 
          IppEventController.getInstance().notifyEvent(
                new NoteEvent(scopeProcessInstance.getOID(), lastValidNote, scopeProcessInstance.getAttributes()

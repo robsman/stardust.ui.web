@@ -291,6 +291,18 @@ public class IppUser implements User
          for (Entry<String, List<String>> permission : allDeniedGrants.entrySet())
          {
             Set<ModelParticipantInfo> grants = UiPermissionUtils.externalize(permission.getValue());
+            String permId = UiPermissionUtils.getPortalPermissionId(permission.getKey());
+
+            // check if the user has been already denied the permission in above loop
+            if (uiPermissionsCache.containsKey(permId))
+            {
+               Boolean evaluatedGrant = uiPermissionsCache.get(permId);
+               if (!evaluatedGrant)
+               {
+                  continue;
+               }
+            }
+
             uiPermissionsCache.put(UiPermissionUtils.getPortalPermissionId(permission.getKey()),
                   isInRoles(grants) == null ? null : !isInRoles(grants));
          }

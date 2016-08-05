@@ -33,6 +33,7 @@
 		
 		this.collapsePanelHandle = null;
 		var self = this;
+		this.syncPanel = true;
 		
 		sgPubSubService.subscribe("sdActivePerspectiveChange", function(){
 			var activePerspective = sdSidebarService.getActivePerspectiveName();

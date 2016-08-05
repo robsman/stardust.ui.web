@@ -13,7 +13,7 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdCriticalityTableFilter',[ '$parse', 'sdUtilService','$filter', CriticalityFilter ]);
+   angular.module('workflow-ui').directive('sdCriticalityTableFilter',[ '$parse', 'sdUtilService','$filter', CriticalityFilter ]);
 
    /*
     */

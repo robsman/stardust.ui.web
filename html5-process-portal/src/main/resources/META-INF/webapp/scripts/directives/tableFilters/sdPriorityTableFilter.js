@@ -14,7 +14,7 @@
 (function() {
 	'use strict';
 
-   angular.module('bpm-common').directive( 'sdPriorityTableFilter', [ 'sdPriorityService', 'sdUtilService','$filter', PriorityFilter]);
+   angular.module('workflow-ui').directive( 'sdPriorityTableFilter', [ 'sdPriorityService', 'sdUtilService','$filter', PriorityFilter]);
 
 		/*
 		*/

@@ -155,6 +155,8 @@ define(
 
                   this.publicVisibilityCheckbox = m_utils
                            .jQuerySelect("#publicVisibilityCheckbox");
+                  this.availableModelsInput = m_utils.jQuerySelect("#configurationTab #availableModelsInput");
+                  
                   /*
                    * this.availableApplicationsInput =
                    * m_utils.jQuerySelect("#configurationTab
@@ -306,7 +308,7 @@ define(
                }
                this.modelId;
                this.eltId;
-               this.elementType;
+               this.elementType=null;
                
                /**
                 * 
@@ -343,21 +345,26 @@ define(
                   elts.applications = [];
                   elts.processes = [];
 
-                  if (this.modelId)
+                  if (this.modelId && this.modelId!="None")
                   {
                      var model = m_model.findModel(this.modelId);
-                     for ( var appId in model.applications)
-                     {
-                        var app = model.applications[appId];
-                        elts.applications.push(app);
-                     }
-
-                     for ( var j in model.processes)
-                     {
-                        var process = model.processes[j]
-                        if (this.hasProcessInterface(process))
+                     if(model){
+                        for ( var appId in model.applications)
                         {
-                           elts.processes.push(process);
+                           var app = model.applications[appId];
+                           if(app && app.applicationType!="interactive")
+                              elts.applications.push(app);
+                           else
+                              m_utils.debug("===> Skipping interactive application" + app.name);
+                        }
+   
+                        for ( var j in model.processes)
+                        {
+                           var process = model.processes[j]
+                           if (this.hasProcessInterface(process))
+                           {
+                              elts.processes.push(process);
+                           }
                         }
                      }
                   }
@@ -459,7 +466,8 @@ define(
                      accessPoints : this.accessPoints
                   }
                };
-               this.submitChanges(submitElements, true); 
+               if(this.getModelElement()!=null &&this.getModelElement().model!=null)
+                  this.submitChanges(submitElements, true); 
             };
 
                /**
@@ -601,6 +609,13 @@ define(
                       this.processInterfacesInput.addClass("error");
                   }
                    */
+                  this.availableModelsInput.removeClass("error");
+
+                  if(m_utils.isEmptyString(this.modelId) || (!m_utils.isEmptyString(this.modelId)&& this.modelId=="None")){
+                      this.errorMessages.push("Please select a model.");
+                      this.availableModelsInput.addClass("error");
+                  }
+                  
                   if (this.errorMessages.length > 0)
                   {
                      this.showErrorMessages();

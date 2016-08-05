@@ -120,7 +120,7 @@ public class MimeTypesHelper implements Serializable
          "pi-lg pi pi-bar-chart",
          "Reports");
    
-   public static final MIMEType CSS = new MIMEType("text/css", "css", "document-text.png", "pi-lg pi pi-css", "CSS");
+   public static final MIMEType CSS = new MIMEType("text/css", "css", "document-css.png", "pi-lg pi pi-css", "CSS");
 
    public static final MIMEType X_MPEG = new MIMEType("audio/x-mpeg", "mp3", "document-music.png",
          "pi-lg pi pi-audio",

@@ -250,8 +250,17 @@ li.ipp {
 	display: none;
 }
 
+/* Intermediate hiding/showing Business Object related topics from Stardust */
+li.bohide {
+	display: none;
+}
+
 li.stardust {
-	
+   
+}
+
+.boshow {
+   
 }
 
 /* Indenting the second line in a list element, e.g. in a new line after a 
@@ -279,6 +288,11 @@ li.collapse {
 /* Classes used to show/hide IPP and Stardust specific documentation. */
 .ipp {
 	display: none;
+}
+
+/* Intermediate hiding/showing Business Object related topics from Stardust */
+.bohide {
+   display: none;
 }
 
 .stardust {

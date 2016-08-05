@@ -20,8 +20,8 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityUtils.filter
 import java.util.List;
 
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DepartmentInfoDetails;
 import org.eclipse.stardust.engine.api.dto.QualityAssuranceAdminServiceFacade;
 import org.eclipse.stardust.engine.api.model.Activity;

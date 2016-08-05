@@ -16,8 +16,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.stardust.common.constants.PlainJavaConstants;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.pojo.app.PlainJavaAccessPointProvider;

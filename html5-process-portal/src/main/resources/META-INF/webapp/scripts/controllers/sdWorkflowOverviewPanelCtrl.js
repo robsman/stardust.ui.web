@@ -23,43 +23,48 @@
 	var trace;
 	var _sdI18nService;
 	var _sdWorklistConstants;
+	var _sgPubSubService;
 	/**
 	 *
 	 */
-	function WorkflowOverviewPanelCtrl($scope, sdWorkflowOverviewService, sdLoggerService, sdViewUtilService, 
+	function WorkflowOverviewPanelCtrl($scope, sdWorkflowOverviewService, sdLoggerService, sdViewUtilService,
 			 sdLoggedInUserService, sdI18nService, sdWorklistConstants, sgPubSubService, sdSidebarService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowOverviewPanelCtrl');
 		_sdWorkflowOverviewService = sdWorkflowOverviewService;
 		_sdViewUtilService = sdViewUtilService;
 		_sdI18nService = sdI18nService;
 		_sdWorklistConstants = sdWorklistConstants;
+		_sgPubSubService = sgPubSubService;
 		this.userInfo = sdLoggedInUserService.getUserInfo();
 		this.collapsePanelHandle = null;
 		this.dateId = "-";
+		this.syncPanel = true;
 		var self = this;
 		
-		sgPubSubService.subscribe("sdActivePerspectiveChange", function(){
+		this.workflowOverviewCounts = {
+				"directUserWorkCount" : "",
+				"assignedActivitiesCount" : "",
+				"criticalActivitiesCount" : ""
+		}
+
+		_sgPubSubService.subscribe("sdActivePerspectiveChange", function(){
 			var activePerspective = sdSidebarService.getActivePerspectiveName();
 			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
 				if(self.syncPanel == true){
 					self.syncPanel = false;
-					self.getOverviewCounts();
+					self.refreshOverviewPanel();
 				}
-				
 			}
 		});
-		
-		sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){
-			var activePerspective = sdSidebarService.getActivePerspectiveName();
-			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
-				self.getOverviewCounts();
-			}else{
-				self.syncPanel = true;
-			}				
-		});
-		
-		this.getOverviewCounts();
 
+		_sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){
+			var activePerspective = sdSidebarService.getActivePerspectiveName();
+			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution") {
+				self.getOverviewCounts();
+			}
+		});
+
+		self.refreshOverviewPanel();
 	}
 
 	/**
@@ -133,22 +138,26 @@
 	      _sdViewUtilService.openView("worklistPanel","id=" + "lastNWorkedOn" + "&dateID=" + self.dateId, params);
 	};
 
+	
 	/**
 	 *
 	 */
 	WorkflowOverviewPanelCtrl.prototype.refreshOverviewPanel = function(){
-		this.getOverviewCounts();
+		_sdWorkflowOverviewService.resetCache().then(function(){
+			_sgPubSubService.publish('sdRefreshLaunchPanel');
+		});
 	};
-	
+
+
 	/**
-	 * 
+	 *
 	 */
 	WorkflowOverviewPanelCtrl.prototype.refreshPanelToSync = function() {
 		var self = this;
 		if(self.syncPanel){
 			self.syncPanel = false;
 			self.getOverviewCounts();
-		}		
+		}
 	};
 
 })();

@@ -30,8 +30,8 @@ import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.ConcurrencyException;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.HistoricalState;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.model.Activity;
@@ -84,7 +84,7 @@ public class ActivityInstanceUtils
    public static final String IMAGE_BASE_PATH = "/plugins/views-common/images/icons/process-history/";
    private static final Map<String, String> iconMap;
    private static final Map<String, String> fontMap;
-   
+
    static
    {
       iconMap = new LinkedHashMap<String, String>();
@@ -105,7 +105,7 @@ public class ActivityInstanceUtils
       iconMap.put("activityQAPassed", Constants.ACTIVITY_QA_PASSED_IMAGE);
       iconMap.put("activityQAAwait", Constants.ACTIVITY_QA_AWAIT_IMAGE);
       iconMap.put("Note", "/plugins/views-common/images/icons/mime-types/notes-filled.png");
-      
+
       // TODO - review icons
       fontMap = new LinkedHashMap<String, String>();
       fontMap.put("ApplicationActivity", "pi-non-interactive-activity");
@@ -125,9 +125,9 @@ public class ActivityInstanceUtils
       fontMap.put("activityQAPassed", "pi-qa-passed");
       fontMap.put("activityQAAwait", "pi-qa-waiting");
       fontMap.put("Note", "pi-notes");
-      
+
    }
-   
+
    /**
     * @param event
     */
@@ -156,7 +156,7 @@ public class ActivityInstanceUtils
    {
       openActivity(ai, viewParams, -1);
    }
-   
+
    /**
     * @param ai
     * @param viewParams
@@ -176,10 +176,10 @@ public class ActivityInstanceUtils
          {
             Map<String, Object> params = CollectionUtils.newTreeMap();
             params.put("processInstanceOID", String.valueOf(ai.getProcessInstanceOID()));
-            
+
             PortalApplication.getInstance().openViewById("caseDetailsView",
                   "processInstanceOID=" + String.valueOf(ai.getProcessInstanceOID()), params, null, false);
-            
+
             return;
          }
 
@@ -210,7 +210,7 @@ public class ActivityInstanceUtils
          }
       }
    }
-   
+
    /**
     * @param ai
     * @return
@@ -285,7 +285,7 @@ public class ActivityInstanceUtils
             return true;
          }
       }
-      
+
       return false;
    }
 
@@ -335,7 +335,7 @@ public class ActivityInstanceUtils
 
    /**
     * Gets the last performer for the ActivityInstance
-    * 
+    *
     * @param ai
     * @return
     */
@@ -354,10 +354,10 @@ public class ActivityInstanceUtils
       }
       return null;
    }
-   
+
    /**
     * returns assigned to performer name
-    * 
+    *
     * @param ai
     * @return
     */
@@ -395,7 +395,7 @@ public class ActivityInstanceUtils
          // Target timestamp is available as ActivityInstanceProperty
          ActivityInstanceProperty targetTimeProperty = (ActivityInstanceProperty) binding
                .getAttribute(PredefinedConstants.TARGET_TIMESTAMP_ATT);
-         
+
          Calendar dateTime = PortalTimestampProvider.getCalendar();
          if(null != targetTimeProperty)
          {
@@ -464,10 +464,10 @@ public class ActivityInstanceUtils
       catch (Exception e) {
          trace.error("Resubmission Date not available for : " + ai != null ? ai.getOID() : "");
       }
-      
+
       return null;
    }
-   
+
    private static boolean isTimePeriodAvailable(Period period)
    {
       if (period.get(Period.SECONDS) > 0 || period.get(Period.MINUTES) > 0 || period.get(Period.HOURS) > 0
@@ -478,7 +478,7 @@ public class ActivityInstanceUtils
       return false;
    }
    /**
-    * 
+    *
     * @param ais
     */
    public static void delegateToDefaultPerformer(List<ActivityInstance> ais)
@@ -506,7 +506,7 @@ public class ActivityInstanceUtils
 
    /**
     * Activity instance is in Application state, force suspend will be done
-    * 
+    *
     * @param ai
     */
    public static void forceSuspend(ActivityInstance ai)
@@ -600,7 +600,7 @@ public class ActivityInstanceUtils
 
    /**
     * Checks whether current Activity is Auxiliary Activity
-    * 
+    *
     * @param activity
     * @return
     */
@@ -752,7 +752,7 @@ public class ActivityInstanceUtils
    /**
     * Utility method called from Icefaces activate() and REST endpoints to activate
     * activity
-    * 
+    *
     * @param ai
     * @return
     * @throws Exception
@@ -764,7 +764,7 @@ public class ActivityInstanceUtils
       sendActivityEvent(ai, ActivityEvent.activated(activatedAi));
       return activatedAi;
    }
-   
+
    /**
     * @param ai
     */
@@ -822,7 +822,7 @@ public class ActivityInstanceUtils
       }
       return "";
    }
-   
+
    /**
     * @param ai
     * @return Localized activity state name
@@ -831,7 +831,7 @@ public class ActivityInstanceUtils
    {
       return MessagesViewsCommonBean.getInstance().getString(STATUS_PREFIX + ai.getState().getName().toLowerCase());
    }
-   
+
    /**
     * @return AbortActivityScope from user preferences
     */
@@ -855,7 +855,7 @@ public class ActivityInstanceUtils
 
    /**
     * to check Activity of type is Default Case Activity
-    * 
+    *
     * @param ai
     * @return
     */
@@ -867,10 +867,10 @@ public class ActivityInstanceUtils
       }
       return false;
    }
-   
+
    /**
     * to check Activities of type is Default Case Activity
-    * 
+    *
     * @param ai
     * @return
     */
@@ -894,10 +894,10 @@ public class ActivityInstanceUtils
          return false;
       }
    }
-   
+
    /**
     * to check Activities of type is Default Case Activity
-    * 
+    *
     * @param ai
     * @return
     */
@@ -921,10 +921,10 @@ public class ActivityInstanceUtils
          return false;
       }
    }
-   
+
    /**
     * get Case Name from activityInstance
-    * 
+    *
     * @param processInstance
     * @return
     */
@@ -932,7 +932,7 @@ public class ActivityInstanceUtils
    {
       return ProcessInstanceUtils.getCaseName(activityInstance.getProcessInstance());
    }
-   
+
    /**
     * Reads all Activity States and returns a List of Activity States
     */
@@ -964,13 +964,13 @@ public class ActivityInstanceUtils
 
       allStatusList.add(new SelectItem(Integer.toString(ActivityInstanceState.SUSPENDED), propsBean
             .getString("views.activityTable.statusFilter.suspended")));
-      allStatusList.add(new SelectItem(Integer.toString(ActivityInstanceState.HALTING), propsBean
-            .getString("views.activityTable.statusFilter.halting")));
+
       allStatusList.add(new SelectItem(Integer.toString(ActivityInstanceState.HALTED), propsBean
             .getString("views.activityTable.statusFilter.halted")));
+
       return allStatusList;
    }
-   
+
    /**
     * @param formatType
     * @return
@@ -984,12 +984,12 @@ public class ActivityInstanceUtils
       }
       return fileName;
    }
-   
+
    public static String getFont(String formatType)
    {
       return getFontMap().get(formatType);
    }
-   
+
    /**
     * @param type
     * @param strict
@@ -1001,8 +1001,8 @@ public class ActivityInstanceUtils
       String orgType = type;
 
       if ("ActivityActive".equals(type) || "Resubmission".equals(type) || "ActivitySuspended".equals(type)
-            || "ActivityInterrupted".equals(type) || "ActivityAborted".equals(type) || "AbortingActivity".equals(type) 
-            || "ActivityHalted".equals(type) || "HaltingActivity".equals(type))
+            || "ActivityInterrupted".equals(type) || "ActivityAborted".equals(type) || "AbortingActivity".equals(type)
+            || "ActivityHalted".equals(type))
       {
          type = "StateChange";
       }
@@ -1053,8 +1053,8 @@ public class ActivityInstanceUtils
    {
       return fontMap;
    }
-   
-   
+
+
    /**
     * @param ai
     * @return
@@ -1068,8 +1068,8 @@ public class ActivityInstanceUtils
       }
       return notes;
    }
-   
-   
+
+
    /**
     * @param ai
     * @return
@@ -1078,18 +1078,18 @@ public class ActivityInstanceUtils
    {
       return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "name");
    }
-   
+
    /**
     * @param ai
     * @return
     */
    public static String getBenchmarkColor(ActivityInstance ai)
-   { 
+   {
       return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "color");
    }
-   
+
    /**
-    * 
+    *
     * @param result
     * @param property
     * @return
@@ -1109,7 +1109,7 @@ public class ActivityInstanceUtils
    }
 
    /**
-    * 
+    *
     * @param value
     * @param ai
     * @return

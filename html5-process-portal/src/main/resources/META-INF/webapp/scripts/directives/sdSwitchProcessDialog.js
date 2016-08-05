@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService', '$sce',
+	angular.module('workflow-ui').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService', '$sce',
 	                                                                    SwitchProcessDialogDirective]);
 
 	var trace;
@@ -285,6 +285,8 @@
 				self.processInstanceOIDs = getProcessInstanceOIDs();
 				if($scope.pauseParentProcess === "true"){
 					self.dialogTitle = sdUtilService.format(self.i18n('views-common-messages.views-pauseProcessDialog-title'));
+					openSwitchProcessDialog();
+					return;
 				}else{
 					self.dialogTitle = sdUtilService.format(self.i18n('views-common-messages.views-switchProcessDialog-title'));
 				}

@@ -157,6 +157,11 @@
 		var api ={};
 		var that = this;
 
+		//Guard against this code running before we have an instance of fileVersionHistoryDialog
+		if(!this.fileVersionHistoryDialog){
+			return;
+		}
+
 		api.close = this.fileVersionHistoryDialog.close;
 		api.open = function(newId){
 			//api call allows ptional documentID variable
@@ -251,7 +256,7 @@
 
 	sdVersionHistoryDialog.$inject = ["sdUtilService","$q"];
 
-	angular.module("bpm-common.directives")
+	angular.module("viewscommon-ui")
 	.directive("sdVersionHistoryDialog",sdVersionHistoryDialog);
 
 })();

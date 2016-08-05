@@ -255,9 +255,8 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean
 
    private void abortOrHaltAndSpawnProcess(ProcessInstance processInstance)
    {   // check permission
-      if (ProcessInstanceUtils.isAbortable(processInstance))
+      if (pauseParentProcess || ProcessInstanceUtils.isAbortable(processInstance))
       {
-
          ProcessInstance pi = null;
          DataCopyOptions dataCopyOptions = new DataCopyOptions(true, null, null, true);
          SpawnOptions options;
@@ -579,14 +578,17 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean
    {
       List<SwitchProcessTableEntry> tableEntryList = CollectionUtils.newArrayList();
 
-      for (ProcessInstance processInstance : sourceProcessInstances)
+      if (!this.pauseParentProcess)
       {
-         SwitchProcessTableEntry abortedProcess = createNotificationItem(processInstance);
-
-         if (null != abortedProcess)
+         for (ProcessInstance processInstance : sourceProcessInstances)
          {
-            tableEntryList.add(abortedProcess);
-            nonAbortableProcesses.add(processInstance);
+            SwitchProcessTableEntry abortedProcess = createNotificationItem(processInstance);
+
+            if (null != abortedProcess)
+            {
+               tableEntryList.add(abortedProcess);
+               nonAbortableProcesses.add(processInstance);
+            }
          }
       }
 

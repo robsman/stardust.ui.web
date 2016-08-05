@@ -14,7 +14,7 @@
 
 (function() {
 	'use strict';
-	angular.module('bpm-common.services').provider('sdMimeTypeService',
+	angular.module('workflow-ui.services').provider('sdMimeTypeService',
 			function() {
 				this.$get = [function($q, $http) {
 					var service = new MimeTypeService();

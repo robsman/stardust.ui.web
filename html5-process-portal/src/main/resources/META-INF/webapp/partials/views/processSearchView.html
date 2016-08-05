@@ -403,7 +403,11 @@
 							<tr ng-repeat="descCol in procSearchViewCtrl.descritorCols" >
 								<td><label>{{descCol.title +
 										i18n('business-control-center-messages.common-colon')}}</label></td>
-
+								<td ng-if="descCol.dataType =='LIST'">
+									<input type="text" id="{{descCol.id}}" name="listField{{$index}}"
+									ng-model="procSearchViewCtrl.selected[descCol.id]"
+									aid="BCC-ProcSrch-Descriptors-ListTypeFilter" />
+								</td>
 								<td ng-if="descCol.dataType =='BOOLEAN'">
 									<table>
 										<tr>
@@ -442,6 +446,14 @@
 										ng-model="procSearchViewCtrl.selected[descCol.id]"sd-validate="long"
 										aid="BCC-ProcSrch-Descriptors-NumberFilter" maxlength="20"/>
 										<div ng-show="descriptorForm.longField{{$index}}.$error.validate"
+											class="msg-error">{{i18n('html5-common.converter-number-error')}} </div>
+									</div>
+										<!-- Float -->
+									<div ng-if="descCol.detailedType =='FLOAT'">
+										<input type="text" id="{{descCol.id}}" name="floatField{{$index}}"
+										ng-model="procSearchViewCtrl.selected[descCol.id]" ng-pattern="/^\-?\d+((\.|\,)\d+)?$/"
+										aid="BCC-ProcSrch-Descriptors-NumberFilter"/>
+										<div ng-show="descriptorForm.floatField{{$index}}.$error.validate"
 											class="msg-error">{{i18n('html5-common.converter-number-error')}} </div>
 									</div>
 								</td>

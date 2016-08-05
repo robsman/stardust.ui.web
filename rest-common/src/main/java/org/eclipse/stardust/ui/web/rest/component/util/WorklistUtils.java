@@ -566,13 +566,8 @@ public class WorklistUtils
       return extractedWorklist;
    }
 
-   public List<WorklistParticipantDTO> getWorklistAssignemnt(Boolean showEmptyWorklist, boolean reload) throws PortalException
+   public List<WorklistParticipantDTO> getWorklistAssignemnt(Boolean showEmptyWorklist) throws PortalException
    {
-
-      if (reload)
-      {
-         ParticipantWorklistCacheManager.getInstance().reset();
-      }
       Map<String, Set<ParticipantInfo>> participantMap = ParticipantWorklistCacheManager.getInstance()
             .getWorklistParticipants();
       List<WorklistParticipantDTO> rootUserObjectList = new ArrayList<WorklistParticipantDTO>();

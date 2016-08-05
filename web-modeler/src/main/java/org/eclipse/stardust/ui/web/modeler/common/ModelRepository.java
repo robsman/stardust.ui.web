@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 import org.eclipse.stardust.common.Functor;
 import org.eclipse.stardust.common.TransformingIterator;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
