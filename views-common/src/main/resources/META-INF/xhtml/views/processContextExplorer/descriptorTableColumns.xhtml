@@ -17,24 +17,28 @@
 			</ice:inputText>
 
 			<ice:selectInputDate renderAsPopup="true" style="white-space:nowrap"
-				valueChangeListener="#{bean.valueChange}" value="#{row.value}"
-				rendered="#{row.editable and (row.type eq 'TimeStamp' or row.type eq 'date')}">
-				<f:attribute name="row" value="#{row}" />
-				<f:converter converterId="customDateConverter"
-					rendered="#{row.type eq 'date'}" />
-				<f:converter converterId="customDateTimeConverter"
-					rendered="#{row.type eq 'TimeStamp'}" />
+					valueChangeListener="#{bean.valueChange}" value="#{row.value}"
+					rendered="#{row.editable and (row.type eq 'date')}">
+					<f:attribute name="row" value="#{row}" />
+					<f:converter converterId="customDateConverter"/>
 			</ice:selectInputDate>
+			
+			<ice:selectInputDate renderAsPopup="true" style="white-space:nowrap"
+					valueChangeListener="#{bean.valueChange}" value="#{row.value}"
+					rendered="#{row.editable and (row.type eq 'TimeStamp')}">
+					<f:attribute name="row" value="#{row}" />
+					<f:converter converterId="customDateTimeConverter"/>
+			</ice:selectInputDate>	
+				
+				<ice:selectBooleanCheckbox valueChangeListener="#{bean.valueChange}"
+					value="#{row.value}" partialSubmit="true"
+					rendered="#{row.editable and (row.type eq 'Boolean')}">
+					<f:attribute name="row" value="#{row}" />
+				</ice:selectBooleanCheckbox>
 
-			<ice:selectBooleanCheckbox valueChangeListener="#{bean.valueChange}"
-				value="#{row.value}" partialSubmit="true"
-				rendered="#{row.editable and (row.type eq 'Boolean')}">
-				<f:attribute name="row" value="#{row}" />
-			</ice:selectBooleanCheckbox>
-
-			<ice:outputText value="*"
-				style="color: red;padding-left: 0.5px;font-size: 15px; display:inline;"
-				rendered="#{row.hasError}" />
+				<ice:outputText value="*"
+					style="color: red;padding-left: 0.5px;font-size: 15px; display:inline;"
+					rendered="#{row.hasError}" />
 		</ice:panelGroup>
 	</ice:panelGroup>
 </f:view>

@@ -29,8 +29,6 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
-import org.eclipse.stardust.ui.web.common.log.LogManager;
-import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DataPathDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
@@ -71,6 +69,8 @@ import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
 import org.eclipse.stardust.ui.web.common.table.IQuery;
@@ -90,6 +90,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.ValidationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppFilterHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppQueryResult;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
@@ -663,6 +664,13 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                   mapping = new GenericDataMapping(outDataPath);
                   dmWrapper = new DataMappingWrapper(mapping, null, false);
                   String type = dmWrapper.getType();
+                  if (ProcessPortalConstants.TIMESTAMP_TYPE.equals(type))
+                  {
+                     if (CommonDescriptorUtils.isHideTime(inDataPath))
+                     {
+                        type = ProcessPortalConstants.DATE_TYPE;
+                     }
+                  }
                   Object value = DescriptorFilterUtils.convertDataPathValue(dataClass, processDescriptor.getValue());
                   DescriptorItemTableEntry entry = null;
                   
