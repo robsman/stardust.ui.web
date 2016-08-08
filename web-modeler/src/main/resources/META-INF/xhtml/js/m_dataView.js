@@ -346,7 +346,7 @@ define(
 						m_angularContextUtils.runInAngularContext(function($scope) {
 							$scope.dataType = primitiveDataTypeSelect.val();
 
-							if (primitiveDataTypeSelect.val() == 'Timestamp') {
+							if (primitiveDataTypeSelect.val() == 'Timestamp' || primitiveDataTypeSelect.val() == 'Calendar') {
 								var dateValue = defaultValue;
 								if (defaultValue.indexOf(" ") > -1) {
 									dateValue = defaultValue.substring(0, defaultValue.indexOf(" "));

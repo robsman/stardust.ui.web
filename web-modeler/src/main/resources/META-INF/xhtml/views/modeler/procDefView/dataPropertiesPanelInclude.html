@@ -136,7 +136,7 @@
 									<div id="longInputTextError"
 										ng-show="form.longInputText.$error.pattern" style="color:red">Not a valid number</div>
 								</div>
-								<div ng-show="dataType == 'Timestamp'">
+								<div ng-show="dataType == 'Timestamp' || dataType == 'Calendar'">
 									<input id="TimestampInputText" name="TimestampInputText" type="text" />
 									<div id="TimestampInputTextError"
 										ng-show="timestampInputTextError" style="color:red">Not a valid date</div>
