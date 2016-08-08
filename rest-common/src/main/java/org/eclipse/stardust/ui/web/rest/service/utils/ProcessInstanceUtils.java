@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils.isAuxiliaryProcess;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,12 +34,12 @@ import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsLevel;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsOptions;
+import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
-import org.eclipse.stardust.engine.api.query.DescriptorFilter;
-import org.eclipse.stardust.engine.api.query.DescriptorOrder;
+import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
@@ -86,8 +87,12 @@ import org.eclipse.stardust.ui.web.rest.service.dto.RelatedProcessesDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
+import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
@@ -1597,49 +1602,70 @@ public class ProcessInstanceUtils
     * @param query
     * @param processListFilterDTO
     */
-	public static void addDescriptorFilters(Query query,
-			ProcessTableFilterDTO processListFilterDTO) {
+   public static void addDescriptorFilters(Query query, ProcessTableFilterDTO processListFilterDTO)
+   {
 
-		Map<String, DescriptorFilterDTO> descFilterMap = processListFilterDTO.descriptorFilterMap;
+      Map<String, DescriptorFilterDTO> descFilterMap = processListFilterDTO.descriptorFilterMap;
 
-		if (null != descFilterMap) {
-			for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap
-					.entrySet()) {
-				Object value = null;
-				String key = descriptor.getKey();
+      if (null != descFilterMap)
+      {
 
-				// Boolean type desc
-				if (descriptor.getValue().type.equals(ColumnDataType.BOOLEAN
-						.toString())) {
-					value = ((BooleanDTO) descriptor.getValue().value).equals;
-					query.where(DescriptorFilter.isEqual(key,(Boolean) value));
-				}
-				// String type desc
-				else if (descriptor.getValue().type
-						.equals(ColumnDataType.STRING.toString())) {
-					value = ((TextSearchDTO) descriptor.getValue().value).textSearch;
-					query.where(DescriptorFilter.like(key,
-							String.valueOf(value)));
-				}
-				// Number type desc
-				else if (descriptor.getValue().type
-						.equals(ColumnDataType.NUMBER.toString())) {
-					Long from = ((RangeDTO) descriptor.getValue().value).from;
-					Long to = ((RangeDTO) descriptor.getValue().value).to;
-					query.where(DescriptorFilter.between(key, from, to));
-				}
-				// Date type desc
-				else if (descriptor.getValue().type.equals(ColumnDataType.DATE
-						.toString())) {
-					Long from = ((RangeDTO) descriptor.getValue().value).from;
-					Long to = ((RangeDTO) descriptor.getValue().value).to;
-					query.where(DescriptorFilter.between(key, new Date(from),
-							new Date(to)));
-				}
+         Map<String, DataPath> descriptors = ProcessDefinitionUtils.getAllDescriptors(false);
+         GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel.create(descriptors.values());
+         filterModel.setFilterEnabled(true);
 
-			}
-		}
-	}
+         for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap.entrySet())
+         {
+            Object value = null;
+            String key = descriptor.getKey();
+
+            // Boolean type desc
+            if (descriptor.getValue().type.equals(ColumnDataType.BOOLEAN.toString()))
+            {
+               value = ((BooleanDTO) descriptor.getValue().value).equals;
+            }
+            // String type desc
+            else if (descriptor.getValue().type.equals(ColumnDataType.STRING.toString()))
+            {
+               value = ((TextSearchDTO) descriptor.getValue().value).textSearch;
+            }
+            // Number type desc
+            else if (descriptor.getValue().type.equals(ColumnDataType.NUMBER.toString()))
+            {
+               Number from = ((RangeDTO) descriptor.getValue().value).from;
+               Number to = ((RangeDTO) descriptor.getValue().value).to;
+               value = new NumberRange(from, to);
+            }
+            // Date type desc
+            else if (descriptor.getValue().type.equals(ColumnDataType.DATE.toString()))
+            {
+               Long from = ((RangeDTO) descriptor.getValue().value).from;
+               Long to = ((RangeDTO) descriptor.getValue().value).to;
+               value = new DateRange();
+               if (null != from)
+               {
+                  ((DateRange) value).setFromDateValue(new Date(from));
+               }
+               if (null != to)
+               {
+                  ((DateRange) value).setToDateValue(new Date(to));
+               }
+            }
+
+            filterModel.setFilterValue(key, (Serializable) value);
+         }
+
+         try
+         {
+            DescriptorFilterUtils.applyFilters(query, filterModel);
+         }
+         catch (Exception e)
+         {
+            trace.error("Error occurred while applying filter to descriptors..", e);
+         }
+      }
+
+   }
 
    /**
     * @param query
@@ -1654,7 +1680,22 @@ public class ProcessInstanceUtils
 
       if (options.visibleDescriptorColumns.contains(options.orderBy))
       {
-    	  query.orderBy(new DescriptorOrder(options.orderBy, options.asc));
+         Map<String, DataPath> allDescriptors = ProcessDefinitionUtils.getAllDescriptors(false);
+         String descriptorName = options.orderBy;
+         if (allDescriptors.containsKey(descriptorName))
+         {
+            DescriptorUtils.applyDescriptorPolicy(query, options);
+            String columnName = DescriptorUtils.getDescriptorColumnName(descriptorName, allDescriptors);
+            if (CommonDescriptorUtils.isStructuredData(allDescriptors.get(descriptorName)))
+            {
+               query.orderBy(new DataOrder(columnName, DescriptorUtils.getXpathName(descriptorName, allDescriptors),
+                     options.asc));
+            }
+            else
+            {
+               query.orderBy(new DataOrder(columnName, options.asc));
+            }
+         }
       }
       else if (COL_PROCESS_NAME.equals(options.orderBy))
       {

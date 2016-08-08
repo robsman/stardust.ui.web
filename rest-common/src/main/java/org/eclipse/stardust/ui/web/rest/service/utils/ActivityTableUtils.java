@@ -18,6 +18,7 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtil
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAuxiliaryActivity;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isDelegable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +42,7 @@ import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.RoleInfoDetails;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ConditionalPerformer;
+import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.Participant;
@@ -48,8 +50,7 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
-import org.eclipse.stardust.engine.api.query.DescriptorFilter;
-import org.eclipse.stardust.engine.api.query.DescriptorOrder;
+import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
@@ -89,7 +90,11 @@ import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
+import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
@@ -99,6 +104,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils.Participan
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -392,53 +398,68 @@ public class ActivityTableUtils
          query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
       }
    }
-   
+
    /**
     * Add filter on descriptor columns .
     * @param query
     * @param worklistDTO
     */
-	public static void addDescriptorFilters(Query query,
-			WorklistFilterDTO worklistDTO) {
-		Map<String, DescriptorFilterDTO> descFilterMap = worklistDTO.descriptorFilterMap;
-		if (null != descFilterMap) {
-			for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap
-					.entrySet()) {
-				Object value = null;
-				String key = descriptor.getKey();
+   public static void addDescriptorFilters(Query query, WorklistFilterDTO worklistDTO)
+   {
 
-				// Boolean type desc
-				if (descriptor.getValue().type.equals(ColumnDataType.BOOLEAN
-						.toString())) {
-					value = ((BooleanDTO) descriptor.getValue().value).equals;
-					Boolean booleanValue = (Boolean) value;
-					query.where(DescriptorFilter.isEqual(key, booleanValue));
-				}
-				// String type desc
-				else if (descriptor.getValue().type
-						.equals(ColumnDataType.STRING.toString())) {
-					value = ((TextSearchDTO) descriptor.getValue().value).textSearch;
-					query.where(DescriptorFilter.like(key,
-							String.valueOf(value)));
-				}
-				// Number type desc
-				else if (descriptor.getValue().type
-						.equals(ColumnDataType.NUMBER.toString())) {
-					Long from = ((RangeDTO) descriptor.getValue().value).from;
-					Long to = ((RangeDTO) descriptor.getValue().value).to;
-					query.where(DescriptorFilter.between(key, from, to));
-				}
-				// Date type desc
-				else if (descriptor.getValue().type.equals(ColumnDataType.DATE
-						.toString())) {
-					Long from = ((RangeDTO) descriptor.getValue().value).from;
-					Long to = ((RangeDTO) descriptor.getValue().value).to;
-					query.where(DescriptorFilter.between(key, new Date(from),
-							new Date(to)));
-				}
-			}
-		}
-	}
+      Map<String, DescriptorFilterDTO> descFilterMap = worklistDTO.descriptorFilterMap;
+
+      if (null != descFilterMap)
+      {
+
+         Map<String, DataPath> descriptors = ProcessDefinitionUtils.getAllDescriptors(false);
+         GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel
+               .create(descriptors.values());
+         filterModel.setFilterEnabled(true);
+
+         for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap
+               .entrySet())
+         {
+            Object value = null;
+            String key = descriptor.getKey();
+
+            // Boolean type desc
+            if (descriptor.getValue().type.equals(ColumnDataType.BOOLEAN.toString()))
+            {
+               value = ((BooleanDTO)descriptor.getValue().value).equals;
+            }
+            // String type desc
+            else if (descriptor.getValue().type.equals(ColumnDataType.STRING.toString()))
+            {
+               value = ((TextSearchDTO) descriptor.getValue().value).textSearch;
+            }
+            // Number type desc
+            else if (descriptor.getValue().type.equals(ColumnDataType.NUMBER.toString()))
+            {
+               Number from = ((RangeDTO) descriptor.getValue().value).from;
+               Number to = ((RangeDTO) descriptor.getValue().value).to;
+               value = new NumberRange(from, to);
+            }
+            // Date type desc
+            else if (descriptor.getValue().type.equals(ColumnDataType.DATE.toString()))
+            {
+               Long from = ((RangeDTO) descriptor.getValue().value).from;
+               Long to = ((RangeDTO) descriptor.getValue().value).to;
+               value = new DateRange();
+               if (null != from)
+               {
+                  ((DateRange) value).setFromDateValue(new Date(from));
+               }
+               if (null != to)
+               {
+                  ((DateRange) value).setToDateValue(new Date(to));
+               }
+            }
+            filterModel.setFilterValue(key, (Serializable) value);
+         }
+         DescriptorFilterUtils.applyFilters(query, filterModel);
+      }
+   }
 
 
    /**
@@ -451,7 +472,22 @@ public class ActivityTableUtils
 
       if (options.visibleDescriptorColumns.contains(options.orderBy))
       {
-    	  query.orderBy(new DescriptorOrder( options.orderBy, options.asc));
+         Map<String, DataPath> allDescriptors = ProcessDefinitionUtils.getAllDescriptors(false);
+         String descriptorName = options.orderBy;
+         if (allDescriptors.containsKey(descriptorName))
+         {
+            DescriptorUtils.applyDescriptorPolicy(query, options);
+            String columnName = DescriptorUtils.getDescriptorColumnName(descriptorName, allDescriptors);
+            if (CommonDescriptorUtils.isStructuredData(allDescriptors.get(descriptorName)))
+            {
+               query.orderBy(new DataOrder(columnName,
+                     DescriptorUtils.getXpathName(descriptorName, allDescriptors), options.asc));
+            }
+            else
+            {
+               query.orderBy(new DataOrder(columnName, options.asc));
+            }
+         }
       }
       else if (COL_ACTIVITY_NAME.equals(options.orderBy))
       {
