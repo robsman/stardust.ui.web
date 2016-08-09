@@ -24,7 +24,9 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 public class ModelUpgrader
 {
    private List<UpgradeJob> jobs;
+
    private ModelType model;
+
    private Version version;
 
    public ModelUpgrader(ModelType model)
@@ -42,9 +44,9 @@ public class ModelUpgrader
 
    public boolean upgradeNeeded()
    {
-      for(UpgradeJob job : jobs)
+      for (UpgradeJob job : jobs)
       {
-         if(job.matches(version))
+         if (job.matches(version))
          {
             return true;
          }
@@ -55,12 +57,12 @@ public class ModelUpgrader
 
    public ModelType doUpgradeModel()
    {
-      for(UpgradeJob job : jobs)
+      for (UpgradeJob job : jobs)
       {
-         if(job.matches(version))
+         if (job.matches(version))
          {
             ModelType upgraded = job.upgradeModel(model);
-            if(upgraded != null)
+            if (upgraded != null)
             {
                model = upgraded;
             }

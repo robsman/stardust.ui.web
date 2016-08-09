@@ -30,7 +30,7 @@ public class R9_2_0from9_0_0UpgradeJob extends UpgradeJob
    /**
     * the upgrade will change version number to this version
     */
-   private static final Version VERSION = Version.createFixedVersion(9, 0, 0);
+   private static final Version VERSION = Version.createFixedVersion(9, 2, 0);
 
    public R9_2_0from9_0_0UpgradeJob()
    {
