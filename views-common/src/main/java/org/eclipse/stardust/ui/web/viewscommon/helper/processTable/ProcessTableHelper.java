@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.viewscommon.helper.processTable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,9 +28,8 @@ import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
-import org.eclipse.stardust.engine.api.query.DataOrder;
+import org.eclipse.stardust.engine.api.query.DescriptorOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
@@ -43,23 +41,22 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceLink;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreferenceComparator;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.FilterCriteria;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterBetween;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterPickList;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterPickList.RenderType;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterDate;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterNumber;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPickList;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.FilterCriteria;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterPickList.RenderType;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
 import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
@@ -79,10 +76,10 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SpawnProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -987,16 +984,7 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
                if (allDescriptors.containsKey(descriptorName))
                {
                   applyDescriptorPolicy(query);
-                  String columnName = getDescriptorColumnName(descriptorName, allDescriptors);
-                  if (CommonDescriptorUtils.isStructuredData(allDescriptors.get(descriptorName)))
-                  {
-                     query.orderBy(new DataOrder(columnName,
-                           getXpathName(descriptorName, allDescriptors), sortCriterion.isAscending()));
-                  }
-                  else
-                  {
-                     query.orderBy(new DataOrder(columnName, sortCriterion.isAscending()));
-                  }
+                  query.orderBy(new DescriptorOrder(descriptorName, sortCriterion.isAscending()));
                }
             }
             else if ("processInstanceRootOID".equals(sortCriterion.getProperty()))

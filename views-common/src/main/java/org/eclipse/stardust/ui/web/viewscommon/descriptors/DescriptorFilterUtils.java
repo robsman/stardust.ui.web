@@ -34,7 +34,8 @@ import org.eclipse.stardust.engine.api.model.ModelElement;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.DataFilter;
-import org.eclipse.stardust.engine.api.query.DataOrder;
+import org.eclipse.stardust.engine.api.query.DescriptorFilter;
+import org.eclipse.stardust.engine.api.query.DescriptorOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
@@ -77,16 +78,8 @@ public class DescriptorFilterUtils
       DataPathMetadata descriptorFlags = getDataPathMetadata(dataPath);
       if (descriptorFlags.isSortable())
       {
-         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-         String dataId = getData(dataPath).getQualifiedId();
-         if (CommonDescriptorUtils.isStructuredData(dataPath))
-         {
-            query.orderBy(new DataOrder(dataId, dataPath.getAccessPath(), ascending));
-         }
-         else
-         {
-            query.orderBy(new DataOrder(dataId, ascending));
-         }
+    	  query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+    	  query.orderBy(new DescriptorOrder(descriptorId, ascending));
       }
    }
 
@@ -206,6 +199,7 @@ public class DescriptorFilterUtils
       }
       return dataPathMD;
    }
+   
 
    /**
     * Applies a given descriptor filter model to a query. Currently the following query
@@ -223,8 +217,9 @@ public class DescriptorFilterUtils
     *           Set a case sensitive flag for a condition where it makes sense
     */
    public static void applyDescriptorDataFilters(FilterTerm predicate, IDescriptorFilterModel filterModel,
-         Class< ? extends Query> queryClass, boolean caseSensitive)
+        Query query, boolean caseSensitive)
    {
+	   Class< ? extends Query> queryClass = query.getClass();
       if ((null != filterModel) && filterModel.isFilterEnabled())
       {
          List filterableData = filterModel.getFilterableData();
@@ -242,10 +237,6 @@ public class DescriptorFilterUtils
                   {
                      trace.debug("setting data filter: '" + mapping.getId() + "=" + filterValue + "'");
                   }
-
-                  DataFilter dataFilter = null;
-                  DataFilter dataFilterOrTerm=null;
-
                   // for String
                   if (Character.class.equals(dataPath.getMappedType()) || String.class.equals(dataPath.getMappedType()))
                   {
@@ -254,43 +245,68 @@ public class DescriptorFilterUtils
                         FilterOrTerm term = predicate.addOrTerm();
                         if(filterValue instanceof Set<?>)
                         {
-                           Set<Object> vals= (Set<Object>) filterValue;
-                           for(Object obj:vals)
-                           {
-                              dataFilterOrTerm = getStringFilter(mapping, dataPath, obj.toString(), caseSensitive);
-                              term.add(dataFilterOrTerm);
-                           }
+                        	Set<Object> vals= (Set<Object>) filterValue;
+                        	term.add(DescriptorFilter.in(mapping.getId(), vals));
                         }
                      }
                      else
                      {
-                        dataFilter = getStringFilter(mapping, dataPath, filterValue, caseSensitive);
+                    	 query.where(DescriptorFilter.like(mapping.getId(), (String)filterValue));
                      }
+                     
                   }// for boolean
                   else if (Boolean.class.equals(dataPath.getMappedType()))
                   {
-                     dataFilter = getBooleanFilter(dataPath, filterValue);
+                	  query.where(DescriptorFilter.isEqual(mapping.getId(), (Boolean)filterValue));
                   }
                   // for single number
                   else if (filterValue instanceof Number)
                   {
-                     Number filterValueNumber = getNumberFilterValue(mapping, (Number) filterValue);
-                     dataFilter = getNumberFilter(dataPath, filterValueNumber);
+                	  query.where(DescriptorFilter.greaterOrEqual(mapping.getId(), (Number) filterValue));
                   }// for number range
                   else if (filterValue instanceof NumberRange)
                   {
-                     Number fromValue = getNumberFilterValue(mapping, ((NumberRange) filterValue).getFromValue());
-                     Number toValue = getNumberFilterValue(mapping, ((NumberRange) filterValue).getToValue());
-                     dataFilter = getNumberRangeFilter(dataPath, fromValue, toValue);
+                	  NumberRange numberRange = (NumberRange)filterValue;
+                	  Number fromDateValue = numberRange.getFromValue();
+                	  Number toDateValue = numberRange.getToValue();
+                	 
+                	  if (null != fromDateValue && null == toDateValue) 
+                	  {
+                		  query.where(DescriptorFilter.greaterOrEqual(mapping.getId(), fromDateValue));
+                	  }
+                	  else if (null != toDateValue && null == fromDateValue) 
+                	  {
+                		  query.where(DescriptorFilter.lessOrEqual(mapping.getId(), toDateValue));
+                	  } 
+                	  else
+                	  {
+                		  query.where(DescriptorFilter.between(mapping.getId(), fromDateValue, toDateValue));
+                	  }
                   }
                   // for Date range
                   else if (filterValue instanceof DateRange)
-                  {
-                     dataFilter = getDateFilter(dataPath, (DateRange) filterValue);
+                  {    
+                	  DateRange dateRange = (DateRange)filterValue;
+                	  Date fromDateValue = dateRange.getFromDateValue();
+                	  Date toDateValue = dateRange.getToDateValue();
+                	 
+                	  if (null != fromDateValue && null == toDateValue) 
+                	  {
+                		  query.where(DescriptorFilter.greaterOrEqual(mapping.getId(), fromDateValue));
+                	  }
+                	  else if (null != toDateValue && null == fromDateValue) 
+                	  {
+                		  query.where(DescriptorFilter.lessOrEqual(mapping.getId(), toDateValue));
+                	  } 
+                	  else
+                	  {
+                		  query.where(DescriptorFilter.between(mapping.getId(), fromDateValue, toDateValue));
+                	  }
                   }
                   else if(dataPath.getMappedType() instanceof Class<?>)
                   {
-                     dataFilter = getStringFilter(mapping, dataPath, filterValue, caseSensitive);
+                	  //TODO 
+                     //dataFilter = getStringFilter(mapping, dataPath, filterValue, caseSensitive);
                   }
 
                   if (mapping.getDataId().equals("PROCESS_PRIORITY"))
@@ -340,7 +356,7 @@ public class DescriptorFilterUtils
                      }
                   }
                   else
-                  {
+                  {/*
                      // For multiple ENUM's 'OR' term is formed, dataFilter is null
                      if (dataFilter == null && dataFilterOrTerm == null)
                      {
@@ -365,7 +381,7 @@ public class DescriptorFilterUtils
                      {
                         predicate.add(dataFilter);   
                      }
-                  }
+                  */}
                }
                else
                {

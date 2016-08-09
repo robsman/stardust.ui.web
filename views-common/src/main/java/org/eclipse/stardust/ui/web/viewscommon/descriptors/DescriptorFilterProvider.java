@@ -96,7 +96,7 @@ public class DescriptorFilterProvider extends AbstractFilterProvider
          }
 
          DescriptorFilterUtils.applyDescriptorDataFilters(predicate, filterModel,
-               query.getClass(), Constants.isSearchCaseSensitive());
+               query, Constants.isSearchCaseSensitive());
       }
    }
 

@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.viewscommon.helper.activityTable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +32,7 @@ import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
 import org.eclipse.stardust.engine.api.query.DataOrder;
+import org.eclipse.stardust.engine.api.query.DescriptorOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
@@ -43,7 +43,6 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreferenceComparator;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
@@ -1015,15 +1014,8 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
                if (allDescriptors.containsKey(descriptorName))
                {
                   applyDescriptorPolicy(query);
-                  String columnName = getDescriptorColumnName(descriptorName, allDescriptors);
-                  if (CommonDescriptorUtils.isStructuredData(allDescriptors.get(descriptorName)))
-                  {
-                     query.orderBy(new DataOrder(columnName, getXpathName(descriptorName, allDescriptors), sortCriterion.isAscending()));
-                  }
-                  else
-                  {
-                     query.orderBy(new DataOrder(columnName, sortCriterion.isAscending()));
-                  }
+                  query.orderBy(new DescriptorOrder(descriptorName, sortCriterion.isAscending()));
+              
                }
             }
             else if ("activityOID".equals(sortCriterion.getProperty()))

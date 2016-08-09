@@ -40,6 +40,7 @@ import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
+import org.eclipse.stardust.engine.api.query.DescriptorOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
@@ -1431,11 +1432,7 @@ public class WorklistTableBean extends UIComponentBean
             {
                String[] descriptorNames = sortCriterion.getProperty().split("\\.");
                String descriptorId = descriptorNames[1];
-               if (allDescriptors.containsKey(descriptorId))
-               {
-                  DescriptorFilterUtils.applySorting(query, descriptorId, allDescriptors.get(descriptorId),
-                        sortCriterion.isAscending());
-               }
+               query.orderBy(new DescriptorOrder( descriptorId,  sortCriterion.isAscending()));
             }
             else
             {
