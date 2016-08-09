@@ -262,26 +262,15 @@ public class DescriptorFilterUtils
                   // for single number
                   else if (filterValue instanceof Number)
                   {
-                	  query.where(DescriptorFilter.greaterOrEqual(mapping.getId(), (Number) filterValue));
+                	  Number filterValueNumber = getNumberFilterValue(mapping, (Number) filterValue);
+                	  query.where(DescriptorFilter.greaterOrEqual(mapping.getId(), filterValueNumber));
                   }// for number range
                   else if (filterValue instanceof NumberRange)
                   {
                 	  NumberRange numberRange = (NumberRange)filterValue;
-                	  Number fromDateValue = numberRange.getFromValue();
-                	  Number toDateValue = numberRange.getToValue();
-                	 
-                	  if (null != fromDateValue && null == toDateValue) 
-                	  {
-                		  query.where(DescriptorFilter.greaterOrEqual(mapping.getId(), fromDateValue));
-                	  }
-                	  else if (null != toDateValue && null == fromDateValue) 
-                	  {
-                		  query.where(DescriptorFilter.lessOrEqual(mapping.getId(), toDateValue));
-                	  } 
-                	  else
-                	  {
-                		  query.where(DescriptorFilter.between(mapping.getId(), fromDateValue, toDateValue));
-                	  }
+                	  Number fromValue = getNumberFilterValue(mapping,(Number)numberRange.getFromValue());
+                	  Number toValue = getNumberFilterValue(mapping, (Number)numberRange.getToValue());
+                	  applyRangeFilter(query,mapping.getId(), fromValue, toValue);
                   }
                   // for Date range
                   else if (filterValue instanceof DateRange)
@@ -289,24 +278,12 @@ public class DescriptorFilterUtils
                 	  DateRange dateRange = (DateRange)filterValue;
                 	  Date fromDateValue = dateRange.getFromDateValue();
                 	  Date toDateValue = dateRange.getToDateValue();
-                	 
-                	  if (null != fromDateValue && null == toDateValue) 
-                	  {
-                		  query.where(DescriptorFilter.greaterOrEqual(mapping.getId(), fromDateValue));
-                	  }
-                	  else if (null != toDateValue && null == fromDateValue) 
-                	  {
-                		  query.where(DescriptorFilter.lessOrEqual(mapping.getId(), toDateValue));
-                	  } 
-                	  else
-                	  {
-                		  query.where(DescriptorFilter.between(mapping.getId(), fromDateValue, toDateValue));
-                	  }
+                	  applyRangeFilter(query,mapping.getId(), fromDateValue, toDateValue);
                   }
                   else if(dataPath.getMappedType() instanceof Class<?>)
                   {
                 	  //TODO 
-                     //dataFilter = getStringFilter(mapping, dataPath, filterValue, caseSensitive);
+                   // dataFilter = getStringFilter(mapping, dataPath, filterValue, caseSensitive);
                   }
 
                   if (mapping.getDataId().equals("PROCESS_PRIORITY"))
@@ -393,6 +370,28 @@ public class DescriptorFilterUtils
             }
          }
       }
+   }
+   
+  /**
+   * 
+   * @param query
+   * @param id
+   * @param fromVal
+   * @param toVal
+   */
+   private static void applyRangeFilter(Query query, String id, Serializable fromVal,
+		   Serializable toVal)
+   {
+	   if (null != fromVal && null == toVal) 
+	   {
+		   query.where(DescriptorFilter.greaterOrEqual(id, fromVal));
+	   } else if (null != toVal && null == fromVal) 
+	   {
+		   query.where(DescriptorFilter.lessOrEqual(id, fromVal));
+	   } else 
+	   {
+		   query.where(DescriptorFilter.between(id, fromVal, toVal));
+	   }
    }
 
    /**
