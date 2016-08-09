@@ -682,7 +682,7 @@
   // and as such we need to invoke $timeout to initiate a digest.
   AMCtrl.prototype.allowRole = function(data, e) {
     var scope = angular.element(e.target || e.srcElement).scope();
-    var permission = scope.genItem;
+    var permission = this.fishForPermission(scope);
     var allow = null;
     var deny = null;
     
@@ -702,7 +702,7 @@
   // and as such we need to invoke $timeout to initiate a digest.
   AMCtrl.prototype.denyRole = function(data, e) {
     var scope = angular.element(e.target || e.srcElement).scope();
-    var permission = scope.genItem;
+    var permission = this.fishForPermission(scope);
     var deny = null;
     var allow = null;
     if (this.selectedDeny.indexOf(permission) == -1) {
@@ -951,7 +951,7 @@
     var self = this;
     this.resetMessages();
     var scope = angular.element(e.target || e.srcElement).scope();
-    var permission = scope.genItem;
+    var permission = this.fishForPermission(scope);
 
     if (v.menuEvent === "menuItem.clicked") {
       var allow = null;
