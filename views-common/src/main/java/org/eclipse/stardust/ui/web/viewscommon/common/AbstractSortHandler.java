@@ -15,10 +15,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
 import org.eclipse.stardust.engine.api.query.DataOrder;
+import org.eclipse.stardust.engine.api.query.DescriptorOrder;
 import org.eclipse.stardust.engine.api.query.FilterableAttribute;
 import org.eclipse.stardust.engine.api.query.OrderCriterion;
 import org.eclipse.stardust.engine.api.query.Query;
@@ -130,12 +130,11 @@ public abstract class AbstractSortHandler implements ISortHandler
    {
       if(attr instanceof CustomOrderCriterion && !ascending)
       {
-         attr = ((CustomOrderCriterion)attr).ascendig(false);
+    	  attr = ((CustomOrderCriterion)attr).ascendig(false);
       }
       else if (attr instanceof DataOrder && !ascending)
       {
-         attr = new DataOrder(((DataOrder) attr).getDataID(), ((DataOrder) attr)
-               .getAttributeName(), false);
+    	  attr = new DescriptorOrder(((DataOrder) attr).getDataID(), false);
       }
       query.orderBy(attr);
    }

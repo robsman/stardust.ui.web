@@ -656,11 +656,22 @@ public class DescriptorFilterUtils
     */
    public static DescriptorFilter getDescriptorFilter(DataPath dataPath, Serializable value)
    {
+	   // for String
+	   if (Character.class.equals(dataPath.getMappedType()) || String.class.equals(dataPath.getMappedType()))
+	   {
+		   String filterValue = (String) value;
+		   return DescriptorFilter.isEqual(dataPath.getId(), filterValue);
+	   }// for boolean
+	   else if (Boolean.class.equals(dataPath.getMappedType()))
+	   {
+		   Boolean filterValue = (Boolean) value;
+		   return DescriptorFilter.isEqual(dataPath.getId(), filterValue);
+	   }
 	   // for single number
 	   if (value instanceof Number)
 	   {
-		   Number filterValueNumber = getNumberFilterValue(dataPath.getMappedType(), (Number) value);
-		   return DescriptorFilter.isEqual(dataPath.getId(), filterValueNumber);
+		   Number filterValue = getNumberFilterValue(dataPath.getMappedType(), (Number) value);
+		   return DescriptorFilter.isEqual(dataPath.getId(), filterValue);
 	   }
 	   else
 	   {
