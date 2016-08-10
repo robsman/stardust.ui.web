@@ -449,8 +449,8 @@ define(
                if (ap.attributes["carnot:engine:defaultValue"]){
                   m_utils.debug("Default value "
                           + ap.attributes["carnot:engine:defaultValue"]);
-
-                  if (ap.primitiveDataType=="Timestamp"){
+                  
+                  if (ap.primitiveDataType=="Timestamp" || ap.primitiveDataType=="Calendar"){
                      var date=jQuery.datepicker.parseDate("yy/mm/dd",  ap.attributes["carnot:engine:defaultValue"]);
                      if(date){
                         ap.attributes["carnot:engine:defaultValue"]=jQuery.datepicker.formatDate("yy/mm/dd",date )+" 00:00:00:000";
