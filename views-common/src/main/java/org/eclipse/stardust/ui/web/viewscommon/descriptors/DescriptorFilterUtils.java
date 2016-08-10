@@ -282,8 +282,7 @@ public class DescriptorFilterUtils
                   }
                   else if(dataPath.getMappedType() instanceof Class<?>)
                   {
-                	  //TODO 
-                   // dataFilter = getStringFilter(mapping, dataPath, filterValue, caseSensitive);
+                	  trace.debug("Not able to apply filter for "+dataPath.getId() + " it is of type "+dataPath.getMappedType() );
                   }
 
                   if (mapping.getDataId().equals("PROCESS_PRIORITY"))
@@ -332,33 +331,7 @@ public class DescriptorFilterUtils
                         predicate.add(ProcessInstanceQuery.OID.isEqual(((Number) filterValue).intValue()));
                      }
                   }
-                  else
-                  {/*
-                     // For multiple ENUM's 'OR' term is formed, dataFilter is null
-                     if (dataFilter == null && dataFilterOrTerm == null)
-                     {
-                        if (trace.isDebugEnabled())
-                        {
-                           trace.debug("Performing equal filter with filter value " + filterValue);
-                        }
-                        if (isStructuredData(mapping))
-                        {
-                           if (mapping.getModelElement() instanceof DataPath)
-                           {
-                              dataFilter = (DataFilter) DataFilter.isEqual(mapping.getDataId(),
-                                    ((DataPath) mapping.getModelElement()).getAccessPath(), filterValue);
-                           }
-                        }
-                        else
-                        {
-                           dataFilter = DataFilter.isEqual(mapping.getDataId(), filterValue);
-                        }
-                     }
-                     if(dataFilter != null)
-                     {
-                        predicate.add(dataFilter);   
-                     }
-                  */}
+ 
                }
                else
                {
@@ -675,6 +648,26 @@ public class DescriptorFilterUtils
       }
       return dataFilter;
    }
+   
+
+   /**
+    * 
+    * @return
+    */
+   public static DescriptorFilter getDescriptorFilter(DataPath dataPath, Serializable value)
+   {
+	   // for single number
+	   if (value instanceof Number)
+	   {
+		   Number filterValueNumber = getNumberFilterValue(dataPath.getMappedType(), (Number) value);
+		   return DescriptorFilter.isEqual(dataPath.getId(), filterValueNumber);
+	   }
+	   else
+	   {
+		   return DescriptorFilter.isEqual(dataPath.getId(), value);
+	   }
+   }
+
 
    /**
     * 

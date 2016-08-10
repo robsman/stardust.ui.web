@@ -20,7 +20,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.engine.api.query.DataFilter;
+import org.eclipse.stardust.engine.api.query.DescriptorFilter;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
@@ -32,10 +32,10 @@ import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
-import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
+import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilters;
 import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
@@ -299,7 +299,6 @@ public class RelatedProcessSearchHelper
       ProcessInstanceQuery piQuery = ProcessInstanceQuery.findCases();
       piQuery.getFilter().add(new ProcessStateFilter(ProcessInstanceState.Active));
       excludeSourceProcesses(piQuery);
-      FilterTerm filter = matchAny ? piQuery.getFilter().addOrTerm() : piQuery.getFilter().addAndTerm();
 
       for (DataPath path : datas)
       {
@@ -309,11 +308,12 @@ public class RelatedProcessSearchHelper
             
             if (null==value ||StringUtils.isEmpty(value.toString()))
             {
-               filter.add(DataFilter.equalsCaseDescriptor(path.getId(), ""));
+            	piQuery.where(DescriptorFilter.equalsCaseDescriptor(path.getId(), ""));
             }            
             else
             {
-               filter.add(DataFilter.equalsCaseDescriptor(path.getId(), sourceDescriptors.get(path.getId())));
+            	Serializable filterValue =  (Serializable) sourceDescriptors.get(path.getId());
+            	piQuery.where(DescriptorFilter.equalsCaseDescriptor(path.getId(), filterValue));
             }
          }
       }
@@ -343,11 +343,11 @@ public class RelatedProcessSearchHelper
          for (DataPath dataPath : datas)
          {
             Serializable value = (Serializable) sourceDescriptors.get(dataPath.getId());
-            DataFilter dataFilter = DescriptorFilterUtils.getDateFilter(dataPath, value);
+            DescriptorFilter descriptorFilter = DescriptorFilterUtils.getDescriptorFilter(dataPath, value);
 
-            if (null != dataFilter)
+            if (null != descriptorFilter)
             {
-               filter.add(dataFilter);
+               filter.add(descriptorFilter);
             }
          }
       }
@@ -383,12 +383,6 @@ public class RelatedProcessSearchHelper
       return piQuery;
    }
 
-   /**
-    * method create ProcessInstanceQuery,it filter-out source process instance query only
-    * fetch process instance if key descriptor match (any or all)
-    * 
-    * @return ProcessInstanceQuery
-    */
    /**
     * method create ProcessInstanceQuery,it filter-out source process instance query only
     * fetch process instance if key descriptor match (any or all)

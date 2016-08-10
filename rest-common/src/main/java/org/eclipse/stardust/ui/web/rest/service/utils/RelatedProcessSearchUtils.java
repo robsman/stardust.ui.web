@@ -10,7 +10,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.engine.api.query.DataFilter;
+import org.eclipse.stardust.engine.api.query.DescriptorFilter;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
@@ -144,7 +144,6 @@ public class RelatedProcessSearchUtils {
       ProcessInstanceQuery piQuery = ProcessInstanceQuery.findCases();
       piQuery.getFilter().add(new ProcessStateFilter(ProcessInstanceState.Active));
       excludeSourceProcesses(piQuery, sourceProcessInstances);
-      FilterTerm filter = matchAny ? piQuery.getFilter().addOrTerm() : piQuery.getFilter().addAndTerm();
 
       for (DataPath path : datas)
       {
@@ -154,11 +153,12 @@ public class RelatedProcessSearchUtils {
             
             if (null==value ||StringUtils.isEmpty(value.toString()))
             {
-               filter.add(DataFilter.equalsCaseDescriptor(path.getId(), ""));
+            	piQuery.where(DescriptorFilter.equalsCaseDescriptor(path.getId(), ""));
             }            
             else
             {
-               filter.add(DataFilter.equalsCaseDescriptor(path.getId(), sourceDescriptors.get(path.getId())));
+            	Serializable filterValue =  (Serializable) sourceDescriptors.get(path.getId());
+            	piQuery.where(DescriptorFilter.equalsCaseDescriptor(path.getId(), filterValue));
             }
          }
       }
@@ -189,11 +189,10 @@ public class RelatedProcessSearchUtils {
          for (DataPath dataPath : datas)
          {
             Serializable value = (Serializable) sourceDescriptors.get(dataPath.getId());
-            DataFilter dataFilter = DescriptorFilterUtils.getDateFilter(dataPath, value);
-
-            if (null != dataFilter)
+            DescriptorFilter descriptorFilter = DescriptorFilterUtils.getDescriptorFilter(dataPath, value);
+            if (null != descriptorFilter)
             {
-               filter.add(dataFilter);
+               filter.add(descriptorFilter);
             }
          }
       }
