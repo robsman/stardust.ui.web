@@ -30,10 +30,8 @@ import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
-import org.eclipse.stardust.engine.api.model.ModelElement;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
-import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.DescriptorFilter;
 import org.eclipse.stardust.engine.api.query.DescriptorOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
@@ -53,7 +51,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IFilterModel;
-import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
 
@@ -442,213 +439,6 @@ public class DescriptorFilterUtils
 
    }
 
-   /**
-    * returns String filter for provided datapath and value
-    * 
-    * @author Yogesh.Manware
-    * @param dataPath
-    * @param filterValue
-    * @return
-    */
-   public static DataFilter getStringFilter(DataPath dataPath, Object filterValue, boolean caseSensitive)
-   {
-      return getStringFilter(null, dataPath, filterValue, caseSensitive);
-   }
-   
-   /**
-    * 
-    * @param mapping
-    * @param dataPath
-    * @param filterValue
-    * @param caseSensitive
-    * @return
-    */
-   public static DataFilter getStringFilter(GenericDataMapping mapping, DataPath dataPath, Object filterValue, boolean caseSensitive)
-   {
-      DataFilter dataFilter = null;
-      boolean isCaseDescriptor = isCaseDescriptor(dataPath);
-      String dataId = isCaseDescriptor ? dataPath.getId() : getData(dataPath).getQualifiedId();
-
-      // Check if it is a character
-      if (Character.class.equals(dataPath.getMappedType()))
-      {
-         char charValue = ' ';
-         if (filterValue instanceof Character)
-         {
-            charValue = ((Character) filterValue).charValue();
-         }
-         else if (filterValue != null && !StringUtils.isEmpty((String) filterValue))
-         {
-            charValue = ((String) filterValue).charAt(0);
-
-         }
-         if (!Character.isSpaceChar(charValue))
-         {
-            if (CommonDescriptorUtils.isStructuredData(dataPath))
-            {
-               // Grab the xpath here.......
-               String xPath = dataPath.getAccessPath();
-               dataFilter = (DataFilter) DataFilter.isEqual(dataId, xPath, charValue);
-            }
-            else
-            {
-               dataFilter = DataFilter.isEqual(dataId, charValue);
-            }
-         }
-      }// For String type
-      else if (String.class.equals(dataPath.getMappedType()) || dataPath.getMappedType() instanceof Class<?>)
-      {
-         if (filterValue instanceof String && !StringUtils.isEmpty((String) filterValue))
-         {
-            String filterString = (String) filterValue;
-
-            String filterValueStr = (String) filterValue;
-
-            filterValueStr = filterValueStr.replace('*', '%').trim();
-            if (trace.isDebugEnabled())
-            {
-               trace.debug("Performing like filter with filter value " + filterString);
-            }
-            if (isCaseDescriptor)
-            {
-               dataFilter=DataFilter.likeCaseDescriptor(dataId, filterValueStr);
-            }
-            else
-            {
-               if (CommonDescriptorUtils.isStructuredData(dataPath))
-               {
-                  if (null != mapping && CommonDescriptorUtils.isEnumerationType(mapping))
-                  {
-                     dataFilter = DataFilter.isEqual(dataId, dataPath.getAccessPath(), filterValueStr);
-                  }
-                  else
-                  {
-                     // Grab the xpath here.......
-                     String xPath = dataPath.getAccessPath();
-                     dataFilter = DataFilter.like(dataId, xPath, filterValueStr, caseSensitive);                     
-                  }
-               }
-               else
-               {
-                  if (CommonDescriptorUtils.isEnumerationPrimitive(dataPath))
-                  {
-                     dataFilter = DataFilter.isEqual(dataId, filterValueStr);
-                  }
-                  else
-                  {
-                     dataFilter = DataFilter.like(dataId, filterValueStr, caseSensitive);
-                  }
-               }
-            }
-         }
-         else if(filterValue instanceof Integer)
-         {
-            dataFilter = DataFilter.isEqual(dataId,(Integer) filterValue);
-         }
-      }
-      return dataFilter;
-   }
-
-   /**
-    * returns boolean filter for provided datapath and value
-    * 
-    * @author Yogesh.Manware
-    * @param dataPath
-    * @param filterValue
-    * @return
-    */
-   public static DataFilter getBooleanFilter(DataPath dataPath, Object filterValue)
-   {
-      DataFilter dataFilter = null;
-
-      if (filterValue != null && filterValue instanceof Boolean)
-      {
-         Boolean booleanValue = (Boolean) filterValue;
-         String dataId = isCaseDescriptor(dataPath) ? dataPath.getId() : getData(dataPath).getQualifiedId();
-         if (CommonDescriptorUtils.isStructuredData(dataPath))
-         {
-            // Grab the xpath here.......
-            String xPath = dataPath.getAccessPath();
-            dataFilter = (DataFilter) DataFilter.isEqual(dataId, xPath, booleanValue);
-         }
-         else
-         {
-            dataFilter = DataFilter.isEqual(dataId, booleanValue);
-         }
-      }
-      return dataFilter;
-   }
-
-   /**
-    * return number filter for the provided datapath
-    * 
-    * @author Yogesh.Manware
-    * @param dataPath
-    * @param from
-    * @param to
-    * @return
-    */
-   private static DataFilter getNumberFilter(DataPath dataPath, Number numberValue)
-   {
-      String dataId = isCaseDescriptor(dataPath) ? dataPath.getId() : getData(dataPath).getQualifiedId();
-      DataFilter dataFilter = null;
-
-      if (numberValue != null)
-      {
-         if (CommonDescriptorUtils.isStructuredData(dataPath))
-         {
-            dataFilter = (DataFilter) DataFilter.isEqual(dataId, dataPath.getAccessPath(), numberValue);
-         }
-         else
-            dataFilter = DataFilter.isEqual(dataId, numberValue);
-      }
-      return dataFilter;
-   }
-
-   /**
-    * return number range filter for the provided datapath
-    * 
-    * @author Yogesh.Manware
-    * @param dataPath
-    * @param from
-    * @param to
-    * @return
-    */
-   private static DataFilter getNumberRangeFilter(DataPath dataPath, Number from, Number to)
-   {
-      String dataId = isCaseDescriptor(dataPath) ? dataPath.getId() : getData(dataPath).getQualifiedId();
-      DataFilter dataFilter = null;
-
-      if (from != null && to != null)
-      {
-         if (CommonDescriptorUtils.isStructuredData(dataPath))
-         {
-            dataFilter = DataFilter.between(dataId, dataPath.getAccessPath(), from, to);
-         }
-         else
-            dataFilter = DataFilter.between(dataId, from, to);
-      }
-      else if (to != null)
-      {
-         if (CommonDescriptorUtils.isStructuredData(dataPath))
-         {
-            dataFilter = DataFilter.lessOrEqual(dataId, dataPath.getAccessPath(), to);
-         }
-         else
-            dataFilter = DataFilter.lessOrEqual(dataId, to);
-      }
-      else if (from != null)
-      {
-         if (CommonDescriptorUtils.isStructuredData(dataPath))
-         {
-            dataFilter = DataFilter.greaterOrEqual(dataId, dataPath.getAccessPath(), from);
-         }
-         else
-            dataFilter = DataFilter.greaterOrEqual(dataId, from);
-      }
-      return dataFilter;
-   }
-   
 
    /**
     * 
@@ -679,90 +469,6 @@ public class DescriptorFilterUtils
 	   }
    }
 
-
-   /**
-    * 
-    * @return
-    */
-   public static DataFilter getDateFilter(DataPath dataPath, Serializable value)
-   {
-      DataFilter dataFilter = null;
-
-      // for String
-      if (Character.class.equals(dataPath.getMappedType()) || String.class.equals(dataPath.getMappedType()))
-      {
-         dataFilter = getStringFilter(dataPath, value, false);
-      }// for boolean
-      else if (Boolean.class.equals(dataPath.getMappedType()))
-      {
-         dataFilter = getBooleanFilter(dataPath, (Boolean) value);
-      }
-      // for single number
-      else if (value instanceof Number)
-      {
-         Number filterValueNumber = getNumberFilterValue(dataPath.getMappedType(), (Number) value);
-         dataFilter = DataFilter.isEqual(getData(dataPath).getQualifiedId(), filterValueNumber);
-      }
-      else
-      {
-         dataFilter = DataFilter.isEqual(getData(dataPath).getQualifiedId(), value);
-      }
-
-      return dataFilter;
-   }
-   
-   /**
-    * return date filter for the provided datapath of type date
-    * 
-    * @author Yogesh.Manware
-    * @param dataPath
-    * @param fromTime
-    * @param toTime
-    * @return
-    */
-   private static DataFilter getDateFilter(DataPath dataPath, DateRange dateRange)
-   {
-      String dataId = getData(dataPath).getQualifiedId();
-      DataFilter dataFilter = null;
-
-      Date fromDateValue = dateRange.getFromDateValue();
-      Date toDateValue = dateRange.getToDateValue();
-
-      if (fromDateValue != null && toDateValue != null)
-      {
-         if (CommonDescriptorUtils.isStructuredData(dataPath))
-         {
-            dataFilter = DataFilter.between(dataId, dataPath.getAccessPath(), fromDateValue, toDateValue);
-         }
-         else
-         {
-            dataFilter = DataFilter.between(dataId, fromDateValue, toDateValue);
-         }
-      }
-      else if (toDateValue != null)
-      {
-         if (CommonDescriptorUtils.isStructuredData(dataPath))
-         {
-            dataFilter = DataFilter.lessOrEqual(dataId, dataPath.getAccessPath(), toDateValue);
-         }
-         else
-         {
-            dataFilter = DataFilter.lessOrEqual(dataId, toDateValue);
-         }
-      }
-      else if (fromDateValue != null)
-      {
-         if (CommonDescriptorUtils.isStructuredData(dataPath))
-         {
-            dataFilter = DataFilter.greaterOrEqual(dataId, dataPath.getAccessPath(), fromDateValue);
-         }
-         else
-         {
-            dataFilter = DataFilter.greaterOrEqual(dataId, fromDateValue);
-         }
-      }
-      return dataFilter;
-   }
 
    /**
     * @param mapping
@@ -856,31 +562,6 @@ public class DescriptorFilterUtils
    
 
    /**
-    * @param mapping
-    * @return
-    */
-   private static boolean isStructuredData(GenericDataMapping mapping)
-   {
-      ModelElement modelElement = mapping.getModelElement();
-      if (modelElement instanceof DataPath)
-      {
-         Model model = ModelCache.findModelCache().getModel(modelElement.getModelOID());
-         Data data = model.getData(mapping.getDataId());
-         if (data instanceof DataDetails)
-         {
-            DataDetails dataDetails = (DataDetails) data;
-            String typeId = dataDetails.getTypeId();
-            if (StructuredDataConstants.STRUCTURED_DATA.equals(typeId))
-            {
-               return true;
-            }
-         }
-
-      }
-      return false;
-   }
-   
-   /**
     * 
     * @param descriptorItems
     * @param filter
@@ -902,11 +583,11 @@ public class DescriptorFilterUtils
             if (PredefinedConstants.CASE_DESCRIPTION_ELEMENT.equals(dataFilter.getId()))
             {
                String newValue = "%" + value + "%";
-               filter.add(DataFilter.likeCaseDescriptor(dataFilter.getId(), newValue));
+               filter.add(DescriptorFilter.likeCaseDescriptor(dataFilter.getId(), newValue));
             }
             else
             {
-               filter.add(DataFilter.equalsCaseDescriptor(dataFilter.getId(), value));
+               filter.add(DescriptorFilter.equalsCaseDescriptor(dataFilter.getId(), (Serializable) value));
             }
          }
       }
