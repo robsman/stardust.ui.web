@@ -969,12 +969,7 @@ if (!window.bpm.portal.AngularAdapter) {
 						if(attrs.dateFormat){
 							dateFormat = attrs.dateFormat;
 						}
-						
-						var hideTime = false;
-						if(attrs.sdaHideTime == "true"){
-						  hideTime = true;
-            }
-						
+
 						var datePickerProperties
 						if (attrs.datePickerProperties) {
 							datePickerProperties = scope.$eval(attrs.datePickerProperties); 
@@ -998,21 +993,66 @@ if (!window.bpm.portal.AngularAdapter) {
 								showMonthAfterYear: datePickerProperties.showMonthAfterYear,
 								yearSuffix: datePickerProperties.yearSuffix,
 								onSelect : function(datetext) {
-								     if(!hideTime){
-								       var d = new Date(); // for now
-	                      datetext = datetext + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ":000"; 
-								     } 
-
+    								 var d = new Date(); // for now
+                     datetext = datetext + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ":000";
 								     this.value = datetext;
-							        controller.$setViewValue(datetext);
-									scope.$apply(function () {
-									   controller.$setViewValue(datetext);
-									});
+							       controller.$setViewValue(datetext);
+    									scope.$apply(function () {
+    									   controller.$setViewValue(datetext);
+    									});
 								}
 							});
 					}
 				};
 			});
+			
+			this.angularModule.directive('sdDate', function() {
+        console.debug("sd-datetime parsed");
+        return {
+          restrict : "A",
+          require : "ngModel",
+          link : function(scope, element, attrs, controller) {
+            var timeFormat = "hh:mm:ss:l";
+            var dateFormat = "yy/mm/dd";
+            if(attrs.timeFormat){
+              timeFormat = attrs.timeFormat;
+            }
+            if(attrs.dateFormat){
+              dateFormat = attrs.dateFormat;
+            }
+
+            var datePickerProperties
+            if (attrs.datePickerProperties) {
+              datePickerProperties = scope.$eval(attrs.datePickerProperties); 
+            }
+            
+              element.datepicker({
+                inline : true,
+                dateFormat : 'yy/mm/dd', // I18N
+                closeText: datePickerProperties.closeText,
+                prevText: datePickerProperties.prevText,
+                nextText: datePickerProperties.nextText,
+                currentText: datePickerProperties.currentText,
+                monthNames: datePickerProperties.monthNames,
+                monthNamesShort: datePickerProperties.monthNamesShort,
+                dayNames: datePickerProperties.dayNames,
+                dayNamesShort: datePickerProperties.dayNamesShort,
+                dayNamesMin: datePickerProperties.dayNamesMin,
+                weekHeader: datePickerProperties.weekHeader,
+                firstDay: datePickerProperties.firstDay,
+                isRTL: false,
+                showMonthAfterYear: datePickerProperties.showMonthAfterYear,
+                yearSuffix: datePickerProperties.yearSuffix,
+                onSelect : function(datetext) {
+                      this.value = datetext;
+                      scope.$apply(function () {
+                         controller.$setViewValue(datetext);
+                      });
+                }
+              });
+          }
+        };
+      });
 			
 			this.angularModule.directive('sdDatePicker', function() {
 			    return {

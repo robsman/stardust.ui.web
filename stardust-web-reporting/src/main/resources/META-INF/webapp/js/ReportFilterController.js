@@ -701,35 +701,30 @@ define(
 					return this.reportingService.metadata;
 				};
 				
-		    /**
-		     * 
-		     */
-        ReportFilterController.prototype.isHideTime = function(id) {
+        /**
+         * 
+         */
+        ReportFilterController.prototype.isDateWithoutTimeType = function(id) {
           var dimensions = this.getDimensions(true);
           for (var i = 0; i < dimensions.length; i++) {
             if (id == dimensions[i].id) 
             { 
               if(dimensions[i].type == this.getMetadata().dateWithoutTime) {
-                return true; 
+                return true;
               }else{
                 return false;
               }
             }
           }
-          
           return false;
         };
-
-        /**
-         * 
-         */
+        
         ReportFilterController.prototype.isDateType = function(id) {
           var dimensions = this.getDimensions(true);
           for (var i = 0; i < dimensions.length; i++) {
             if (id == dimensions[i].id) 
             { 
-              if(dimensions[i].type == reportFilterController.getMetadata().timestampType 
-                      || dimensions[i].type == reportFilterController.getMetadata().dateWithoutTime) {
+              if(dimensions[i].type == this.getMetadata().timestampType) {
                 return true;
               }else{
                 return false;

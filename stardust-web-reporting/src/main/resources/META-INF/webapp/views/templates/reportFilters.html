@@ -92,12 +92,12 @@
 						<table cellpadding="0" cellspacing="0" class="layoutTable">
 							<tr>
 								<td><label>{{reportFilterController.getI18N('reporting.definitionView.from.label')}}</label></td>
-								<td><input type="text" ng-model="x.value.from" sd-datetime sda-hide-time={{reportFilterController.isHideTime(x.dimension)}} date-picker-properties="{{reportFilterController.reportingService.datePickerProperties}}" /></td>
+								<td><input type="text" ng-model="x.value.from" sd-datetime date-picker-properties="{{reportFilterController.reportingService.datePickerProperties}}" /></td>
 								<td rowspan="2" ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 							<tr>
 								<td><label>{{reportFilterController.getI18N('reporting.definitionView.to.label')}}</label></td>
-								<td><input type="text" ng-model="x.value.to" sd-datetime sda-hide-time={{reportFilterController.isHideTime(x.dimension)}}  date-picker-properties="{{reportFilterController.reportingService.datePickerProperties}}"/></td>
+								<td><input type="text" ng-model="x.value.to" sd-datetime date-picker-properties="{{reportFilterController.reportingService.datePickerProperties}}"/></td>
 							</tr>
 						</table>
 
@@ -111,7 +111,52 @@
 						<table cellpadding="0" cellspacing="0" class="formTable">
 							<tr>
 								<td><label>{{reportFilterController.getI18N('reporting.definitionView.from.label')}}</label></td>
-								<td><input type="text" ng-model="x.value.from" sd-datetime sda-hide-time={{reportFilterController.isHideTime(x.dimension)}}  date-picker-properties="{{reportFilterController.reportingService.datePickerProperties}}"/></td>
+								<td><input type="text" ng-model="x.value.from" sd-datetime date-picker-properties="{{reportFilterController.reportingService.datePickerProperties}}"/></td>
+								<td rowspan="2" ng-include="'templates/parameterControl.html'"></td>
+							</tr>
+							<tr>
+								<td><label>{{reportFilterController.getI18N('reporting.definitionView.duration.label')}}</label></td>
+								<td><input id="value{{$index}}" type="number" ng-model="x.value.duration"
+									style="width: 50px;" /> 
+									<select  ng-model="x.value.durationUnit" 
+									ng-options="d_unit.id as d_unit.name for d_unit in reportFilterController.constants.DURATION_UNITS">
+								</select>
+								 </td>
+								<td></td>
+							</tr>
+						</table>
+						<a id="toggle{{$index}}" style="font-size: 9px;"
+							ng-click="x.metadata.fromTo = true; reportFilterController.toggleToAndDuration(x);"
+							class="smallLink">{{reportFilterController.getI18N('reporting.definitionView.switchToStartDateAndEndDate.label')}}
+							&raquo;</a>
+					</div>
+				</div>
+				<div
+					ng-show="reportFilterController.isDateWithoutTimeType(x.dimension)">
+					<div ng-show="x.metadata.fromTo" style="margin-left: 10px;">
+						<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<tr>
+								<td><label>{{reportFilterController.getI18N('reporting.definitionView.from.label')}}</label></td>
+								<td><input type="text" ng-model="x.value.from" sd-date date-picker-properties="{{reportFilterController.reportingService.datePickerProperties}}" /></td>
+								<td rowspan="2" ng-include="'templates/parameterControl.html'"></td>
+							</tr>
+							<tr>
+								<td><label>{{reportFilterController.getI18N('reporting.definitionView.to.label')}}</label></td>
+								<td><input type="text" ng-model="x.value.to" sd-date date-picker-properties="{{reportFilterController.reportingService.datePickerProperties}}"/></td>
+							</tr>
+						</table>
+
+						<a id="toggle{{$index}}" style="font-size: 9px;"
+							ng-click="x.metadata.fromTo = false; reportFilterController.toggleToAndDuration(x);"
+							class="smallLink">
+							{{reportFilterController.getI18N('reporting.definitionView.switchToStartDateAndDuration.label')}}
+							&raquo;</a>
+					</div>
+					<div ng-show="!x.metadata.fromTo" style="margin-left: 10px;">
+						<table cellpadding="0" cellspacing="0" class="formTable">
+							<tr>
+								<td><label>{{reportFilterController.getI18N('reporting.definitionView.from.label')}}</label></td>
+								<td><input type="text" ng-model="x.value.from" sd-date date-picker-properties="{{reportFilterController.reportingService.datePickerProperties}}"/></td>
 								<td rowspan="2" ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 							<tr>
