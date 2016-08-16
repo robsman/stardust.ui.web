@@ -734,6 +734,10 @@ public class ActivityTableUtils
                      ai.getModelOID(), ai.getProcessDefinitionId());
                dto.processInstance.supportsProcessAttachments = ProcessDefinitionUtils.supportsProcessAttachments(processDefinition);
                
+               //Internationalization
+               dto.processInstance.processName= I18nUtils.getProcessName(processDefinition);
+               dto.activity.name = I18nUtils.getActivityName(ai.getActivity());
+               
                if (mode.equals(MODE.ACTIVITY_TABLE))
                {
                   dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
