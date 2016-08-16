@@ -102,6 +102,7 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.processContextExplorer.DescriptorItemTableEntry;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CorrespondencePanelPreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
@@ -987,5 +988,17 @@ public class ProcessInstanceService
             return false;
          return true;
       }
+   }
+   
+   public List<DescriptorItemTableEntry> getProcessDescriptorsWithModifyByAndDate(Long oid){
+	   ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, true, false);
+	   List<DescriptorItemTableEntry> descriptorList = processInstanceUtilsREST.fetchDescriptorsWithLastModified(process);
+	   return descriptorList;
+   }
+   
+   public boolean updateDescriptor(long processInstanceOid,String dataPathId, Object newValue){
+	   ContextPortalServices.getWorkflowService().setOutDataPath(processInstanceOid,
+			   dataPathId, newValue);
+	   return true;
    }
 }

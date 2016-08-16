@@ -2,8 +2,21 @@
 <div class="ng-hide" ng-show="true" ng-controller="sdGanttChartCtrl as ctrl">
 	<!-- ng-show="ctrl.columnData.length > 0" -->
 	<div >
-		<div class="heading"  > {{ctrl.process.processName}} (#{{ctrl.process.oid}})</div>
+		<div class="heading"  > {{ctrl.process.processName}} </div>
 		<div> <span class="iceOutLbl spacing-right">{{i18n('business-control-center-messages.views-customColumn-startDate')}}</span> <span> {{ctrl.process.startTime | date: ctrl.timeFormat}} </span> </div>
+		<div class="heading"
+			ng-click="ctrl.setShowProcessDescriptors()"
+			aid="BCC-ProcSrch-ShowHideProcessDescriptor">
+			<i ng-show="ctrl.showProcessDescriptor"
+				class="pi pi-trigger-expanded pi-lg"></i>
+			<i ng-show="!ctrl.showProcessDescriptor"
+				class="pi pi-trigger-collapsed pi-lg"></i>
+			<span>{{i18n('business-control-center-messages.views-process-descriptor-heading-label')}}</span>
+		</div>
+		<div id="process_descriptor_container" ng-show="ctrl.showProcessDescriptor">
+			 <div sd-process-descriptor poid="ctrl.selected.process"></div>
+		</div>
+		<br/>
 		<div>
 			<select class="gantt-chart-select-box" ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();"  ng-if ="ctrl.legendCategories.length > 1"
 					ng-options="opt.id as opt.label for opt in ctrl.legendCategories" aid="BCC-GanttChart-ChangeLegend">

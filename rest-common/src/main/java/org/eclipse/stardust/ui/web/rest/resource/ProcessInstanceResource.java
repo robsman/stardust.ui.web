@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.rest.resource;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -554,6 +555,37 @@ public class ProcessInstanceResource
    {
       return Response.ok(processInstanceService.getProcessByOid(oid, fetchDescriptors).toJson(),
             MediaType.APPLICATION_JSON).build();
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{oid}/process-descriptors")
+   @ResponseDescription("returns list of DescriptorItemTableEntry")
+   
+   public Response getProcessByOid(@PathParam("oid") Long oid) throws ResourceNotFoundException
+   {
+      return Response.ok(AbstractDTO.toJson(processInstanceService.getProcessDescriptorsWithModifyByAndDate(oid)),
+            MediaType.APPLICATION_JSON).build();
+   }
+   
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON) 
+   @Path("{oid}/update-descriptor")
+   public Response updateProcessDescriptor(@PathParam("oid") Long processOid, String postedData)
+   {
+	  JsonObject inputJson = new JsonMarshaller().readJsonObject(postedData);
+	  Boolean status = false;
+	  if(inputJson.get("type").getAsString().equals("date")||inputJson.get("type").getAsString().equals("TimeStamp")){
+		  Date dateObj = new Date();
+		  dateObj.setTime(inputJson.get("changedValue").getAsLong());
+		  status = getProcessInstanceService().updateDescriptor(processOid,inputJson.get("id").getAsString(),dateObj);
+	  }else{
+		  status = getProcessInstanceService().updateDescriptor(processOid,inputJson.get("id").getAsString(),inputJson.get("changedValue").getAsString());
+	  }
+		  
+	  
+	  return Response.ok(status, MediaType.APPLICATION_JSON).build();
    }
 
    /**

@@ -26,15 +26,18 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
+import org.eclipse.stardust.engine.api.dto.DataPathDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsLevel;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsOptions;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.Participant;
@@ -60,6 +63,7 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.DataCopyOptions;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
 import org.eclipse.stardust.engine.api.runtime.ProcessDefinitions;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
@@ -97,8 +101,10 @@ import org.eclipse.stardust.ui.web.rest.util.DescriptorUtils;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.util.RelatedProcessSearchUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
+import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
@@ -106,6 +112,7 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.processContextExplorer.DescriptorItemTableEntry;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
@@ -2360,5 +2367,148 @@ public class ProcessInstanceUtils
       }
       return pi;
    }
+   
+   public List<DescriptorItemTableEntry> fetchDescriptorsWithLastModified(ProcessInstance pi){
+	   
+	   List<DescriptorItemTableEntry> descriptorList = new ArrayList<DescriptorItemTableEntry>();
+	   
+	   
+	   Map<String, DataPathDetails> inDataPathsMap = CollectionUtils.newHashMap();
+	   Map<String, DataPathDetails> outDataPathsMap = CollectionUtils.newHashMap();
+	   Map<String,HistoricalEvent> dataPathHistoryMap = CollectionUtils.newHashMap();
+	   
+	   //Populate in and out data path maps
+	   ProcessDefinition processDef = ProcessDefinitionUtils.getProcessDefinition(pi.getModelOID(),
+	            pi.getProcessID());
+	   List<DataPathDetails> dataPaths = processDef.getAllDataPaths();
+	   DataPathDetails dataPathDetails;
+	   int size = dataPaths.size();
+	   for (int i = 0; i < size; i++)
+	   {
+	      dataPathDetails = (DataPathDetails) dataPaths.get(i);
+	      if(null != dataPathDetails.getDirection())
+	      {
+	         if(dataPathDetails.getDirection().equals(Direction.OUT))
+	         {
+	            outDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);  
+	         }
+	         else
+	         {
+	            inDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);
+	         }
+	      }
+	   }
+	   
+	   /*List<HistoricalEvent> events = DescriptorColumnUtils.getProcessDescriptorsHistory(pi);*/
+	   
+	   updateDataPathHistoryMap(pi,outDataPathsMap,dataPathHistoryMap);
+	   
+	   descriptorList = fetchProcessDescriptorsAndAddHistoryDetails(pi, dataPathHistoryMap, inDataPathsMap, outDataPathsMap);
+      
+	   return descriptorList;
+   }
+   
+   private void updateDataPathHistoryMap(ProcessInstance pi,Map<String, DataPathDetails> outDataPathsMap, Map<String,HistoricalEvent> dataPathHistoryMap){
+	   List<HistoricalEvent> events = CollectionUtils.newArrayList();
+	   events = DescriptorColumnUtils.getProcessDescriptorsHistory(pi);
+	   for (HistoricalEvent event : events)
+       {
+		   String descriptorDetails = (String)event.getDetails();
+		   if (StringUtils.isNotEmpty(descriptorDetails))
+           {
+              if (descriptorDetails.contains("'"))
+              {
+            	  String[] token = descriptorDetails.split("'");
+                  String dataPathId = token[5];
+                  DataPath dataPath = outDataPathsMap.get(dataPathId);
+                  if (null != dataPath)
+                  {
+                     dataPathId = I18nUtils.getDataPathName(dataPath);
+                  }
+                  dataPathHistoryMap.put(dataPathId,event);
+              }
+           }
+       }
+   }
+   
+   private List<DescriptorItemTableEntry> fetchProcessDescriptorsAndAddHistoryDetails(ProcessInstance pi,Map<String,HistoricalEvent> dataPathHistoryMap,Map<String, DataPathDetails> inDataPathsMap,Map<String, DataPathDetails> outDataPathsMap){
+	   
+	   List<DescriptorItemTableEntry> decsriptorList = CollectionUtils.newArrayList();
+	   
+	   GenericDataMapping mapping;
+       DataMappingWrapper dmWrapper;
+	   
+	   List<ProcessDescriptor> processDescriptors = CommonDescriptorUtils.createProcessDescriptors(pi, false);
+	   boolean suppressBlankDescriptors = CommonDescriptorUtils.isSuppressBlankDescriptorsEnabled();
+	   for(ProcessDescriptor processDescriptor : processDescriptors){
+		   DataPathDetails inDataPath = inDataPathsMap.get(processDescriptor.getId());
+		   if (CollectionUtils.isNotEmpty(outDataPathsMap))
+           {
+			   DataPathDetails outDataPath = fetchRespectiveOutDataPath(inDataPath,outDataPathsMap);
+			   if (null != outDataPath)
+               {
+				  Class dataClass = outDataPath.getMappedType();
+	              mapping = new GenericDataMapping(outDataPath);
+	              dmWrapper = new DataMappingWrapper(mapping, null, false);
+	              String type = dmWrapper.getType();
+	              Object value = null;
+					try {
+						value = DescriptorFilterUtils.convertDataPathValue(dataClass, processDescriptor.getValue());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	              
+	                  
+                  DescriptorItemTableEntry descriptorTableRowObj = new DescriptorItemTableEntry(processDescriptor.getKey(), value, processDescriptor.getId(), type, dataClass, true);
+                  if(dataPathHistoryMap.containsKey(processDescriptor.getId()))
+                  {
+                	  HistoricalEvent event = dataPathHistoryMap.get(processDescriptor.getId());
+                	  descriptorTableRowObj.setLastModified(event.getEventTime());
+                	  descriptorTableRowObj.setModifiedBy(event.getUser().getName());
+                  }
+                  
+                  decsriptorList.add(descriptorTableRowObj);
+               }
+               else
+               {
+                  if (!suppressBlankDescriptors || (suppressBlankDescriptors
+                        && (null != processDescriptor.getValue() && StringUtils.isNotEmpty(processDescriptor.getValue()))))
+                  {
+                	  DescriptorItemTableEntry descriptorTableRowObj = new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor.getValue());
+                	  decsriptorList.add(descriptorTableRowObj);
+                  }
+               }
+           }
+	   }
+	   return decsriptorList;
+   }
+   
+   private DataPathDetails fetchRespectiveOutDataPath(DataPathDetails inDataPath,Map<String, DataPathDetails> outDataPathsMap)
+   {
+      if (CollectionUtils.isNotEmpty(outDataPathsMap))
+      {
+         // read all OUT dataPath for given Data
+         DataPathDetails outDataPath = outDataPathsMap.get(inDataPath.getId());
+         if (null != outDataPath)
+         {
+            // Filter dataPath with same AccessPoint and on same Qualified Model
+            if (outDataPath.getAccessPath().equals(inDataPath.getAccessPath()))
+            {
+               String data = inDataPath.getData();
+               Data data1 = DescriptorFilterUtils.getData(inDataPath);
+               Data data2 = DescriptorFilterUtils.getData(outDataPath);
+               if (data1.equals(data2))
+               {
+                  return outDataPath;
+               }
+            }
+         }
+      }
+
+      return null;
+   }
+   
+   
 
 }

@@ -1,0 +1,27 @@
+<div class="marker" ng-show="processDescriptorCtrl.updateMsg!=''?true:false"><i class="pi-information"></i> &nbsp;&nbsp;&nbsp;<span class="properties-panel-noteUser">{{processDescriptorCtrl.updateMsg}}</span></div>
+<table sd-data-table="processDescriptorCtrl.dataTable" sd-data="processDescriptorCtrl.fetchData()" sda-mode="local" sda-selectable="multiple" sda-no-pagination="true"
+			sda-sortable="true" sda-exports="false">
+		<thead 
+			sda-i18n-scope="business-control-center-messages.views-processDescriptorTable-column">
+			<tr>
+				<th sda-name="name"  sda-label-key="name" sda-sortable="true"></th>
+				<th sda-name="value"  sda-label-key="value" sda-sortable="true"></th>
+				<th sda-name="lastModified"  sda-label-key="lastModified" sda-sortable="true"></th>
+				<th sda-name="modifiedBy"  sda-label-key="modifiedBy" sda-sortable="true"></th>				
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td sda-field="name" sda-data-type="string"></td>
+				<td  sda-data-type="string" align="right">
+					<div ng-if="rowData.editable==false">{{rowData.value}}</div>
+					<input type="text" ng-model="rowData.value"  ng-if="rowData.type!='date' && rowData.type!='TimeStamp' && rowData.editable==true" ng-blur="processDescriptorCtrl.updateDescriptor(rowData)">
+					<div sd-date-time-condensed ng-model="rowData.value" ng-if="rowData.type=='TimeStamp' && rowData.editable==true" ng-change="processDescriptorCtrl.updateDescriptor(rowData)"></div>
+					<div sd-date-picker ng-model="rowData.value" ng-if="rowData.type=='date' && rowData.editable==true" ng-change="processDescriptorCtrl.updateDescriptor(rowData)">
+				</td>
+				<td sda-field="lastModified" ></td>
+				<td sda-field="modifiedBy" ></td>
+			</tr>
+		</tbody>
+		
+</table>
