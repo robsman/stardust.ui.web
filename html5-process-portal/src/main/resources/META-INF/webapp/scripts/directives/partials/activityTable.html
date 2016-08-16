@@ -234,7 +234,7 @@
 					<table sda-if="rowData.descriptorValues != undefined">
 						<tr sda-repeat="desc in rowData.descriptorValues" sda-repeat-if="desc.value != ''">
 							<td class="noWrap" sda-repeat-if="!desc.isDocument">
-								<span sda-bind="desc.key"></span>:
+								<span sda-bind="desc.key"></span>
 							</td>
 							<td sda-repeat-if="!desc.isDocument" class="noWrap">: <span class="spacing-right" sda-bind="desc.value"> </span></td>
 						</tr>
