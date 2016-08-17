@@ -138,7 +138,7 @@
 							'<i class="pi pi-export pi-lg"></i>\n' +
 						'</button>\n' +
 						'<button ng-if="$dtApi.enableExportCSV" class="button-link tbl-toolbar-item tbl-tool-link" sd-popover sda-template="\'exportAsCSV.html\'"  aid="PP-DataTable-exportMenu"' +
-							'sda-placement="auto bottom-left"  ng-click="$dtApi.setExportPopoverVisibility()"  aid="PP-DataTable-exportAsCSV">\n' +
+							'sda-placement="auto bottom-left"  ng-click="$dtApi.setExportPopoverVisibility()" sda-trigger="outsideClick" sda-is-open="$dtApi.showExportPopup"  aid="PP-DataTable-exportAsCSV">\n' +
 							'<i class="pi pi-bottom pi-menu-dropdown"></i>\n' +
 						'</button>' +
 					'<script id="exportAsCSV.html" type="text/ng-template">' +
@@ -3361,6 +3361,7 @@
 					 */
 					this.exportCSV = function(options) {
 						exportAsCSV(options);
+						this.showExportPopup = false;
 					}
 
 					/*
