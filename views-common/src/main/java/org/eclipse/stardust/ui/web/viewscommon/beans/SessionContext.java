@@ -117,25 +117,28 @@ public final class SessionContext implements Serializable
       {
          val = ManagedBeanUtils.getManagedBean(BEAN_ID);
       }
-      
-      try
+
+      if (null == val)
       {
-         ValueBinding valueBinding = createValueBinding(context, BEAN_ID_EXPRESSION);
-         val = (null != valueBinding) ? valueBinding.getValue(context) : null;
-         if (val == null || !(val instanceof SessionContext))
+         try
          {
-            val = new SessionContext();
-            valueBinding.setValue(context, val);
+            ValueBinding valueBinding = createValueBinding(context, BEAN_ID_EXPRESSION);
+            val = (null != valueBinding) ? valueBinding.getValue(context) : null;
+            if (val == null || !(val instanceof SessionContext))
+            {
+               val = new SessionContext();
+               valueBinding.setValue(context, val);
+            }
+            
+            if (valueBinding == null)
+            {
+               valueBinding.setValue(context, val);
+            }
          }
-         
-         if (valueBinding == null)
+         catch(Exception e)
          {
-            valueBinding.setValue(context, val);
+            // ignore
          }
-      }
-      catch(Exception e)
-      {
-         // ignore
       }
       return (SessionContext)val;
    }
