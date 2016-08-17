@@ -401,7 +401,7 @@
 			/*
 			 *
 			 */
-			ProcessTableCompiler.prototype.registerNewPriority = function(oid) {
+			ProcessTableCompiler.prototype.registerNewPriority = function(event, oid) {
 				var self = this;
 				event.stopPropagation();
 				

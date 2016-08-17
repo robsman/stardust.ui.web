@@ -1608,7 +1608,7 @@
 		/*
 		 * 
 		 */
-		ActivityTableCompiler.prototype.registerNewPriority = function(activityOID) {
+		ActivityTableCompiler.prototype.registerNewPriority = function(event , activityOID) {
 			var self = this;
 			event.stopPropagation();
 			
