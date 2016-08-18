@@ -33,6 +33,8 @@ import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.InvalidValueException;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -571,21 +573,29 @@ public class ProcessInstanceResource
    @PUT
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON) 
-   @Path("{oid}/update-descriptor")
+   @Path("{oid}/process-descriptor")
    public Response updateProcessDescriptor(@PathParam("oid") Long processOid, String postedData)
    {
 	  JsonObject inputJson = new JsonMarshaller().readJsonObject(postedData);
 	  Boolean status = false;
-	  if(inputJson.get("type").getAsString().equals("date")||inputJson.get("type").getAsString().equals("TimeStamp")){
-		  Date dateObj = new Date();
-		  dateObj.setTime(inputJson.get("changedValue").getAsLong());
-		  status = getProcessInstanceService().updateDescriptor(processOid,inputJson.get("id").getAsString(),dateObj);
-	  }else{
-		  status = getProcessInstanceService().updateDescriptor(processOid,inputJson.get("id").getAsString(),inputJson.get("changedValue").getAsString());
+	  String errorMsg = "";
+	  try{
+	     if(inputJson.get("type").getAsString().equals("date")||inputJson.get("type").getAsString().equals("TimeStamp")){
+	          Date dateObj = new Date();
+	          dateObj.setTime(inputJson.get("changedValue").getAsLong());
+	          status = getProcessInstanceService().updateDescriptor(processOid,inputJson.get("id").getAsString(),dateObj);
+	      }else{
+	          status = getProcessInstanceService().updateDescriptor(processOid,inputJson.get("id").getAsString(),inputJson.get("changedValue").getAsString());
+	      }
+	     errorMsg = status+"";
 	  }
-		  
-	  
-	  return Response.ok(status, MediaType.APPLICATION_JSON).build();
+	  catch(InvalidValueException e){
+	     errorMsg = e.getMessage();
+	  }
+	  catch(ObjectNotFoundException e){
+	     errorMsg = e.getMessage();
+	  }
+	  return Response.ok(errorMsg, MediaType.APPLICATION_JSON).build();
    }
 
    /**

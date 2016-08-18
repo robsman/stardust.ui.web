@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * Copyright (c) 2016 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
 (function() {
 	'use strict';
 	
@@ -27,6 +36,7 @@
 			var self = this;
 			this.poid = scope.poid;
 			scope.i18n = scope.$parent.i18n;
+			
 			this.dataTable = null;
 			this.tableHandleExpr = "processDescriptorCtrl.dataTable";
 			this.updateMsg = "";
@@ -52,17 +62,24 @@
 					dataObject.list = descriptorList;  
 					deferred.resolve(dataObject);
 				},function(responseObj){
-					//deferred.error("Failed to load descriptor data");
+					
 				});
 				return deferred.promise;
 			};
 			DescriptorTableCompiler.prototype.updateDescriptor = function(descriptorObj){
 				self.descriptorName = descriptorObj.name; 
 				sdProcessDescriptorService.updateProcessDescriptors(this.poid,descriptorObj.id,descriptorObj.value,descriptorObj.type).then(function(response){
-					self.dataTable.refresh(true);
-					self.updateMsg = self.descriptorName+" Updated Successfully" 
-				},function(response){
+					if(response == "true"){
+						self.dataTable.refresh(true);
+						self.updateMsg = self.descriptorName+" Updated Successfully"; 
+					}else{
+						self.dataTable.refresh(true);
+						self.updateMsg = "Last Update did not get saved, please try again, Reason - "+response;
+					}
 					
+				},function(response){
+					self.dataTable.refresh(true);
+					self.updateMsg = "Last Update did not get saved, please try again"; 
 				});
 			};
 			scope.processDescriptorCtrl = self;

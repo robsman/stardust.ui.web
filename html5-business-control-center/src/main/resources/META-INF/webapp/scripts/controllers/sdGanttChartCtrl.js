@@ -108,6 +108,9 @@
 
 		self.currentTimeLine = {};
 		self.estimatedEndTimeLine = {};
+		
+		self.showProcessDescriptor = false;
+		
 	};
 
 	/**
@@ -1072,12 +1075,8 @@
 		return graphData;
 	};
 	
-	Controller.prototype.showProcessDescriptor = false;
-	
 	Controller.prototype.setShowProcessDescriptors = function(){
-		
-		var self = this;
-		self.showProcessDescriptor = !self.showProcessDescriptor; 
+		this.showProcessDescriptor = !this.showProcessDescriptor; 
 	};
 
 

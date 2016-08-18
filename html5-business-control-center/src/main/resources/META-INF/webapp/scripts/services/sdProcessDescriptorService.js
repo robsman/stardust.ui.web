@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 SunGard CSA LLC and others. All rights reserved. This
+ * Copyright (c) 2016 SunGard CSA LLC and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -36,17 +36,14 @@
 		};
 		
 		ProcessDescriptorService.prototype.updateProcessDescriptors = function(oid,descriptorPathId,changedValue,type){
-			var restUrl = REST_BASE_URL+oid+"/update-descriptor";
+			var restUrl = REST_BASE_URL+oid+"/process-descriptor";
 			var request = $resource(restUrl, null,
 					{
 						'update': { 
 							method:'PUT',
 							transformRequest: function(data, headers){
 				                headers = angular.extend({}, headers, {'Content-Type': 'application/json'});
-				                console.log(headers);
-				                console.log(data);
-				                console.log(angular.toJson(data));
-				                return angular.toJson({'id' : descriptorPathId, 'changedValue' : changedValue, 'type' : type}); // this will go in the body request
+				                return angular.toJson({'id' : descriptorPathId, 'changedValue' : changedValue, 'type' : type}); 
 				            }      
 						}
 					});

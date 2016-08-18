@@ -31,6 +31,8 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
+import org.eclipse.stardust.common.error.InvalidValueException;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.HistoricalData;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
@@ -122,34 +124,34 @@ import com.google.gson.reflect.TypeToken;
 public class ProcessInstanceService
 {
    private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
-   
+
    @Resource
    private org.eclipse.stardust.ui.web.rest.component.util.ProcessInstanceUtils processInstanceUtilsREST;
 
    @Resource
    private ProcessDefinitionUtils processDefinitionUtils;
-   
+
    @Resource
    private RepositoryService repositoryService;
-   
+
    @Autowired
    private ActivityInstanceService activityInstanceService;
-   
+
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
-   
+
    @Resource
    private UserService userService;
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
-   
+
    @Resource
    UserAttributesCacheManager userAttributesCacheManager;
-   
+
    @Resource
    private NotesService notesService;
-   
+
    /**
     * @param processInstanceOid
     * @return
@@ -160,17 +162,18 @@ public class ProcessInstanceService
       List<EvaluationPolicy> policies = new ArrayList<EvaluationPolicy>();
       policies.add(HistoricalDataPolicy.INCLUDE_HISTORICAL_DATA);
       ProcessInstance rootProcessInstance = getProcessInstance(processInstanceOid, policies);
-      
-      if(rootProcessInstance.getRootProcessInstanceOID() != rootProcessInstance.getOID()){
+
+      if (rootProcessInstance.getRootProcessInstanceOID() != rootProcessInstance.getOID())
+      {
          rootProcessInstance = getProcessInstance(rootProcessInstance.getRootProcessInstanceOID(), policies);
       }
-      ProcessInstanceDTO rootProcessInstanceDTO  = processInstanceUtilsREST.buildProcessInstanceDTO(rootProcessInstance);
+      ProcessInstanceDTO rootProcessInstanceDTO = processInstanceUtilsREST.buildProcessInstanceDTO(rootProcessInstance);
       rootProcessInstanceDTO.notes = notesService.getProcessNotes(rootProcessInstanceDTO.oid, true);
-      
+
       traverseProcessInstanceHierarchy(rootProcessInstanceDTO, rootProcessInstance, policies);
       return rootProcessInstanceDTO;
    }
-   
+
    /**
     * @param processInstanceDTO
     * @param processInstance
@@ -180,26 +183,26 @@ public class ProcessInstanceService
          ProcessInstance processInstance, List<EvaluationPolicy> policies)
    {
       List<DataPathValueDTO> dataPathV = getProcessInstanceDocuments(processInstance.getOID());
-      
+
       // set historic data
       List<HistoricalData> histDataList = ((ProcessInstanceDetails) processInstance).getHistoricalData();
       // filter to get most recent instances only
-      histDataList = new ArrayList<HistoricalData>(getMostRecentDataValues(histDataList)); 
-      
+      histDataList = new ArrayList<HistoricalData>(getMostRecentDataValues(histDataList));
+
       if (CollectionUtils.isNotEmpty(histDataList))
       {
          List<HistoricalDataDTO> histDTOs = new ArrayList<HistoricalDataDTO>();
          for (HistoricalData historicalData : histDataList)
          {
             HistoricalDataDTO dataDTO = new HistoricalDataDTO();
-            
+
             dataDTO.name = I18nUtils.getLabel(historicalData.getData(), historicalData.getData().getName());
-            
+
             if (historicalData.getHistoricalDataValue() != null)
             {
                if (Date.class.equals(historicalData.getHistoricalDataValue().getClass()))
                {
-                  Long date = ((Date)historicalData.getHistoricalDataValue()).getTime();
+                  Long date = ((Date) historicalData.getHistoricalDataValue()).getTime();
                   dataDTO.value = String.valueOf(date);
                }
                else if (Boolean.class.equals(historicalData.getHistoricalDataValue().getClass()))
@@ -210,7 +213,7 @@ public class ProcessInstanceService
                {
                   dataDTO.value = historicalData.getHistoricalDataValue().toString();
                }
-               
+
                dataDTO.javaType = historicalData.getHistoricalDataValue().getClass().getName();
             }
 
@@ -218,13 +221,13 @@ public class ProcessInstanceService
             dataDTO.contextAIOID = historicalData.getModifyingActivityInstanceOID();
             dataDTO.modifiedBy = userAttributesCacheManager.getUserAttributes(historicalData.getModifyingUserOID(),
                   false);
-            
+
             histDTOs.add(dataDTO);
          }
          processInstanceDTO.historicalData = histDTOs;
       }
-      
-      //set attachments 
+
+      // set attachments
       for (DataPathValueDTO dataPathValueDTO : dataPathV)
       {
          if (dataPathValueDTO.dataPath.id.equals("PROCESS_ATTACHMENTS"))
@@ -233,25 +236,25 @@ public class ProcessInstanceService
             processInstanceDTO.attachments = dataPathValueDTO.documents;
          }
       }
-      
+
       processInstanceDTO.activityInstances = activityInstanceService
             .getActivityInstancesForProcess(processInstance.getOID(), false);
-      
+
       for (ActivityInstanceDTO adto : processInstanceDTO.activityInstances)
       {
          if ("Subprocess".equals(adto.activity.implementationTypeId))
          {
             ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
-            processInstanceQuery.getFilter().add(
-                  ProcessInstanceQuery.STARTING_ACTIVITY_INSTANCE_OID.isEqual(adto.activityOID));
+            processInstanceQuery.getFilter()
+                  .add(ProcessInstanceQuery.STARTING_ACTIVITY_INSTANCE_OID.isEqual(adto.activityOID));
 
             for (EvaluationPolicy policy : policies)
             {
                processInstanceQuery.setPolicy(policy);
             }
 
-            ProcessInstances processInstances = serviceFactoryUtils.getQueryService().getAllProcessInstances(
-                  processInstanceQuery);
+            ProcessInstances processInstances = serviceFactoryUtils.getQueryService()
+                  .getAllProcessInstances(processInstanceQuery);
             for (ProcessInstance processInstance2 : processInstances)
             {
                adto.startingProcessInstance = processInstanceUtilsREST.buildProcessInstanceDTO(processInstance2);
@@ -261,7 +264,7 @@ public class ProcessInstanceService
       }
       return processInstanceDTO;
    }
-   
+
    /**
     * @param histDataList
     * @return
@@ -329,8 +332,8 @@ public class ProcessInstanceService
          Model model = ModelCache.findModelCache().getModel(processDef.getModelOID());
          final InputDocumentsXto processDocuments = createProcessDocuments(documentDataDTO, documentInfoDTO);
          StartProcessWithDocumentsCommand command = new StartProcessWithDocumentsCommand(processDefinitionId,
-               model.getModelOID(), null, true,
-               WsApiStartProcessUtils.unmarshalToSerializable(processDocuments, model), null);
+               model.getModelOID(), null, true, WsApiStartProcessUtils.unmarshalToSerializable(processDocuments, model),
+               null);
 
          pi = (ProcessInstance) org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils.getWorkflowService()
                .execute(command);
@@ -345,7 +348,8 @@ public class ProcessInstanceService
 
    }
 
-   private InputDocumentsXto createProcessDocuments(DocumentDataDTO documentData, DocumentContentRequestDTO documentInfo)
+   private InputDocumentsXto createProcessDocuments(DocumentDataDTO documentData,
+         DocumentContentRequestDTO documentInfo)
    {
       final InputDocumentsXto inputDocs = new InputDocumentsXto();
       final InputDocumentXto inputDoc = new InputDocumentXto();
@@ -374,12 +378,13 @@ public class ProcessInstanceService
 
    private DataHandler createContent(DocumentDataDTO documentData, DocumentContentRequestDTO documentInfo)
    {
-      
+
       final DocumentInfo docInfo = DmsUtils.createDocumentInfo(documentInfo.name);
       docInfo.setContentType(documentInfo.contentType);
       docInfo.setOwner(processInstanceUtilsREST.getCurrentUser().getAccount());
       return new DataHandler(new DocumentContentDataSource(docInfo, documentInfo.contentBytes));
    }
+
    public List<ProcessInstanceDTO> getPendingProcesses(JsonObject json)
    {
       // TODO Auto-generated method stub
@@ -391,7 +396,7 @@ public class ProcessInstanceService
       // TODO Auto-generated method stub
       return null;
    }
- 
+
    /**
     * @author Yogesh.Manware
     * @param processOid
@@ -416,8 +421,8 @@ public class ProcessInstanceService
       else
       {
          // check if OUT dataPath exist
-         ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
-               processInstance.getModelOID(), processInstance.getProcessID());
+         ProcessDefinition processDefinition = ProcessDefinitionUtils
+               .getProcessDefinition(processInstance.getModelOID(), processInstance.getProcessID());
          ModelCache modelCache = ModelCache.findModelCache();
          Model model = modelCache.getModel(processInstance.getModelOID());
          List<DataPath> dataPaths = processDefinition.getAllDataPaths();
@@ -434,7 +439,8 @@ public class ProcessInstanceService
             dataDetails = (DataDetails) model.getData(dataPath.getData());
 
             if (Direction.OUT.equals(dataPath.getDirection()) || Direction.IN_OUT.equals(dataPath.getDirection())
-                  || (!DescriptorColumnUtils.isCompositeOrLinkDescriptor(dataPath) && DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId())))
+                  || (!DescriptorColumnUtils.isCompositeOrLinkDescriptor(dataPath)
+                        && DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId())))
             {
                outDataMappingExist = true;
                break;
@@ -443,8 +449,8 @@ public class ProcessInstanceService
 
          if (!outDataMappingExist)
          {
-            throw new I18NException(restCommonClientMessages.getParamString("processInstance.outDataPath.error",
-                  dataPathId));
+            throw new I18NException(
+                  restCommonClientMessages.getParamString("processInstance.outDataPath.error", dataPathId));
          }
 
          // determine DocumentType
@@ -468,15 +474,14 @@ public class ProcessInstanceService
    }
 
    /**
-    *  @author Yogesh.Manware
+    * @author Yogesh.Manware
     * @param processOid
     * @param dataPathId
     * @param documentId
     * @return
     * @throws Exception
     */
-   public void removeProcessDocument(long processOid, String dataPathId, String documentId)
-         throws Exception
+   public void removeProcessDocument(long processOid, String dataPathId, String documentId) throws Exception
    {
       ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
 
@@ -491,7 +496,7 @@ public class ProcessInstanceService
          serviceFactoryUtils.getWorkflowService().setOutDataPath(processOid, dataPathId, null);
       }
    }
-   
+
    /**
     * Returns process attachemtents and specific documents, if supported.
     * 
@@ -530,15 +535,16 @@ public class ProcessInstanceService
          try
          {
             ProcessInstanceUtils.setProcessPriority(oid, entry.getValue());
-            notificationMap.addSuccess(new NotificationDTO(oid, null, MessagesViewsCommonBean.getInstance()
-                  .getParamString("views.processTable.savePriorities.priorityChanged",
+            notificationMap.addSuccess(new NotificationDTO(oid, null,
+                  MessagesViewsCommonBean.getInstance().getParamString(
+                        "views.processTable.savePriorities.priorityChanged",
                         PriorityConverter.getPriorityLabel(entry.getValue()))));
 
          }
          catch (AccessForbiddenException exception)
          {
-            notificationMap.addFailure(new NotificationDTO(oid, null, MessagesViewsCommonBean.getInstance().getString(
-                  "common.authorization.msg")));
+            notificationMap.addFailure(new NotificationDTO(oid, null,
+                  MessagesViewsCommonBean.getInstance().getString("common.authorization.msg")));
             trace.error("Authorization exception occurred while changing process priority: ", exception);
          }
          catch (Exception exception)
@@ -635,8 +641,8 @@ public class ProcessInstanceService
       }.getType();
 
       @SuppressWarnings("unchecked")
-      List<Long> processes = (List<Long>) GsonUtils
-            .extractList(GsonUtils.extractJsonArray(json, "processes"), listType);
+      List<Long> processes = (List<Long>) GsonUtils.extractList(GsonUtils.extractJsonArray(json, "processes"),
+            listType);
 
       if (AbortScope.RootHierarchy.toString().equalsIgnoreCase(scope))
       {
@@ -652,8 +658,8 @@ public class ProcessInstanceService
 
    public QueryResultDTO getProcessInstances(ProcessInstanceQuery query, DataTableOptionsDTO options)
    {
-      QueryResult< ? extends ProcessInstance> queryResult = processInstanceUtilsREST
-            .getProcessInstances(query, options);
+      QueryResult< ? extends ProcessInstance> queryResult = processInstanceUtilsREST.getProcessInstances(query,
+            options);
       return processInstanceUtilsREST.buildProcessListResult(queryResult);
    }
 
@@ -691,17 +697,17 @@ public class ProcessInstanceService
    {
       JoinProcessDTO processDTO = GsonUtils.fromJson(processData, JoinProcessDTO.class);
 
-      return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.abortAndJoinProcess(
-            Long.parseLong(processDTO.sourceProcessOID), Long.parseLong(processDTO.targetProcessOID),
-            processDTO.linkComment));
+      return GsonUtils.toJsonHTMLSafeString(
+            processInstanceUtilsREST.abortAndJoinProcess(Long.parseLong(processDTO.sourceProcessOID),
+                  Long.parseLong(processDTO.targetProcessOID), processDTO.linkComment));
    }
 
    public String getRelatedProcesses(String processData, boolean matchAny, boolean searchCases)
    {
       List<Long> processInstOIDs = JsonDTO.getAsList(processData, Long.class);
 
-      return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.getRelatedProcesses(processInstOIDs, matchAny,
-            searchCases));
+      return GsonUtils
+            .toJsonHTMLSafeString(processInstanceUtilsREST.getRelatedProcesses(processInstOIDs, matchAny, searchCases));
    }
 
    /**
@@ -739,13 +745,13 @@ public class ProcessInstanceService
    public ProcessInstanceDTO getCorrespondenceProcessInstanceDTO(Long oid)
    {
       ProcessInstance processInstance = ProcessInstanceUtils.getCorrespondenceProcessInstance(oid);
-      return processInstanceUtilsREST.buildProcessInstanceDTO(processInstance);   
+      return processInstanceUtilsREST.buildProcessInstanceDTO(processInstance);
    }
-   
+
    /**
     * @param oid
     * @return
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     */
    public FolderDTO getCorrespondenceFolderDTO(Long oid) throws ResourceNotFoundException
    {
@@ -759,11 +765,11 @@ public class ProcessInstanceService
     */
    public AbstractDTO findByStartingActivityOid(Long aOid)
    {
-      ProcessInstance process =  processInstanceUtilsREST.findByStartingActivityOid(aOid);
-      ProcessInstanceDTO dto =  processInstanceUtilsREST.buildProcessInstanceDTO(process);
+      ProcessInstance process = processInstanceUtilsREST.findByStartingActivityOid(aOid);
+      ProcessInstanceDTO dto = processInstanceUtilsREST.buildProcessInstanceDTO(process);
       return dto;
    }
-   
+
    /**
     * @param processInstanceOid
     * @return
@@ -773,7 +779,7 @@ public class ProcessInstanceService
    {
       String faxFormat = CorrespondencePanelPreferenceUtils.getCorrespondencePreferenceForUser(
             processInstanceUtilsREST.getCurrentUser(), UserPreferencesEntries.F_CORRESPONDENCE_NUMBER_FORMAT);
-      
+
       return (List<AddressBookDataPathValueDTO>) getDataPathValueDTO(getProcessInstance(processInstanceOid),
             new AddressBookDataPathValueFilter(faxFormat), null);
    }
@@ -785,7 +791,8 @@ public class ProcessInstanceService
    @SuppressWarnings({"unchecked"})
    public List<DataPathValueDTO> getAllDataPathValuesDTO(long processInstanceOid)
    {
-      return (List<DataPathValueDTO>)getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter(), null);
+      return (List<DataPathValueDTO>) getDataPathValueDTO(getProcessInstance(processInstanceOid),
+            new DefaultDataPathValueFilter(), null);
    }
 
    /**
@@ -796,18 +803,19 @@ public class ProcessInstanceService
    @SuppressWarnings({"unchecked"})
    public List<DataPathValueDTO> getDataPathValueFor(long processInstanceOid, String dataPathId)
    {
-      return (List<DataPathValueDTO>) getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter(), dataPathId);
+      return (List<DataPathValueDTO>) getDataPathValueDTO(getProcessInstance(processInstanceOid),
+            new DefaultDataPathValueFilter(), dataPathId);
    }
-   
+
    /**
     * @param processInstance
     * @param dataPathValueFilter
     * @return
     */
-   public List<? extends AbstractDTO> getDataPathValueDTO(ProcessInstance processInstance,
+   public List< ? extends AbstractDTO> getDataPathValueDTO(ProcessInstance processInstance,
          IDataPathValueFilter dataPathValueFilter, String dataPathId)
    {
-      List<? extends AbstractDTO> dataPathDtoList = new ArrayList<AbstractDTO>();
+      List< ? extends AbstractDTO> dataPathDtoList = new ArrayList<AbstractDTO>();
       ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
             processInstance.getProcessID());
 
@@ -830,7 +838,7 @@ public class ProcessInstanceService
 
          Set<String> dataPathIds = new HashSet<String>();
          List<DataPath> inDataPaths = new ArrayList<DataPath>();
-         
+
          for (DataPath dataPath : dataPaths)
          {
             if (dataPath == null)
@@ -846,8 +854,8 @@ public class ProcessInstanceService
             }
          }
 
-         Map<String, Serializable> dataValues = ContextPortalServices.getWorkflowService().getInDataPaths(
-               processInstance.getOID(), dataPathIds);
+         Map<String, Serializable> dataValues = ContextPortalServices.getWorkflowService()
+               .getInDataPaths(processInstance.getOID(), dataPathIds);
 
          for (DataPath dataPath : inDataPaths)
          {
@@ -857,29 +865,29 @@ public class ProcessInstanceService
       }
       return dataPathDtoList;
    }
-   
+
    public boolean setDataPaths(long processInstanceOid, Map<String, Object> dataPathMap)
    {
       try
       {
          ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
-         ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
-               processInstance.getModelOID(), processInstance.getProcessID());
+         ProcessDefinition processDefinition = ProcessDefinitionUtils
+               .getProcessDefinition(processInstance.getModelOID(), processInstance.getProcessID());
          List<DataPath> dataPaths = processDefinition.getAllDataPaths();
          Map<String, DataPath> outDataPathMap = CollectionUtils.newHashMap();
          Map<String, Object> outDataPathValues = CollectionUtils.newHashMap();
-         trace.info("Process Instance OID ::"+ processInstanceOid);
+         trace.info("Process Instance OID ::" + processInstanceOid);
          trace.info("List of DataPath received at setDataPath ::");
-         for(Entry<String, Object> path : dataPathMap.entrySet())
+         for (Entry<String, Object> path : dataPathMap.entrySet())
          {
-            trace.info("Data Path ID ---> "+ path.getKey() + " --> Value ---> " + path.getValue());
+            trace.info("Data Path ID ---> " + path.getKey() + " --> Value ---> " + path.getValue());
          }
          for (DataPath dataPath : dataPaths)
          {
             if (DescriptorFilterUtils.isDataFilterable(dataPath)
                   && !DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPath.getId()))
             {
-               
+
                if (dataPathMap.containsKey(dataPath.getId()) && !Direction.IN.equals(dataPath.getDirection()))
                {
                   outDataPathMap.put(dataPath.getId(), dataPath);
@@ -890,7 +898,7 @@ public class ProcessInstanceService
                trace.error(" Nested or Complex DataPath --> " + dataPath.getId() + " --> Type  "
                      + dataPath.getMappedType() + " --> Direction -->" + dataPath.getDirection());
             }
-            
+
          }
          if (CollectionUtils.isNotEmpty(outDataPathMap))
          {
@@ -901,7 +909,7 @@ public class ProcessInstanceService
                outDataPathValues.put(outDataPath.getId(),
                      DescriptorFilterUtils.convertDataPathValue(outDataPath.getMappedType(), value));
             }
-            
+
             ContextPortalServices.getWorkflowService().setOutDataPaths(processInstance.getOID(), outDataPathValues);
          }
          else
@@ -929,7 +937,7 @@ public class ProcessInstanceService
    {
       return getProcessInstance(processInstanceOid, null);
    }
-   
+
    /**
     * @param processInstanceOid
     * @param policies
@@ -940,12 +948,12 @@ public class ProcessInstanceService
       ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid, policies);
       if (processInstance == null)
       {
-         throw new I18NException(restCommonClientMessages.getParamString("processInstance.notFound",
-               String.valueOf(processInstanceOid)));
+         throw new I18NException(
+               restCommonClientMessages.getParamString("processInstance.notFound", String.valueOf(processInstanceOid)));
       }
       return processInstance;
    }
-   
+
    private class DataContext
    {
       private Data data;
@@ -989,16 +997,30 @@ public class ProcessInstanceService
          return true;
       }
    }
-   
-   public List<DescriptorItemTableEntry> getProcessDescriptorsWithModifyByAndDate(Long oid){
-	   ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, true, false);
-	   List<DescriptorItemTableEntry> descriptorList = processInstanceUtilsREST.fetchDescriptorsWithLastModified(process);
-	   return descriptorList;
+
+   /**
+    * @param oid
+    * @return
+    */
+   public List<DescriptorItemTableEntry> getProcessDescriptorsWithModifyByAndDate(Long oid)
+   {
+      ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, true, false);
+      List<DescriptorItemTableEntry> descriptorList = processInstanceUtilsREST
+            .fetchDescriptorsWithLastModified(process);
+      return descriptorList;
    }
-   
-   public boolean updateDescriptor(long processInstanceOid,String dataPathId, Object newValue){
-	   ContextPortalServices.getWorkflowService().setOutDataPath(processInstanceOid,
-			   dataPathId, newValue);
-	   return true;
+
+   /**
+    * @param processInstanceOid
+    * @param dataPathId
+    * @param newValue
+    * @return
+    * @throws InvalidValueException
+    * @throws ObjectNotFoundException
+    */
+   public boolean updateDescriptor(long processInstanceOid, String dataPathId, Object newValue) throws InvalidValueException,ObjectNotFoundException
+   {      
+      ContextPortalServices.getWorkflowService().setOutDataPath(processInstanceOid, dataPathId, newValue);
+      return true;
    }
 }

@@ -144,7 +144,7 @@ public class ProcessInstanceUtils
    private static final Logger trace = LogManager.getLogger(ProcessInstanceUtils.class);
 
    private static final String COL_PROCESS_NAME = "processName";
-   
+
    private static final String COL_ROOT_PROCESS_NAME = "rootProcessName";
 
    private static final String COL_PROCESS_INSTANCE_OID = "processOID";
@@ -181,13 +181,16 @@ public class ProcessInstanceUtils
       ProcessInstance pi = null;
       ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
       query.where(ProcessInstanceQuery.OID.isEqual(oid));
-      
-      if(fetchDescriptors){
+
+      if (fetchDescriptors)
+      {
          query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-      }else{
+      }
+      else
+      {
          query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
       }
-    
+
       if (withHierarchyInfo)
       {
          ProcessInstanceDetailsPolicy processInstanceDetailsPolicy = new ProcessInstanceDetailsPolicy(
@@ -198,7 +201,7 @@ public class ProcessInstanceUtils
       }
 
       ProcessInstances pis = serviceFactoryUtils.getQueryService().getAllProcessInstances(query);
-      
+
       if (!pis.isEmpty())
       {
          pi = pis.get(0);
@@ -234,14 +237,13 @@ public class ProcessInstanceUtils
       }
       return pi;
    }
-   
-   
+
    /**
     * @param oid
     * @param fetchDescriptors
     * @param withEvents
     * @return
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     */
    public ProcessInstances getAllProcessInstances(long oid, boolean fetchDescriptors, boolean withEvents)
          throws ResourceNotFoundException
@@ -250,12 +252,13 @@ public class ProcessInstanceUtils
 
       if (null == processInstance)
       {
-         throw new ResourceNotFoundException(MessagesViewsCommonBean.getInstance().getParamString(
-               "common.process.instance.notfound", String.valueOf(oid)));
+         throw new ResourceNotFoundException(MessagesViewsCommonBean.getInstance()
+               .getParamString("common.process.instance.notfound", String.valueOf(oid)));
       }
 
       ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
-      query.getFilter().and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.isEqual(processInstance.getRootProcessInstanceOID()));
+      query.getFilter()
+            .and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.isEqual(processInstance.getRootProcessInstanceOID()));
       query.orderBy(ProcessInstanceQuery.START_TIME);
 
       if (withEvents)
@@ -283,7 +286,7 @@ public class ProcessInstanceUtils
     */
    public ProcessInstance getProcessInstance(long oid)
    {
-      return getProcessInstance( oid, false, false);
+      return getProcessInstance(oid, false, false);
    }
 
    public User getCurrentUser()
@@ -299,8 +302,8 @@ public class ProcessInstanceUtils
    {
       if (null != instance)
       {
-         StringBuilder processLabel = new StringBuilder(I18nUtils.getProcessName(processDefinitionUtils
-               .getProcessDefinition(instance.getModelOID(), instance.getProcessID())));
+         StringBuilder processLabel = new StringBuilder(I18nUtils.getProcessName(
+               processDefinitionUtils.getProcessDefinition(instance.getModelOID(), instance.getProcessID())));
          return processLabel.toString();
       }
       return "";
@@ -478,9 +481,8 @@ public class ProcessInstanceUtils
          {
             if (rootProcessInstance.isCaseProcessInstance())
             {
-               if (sourceProcessInstance.getParentProcessInstanceOid() > 0
-                     & (sourceProcessInstance.getParentProcessInstanceOid() != sourceProcessInstance
-                           .getRootProcessInstanceOID()))
+               if (sourceProcessInstance.getParentProcessInstanceOid() > 0 & (sourceProcessInstance
+                     .getParentProcessInstanceOid() != sourceProcessInstance.getRootProcessInstanceOID()))
                {
                   return getProcessInstance(sourceProcessInstance.getParentProcessInstanceOid());
                }
@@ -519,8 +521,10 @@ public class ProcessInstanceUtils
     */
    public boolean isAbortableState(ProcessInstance processInstance)
    {
-      boolean abortable = processInstance == null ? false : !ProcessInstanceState.Aborted.equals(processInstance
-            .getState()) && !ProcessInstanceState.Completed.equals(processInstance.getState());
+      boolean abortable = processInstance == null
+            ? false
+            : !ProcessInstanceState.Aborted.equals(processInstance.getState())
+                  && !ProcessInstanceState.Completed.equals(processInstance.getState());
       return abortable;
    }
 
@@ -641,8 +645,8 @@ public class ProcessInstanceUtils
          WorkflowService ws = serviceFactoryUtils.getWorkflowService();
          Object o = ws.getInDataPath(processInstance.getOID(), DmsConstants.PATH_ID_ATTACHMENTS);
 
-         DataDetails data = (DataDetails) modelUtils.getModel(processInstance.getModelOID()).getData(
-               DmsConstants.PATH_ID_ATTACHMENTS);
+         DataDetails data = (DataDetails) modelUtils.getModel(processInstance.getModelOID())
+               .getData(DmsConstants.PATH_ID_ATTACHMENTS);
          if (DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST.equals(data.getTypeId()))
          {
             processAttachments = (List<Document>) o;
@@ -659,8 +663,10 @@ public class ProcessInstanceUtils
    public List<Document> getProcessInstanceDocumentsForDataPath(ProcessInstance processInstance, String dataPathId)
    {
       List<Document> docList = new ArrayList<Document>();
-      Object objectDocument = serviceFactoryUtils.getWorkflowService().getInDataPath(processInstance.getOID(), dataPathId);
-      if (objectDocument != null && objectDocument instanceof Document) {
+      Object objectDocument = serviceFactoryUtils.getWorkflowService().getInDataPath(processInstance.getOID(),
+            dataPathId);
+      if (objectDocument != null && objectDocument instanceof Document)
+      {
          docList.add((Document) objectDocument);
       }
 
@@ -741,8 +747,8 @@ public class ProcessInstanceUtils
 
    public List<ProcessDefinition> getTargetProcessesForSpawnSwitch() throws Exception
    {
-      ProcessDefinitions pds = serviceFactoryUtils.getQueryService().getProcessDefinitions(
-            ProcessDefinitionQuery.findStartable());
+      ProcessDefinitions pds = serviceFactoryUtils.getQueryService()
+            .getProcessDefinitions(ProcessDefinitionQuery.findStartable());
 
       List<ProcessDefinition> filteredPds = new ArrayList<ProcessDefinition>(pds);
       processDefinitionUtils.sort(filteredPds);
@@ -809,7 +815,8 @@ public class ProcessInstanceUtils
       return notAbortableProcesses;
    }
 
-   public List<AbortNotificationDTO> switchProcess(List<Long> processInstOIDs, String processId, String linkComment, Boolean pauseParentProcess)
+   public List<AbortNotificationDTO> switchProcess(List<Long> processInstOIDs, String processId, String linkComment,
+         Boolean pauseParentProcess)
    {
       List<AbortNotificationDTO> newProcessInstances = new ArrayList<AbortNotificationDTO>();
 
@@ -820,8 +827,8 @@ public class ProcessInstanceUtils
          ProcessInstance srcProcessInstance = getProcessInstance(processInstOID);
 
          // First check the permission
-         if (!pauseParentProcess && (!AuthorizationUtils.hasAbortPermission(srcProcessInstance) || !isAbortable(srcProcessInstance)
-               || srcProcessInstance.isCaseProcessInstance()))
+         if (!pauseParentProcess && (!AuthorizationUtils.hasAbortPermission(srcProcessInstance)
+               || !isAbortable(srcProcessInstance) || srcProcessInstance.isCaseProcessInstance()))
          {
             continue;
          }
@@ -842,17 +849,16 @@ public class ProcessInstanceUtils
             SpawnOptions options;
             if (pauseParentProcess)
             {
-               
+
                options = new SpawnOptions(null, SpawnMode.HALT, linkComment, dataCopyOptions);
-              
+
             }
             else
             {
                options = new SpawnOptions(null, SpawnMode.ABORT, linkComment, dataCopyOptions);
             }
-            
-            pi = serviceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(processInstOID, processId,
-                  options);
+
+            pi = serviceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(processInstOID, processId, options);
 
             if (pi != null)
             {
@@ -866,8 +872,8 @@ public class ProcessInstanceUtils
          }
          catch (Exception e)
          {
-            trace.error("Unable to abort the process with oid: " + processInstOID + " and target process id: "
-                  + processId);
+            trace.error(
+                  "Unable to abort the process with oid: " + processInstOID + " and target process id: " + processId);
             trace.error(e, e);
 
             switchNotificationDTO.statusMessage = propsBean.getString("common.fail");
@@ -1384,9 +1390,8 @@ public class ProcessInstanceUtils
          validationMessage.message = propsBean.getString("views.attachToCase.specifyActiveProcess");
          return validationMessage;
       }
-      else if (!caseScope
-            && (ProcessInstanceState.ABORTED == targetInstance.getState().getValue() || ProcessInstanceState.COMPLETED == targetInstance
-                  .getState().getValue()))
+      else if (!caseScope && (ProcessInstanceState.ABORTED == targetInstance.getState().getValue()
+            || ProcessInstanceState.COMPLETED == targetInstance.getState().getValue()))
       {
          validationMessage.message = propsBean.getString("views.attachToCase.specifyActiveCase");
          return validationMessage;
@@ -1414,11 +1419,11 @@ public class ProcessInstanceUtils
                      {
                         notificationMap.addFailure(new NotificationDTO(processInstanceOid,
                               org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                                    .getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance()
-                                    .getParamString(
-                                          "views.switchProcessDialog.caseAbort.message",
-                                          org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                                                .getProcessStateLabel(processInstance))));
+                                    .getProcessLabel(processInstance),
+                              MessagesViewsCommonBean.getInstance().getParamString(
+                                    "views.switchProcessDialog.caseAbort.message",
+                                    org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                                          .getProcessStateLabel(processInstance))));
                      }
                      else
                      {
@@ -1437,7 +1442,8 @@ public class ProcessInstanceUtils
                      trace.error(e);
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
                            org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                           .getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getParamString(
+                                 .getProcessLabel(processInstance),
+                           MessagesViewsCommonBean.getInstance().getParamString(
                                  "views.common.process.abortProcess.failureMsg2",
                                  ExceptionHandler.getExceptionMessage(e))));
                   }
@@ -1449,7 +1455,8 @@ public class ProcessInstanceUtils
                   {
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
                            org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                           .getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getParamString(
+                                 .getProcessLabel(processInstance),
+                           MessagesViewsCommonBean.getInstance().getParamString(
                                  "views.common.process.abortProcess.failureMsg3",
                                  org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
                                        .getProcessStateLabel(processInstance))));
@@ -1458,8 +1465,9 @@ public class ProcessInstanceUtils
                   {
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
                            org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                           .getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance().getString(
-                                 "views.common.process.abortProcess.failureMsg1")));
+                                 .getProcessLabel(processInstance),
+                           MessagesViewsCommonBean.getInstance()
+                                 .getString("views.common.process.abortProcess.failureMsg1")));
                   }
                }
             }
@@ -1567,7 +1575,7 @@ public class ProcessInstanceUtils
       {
          return;
       }
-    
+
       List<String> processFilter = null;
 
       ProcessTableFilterDTO filterDTO = (ProcessTableFilterDTO) options.filter;
@@ -1658,11 +1666,11 @@ public class ProcessInstanceUtils
             {
                or.add(new ProcessDefinitionFilter(processQId, false));
             }
-            
+
             processFilter = filterDTO.processName.processes;
          }
       }
-      
+
       // Root process name Filter
       if (null != filterDTO.rootProcessName)
       {
@@ -1724,7 +1732,7 @@ public class ProcessInstanceUtils
          query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
       }
    }
-   
+
    /**
     * 
     * @param processFilter
@@ -1746,16 +1754,15 @@ public class ProcessInstanceUtils
          {
             for (String processQId : processFilter)
             {
-               Map<String, DataPath> procDescriptors = allFilterableDescriptorsByProcess
-                     .get(processQId);
+               Map<String, DataPath> procDescriptors = allFilterableDescriptorsByProcess.get(processQId);
                if (null != procDescriptors && procDescriptors.containsKey(dataId))
                {
                   dataPaths = procDescriptors.values();
 
                   if (trace.isDebugEnabled())
                   {
-                     trace.debug("Descriptor Filtering:: Using Descriptors from Process: "
-                           + processQId + ", because of filtering on dataId: " + dataId);
+                     trace.debug("Descriptor Filtering:: Using Descriptors from Process: " + processQId
+                           + ", because of filtering on dataId: " + dataId);
                   }
 
                   break;
@@ -1775,7 +1782,6 @@ public class ProcessInstanceUtils
 
       return dataPaths;
    }
-   
 
    /**
     * Add filter on descriptor columns .
@@ -1783,23 +1789,20 @@ public class ProcessInstanceUtils
     * @param query
     * @param processListFilterDTO
     */
-   public static void addDescriptorFilters(Query query,
-         ProcessTableFilterDTO processListFilterDTO, List<String> processFilter)
+   public static void addDescriptorFilters(Query query, ProcessTableFilterDTO processListFilterDTO,
+         List<String> processFilter)
    {
 
       Map<String, DescriptorFilterDTO> descFilterMap = processListFilterDTO.descriptorFilterMap;
 
       if (null != descFilterMap)
       {
-         Collection<DataPath> dataPaths = getRelevantDataPaths(processFilter,
-               descFilterMap);
+         Collection<DataPath> dataPaths = getRelevantDataPaths(processFilter, descFilterMap);
 
-         GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel
-               .create(dataPaths);
+         GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel.create(dataPaths);
          filterModel.setFilterEnabled(true);
 
-         for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap
-               .entrySet())
+         for (Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap.entrySet())
          {
             Object value = null;
             String key = descriptor.getKey();
@@ -1960,26 +1963,26 @@ public class ProcessInstanceUtils
          }
 
       }
-      
+
       QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = list;
-      resultDTO.totalCount = (queryResult == null) ? 0: queryResult.getTotalCount();
+      resultDTO.totalCount = (queryResult == null) ? 0 : queryResult.getTotalCount();
 
       return resultDTO;
    }
 
-   
    /**
     * 
     * @param processInstance
-    * @return 
+    * @return
     */
-   public ProcessInstanceDTO buildProcessInstanceDTO(ProcessInstance pi ){
+   public ProcessInstanceDTO buildProcessInstanceDTO(ProcessInstance pi)
+   {
 
       ProcessInstanceDTO dto = new ProcessInstanceDTO();
 
-      ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(
-            pi.getModelOID(), pi.getProcessID());
+      ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(pi.getModelOID(),
+            pi.getProcessID());
 
       dto.auxillary = isAuxiliaryProcess(processDefinition);
       dto.processInstanceRootOID = pi.getRootProcessInstanceOID();
@@ -1992,41 +1995,39 @@ public class ProcessInstanceUtils
       priority.setLabel(pi.getPriority());
       priority.setName(pi.getPriority());
       dto.priority = priority;
-      
+
       dto.startTime = pi.getStartTime().getTime();
-      dto.duration = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-            .getDuration(pi);
+      dto.duration = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getDuration(pi);
       dto.processName = I18nUtils.getProcessName(processDefinition);
       dto.rootProcessName = pi.getRootProcessInstanceName();
-      
+
       String startingUserLabel = UserUtils.getUserDisplayLabel(pi.getStartingUser());
       dto.createUser = startingUserLabel;
 
       // Update Document Descriptors for process
       dto.descriptorValues = getDescriptorValues(pi, processDefinition);
-      //For descriptor column display values
-      dto.processDescriptorsValues = getProcessDescriptorValues(processDefinition, ((ProcessInstanceDetails) pi).getDescriptors(), pi);
+      // For descriptor column display values
+      dto.processDescriptorsValues = getProcessDescriptorValues(processDefinition,
+            ((ProcessInstanceDetails) pi).getDescriptors(), pi);
       dto.supportsProcessAttachments = processDefinitionUtils.supportsProcessAttachments(processDefinition);
 
-      CommonDescriptorUtils.updateProcessDocumentDescriptors(
-            ((ProcessInstanceDetails) pi).getDescriptors(), pi, processDefinition);
+      CommonDescriptorUtils.updateProcessDocumentDescriptors(((ProcessInstanceDetails) pi).getDescriptors(), pi,
+            processDefinition);
 
       if (null != pi.getTerminationTime())
       {
          dto.endTime = pi.getTerminationTime().getTime();
       }
       dto.startingUser = startingUserLabel;
-      dto.status = new StatusDTO(pi.getState().getValue(),  org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-            .getProcessStateLabel(pi));
-      
-      dto.enableTerminate = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-            .isAbortable(pi);
+      dto.status = new StatusDTO(pi.getState().getValue(),
+            org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessStateLabel(pi));
+
+      dto.enableTerminate = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.isAbortable(pi);
       dto.enableRecover = true;
       dto.checkSelection = false;
       dto.modifyProcessInstance = AuthorizationUtils.hasPIModifyPermission(pi);
 
-      List<Note> notes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-            .getNotes(pi);
+      List<Note> notes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(pi);
       if (null != notes)
       {
          dto.notesCount = notes.size();
@@ -2034,8 +2035,7 @@ public class ProcessInstanceUtils
       dto.caseInstance = pi.isCaseProcessInstance();
       if (dto.caseInstance)
       {
-         dto.caseOwner = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-               .getCaseOwnerName(pi);
+         dto.caseOwner = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getCaseOwnerName(pi);
       }
 
       dto.oldPriority = dto.priority;
@@ -2047,8 +2047,8 @@ public class ProcessInstanceUtils
    private Map<String, DescriptorDTO> getProcessDescriptorValues(ProcessDefinition processDefinition,
          Map<String, Object> descriptors, ProcessInstance pi)
    {
-      List<ProcessDescriptor> processDescriptorsList = CommonDescriptorUtils.getProcessDescriptorValues(
-            processDefinition, descriptors);
+      List<ProcessDescriptor> processDescriptorsList = CommonDescriptorUtils
+            .getProcessDescriptorValues(processDefinition, descriptors);
       Map<String, DescriptorDTO> processDescriptorValues = new LinkedHashMap<String, DescriptorDTO>();
 
       for (Object descriptor : processDescriptorsList)
@@ -2082,7 +2082,8 @@ public class ProcessInstanceUtils
             DescriptorDTO descriptorDto = null;
             if (desc.isLink())
             {
-               // Fetch the dataPath from Process Instance to read instance 'Link Text' attribute value
+               // Fetch the dataPath from Process Instance to read instance 'Link Text'
+               // attribute value
                List<DataPath> dataPaths = pi.getDescriptorDefinitions();
                String linkText = DescriptorColumnUtils.getLinkDescriptorText(desc.getId(), dataPaths);
                descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null, desc.isLink(), linkText);
@@ -2114,7 +2115,7 @@ public class ProcessInstanceUtils
          dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
                .getBenchmarkLabel(processInstance);
          dto.value = processInstance.getBenchmarkResult().getCategory();
-         dto.oid =  processInstance.getBenchmark();
+         dto.oid = processInstance.getBenchmark();
       }
       return dto;
    }
@@ -2141,8 +2142,8 @@ public class ProcessInstanceUtils
          }
          else
          {
-            processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(descriptorValues,
-                  processDefinition, true, true);
+            processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(descriptorValues, processDefinition,
+                  true, true);
 
          }
 
@@ -2174,8 +2175,8 @@ public class ProcessInstanceUtils
          }
          else
          {
-            processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(
-                  processInstanceDetails.getDescriptors(), processDefinition, true);
+            processDescriptorsList = CommonDescriptorUtils
+                  .createProcessDescriptors(processInstanceDetails.getDescriptors(), processDefinition, true);
          }
       }
       else
@@ -2188,7 +2189,8 @@ public class ProcessInstanceUtils
    /**
     * 
     */
-   private Map<String, DescriptorDTO> getProcessDescriptors(List<ProcessDescriptor> processDescriptorsList, ProcessInstance processInstance)
+   private Map<String, DescriptorDTO> getProcessDescriptors(List<ProcessDescriptor> processDescriptorsList,
+         ProcessInstance processInstance)
    {
       Map<String, DescriptorDTO> descriptors = new LinkedHashMap<String, DescriptorDTO>();
       for (Object descriptor : processDescriptorsList)
@@ -2209,24 +2211,26 @@ public class ProcessInstanceUtils
             }
 
             boolean isDocument = true;
-            if(documents.isEmpty()){             
+            if (documents.isEmpty())
+            {
                isDocument = false;
             }
-            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), isDocument, documents); 
+            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), isDocument, documents);
             descriptors.put(desc.getId(), descriptorDto);
          }
          else
          {
             ProcessDescriptor desc = (ProcessDescriptor) descriptor;
             DescriptorDTO descriptorDto = null;
-            if(desc.isLink())
+            if (desc.isLink())
             {
-               String linkText = DescriptorColumnUtils.getLinkDescriptorText(desc.getId(), processInstance.getDescriptorDefinitions());
-               descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null, desc.isLink(), linkText);
+               String linkText = DescriptorColumnUtils.getLinkDescriptorText(desc.getId(),
+                     processInstance.getDescriptorDefinitions());
+               descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null, desc.isLink(), linkText);
             }
             else
             {
-               descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null);
+               descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null);
             }
             descriptors.put(desc.getId(), descriptorDto);
          }
@@ -2345,8 +2349,6 @@ public class ProcessInstanceUtils
 
       processListFilterDTO.descriptorFilterMap = descriptorColumnMap;
    }
-   
-   
 
    /**
     * 
@@ -2358,7 +2360,7 @@ public class ProcessInstanceUtils
       ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
       query.getFilter().add(ProcessInstanceQuery.STARTING_ACTIVITY_INSTANCE_OID.isEqual(aOid));
       query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
-    
+
       ProcessInstances pis = serviceFactoryUtils.getQueryService().getAllProcessInstances(query);
       ProcessInstance pi = null;
       if (!pis.isEmpty())
@@ -2367,124 +2369,172 @@ public class ProcessInstanceUtils
       }
       return pi;
    }
-   
-   public List<DescriptorItemTableEntry> fetchDescriptorsWithLastModified(ProcessInstance pi){
-	   
-	   List<DescriptorItemTableEntry> descriptorList = new ArrayList<DescriptorItemTableEntry>();
-	   
-	   
-	   Map<String, DataPathDetails> inDataPathsMap = CollectionUtils.newHashMap();
-	   Map<String, DataPathDetails> outDataPathsMap = CollectionUtils.newHashMap();
-	   Map<String,HistoricalEvent> dataPathHistoryMap = CollectionUtils.newHashMap();
-	   
-	   //Populate in and out data path maps
-	   ProcessDefinition processDef = ProcessDefinitionUtils.getProcessDefinition(pi.getModelOID(),
-	            pi.getProcessID());
-	   List<DataPathDetails> dataPaths = processDef.getAllDataPaths();
-	   DataPathDetails dataPathDetails;
-	   int size = dataPaths.size();
-	   for (int i = 0; i < size; i++)
-	   {
-	      dataPathDetails = (DataPathDetails) dataPaths.get(i);
-	      if(null != dataPathDetails.getDirection())
-	      {
-	         if(dataPathDetails.getDirection().equals(Direction.OUT))
-	         {
-	            outDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);  
-	         }
-	         else
-	         {
-	            inDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);
-	         }
-	      }
-	   }
-	   
-	   /*List<HistoricalEvent> events = DescriptorColumnUtils.getProcessDescriptorsHistory(pi);*/
-	   
-	   updateDataPathHistoryMap(pi,outDataPathsMap,dataPathHistoryMap);
-	   
-	   descriptorList = fetchProcessDescriptorsAndAddHistoryDetails(pi, dataPathHistoryMap, inDataPathsMap, outDataPathsMap);
-      
-	   return descriptorList;
+
+   /**
+    * @param pi
+    * @return
+    */
+   public List<DescriptorItemTableEntry> fetchDescriptorsWithLastModified(ProcessInstance pi)
+   {
+
+      List<DescriptorItemTableEntry> descriptorList = new ArrayList<DescriptorItemTableEntry>();
+
+      Map<String, DataPathDetails> inDataPathsMap = CollectionUtils.newHashMap();
+      Map<String, DataPathDetails> outDataPathsMap = CollectionUtils.newHashMap();
+      Map<String, HistoricalEvent> dataPathHistoryMap = CollectionUtils.newHashMap();
+
+      // Populate in and out data path maps
+      ProcessDefinition processDef = ProcessDefinitionUtils.getProcessDefinition(pi.getModelOID(), pi.getProcessID());
+      List<DataPathDetails> dataPaths = processDef.getAllDataPaths();
+      DataPathDetails dataPathDetails;
+      int size = dataPaths.size();
+      for (int i = 0; i < size; i++)
+      {
+         dataPathDetails = (DataPathDetails) dataPaths.get(i);
+         if (null != dataPathDetails.getDirection())
+         {
+            if (dataPathDetails.getDirection().equals(Direction.OUT))
+            {
+               outDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);
+            }
+            else
+            {
+               inDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);
+            }
+         }
+      }
+
+      dataPathHistoryMap = getDataPathHistoryMap(pi, outDataPathsMap);
+
+      descriptorList = fetchProcessDescriptorsAndAddHistoryDetails(pi, dataPathHistoryMap, inDataPathsMap,
+            outDataPathsMap);
+
+      return descriptorList;
    }
-   
-   private void updateDataPathHistoryMap(ProcessInstance pi,Map<String, DataPathDetails> outDataPathsMap, Map<String,HistoricalEvent> dataPathHistoryMap){
-	   List<HistoricalEvent> events = CollectionUtils.newArrayList();
-	   events = DescriptorColumnUtils.getProcessDescriptorsHistory(pi);
-	   for (HistoricalEvent event : events)
-       {
-		   String descriptorDetails = (String)event.getDetails();
-		   if (StringUtils.isNotEmpty(descriptorDetails))
-           {
-              if (descriptorDetails.contains("'"))
-              {
-            	  String[] token = descriptorDetails.split("'");
-                  String dataPathId = token[5];
-                  DataPath dataPath = outDataPathsMap.get(dataPathId);
-                  if (null != dataPath)
-                  {
-                     dataPathId = I18nUtils.getDataPathName(dataPath);
-                  }
-                  dataPathHistoryMap.put(dataPathId,event);
-              }
-           }
-       }
-   }
-   
-   private List<DescriptorItemTableEntry> fetchProcessDescriptorsAndAddHistoryDetails(ProcessInstance pi,Map<String,HistoricalEvent> dataPathHistoryMap,Map<String, DataPathDetails> inDataPathsMap,Map<String, DataPathDetails> outDataPathsMap){
-	   
-	   List<DescriptorItemTableEntry> decsriptorList = CollectionUtils.newArrayList();
-	   
-	   GenericDataMapping mapping;
-       DataMappingWrapper dmWrapper;
-	   
-	   List<ProcessDescriptor> processDescriptors = CommonDescriptorUtils.createProcessDescriptors(pi, false);
-	   boolean suppressBlankDescriptors = CommonDescriptorUtils.isSuppressBlankDescriptorsEnabled();
-	   for(ProcessDescriptor processDescriptor : processDescriptors){
-		   DataPathDetails inDataPath = inDataPathsMap.get(processDescriptor.getId());
-		   if (CollectionUtils.isNotEmpty(outDataPathsMap))
-           {
-			   DataPathDetails outDataPath = fetchRespectiveOutDataPath(inDataPath,outDataPathsMap);
-			   if (null != outDataPath)
+
+   /**
+    * @param pi
+    * @param outDataPathsMap
+    * @return
+    */
+   private Map<String, HistoricalEvent> getDataPathHistoryMap(ProcessInstance pi,
+         Map<String, DataPathDetails> outDataPathsMap)
+   {
+      Map<String, HistoricalEvent> dataPathHistoryMap = CollectionUtils.newHashMap();
+      List<HistoricalEvent> events = CollectionUtils.newArrayList();
+      events = DescriptorColumnUtils.getProcessDescriptorsHistory(pi);
+      for (HistoricalEvent event : events)
+      {
+         String descriptorDetails = (String) event.getDetails();
+         if (StringUtils.isNotEmpty(descriptorDetails))
+         {
+            if (descriptorDetails.contains("'"))
+            {
+               String[] token = descriptorDetails.split("'");
+               String dataPathId = token[5];
+               DataPath dataPath = outDataPathsMap.get(dataPathId);
+               if (null != dataPath)
                {
-				  Class dataClass = outDataPath.getMappedType();
-	              mapping = new GenericDataMapping(outDataPath);
-	              dmWrapper = new DataMappingWrapper(mapping, null, false);
-	              String type = dmWrapper.getType();
-	              Object value = null;
-					try {
-						value = DescriptorFilterUtils.convertDataPathValue(dataClass, processDescriptor.getValue());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	              
-	                  
-                  DescriptorItemTableEntry descriptorTableRowObj = new DescriptorItemTableEntry(processDescriptor.getKey(), value, processDescriptor.getId(), type, dataClass, true);
-                  if(dataPathHistoryMap.containsKey(processDescriptor.getId()))
-                  {
-                	  HistoricalEvent event = dataPathHistoryMap.get(processDescriptor.getId());
-                	  descriptorTableRowObj.setLastModified(event.getEventTime());
-                	  descriptorTableRowObj.setModifiedBy(event.getUser().getName());
-                  }
-                  
+                  dataPathId = I18nUtils.getDataPathName(dataPath);
+               }
+               dataPathHistoryMap.put(dataPathId, event);
+            }
+         }
+      }
+      return dataPathHistoryMap;
+   }
+
+   /**
+    * @param pi
+    * @param dataPathHistoryMap
+    * @param inDataPathsMap
+    * @param outDataPathsMap
+    * @return
+    */
+   private List<DescriptorItemTableEntry> fetchProcessDescriptorsAndAddHistoryDetails(ProcessInstance pi,
+         Map<String, HistoricalEvent> dataPathHistoryMap, Map<String, DataPathDetails> inDataPathsMap,
+         Map<String, DataPathDetails> outDataPathsMap)
+   {
+
+      List<DescriptorItemTableEntry> decsriptorList = CollectionUtils.newArrayList();
+
+      GenericDataMapping mapping;
+      DataMappingWrapper dmWrapper;
+
+      List<ProcessDescriptor> processDescriptors = CommonDescriptorUtils.createProcessDescriptors(pi, false);
+      boolean suppressBlankDescriptors = CommonDescriptorUtils.isSuppressBlankDescriptorsEnabled();
+      for (ProcessDescriptor processDescriptor : processDescriptors)
+      {
+         DataPathDetails inDataPath = inDataPathsMap.get(processDescriptor.getId());
+         if (CollectionUtils.isNotEmpty(outDataPathsMap))
+         {
+            DataPathDetails outDataPath = fetchRespectiveOutDataPath(inDataPath, outDataPathsMap);
+            if (null != outDataPath)
+            {
+               Class dataClass = outDataPath.getMappedType();
+               mapping = new GenericDataMapping(outDataPath);
+               dmWrapper = new DataMappingWrapper(mapping, null, false);
+               String type = dmWrapper.getType();
+               Object value = null;
+               try
+               {
+                  value = DescriptorFilterUtils.convertDataPathValue(dataClass, processDescriptor.getValue());
+               }
+               catch (Exception e)
+               {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+               }
+
+               DescriptorItemTableEntry descriptorTableRowObj = new DescriptorItemTableEntry(processDescriptor.getKey(),
+                     value, processDescriptor.getId(), type, dataClass, true);
+               if (dataPathHistoryMap.containsKey(processDescriptor.getId()))
+               {
+                  HistoricalEvent event = dataPathHistoryMap.get(processDescriptor.getId());
+                  descriptorTableRowObj.setLastModified(event.getEventTime());
+                  descriptorTableRowObj.setModifiedBy(event.getUser().getName());
+               }
+
+               decsriptorList.add(descriptorTableRowObj);
+            }
+            else
+            {
+               if (!suppressBlankDescriptors || (suppressBlankDescriptors
+                     && (null != processDescriptor.getValue() && StringUtils.isNotEmpty(processDescriptor.getValue()))))
+               {
+                  DescriptorItemTableEntry descriptorTableRowObj = new DescriptorItemTableEntry(
+                        processDescriptor.getKey(), processDescriptor.getValue());
                   decsriptorList.add(descriptorTableRowObj);
                }
-               else
+            }
+         }
+         else if(!suppressBlankDescriptors|| (suppressBlankDescriptors && (null != processDescriptor.getValue() && StringUtils
+               .isNotEmpty(processDescriptor.getValue())))){
+            {
+               if (processDescriptor.isLink())
                {
-                  if (!suppressBlankDescriptors || (suppressBlankDescriptors
-                        && (null != processDescriptor.getValue() && StringUtils.isNotEmpty(processDescriptor.getValue()))))
-                  {
-                	  DescriptorItemTableEntry descriptorTableRowObj = new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor.getValue());
-                	  decsriptorList.add(descriptorTableRowObj);
-                  }
+                  List<DataPath> dataPaths = pi.getDescriptorDefinitions();
+                  String linkText = DescriptorColumnUtils.getLinkDescriptorText(processDescriptor.getId(), dataPaths);
+                  
+                  decsriptorList.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor.getValue(),  
+                        processDescriptor.getId(), "Link", String.class, false, linkText));
+               } else {
+                  decsriptorList.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
+                     .getValue()));
                }
-           }
-	   }
-	   return decsriptorList;
+            }
+         }
+      }
+      return decsriptorList;
    }
-   
-   private DataPathDetails fetchRespectiveOutDataPath(DataPathDetails inDataPath,Map<String, DataPathDetails> outDataPathsMap)
+
+   /**
+    * @param inDataPath
+    * @param outDataPathsMap
+    * @return
+    */
+   private DataPathDetails fetchRespectiveOutDataPath(DataPathDetails inDataPath,
+         Map<String, DataPathDetails> outDataPathsMap)
    {
       if (CollectionUtils.isNotEmpty(outDataPathsMap))
       {
@@ -2508,7 +2558,5 @@ public class ProcessInstanceUtils
 
       return null;
    }
-   
-   
 
 }
