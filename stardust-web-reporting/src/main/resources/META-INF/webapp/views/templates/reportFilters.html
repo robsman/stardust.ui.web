@@ -250,7 +250,7 @@
 										<td valign="top"><a id="afni{{$index}}" href=""
 											ng-click="reportFilterController.toggleFilter(x, 'activity_filter_nonInteractive')"
 											ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_nonInteractive]">
-												<i class="pi pi-manual-activity pi-lg"
+												<i class="pi pi-non-interactive-activity pi-lg"
 												title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.nonInteractive.' + x.metadata.activity_filter_nonInteractive)}}"></i>
 										</a></td>
 										<td valign="top"><a id="afi{{$index}}" href=""
@@ -258,7 +258,6 @@
 											ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_interactive]">
 												<i class="pi pi-manual-activity pi-lg" 
 													title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.interactive.' + x.metadata.activity_filter_interactive)}}" >
-													<i class="pi pi-user pi-bottom pi-right pi-sm"></i>
 												</i>
 										</a></td>
 										<td valign="top"><a id="afa{{$index}}" href=""
