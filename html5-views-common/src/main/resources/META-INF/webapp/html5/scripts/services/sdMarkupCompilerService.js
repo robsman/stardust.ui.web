@@ -67,6 +67,7 @@
 				handleAttribute('select[sda-on-change]', bindSelect); // One time processing of sda-on-change
 				handleAttribute('[sda-class]', handleSdaAttribute, 'sda-class'); // One time processing of sda-class
 				handleAttribute('[sda-style]', handleSdaAttribute, 'sda-style'); // One time processing of sda-style
+				handleAttribute('[sda-href]', handleSdaAttribute, 'sda-href'); // One time processing of sda-href
 
 				/*
 				 * 

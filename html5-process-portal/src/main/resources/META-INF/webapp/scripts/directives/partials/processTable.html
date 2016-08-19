@@ -178,7 +178,11 @@
 							<td class="noWrap" sda-repeat-if="!desc.isDocument">
 								<span sda-bind="desc.key"></span>
 							</td>
-							<td sda-repeat-if="!desc.isDocument" class="noWrap">: <span class="spacing-right" sda-bind="desc.value"> </span></td>
+							<td sda-repeat-if="!desc.isDocument && !desc.isLink" class="noWrap">: <span class="spacing-right" sda-bind="desc.value"> </span></td>
+							<td sda-repeat-if="desc.isLink" class="noWrap">: 
+								<a sda-href="desc.value" target="_blank">
+								<span class="spacing-right" sda-bind="desc.linkText"> </span></a>
+							</td>
 						</tr>
 					</table>
 				</td>
