@@ -234,6 +234,10 @@ public class DescriptorFilterUtils
                   {
                      trace.debug("setting data filter: '" + mapping.getId() + "=" + filterValue + "'");
                   }
+                  
+                  DescriptorFilter descFilter = null;
+                  DescriptorFilter descFilterOrTerm=null;
+                  
                   // for String
                   if (Character.class.equals(dataPath.getMappedType()) || String.class.equals(dataPath.getMappedType()))
                   {
@@ -243,31 +247,32 @@ public class DescriptorFilterUtils
                         if(filterValue instanceof Set<?>)
                         {
                         	Set<Object> vals= (Set<Object>) filterValue;
-                        	term.add(DescriptorFilter.in(mapping.getId(), vals));
+                        	descFilterOrTerm = DescriptorFilter.in(mapping.getId(), vals);
+                        	term.add(descFilterOrTerm);
                         }
                      }
                      else
                      {
-                    	 query.where(DescriptorFilter.like(mapping.getId(), (String)filterValue));
+                    	 descFilter = DescriptorFilter.like(mapping.getId(), (String)filterValue);
                      }
                      
                   }// for boolean
                   else if (Boolean.class.equals(dataPath.getMappedType()))
                   {
-                	  query.where(DescriptorFilter.isEqual(mapping.getId(), (Boolean)filterValue));
+                	  descFilter =DescriptorFilter.isEqual(mapping.getId(), (Boolean)filterValue);
                   }
                   // for single number
                   else if (filterValue instanceof Number)
                   {
                 	  Number filterValueNumber = getNumberFilterValue(mapping, (Number) filterValue);
-                	  query.where(DescriptorFilter.greaterOrEqual(mapping.getId(), filterValueNumber));
+                	  descFilter = DescriptorFilter.greaterOrEqual(mapping.getId(), filterValueNumber);
                   }// for number range
                   else if (filterValue instanceof NumberRange)
                   {
                 	  NumberRange numberRange = (NumberRange)filterValue;
                 	  Number fromValue = getNumberFilterValue(mapping,(Number)numberRange.getFromValue());
                 	  Number toValue = getNumberFilterValue(mapping, (Number)numberRange.getToValue());
-                	  applyRangeFilter(query,mapping.getId(), fromValue, toValue);
+                	  descFilter = getRangeFilter(mapping.getId(), fromValue, toValue);
                   }
                   // for Date range
                   else if (filterValue instanceof DateRange)
@@ -275,7 +280,7 @@ public class DescriptorFilterUtils
                 	  DateRange dateRange = (DateRange)filterValue;
                 	  Date fromDateValue = dateRange.getFromDateValue();
                 	  Date toDateValue = dateRange.getToDateValue();
-                	  applyRangeFilter(query,mapping.getId(), fromDateValue, toDateValue);
+                	  descFilter =  getRangeFilter(mapping.getId(), fromDateValue, toDateValue);
                   }
                   else if(dataPath.getMappedType() instanceof Class<?>)
                   {
@@ -327,8 +332,23 @@ public class DescriptorFilterUtils
                      {
                         predicate.add(ProcessInstanceQuery.OID.isEqual(((Number) filterValue).intValue()));
                      }
+	               }
+                  else
+                  {
+                     // For multiple ENUM's 'OR' term is formed, dataFilter is null
+                	  if (descFilter == null && descFilterOrTerm == null)
+                	  {
+                		  if (trace.isDebugEnabled())
+                		  {
+                			  trace.debug("Performing equal filter with filter value " + filterValue);
+                		  }
+                		  descFilter = DescriptorFilter.isEqual(mapping.getDataId(), filterValue);
+                	  }
+                	  if(descFilter != null)
+                	  {
+                		  predicate.add(descFilter);   
+                	  }
                   }
- 
                }
                else
                {
@@ -348,19 +368,20 @@ public class DescriptorFilterUtils
    * @param id
    * @param fromVal
    * @param toVal
+ * @return 
    */
-   private static void applyRangeFilter(Query query, String id, Serializable fromVal,
+   private static DescriptorFilter getRangeFilter(String id, Serializable fromVal,
 		   Serializable toVal)
    {
 	   if (null != fromVal && null == toVal) 
 	   {
-		   query.where(DescriptorFilter.greaterOrEqual(id, fromVal));
+		  return  DescriptorFilter.greaterOrEqual(id, fromVal);
 	   } else if (null != toVal && null == fromVal) 
 	   {
-		   query.where(DescriptorFilter.lessOrEqual(id, fromVal));
+		   return DescriptorFilter.lessOrEqual(id, fromVal);
 	   } else 
 	   {
-		   query.where(DescriptorFilter.between(id, fromVal, toVal));
+		   return DescriptorFilter.between(id, fromVal, toVal);
 	   }
    }
 
