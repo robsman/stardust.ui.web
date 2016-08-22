@@ -236,9 +236,18 @@ public class RepositoryServiceImpl implements RepositoryService
       String xPathQuery = "//*[jcr:like(fn:lower-case(@vfs:metaData/vfs:name), '%"
             + searchRequestDTO.name.toLowerCase() + "%')]";
 
-      List<Folder> folders = DocumentMgmtUtility.getDocumentManagementService().findFolders(xPathQuery,
-            Folder.LOD_NO_MEMBERS);
-
+      List<Folder> folders = new ArrayList<Folder>();
+      
+      try
+      {
+         folders = DocumentMgmtUtility.getDocumentManagementService().findFolders(xPathQuery,
+               Folder.LOD_NO_MEMBERS);
+      }
+      catch (UnsupportedOperationException e)
+      {
+         folders = new ArrayList<Folder>();
+      }
+      
       return buildFolderSearchResult(folders, searchRequestDTO);
    }
 
