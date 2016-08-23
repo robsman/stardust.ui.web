@@ -108,9 +108,8 @@
 
 		self.currentTimeLine = {};
 		self.estimatedEndTimeLine = {};
-		
+		self.elapsedEstimatedLine = {};
 		self.showProcessDescriptor = false;
-		
 	};
 
 	/**
@@ -413,6 +412,7 @@
 		nextDay.setDate(first.getDate() + 1);
 		if (second < nextDay) {
 			second = nextDay;
+			second.setHours(second.getHours() + 1);
 		} else {
 			second.setHours(second.getHours() + 3);
 		}
@@ -465,7 +465,7 @@
 		if (second.getTime() < minDuration) {
 			second.setTime(minDuration);
 		} else {
-			second.setTime(second.getTime() + (ONE_HOUR_IN_MIILS));
+			second.setTime(second.getTime() + (ONE_HOUR_IN_MIILS * 2));
 		}
 		var quaterHoursInADay = 0;
 		var quaterHourWidth = factor.majorFactorWidth;
@@ -836,10 +836,15 @@
 	 *
 	 */
 	Controller.prototype.calculateGridLines = function(timeFrame, data) {
-		var offset = 184;
+		var offset = 234;
 		this.currentTimeLine[timeFrame] = data.delay + data.completed + offset;
-		if (data.inflight) {
+		if (data.inflight> 0) {
 			this.estimatedEndTimeLine[timeFrame] = data.delay + data.completed + data.inflight + offset;
+			if(this.estimatedEndTimeLine[timeFrame] ==this.currentTimeLine[timeFrame] ) {
+				this.estimatedEndTimeLine[timeFrame] = 0;
+			}
+		} else if(data.elapsed > 0 ) {
+			this.elapsedEstimatedLine[timeFrame] = data.delay + data.elapsed  + offset;
 		}
 	};
 
@@ -908,13 +913,13 @@
 		var statusColor = self.getBarColor(piData.status.value, "Process", false);
 		var bColor = self.getBarColor(piData, "Process", true);
 
-		var expectedDuraion = self.getExpectedDurationForProcess(piData.qualifiedId);
+		var expectedDuration = self.getExpectedDurationForProcess(piData.qualifiedId);
 
 		var data = {
 			name: piData.processName,
 			startTime: piData.startTime,
 			endTime: piData.endTime,
-			expectedEndTime: expectedDuraion ? (piData.startTime + expectedDuraion * ONE_HOUR_IN_MIILS) : 0,
+			expectedEndTime: expectedDuration ? (piData.startTime + expectedDuration * ONE_HOUR_IN_MIILS) : 0,
 			sColor: statusColor,
 			bColor: bColor,
 			activatable: piData.activatable,
@@ -1031,7 +1036,7 @@
 		var delay = self.computeDifference(startTime.getTime(),
 			item.startTime, factor);
 		var inflightLength = null;
-
+		var elapsedLength = null;
 
 		var status = item.status;
 		if (self.selected.legend == "benchmark" && item.benchmarkCategory.label) {
@@ -1045,33 +1050,43 @@
 
 		var completedLength = self.computeDifference(item.startTime,
 			item.endTime, factor);
-
-		if (item.expectedEndTime && FINISHED_STATUSES.indexOf(item.status.value) < 0 && item.endTime < item.expectedEndTime) {
-			inflightLength = self.computeDifference(item.endTime, item.expectedEndTime, factor);
-		} else {
-			item.expectedEndTime = null;
+		
+		if(item.expectedEndTime ) {
+			if ( FINISHED_STATUSES.indexOf(item.status.value) < 0 && item.endTime < item.expectedEndTime) {
+				inflightLength = self.computeDifference(item.endTime, item.expectedEndTime, factor);
+			} else {
+				elapsedLength =  self.computeDifference(item.startTime, item.expectedEndTime, factor);
+			}
 		}
-
-
-		delay = (delay.difference * minorFactorWidth) + delay.padding - 1;
-		var completed = completedLength.difference * minorFactorWidth + completedLength.padding;
+		
+		delay = (delay.difference * minorFactorWidth) - 1;
+		var completed = completedLength.difference * minorFactorWidth;
 		if (completedLength.difference < 2) {
 			completed = 2;
 		}
 
 		var inflight = 0;
+		var elapsed = 0;
 		if (inflightLength) {
 			inflight = (inflightLength.difference * minorFactorWidth) + inflightLength.padding;
 			if (inflightLength.difference < 2) {
 				inflight = 2;
 			}
 		}
+		
+		if(elapsedLength) {
+			elapsed =  (elapsedLength.difference * minorFactorWidth) + elapsedLength.padding;
+			if(elapsedLength.difference < 2) {
+				elapsed = 2;
+			}
+		}
+		 
 		var graphData = {
 			delay: delay,
 			completed: completed,
-			inflight: inflight
+			inflight: inflight,
+			elapsed : elapsed
 		};
-
 		return graphData;
 	};
 	

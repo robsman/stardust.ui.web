@@ -28,7 +28,7 @@
 			</span>
 		</div>
 
-<div id="gantt_chart_container">
+	<div id="gantt_chart_container">
 
 	<table sd-data-table="ctrl.dataTable" sd-data="ctrl.fetchData(params)" sda-ready="ctrl.tableReady" style="width: auto;"
 			sda-mode="local" sda-no-pagination="true" sda-filter-handler="ctrl.auxFilter(rowData);" sda-tree-table>
@@ -54,10 +54,18 @@
 							</button>
 						</div>
 					</th>
-					<th  sda-label=""  >
-					 	<div class="currentTimeLine" ng-attr-style="left :{{ctrl.currentTimeLine[ctrl.selected.timeFrame]}}px;" ng-if="ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame] > 0">.</div>
-					 	<div class="currentTimeLine" ng-attr-style="left :{{ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame]}}px;" ng-if="ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame] > 0">.</div>
-
+					<th  sda-label="" class="gantt-chart-timeline" >
+					 	<div class="currentTimeLine" 
+					 		ng-attr-style="left :{{ctrl.currentTimeLine[ctrl.selected.timeFrame]}}px;"
+					 		ng-if="ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame] > 0 || ctrl.elapsedEstimatedLine[ctrl.selected.timeFrame] > 0"
+					 		></div>
+					 	<div class="estimatedTimeLine" 
+					 		ng-attr-style="left :{{ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame]}}px;" 
+					 		ng-if="ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame] > 0 "></div>
+					 	<div class="estimatedTimeLine" 
+					 		ng-attr-style="left :{{ctrl.elapsedEstimatedLine[ctrl.selected.timeFrame]}}px;" 
+					 		ng-if="ctrl.elapsedEstimatedLine[ctrl.selected.timeFrame] > 0"></div>
+						
 						<div style="clear:both;">
 								<span ng-repeat = "major in ctrl.majorTimeFrames" class="majorTimeLine" ng-attr-style="width :{{major.width}}px;" ng-mouseenter="major.toolTip = true; ctrl.mouseEnter($event, 50)" ng-mouseleave="major.toolTip = false" >
 										<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
@@ -100,7 +108,7 @@
 						</span>
 					</div>
 					</td>
-					<td style="padding-left: 0px;">
+					<td class="gantt-chart-timeline">
 						<span ng-mouseleave="rowData.toolTip = false"> <span
 							ng-mouseenter="rowData.toolTip = true;ctrl.mouseEnter($event)"
 							class="timeline timeLineCompleted" ng-class="ctrl.getClassForCompletedBar(ctrl.getChartData(rowData).inflight);"
@@ -125,7 +133,9 @@
 							<div ng-if="!rowData.expectedEndTime">{{i18n('business-control-center-messages.views-customColumn-endDate')}}
 								: {{rowData.endTime | date:ctrl.timeFormat}}</div>
 							<div ng-if="rowData.expectedEndTime">{{i18n('business-control-center-messages.views-customColumn-endDate')}}
-								: {{rowData.expectedEndTime | date:ctrl.timeFormat}}</div>
+								: <span ng-if="rowData.expectedEndTime > rowData.endTime">{{rowData.expectedEndTime | date:ctrl.timeFormat}}</span>
+								 <span ng-if="rowData.expectedEndTime < rowData.endTime">{{rowData.endTime | date:ctrl.timeFormat}}</span>
+								</div>
 						</div>
 					</td>
 				</tr>

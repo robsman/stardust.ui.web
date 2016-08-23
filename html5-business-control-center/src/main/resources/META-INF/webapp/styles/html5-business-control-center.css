@@ -40,6 +40,14 @@
   z-index: 2;
 }
 
+
+.estimatedTimeLine {
+  position: absolute;
+  height: 100%;
+  border-left: 1px dotted #ec063b;
+  z-index: 3;
+}
+
 .gantt-chart-tooltip {
     min-width: 100px;
     padding : 15px;
@@ -144,6 +152,9 @@
 }
 
 .gantt-chart-process-tree {
-	white-space: nowrap;
-	 margin-right: 30px;
+	min-width : 225px;
+}
+
+.gantt-chart-timeline {
+	padding-left: 0px;
 }
