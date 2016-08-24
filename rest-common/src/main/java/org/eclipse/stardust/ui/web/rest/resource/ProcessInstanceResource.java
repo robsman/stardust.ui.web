@@ -83,7 +83,7 @@ public class ProcessInstanceResource
 
    @Autowired
    private ProcessInstanceService processInstanceService;
-   
+
    @Autowired
    private ActivityInstanceService activityInstanceService;
 
@@ -104,7 +104,7 @@ public class ProcessInstanceResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{processInstanceOid: \\d+}/documents/{documentId}/split")
-   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.DocumentDTO")
+   @DTODescription(response = "org.eclipse.stardust.ui.web.rest.dto.DocumentDTO")
    public Response splitDocument(@PathParam("processInstanceOid") long processInstanceOid,
          @PathParam("documentId") String documentId, String postedData)
    {
@@ -127,14 +127,15 @@ public class ProcessInstanceResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{processInstanceOid: \\d+}/documents")
    @ResponseDescription("The response will contain List<DataPathValueDTO>")
-   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO")
+   @DTODescription(response = "org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO")
    public Response getDocuments(@PathParam("processInstanceOid") String processInstanceOid)
    {
       try
       {
          return Response.ok(
-               AbstractDTO.toJson(getProcessInstanceService().getProcessInstanceDocuments(
-                     Long.parseLong(processInstanceOid))), MediaType.APPLICATION_JSON).build();
+               AbstractDTO.toJson(
+                     getProcessInstanceService().getProcessInstanceDocuments(Long.parseLong(processInstanceOid))),
+               MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -142,11 +143,11 @@ public class ProcessInstanceResource
          return Response.serverError().build();
       }
    }
-   
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{oid}/correspondence")
-   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO")
+   @DTODescription(response = "org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO")
    public Response getCorrespondenceFolder(@PathParam("oid") Long processOid)
    {
       FolderDTO folderDto = null;
@@ -168,15 +169,16 @@ public class ProcessInstanceResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{processInstanceOid: \\d+}/documents/{dataPathId}")
    @ResponseDescription("The response will contain List<DataPathValueDTO>")
-   @DTODescription(response="org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO")
+   @DTODescription(response = "org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO")
    public Response getDocumentsForDatapath(@PathParam("processInstanceOid") String processInstanceOid,
          @PathParam("dataPathId") String dataPathId)
    {
       try
       {
          return Response.ok(
-               AbstractDTO.toJson(getProcessInstanceService().getDataPathValueFor(Long.parseLong(processInstanceOid),
-                     dataPathId)), MediaType.APPLICATION_JSON).build();
+               AbstractDTO.toJson(
+                     getProcessInstanceService().getDataPathValueFor(Long.parseLong(processInstanceOid), dataPathId)),
+               MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -195,8 +197,9 @@ public class ProcessInstanceResource
       {
          JsonObject json = jsonIo.readJsonObject(postedData);
 
-         return Response.ok(getProcessInstanceService().getPendingProcesses(json).toString(),
-               MediaType.APPLICATION_JSON).build();
+         return Response
+               .ok(getProcessInstanceService().getPendingProcesses(json).toString(), MediaType.APPLICATION_JSON)
+               .build();
       }
       catch (Exception e)
       {
@@ -310,7 +313,8 @@ public class ProcessInstanceResource
    {
       try
       {
-         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy,
+               "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
 
          return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(null, options)),
@@ -335,7 +339,8 @@ public class ProcessInstanceResource
    {
       try
       {
-         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy,
+               "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
 
          JsonMarshaller jsonIo = new JsonMarshaller();
@@ -405,14 +410,15 @@ public class ProcessInstanceResource
                FilterOrTerm businessDateFilter = query.getFilter().addOrTerm();
                for (String processId : processIDs)
                {
-                  businessDateFilter.add((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
-                        + PredefinedConstants.BUSINESS_DATE, startDate.getTime(), endDate.getTime())));
+                  businessDateFilter.add((DataFilter.between(
+                        TrafficLightViewUtils.getModelName(processId) + PredefinedConstants.BUSINESS_DATE,
+                        startDate.getTime(), endDate.getTime())));
                }
             }
             else
             {
-               query.where(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(),
-                     endDate.getTimeInMillis()));
+               query.where(
+                     ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(), endDate.getTimeInMillis()));
             }
 
             if (postJSON.getAsJsonPrimitive("benchmarkCategory") != null)
@@ -493,8 +499,8 @@ public class ProcessInstanceResource
    @Path("/checkIfProcessesAbortable")
    public Response checkIfProcessesAbortable(String postedData, @QueryParam("type") String type)
    {
-      return Response
-            .ok(processInstanceService.checkIfProcessesAbortable(postedData, type), MediaType.APPLICATION_JSON).build();
+      return Response.ok(processInstanceService.checkIfProcessesAbortable(postedData, type), MediaType.APPLICATION_JSON)
+            .build();
    }
 
    @POST
@@ -555,47 +561,48 @@ public class ProcessInstanceResource
          @QueryParam("fetchDescriptors") @DefaultValue("false") boolean fetchDescriptors,
          @QueryParam("withEvents") @DefaultValue("false") boolean withEvents) throws ResourceNotFoundException
    {
-      return Response.ok(processInstanceService.getProcessByOid(oid, fetchDescriptors).toJson(),
-            MediaType.APPLICATION_JSON).build();
+      return Response
+            .ok(processInstanceService.getProcessByOid(oid, fetchDescriptors).toJson(), MediaType.APPLICATION_JSON)
+            .build();
    }
-   
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{oid}/process-descriptors")
    @ResponseDescription("returns list of DescriptorItemTableEntry")
-   
+
    public Response getProcessByOid(@PathParam("oid") Long oid) throws ResourceNotFoundException
    {
       return Response.ok(AbstractDTO.toJson(processInstanceService.getProcessDescriptorsWithModifyByAndDate(oid)),
             MediaType.APPLICATION_JSON).build();
    }
-   
+
    @PUT
    @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON) 
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("{oid}/process-descriptor")
    public Response updateProcessDescriptor(@PathParam("oid") Long processOid, String postedData)
    {
-	  JsonObject inputJson = new JsonMarshaller().readJsonObject(postedData);
-	  Boolean status = false;
-	  String errorMsg = "";
-	  try{
-	     if(inputJson.get("type").getAsString().equals("date")||inputJson.get("type").getAsString().equals("TimeStamp")){
-	          Date dateObj = new Date();
-	          dateObj.setTime(inputJson.get("changedValue").getAsLong());
-	          status = getProcessInstanceService().updateDescriptor(processOid,inputJson.get("id").getAsString(),dateObj);
-	      }else{
-	          status = getProcessInstanceService().updateDescriptor(processOid,inputJson.get("id").getAsString(),inputJson.get("changedValue").getAsString());
-	      }
-	     errorMsg = status+"";
-	  }
-	  catch(InvalidValueException e){
-	     errorMsg = e.getMessage();
-	  }
-	  catch(ObjectNotFoundException e){
-	     errorMsg = e.getMessage();
-	  }
-	  return Response.ok(errorMsg, MediaType.APPLICATION_JSON).build();
+      JsonObject inputJson = new JsonMarshaller().readJsonObject(postedData);
+      String errorMsg = "";
+      try
+      {
+         processInstanceService.updateProcessDescriptor(processOid, inputJson);
+         errorMsg = "true";
+      }
+      catch (ObjectNotFoundException e)
+      {
+         e.printStackTrace();
+         errorMsg = e.getMessage();
+      }
+      catch (InvalidValueException e)
+      {
+         e.printStackTrace();
+         errorMsg = e.getMessage();
+      }
+
+      return Response.ok(errorMsg, MediaType.APPLICATION_JSON).build();
+
    }
 
    /**
@@ -612,10 +619,9 @@ public class ProcessInstanceResource
    public Response getAllActivityInstances(@PathParam("oid") Long oid,
          @QueryParam("withEvents") @DefaultValue("false") boolean withEvents) throws ResourceNotFoundException
    {
-      return Response.ok(processInstanceService.getProcessSummary(oid).toJson(),
-            MediaType.APPLICATION_JSON).build();
+      return Response.ok(processInstanceService.getProcessSummary(oid).toJson(), MediaType.APPLICATION_JSON).build();
    }
-   
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("startingActivityOID/{aiOid}")

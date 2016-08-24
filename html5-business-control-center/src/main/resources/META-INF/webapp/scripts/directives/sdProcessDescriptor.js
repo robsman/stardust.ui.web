@@ -53,8 +53,13 @@
 				
 				sdProcessDescriptorService.getProcessDescriptors(this.poid).then(function(descriptorList){
 					for(var i in descriptorList){
-						if(descriptorList[i].type=="TimeStamp"){
+						if(descriptorList[i].type=="TimeStamp" || (descriptorList[i].type== "Calender" && descriptorList[i].hideTime!=true && descriptorList[i].editable)){
 							descriptorList[i].value = new Date(descriptorList[i].value).getTime();
+						}else if(descriptorList[i].type== "Calender" && descriptorList[i].hideTime==true){
+							var day = new Date(descriptorList[i].value).getDate();
+							var month = new Date(descriptorList[i].value).getMonth() + 1;
+							var year = new Date(descriptorList[i].value).getFullYear();
+							descriptorList[i].value = month+"/"+day+"/"+year;
 						}
 					}
 					var dataObject = {};
@@ -68,19 +73,25 @@
 			};
 			DescriptorTableCompiler.prototype.updateDescriptor = function(descriptorObj){
 				self.descriptorName = descriptorObj.name; 
-				sdProcessDescriptorService.updateProcessDescriptors(this.poid,descriptorObj.id,descriptorObj.value,descriptorObj.type).then(function(response){
-					if(response == "true"){
+				var restParam = {};
+				restParam.id = descriptorObj.id;
+				restParam.type = descriptorObj.type;
+				restParam.changedValue = descriptorObj.value;
+				restParam.hideTime = descriptorObj.hideTime;
+				restParam.useServerTimeZone = descriptorObj.useServerTimeZone;
+				if(restParam.hideTime == true){
+					restParam.changedValue = new Date(descriptorObj.value).getTime();
+				}
+				sdProcessDescriptorService.updateProcessDescriptors(this.poid,restParam).then(function(response){
+					
 						self.dataTable.refresh(true);
 						self.updateMsg = self.descriptorName+" Updated Successfully"; 
-					}else{
-						self.dataTable.refresh(true);
-						self.updateMsg = "Last Update did not get saved, please try again, Reason - "+response;
-					}
 					
 				},function(response){
 					self.dataTable.refresh(true);
 					self.updateMsg = "Last Update did not get saved, please try again"; 
 				});
+				
 			};
 			scope.processDescriptorCtrl = self;
 		};

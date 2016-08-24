@@ -14,6 +14,7 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUti
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.jxpath.ri.compiler.Constant;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
@@ -41,6 +43,7 @@ import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
 import org.eclipse.stardust.engine.api.query.DataOrder;
@@ -100,10 +103,12 @@ import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.util.DescriptorUtils;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.util.RelatedProcessSearchUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
@@ -2475,26 +2480,39 @@ public class ProcessInstanceUtils
                mapping = new GenericDataMapping(outDataPath);
                dmWrapper = new DataMappingWrapper(mapping, null, false);
                String type = dmWrapper.getType();
-               Object value = null;
-               try
+
+               boolean hideTime = inDataPath.getAttribute(PredefinedConstants.HIDE_TIME) != null
+                     ? (Boolean) inDataPath.getAttribute(PredefinedConstants.HIDE_TIME)
+                     : false;
+               boolean useServerTimezone = inDataPath.getAttribute(PredefinedConstants.USE_SERVERTIME) != null
+                     ? (Boolean) inDataPath.getAttribute(PredefinedConstants.USE_SERVERTIME)
+                     : false;
+
+               boolean isEditable = true;
+
+               if (dataClass.getName().equals(Calendar.class.getName()))
                {
-                  value = DescriptorFilterUtils.convertDataPathValue(dataClass, processDescriptor.getValue());
-               }
-               catch (Exception e)
-               {
-                  // TODO Auto-generated catch block
-                  e.printStackTrace();
+                  type = ProcessPortalConstants.CALENDER_TYPE;
                }
 
+               if (mapping.getDataId().equals(PredefinedConstants.BUSINESS_DATE))
+               {
+                  isEditable = false;
+               }
+
+               Object value = null;
+               value = processDescriptor.getValue();
+
                DescriptorItemTableEntry descriptorTableRowObj = new DescriptorItemTableEntry(processDescriptor.getKey(),
-                     value, processDescriptor.getId(), type, dataClass, true);
+                     value, processDescriptor.getId(), type, dataClass, isEditable);
                if (dataPathHistoryMap.containsKey(processDescriptor.getId()))
                {
                   HistoricalEvent event = dataPathHistoryMap.get(processDescriptor.getId());
                   descriptorTableRowObj.setLastModified(event.getEventTime());
                   descriptorTableRowObj.setModifiedBy(event.getUser().getName());
                }
-
+               descriptorTableRowObj.setHideTime(hideTime);
+               descriptorTableRowObj.setUseServerTimeZone(useServerTimezone);
                decsriptorList.add(descriptorTableRowObj);
             }
             else
@@ -2508,19 +2526,23 @@ public class ProcessInstanceUtils
                }
             }
          }
-         else if(!suppressBlankDescriptors|| (suppressBlankDescriptors && (null != processDescriptor.getValue() && StringUtils
-               .isNotEmpty(processDescriptor.getValue())))){
+         else if (!suppressBlankDescriptors || (suppressBlankDescriptors
+               && (null != processDescriptor.getValue() && StringUtils.isNotEmpty(processDescriptor.getValue()))))
+         {
             {
                if (processDescriptor.isLink())
                {
                   List<DataPath> dataPaths = pi.getDescriptorDefinitions();
                   String linkText = DescriptorColumnUtils.getLinkDescriptorText(processDescriptor.getId(), dataPaths);
-                  
-                  decsriptorList.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor.getValue(),  
-                        processDescriptor.getId(), "Link", String.class, false, linkText));
-               } else {
-                  decsriptorList.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
-                     .getValue()));
+
+                  decsriptorList
+                        .add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor.getValue(),
+                              processDescriptor.getId(), "Link", String.class, false, linkText));
+               }
+               else
+               {
+                  decsriptorList
+                        .add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor.getValue()));
                }
             }
          }

@@ -32,7 +32,8 @@ public class DescriptorItemTableEntry extends DefaultRowModel
    Date lastModified;
    String modifiedBy;
    String linkText;
-   
+   boolean hideTime;
+   boolean useServerTimeZone;
 
    /**
     * @param name
@@ -133,6 +134,26 @@ public class DescriptorItemTableEntry extends DefaultRowModel
    public void setLinkText(String linkText)
    {
       this.linkText = linkText;
+   }
+   
+   public boolean isHideTime()
+   {
+      return hideTime;
+   }
+
+   public void setHideTime(boolean hideTime)
+   {
+      this.hideTime = hideTime;
+   }
+
+   public boolean isUseServerTimeZone()
+   {
+      return useServerTimeZone;
+   }
+
+   public void setUseServerTimeZone(boolean useServerTimeZone)
+   {
+      this.useServerTimeZone = useServerTimeZone;
    }
 
 }

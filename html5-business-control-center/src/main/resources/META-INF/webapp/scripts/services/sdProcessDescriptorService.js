@@ -35,7 +35,7 @@
 			return $resource(restUrl).query().$promise;
 		};
 		
-		ProcessDescriptorService.prototype.updateProcessDescriptors = function(oid,descriptorPathId,changedValue,type){
+		ProcessDescriptorService.prototype.updateProcessDescriptors = function(oid,restParam){
 			var restUrl = REST_BASE_URL+oid+"/process-descriptor";
 			var request = $resource(restUrl, null,
 					{
@@ -43,12 +43,14 @@
 							method:'PUT',
 							transformRequest: function(data, headers){
 				                headers = angular.extend({}, headers, {'Content-Type': 'application/json'});
-				                return angular.toJson({'id' : descriptorPathId, 'changedValue' : changedValue, 'type' : type}); 
+				                
+				                return angular.toJson(restParam);
 				            }      
 						}
 					});
 			return request.update().$promise;	
 		};
+		
 	}
 		
 })();
