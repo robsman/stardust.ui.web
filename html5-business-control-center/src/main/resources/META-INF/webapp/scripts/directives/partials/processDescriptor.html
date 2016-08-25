@@ -15,9 +15,9 @@
 				<td sda-field="name" sda-data-type="string"></td>
 				<td  sda-data-type="string" align="right">
 					<div ng-if="rowData.editable==false">{{rowData.value}}</div>
-					<input type="text" ng-model="rowData.value"  ng-if="rowData.type!='date' && rowData.type!='TimeStamp' && rowData.type!='Calender' && rowData.editable==true" ng-blur="processDescriptorCtrl.updateDescriptor(rowData)">
-					<div sd-date-time-condensed ng-model="rowData.value" ng-if="((rowData.type=='TimeStamp' || (rowData.type=='Calender' && !rowData.hideTime))  && rowData.editable==true)" ng-change="processDescriptorCtrl.updateDescriptor(rowData)"></div>
-					<input type="text" sd-date-picker ng-model="rowData.value" ng-if="((rowData.type=='date' || (rowData.type=='Calender' && rowData.hideTime)) && rowData.editable==true)" ng-change="processDescriptorCtrl.updateDescriptor(rowData)">
+					<input type="text" ng-model="rowData.value"  ng-if="rowData.type!='date' && rowData.type!='TimeStamp' && rowData.type!='Calender' && rowData.editable==true" ng-blur="processDescriptorCtrl.updateDescriptor(rowData)" aid="ProcessDetails-ProcessDescritor-Text">
+					<div sd-date-time-condensed ng-model="rowData.value" ng-if="((rowData.type=='TimeStamp' || (rowData.type=='Calender' && !rowData.hideTime))  && rowData.editable==true)" ng-change="processDescriptorCtrl.updateDescriptor(rowData)" aid="ProcessDetails-ProcessDescritor-DateTimePicker"></div>
+					<input type="text" sd-date-picker ng-model="rowData.value" ng-if="((rowData.type=='date' || (rowData.type=='Calender' && rowData.hideTime)) && rowData.editable==true)" ng-change="processDescriptorCtrl.updateDescriptor(rowData)" aid="ProcessDetails-ProcessDescritor-DatePicker">
 				</td>
 				<td sda-field="lastModified" ></td>
 				<td sda-field="modifiedBy" ></td>

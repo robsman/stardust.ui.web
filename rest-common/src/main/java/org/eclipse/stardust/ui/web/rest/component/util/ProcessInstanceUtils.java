@@ -2494,14 +2494,7 @@ public class ProcessInstanceUtils
                {
                   type = ProcessPortalConstants.CALENDER_TYPE;
                }
-
-               if (mapping.getDataId().equals(PredefinedConstants.BUSINESS_DATE))
-               {
-                  isEditable = false;
-               }
-
-               Object value = null;
-               value = processDescriptor.getValue();
+               Object value = processDescriptor.getValue();
 
                DescriptorItemTableEntry descriptorTableRowObj = new DescriptorItemTableEntry(processDescriptor.getKey(),
                      value, processDescriptor.getId(), type, dataClass, isEditable);

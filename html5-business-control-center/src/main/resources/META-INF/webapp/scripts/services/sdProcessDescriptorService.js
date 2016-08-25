@@ -13,44 +13,48 @@
  * 
  */
 
-(function() {
+(function () {
 	'use strict';
 
-	angular.module('bcc-ui.services').provider('sdProcessDescriptorService', function() {
-		this.$get = [ '$resource', 'sdLoggerService', 'sdUtilService', function($resource, sdLoggerService, sdUtilService) {
-			var service = new ProcessDescriptorService($resource, sdLoggerService, sdUtilService);
-			return service;
-		} ];
-	});
+	angular.module('bcc-ui.services').provider(
+			'sdProcessDescriptorService',
+			function () {
+				this.$get = ['$resource', 'sdLoggerService', 'sdUtilService',
+						function ($resource, sdLoggerService, sdUtilService) {
+							var service = new ProcessDescriptorService($resource, sdLoggerService, sdUtilService);
+							return service;
+						}];
+			});
 
 	/*
 	 * 
 	 */
-	function ProcessDescriptorService($resource, sdLoggerService, sdUtilService) {
-		var REST_BASE_URL = sdUtilService.getBaseUrl() +"services/rest/portal/process-instances/";
+	function ProcessDescriptorService ($resource, sdLoggerService, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/";
 		var trace = sdLoggerService.getLogger('bcc-ui.services.sdProcessDescriptorService');
-		
-		ProcessDescriptorService.prototype.getProcessDescriptors = function(oid){
-			var restUrl = REST_BASE_URL+oid+"/process-descriptors";
+
+		ProcessDescriptorService.prototype.getProcessDescriptors = function (oid) {
+			var restUrl = REST_BASE_URL + oid + "/process-descriptors";
 			return $resource(restUrl).query().$promise;
 		};
-		
-		ProcessDescriptorService.prototype.updateProcessDescriptors = function(oid,restParam){
-			var restUrl = REST_BASE_URL+oid+"/process-descriptor";
-			var request = $resource(restUrl, null,
-					{
-						'update': { 
-							method:'PUT',
-							transformRequest: function(data, headers){
-				                headers = angular.extend({}, headers, {'Content-Type': 'application/json'});
-				                
-				                return angular.toJson(restParam);
-				            }      
-						}
-					});
-			return request.update().$promise;	
+
+		ProcessDescriptorService.prototype.updateProcessDescriptors = function (oid, restParam) {
+			var restUrl = REST_BASE_URL + oid + "/process-descriptor";
+			var request = $resource(restUrl, null, {
+				'update' : {
+					method : 'PUT',
+					transformRequest : function (data, headers) {
+						headers = angular.extend({}, headers, {
+							'Content-Type' : 'application/json'
+						});
+
+						return angular.toJson(restParam);
+					}
+				}
+			});
+			return request.update().$promise;
 		};
-		
+
 	}
-		
+
 })();

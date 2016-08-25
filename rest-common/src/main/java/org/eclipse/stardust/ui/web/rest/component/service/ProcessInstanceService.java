@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.rest.component.service;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,7 +66,9 @@ import org.eclipse.stardust.engine.ws.WsApiStartProcessUtils;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.rest.component.cachemanager.UserAttributesCacheManager;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
@@ -87,6 +90,7 @@ import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMessageDTO;
+import org.eclipse.stardust.ui.web.rest.dto.ProcessDescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.SwitchProcessDTO;
@@ -96,6 +100,7 @@ import org.eclipse.stardust.ui.web.rest.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.AddressBookDataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO;
+import org.eclipse.stardust.ui.web.rest.exception.mapper.I18nExceptionMapper;
 import org.eclipse.stardust.ui.web.rest.util.AddressBookDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.util.DefaultDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.util.FileUploadUtils;
@@ -1010,106 +1015,145 @@ public class ProcessInstanceService
     */
    public List<DescriptorItemTableEntry> getProcessDescriptorsWithModifyByAndDate(Long oid){
       ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, true, false);
-      List<DescriptorItemTableEntry> descriptorList = processInstanceUtilsREST.fetchDescriptorsWithLastModified(process);
+      List<DescriptorItemTableEntry> descriptorList = CollectionUtils.newArrayList();
+      try{
+         descriptorList = processInstanceUtilsREST.fetchDescriptorsWithLastModified(process);
+      }
+      catch(Exception e){
+         throw new I18NException(e.getMessage());
+      }
+      
       return descriptorList;
   }
   
-  /**
- * @param processOid
- * @param inputJson
- * @return
- */
-/**
- * @param processOid
- * @param inputJson
- * @return
- */
-public void updateProcessDescriptor(Long processOid,JsonObject inputJson)throws ObjectNotFoundException,InvalidValueException{
-     
-     if(inputJson.get("type").getAsString().equals(ProcessPortalConstants.DATE_TYPE)||inputJson.get("type").getAsString().equals(ProcessPortalConstants.TIMESTAMP_TYPE)){
-        Date dateObj = new Date();
-        dateObj.setTime(inputJson.get("changedValue").getAsLong());
-        updateDescriptor(processOid,inputJson.get("id").getAsString(),dateObj);
-    }else if(inputJson.get("type").getAsString().equals(ProcessPortalConstants.CALENDER_TYPE)){
-       Calendar newCal = Calendar.getInstance();
-       
-       Calendar calPrev = getOrignalValueBeforeChange(processOid,inputJson.get("id").getAsString());
-       
-       Date dateObj = new Date();
-       dateObj.setTime(inputJson.get("changedValue").getAsLong());
-       newCal.setTime(dateObj);
-       
-       boolean hideTime = inputJson.get("hideTime").getAsBoolean();
-       boolean useServerTime = inputJson.get("useServerTimeZone").getAsBoolean();
-      
-       if(hideTime){
-          newCal.setTimeInMillis(calPrev.getTimeInMillis());
-       }
-       if(useServerTime){
-          newCal.setTimeZone(PortalApplication.getInstance().getTimeZone());
-       }
-       updateDescriptor(processOid,inputJson.get("id").getAsString(),newCal);
-    }else{
-       updateDescriptor(processOid,inputJson.get("id").getAsString(),inputJson.get("changedValue").getAsString());
-    }
-     
-  }
-  /**
- * @param oid
- * @param pathId
- * @return
- */
-public Calendar getOrignalValueBeforeChange(Long oid,String pathId){
-     Calendar calObj = Calendar.getInstance();
-     ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, true, false);
-     List<DescriptorItemTableEntry> descriptorList = processInstanceUtilsREST.fetchDescriptorsWithLastModified(process);
-     Iterator<DescriptorItemTableEntry> itr = descriptorList.iterator();
-     while(itr.hasNext()){
-        DescriptorItemTableEntry descriptorObj = itr.next();
-        if(descriptorObj.getId().equals(pathId)){
-           
-           Object dataPathValue = descriptorObj.getValue();
-           if (dataPathValue instanceof Date)
-           {
-              calObj.setTime((Date)dataPathValue);       
-             
-           }
-           else if (dataPathValue instanceof Calendar)
-           {
-              calObj = (Calendar) dataPathValue;
-           }
-           else if(dataPathValue instanceof String){
-              SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-              try
-              {
-                  calObj.setTime(format.parse((String)dataPathValue));
-              }
-              catch (ParseException e)
-              {
-                  // TODO Auto-generated catch block
-                 e.printStackTrace();
-              }
-           }
-           else if(dataPathValue instanceof Long){
-              Date dateObj = new Date();
-              dateObj.setTime((Long)dataPathValue);
-              calObj.setTime(dateObj);
-           }
-           
-           break;
-        }
-     }
-     return calObj;
-  }
-  
-  public void updateDescriptor(long processInstanceOid,String dataPathId, Object newValue){
-     try{
-        ContextPortalServices.getWorkflowService().setOutDataPath(processInstanceOid,
-              dataPathId, newValue);
-     }catch(Exception e){
-        e.printStackTrace();
-     }
-      
-      
-  }
+ 
+   /**
+    * @param processOid
+    * @param descriptorDto
+   
+    */
+   public void updateProcessDescriptor(Long processOid, ProcessDescriptorDTO descriptorDto)
+   {
+
+      if (descriptorDto.type.equals(ProcessPortalConstants.DATE_TYPE)
+            || descriptorDto.type.equals(ProcessPortalConstants.TIMESTAMP_TYPE))
+      {
+         Date dateObj = new Date();
+         dateObj.setTime((Long)descriptorDto.changedValue);
+         updateDescriptor(processOid, descriptorDto.id, dateObj);
+      }
+      else if (descriptorDto.type.equals(ProcessPortalConstants.CALENDER_TYPE))
+      {
+         Calendar newCal = Calendar.getInstance();
+
+         Calendar calPrev = getOrignalValueBeforeChange(processOid, descriptorDto.id);
+
+         Date dateObj = new Date();
+         dateObj.setTime((Long)descriptorDto.changedValue);
+         newCal.setTime(dateObj);
+
+         boolean hideTime = descriptorDto.hideTime;
+         boolean useServerTime = descriptorDto.useServerTimeZone;
+
+         if (hideTime)
+         {
+            newCal.set(Calendar.HOUR, calPrev.get(Calendar.HOUR));
+            newCal.set(Calendar.MINUTE, calPrev.get(Calendar.MINUTE));
+            newCal.set(Calendar.SECOND, calPrev.get(Calendar.SECOND));
+            newCal.set(Calendar.MILLISECOND, calPrev.get(Calendar.MINUTE));
+         }
+         if (useServerTime)
+         {
+            newCal.setTimeZone(PortalApplication.getInstance().getTimeZone());
+         }
+         
+         updateDescriptor(processOid, descriptorDto.id, newCal);
+      }
+      else if(descriptorDto.type.equals(ProcessPortalConstants.LONG_TYPE)
+            || descriptorDto.type.equals(ProcessPortalConstants.BIG_DECIMAL_TYPE)|| descriptorDto.type.equals(ProcessPortalConstants.DOUBLE_TYPE)){
+         Number number = null;
+         try
+         {
+            number = NumberFormat.getNumberInstance(FacesUtils.getLocaleFromRequest()).parse((String)descriptorDto.changedValue);
+         }
+         catch (ParseException e)
+         {
+           throw new I18NException(e.getMessage());
+         }
+         updateDescriptor(processOid, descriptorDto.id, number);
+      }
+      else
+      {
+         updateDescriptor(processOid, descriptorDto.id, descriptorDto.changedValue);
+      }
+
+   }
+
+   /**
+    * @param oid
+    * @param pathId
+    * @return
+    */
+   public Calendar getOrignalValueBeforeChange(Long oid, String pathId)
+   {
+      Calendar calObj = Calendar.getInstance();
+      ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, true, false);
+      List<DescriptorItemTableEntry> descriptorList = processInstanceUtilsREST
+            .fetchDescriptorsWithLastModified(process);
+      Iterator<DescriptorItemTableEntry> itr = descriptorList.iterator();
+      while (itr.hasNext())
+      {
+         DescriptorItemTableEntry descriptorObj = itr.next();
+         if (descriptorObj.getId().equals(pathId))
+         {
+
+            Object dataPathValue = descriptorObj.getValue();
+            if (dataPathValue instanceof Date)
+            {
+               calObj.setTime((Date) dataPathValue);
+
+            }
+            else if (dataPathValue instanceof Calendar)
+            {
+               calObj = (Calendar) dataPathValue;
+            }
+            else if (dataPathValue instanceof String)
+            {
+               SimpleDateFormat format = new SimpleDateFormat(MessagePropertiesBean.getInstance().getString(
+                     "portalFramework.formats.defaultDateFormat"));
+               try
+               {
+                  calObj.setTime(format.parse((String) dataPathValue));
+               }
+               catch (ParseException e)
+               {
+                  throw new I18NException(e.getMessage());
+               }
+               
+            }
+            else if (dataPathValue instanceof Long)
+            {
+               Date dateObj = new Date();
+               dateObj.setTime((Long) dataPathValue);
+               calObj.setTime(dateObj);
+            }
+
+            break;
+         }
+      }
+      return calObj;
+   }
+
+   public void updateDescriptor(long processInstanceOid, String dataPathId, Object newValue)
+   {
+      try
+      {
+         ContextPortalServices.getWorkflowService().setOutDataPath(processInstanceOid, dataPathId, newValue);
+      }
+      catch (Exception e)
+      {
+         throw new I18NException(e.getMessage());
+      }
+
+   }
 }

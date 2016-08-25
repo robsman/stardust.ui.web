@@ -59,6 +59,7 @@ import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.dto.ProcessDescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.DataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
@@ -583,26 +584,10 @@ public class ProcessInstanceResource
    @Path("{oid}/process-descriptor")
    public Response updateProcessDescriptor(@PathParam("oid") Long processOid, String postedData)
    {
-      JsonObject inputJson = new JsonMarshaller().readJsonObject(postedData);
-      String errorMsg = "";
-      try
-      {
-         processInstanceService.updateProcessDescriptor(processOid, inputJson);
-         errorMsg = "true";
-      }
-      catch (ObjectNotFoundException e)
-      {
-         e.printStackTrace();
-         errorMsg = e.getMessage();
-      }
-      catch (InvalidValueException e)
-      {
-         e.printStackTrace();
-         errorMsg = e.getMessage();
-      }
-
+      ProcessDescriptorDTO descriptorDTO = GsonUtils.fromJson(postedData, ProcessDescriptorDTO.class);
+      String errorMsg = "true";
+      processInstanceService.updateProcessDescriptor(processOid, descriptorDTO);
       return Response.ok(errorMsg, MediaType.APPLICATION_JSON).build();
-
    }
 
    /**
