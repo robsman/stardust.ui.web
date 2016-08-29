@@ -109,16 +109,19 @@
 					</div>
 					</td>
 					<td class="gantt-chart-timeline">
-						<span ng-mouseleave="rowData.toolTip = false"> <span
+
+						<span ng-mouseleave="rowData.toolTip = false"> <span 
 							ng-mouseenter="rowData.toolTip = true;ctrl.mouseEnter($event)"
 							class="timeline timeLineCompleted" ng-class="ctrl.getClassForCompletedBar(ctrl.getChartData(rowData).inflight);"
-							ng-attr-style="width :{{ctrl.getChartData(rowData).completed}}px ; margin-left :{{ctrl.getChartData(rowData).delay}}px ; background-color: {{ctrl.getRowColor(rowData)}};color:{{ctrl.getRowColor(rowData)}}">.
+							ng-attr-style="width :{{ctrl.getChartData(rowData).completed}}px ; margin-left :{{ctrl.getChartData(rowData).delay}}px ; 
+							background-color: {{ctrl.getRowColor(rowData)}}; color:{{ctrl.getRowColor(rowData)}};">.
 						</span>
 						<span
 							ng-mouseenter="rowData.toolTip = true;ctrl.mouseEnter($event,ctrl.getChartData(rowData).completed)"
 							ng-if="ctrl.getChartData(rowData).inflight > 0"
 							class="timeline timeLineInflight"
-							ng-attr-style="width :{{ctrl.getChartData(rowData).inflight}}px ; background-color: {{ctrl.getRowColor(rowData)}};color:{{ctrl.getRowColor(rowData)}}">.
+							ng-attr-style="width :{{ctrl.getChartData(rowData).inflight}}px ;
+							 background-color: {{ctrl.getRowColor(rowData)}};color:{{ctrl.getRowColor(rowData)}};">.
 						</span>
 					</span>
 						<div class="gantt-chart-tooltip " ng-show="rowData.toolTip"
