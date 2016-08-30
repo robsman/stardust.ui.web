@@ -231,7 +231,7 @@
 		if (!hasBenchmark) {
 			var statuses = self.getAvailableStatuses();
 
-			if (type == "Process") {
+			if (type == "process") {
 				found = _filter("filter")(statuses, { piValue: value }, true);
 			} else {
 				found = _filter("filter")(statuses, { aiValue: value }, true);
@@ -606,7 +606,7 @@
 		//Check if indiviual nodes are loaded
 		if(!this.dataExpanded) {
 			angular.forEach(this.dataTable.getData(),function(node){
-				if(node.type="process" && node.$$treeInfo && node.$$treeInfo.loaded == false) {
+				if(node.type =="process" && node.$$treeInfo && node.$$treeInfo.loaded == false) {
 					dataCallRequired = true;
 				}
 			});
@@ -618,6 +618,7 @@
 		} else { 	// UI Expand all
 			this.dataTable.expandAll();
 		}
+		this.dataExpanded = true;
 	};
 
 
@@ -664,8 +665,8 @@
 	Controller.prototype.populateGraphData = function(process, expandAll) {
 		var self = this;
 		var expectedDuration = self.getExpectedDurationForProcess(process.qualifiedId);
-		var statusColor = self.getBarColor(process.status.value, "Process", false);
-		var bColor = self.getBarColor(process, "Process", true);
+		var statusColor = self.getBarColor(process.status.value, "process", false);
+		var bColor = self.getBarColor(process, "process", true);
 		
 		process.expectedEndTime = expectedDuration ? (process.startTime + expectedDuration * ONE_HOUR_IN_MIILS) : 0;
 		process.sColor = statusColor;

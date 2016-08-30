@@ -95,9 +95,9 @@
 					<td sda-tree-column >
 					<div  class="gantt-chart-process-tree">
 						<span class="identifierIcon spacing-right" ng-switch on="rowData.type">
-							<span ng-switch-default>  <i class="pi pi-activity pi-lg"> </i></span>
+							<span ng-switch-default>  <i class="pi pi-process pi-lg"> </i></span>
 							<span ng-switch-when="process"> <i class="pi pi-process pi-lg"></i></span>
-							<span ng-switch-when="Subprocess"><i class="pi pi-process  pi-lg"></i></span>
+							<span ng-switch-when="activity"><i class="pi pi-activity pi-lg"></i></span>
 						</span>
 						<span ng-bind="rowData.name" class="spacing-right"> </span>
 						<span ng-show="rowData.activatable"  class="gantt-chart-activate-button">
