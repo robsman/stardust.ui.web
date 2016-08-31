@@ -16,7 +16,8 @@
 (function(){
 	'use strict';
 
-	angular.module('workflow-ui').directive('sdCreateCaseDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
+	angular.module('workflow-ui').directive('sdCreateCaseDialog', ['$parse', '$q', 'sdUtilService', 
+	                                                               'sdProcessInstanceService','sdLoggerService','eventBus',
 	                                                                    CreateCaseDialogDirective]);
 
 	var trace;
@@ -24,7 +25,7 @@
 	/*
 	 * Directive class
 	 */
-	function CreateCaseDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
+	function CreateCaseDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, eventBus) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdCreateCaseDialog');
 		
@@ -210,7 +211,7 @@
 				var createCaseData = {};
 				
 				createCaseData.caseName = self.createCase.caseName;
-				createCaseData.descripton = self.createCase.descripton;
+				createCaseData.description = self.createCase.description;
 				createCaseData.note = self.createCase.note;
 				
 				if (self.processInstanceOIDs.length > 0) {
@@ -219,9 +220,7 @@
 
 				if (self.validate(createCaseData)) {
 					performCreateCase(createCaseData).then(function(data) {
-						
 						deferred.resolve();
-						
 						openNotificationDialog(data);
 					}, function(result) {
 						// Error occurred

@@ -16,9 +16,9 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdProcessInstanceService', function () {
-		this.$get = ['$rootScope', '$resource', '$http', '$filter', 'sdUtilService','sdDataTableHelperService','$q','sdLoggerService',
-		             function ($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q, sdLoggerService) {
-			var service = new ProcessInstanceService($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q, sdLoggerService);
+		this.$get = ['$resource', '$http','$q', 'sdUtilService','sdDataTableHelperService', 'sdLoggerService',
+		             function ( $resource, $http, $q, sdUtilService, sdDataTableHelperService,  sdLoggerService) {
+			var service = new ProcessInstanceService($resource, $http, $q, sdUtilService, sdDataTableHelperService, sdLoggerService);
 			return service;
 		}];
 	});
@@ -26,7 +26,7 @@
 	/*
 	 *
 	 */
-	function ProcessInstanceService($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q, sdLoggerService) {
+	function ProcessInstanceService( $resource, $http, $q, sdUtilService, sdDataTableHelperService, sdLoggerService) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/";
 		
 		var trace = sdLoggerService.getLogger("bpm-common.sdProcessInstanceService")
