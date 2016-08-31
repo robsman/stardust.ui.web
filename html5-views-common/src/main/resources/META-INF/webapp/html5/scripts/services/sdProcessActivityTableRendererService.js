@@ -408,11 +408,13 @@
 						return template;
 					}
 				})
-
+				sdUtilService.safeApply(passedScope);
+				
+				//Work around for popup not positioned correctly on the first load.
 				setTimeout(function () {
 					popoverElem.popover("show");
-					sdUtilService.safeApply(passedScope);
-				});
+					
+				},100);
 			}
 			
 			
