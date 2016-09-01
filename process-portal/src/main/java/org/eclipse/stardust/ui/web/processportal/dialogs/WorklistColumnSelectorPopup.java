@@ -75,6 +75,9 @@ public class WorklistColumnSelectorPopup extends PopupUIComponentBean
       WorklistColumn statusCol = new WorklistColumn(Constants.COL_STATUS, getMessage("column.status"), false);
       WorklistColumn assignedToCol = new WorklistColumn(Constants.COL_ASSIGNED_TO, getMessage("column.assignedTo"),
             false);
+      WorklistColumn rootProcessCol = new WorklistColumn(Constants.COL_ROOT_PROCES, getMessage("column.rootProcessName"),
+            false);
+      
 
       columns.add(activityNameCol);
       columns.add(colOid);
@@ -88,6 +91,7 @@ public class WorklistColumnSelectorPopup extends PopupUIComponentBean
       columns.add(lastPerformerCol);
       columns.add(statusCol);
       columns.add(assignedToCol);
+      columns.add(rootProcessCol);
 
       columns.addAll(createDescriptorColumns());
       columns = orderAndSelectAsPerSavedState(storedList);

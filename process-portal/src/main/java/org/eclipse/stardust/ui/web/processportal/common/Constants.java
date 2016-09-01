@@ -32,4 +32,5 @@ public class Constants
    public static final String COL_CRITICALITY = "Criticality";
    public static final String COL_RESUBMISSION_TIME = "ResubmissionTime";
    public static final String COL_BENCHMARK = "Benchmark";
+   public static final String COL_ROOT_PROCES = "RootProcessName";
 }
