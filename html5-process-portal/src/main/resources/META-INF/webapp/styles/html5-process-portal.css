@@ -317,6 +317,6 @@ input[type="checkbox"].tma-input-highlighted {
 	cursor: hand; cursor: pointer;
 }
 
-.worklist-data--input-highlighted {
+.worklist-data-input-highlighted {
 	border: 1px solid #990000 !important;
 }
