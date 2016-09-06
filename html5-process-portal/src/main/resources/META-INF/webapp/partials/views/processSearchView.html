@@ -389,8 +389,8 @@
 							</tr>
 						</table>
 					</td>
-					<td style="vertical-align: top;"
-						ng-show="procSearchViewCtrl.descritorCols.length > 0">
+					<td style="vertical-align: top;" ng-show="procSearchViewCtrl.descritorCols.length > 0">
+					  <div class="process-search-descriptors-list">
 						<table class="searchTableLayout"  ng-form="descriptorForm">
 							<tr>
 								<td colspan="3">
@@ -408,6 +408,7 @@
 									ng-model="procSearchViewCtrl.selected[descCol.id]"
 									aid="BCC-ProcSrch-Descriptors-ListTypeFilter" />
 								</td>
+								
 								<td ng-if="descCol.dataType =='BOOLEAN'">
 									<table>
 										<tr>
@@ -438,7 +439,7 @@
 										ng-model="procSearchViewCtrl.selected[descCol.id]" ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
 										aid="BCC-ProcSrch-Descriptors-NumberFilter" maxlength="620"/>
 										<div ng-show="descriptorForm.doubleField{{$index}}.$error.pattern"
-											class="msg-error">{{i18n('html5-common.converter-number-error')}} </div>
+											class="msg-error">{{i18n('html5-common.double-error')}} </div>
 									</div>
 										<!-- LONG -->
 									<div ng-if="descCol.detailedType =='LONG'">
@@ -446,7 +447,7 @@
 										ng-model="procSearchViewCtrl.selected[descCol.id]"sd-validate="long"
 										aid="BCC-ProcSrch-Descriptors-NumberFilter" maxlength="20"/>
 										<div ng-show="descriptorForm.longField{{$index}}.$error.validate"
-											class="msg-error">{{i18n('html5-common.converter-number-error')}} </div>
+											class="msg-error">{{i18n('html5-common.long-error')}} </div>
 									</div>
 										<!-- Float -->
 									<div ng-if="descCol.detailedType =='FLOAT'">
@@ -454,7 +455,15 @@
 										ng-model="procSearchViewCtrl.selected[descCol.id]" ng-pattern="/^\-?\d+((\.|\,)\d+)?$/"
 										aid="BCC-ProcSrch-Descriptors-NumberFilter"/>
 										<div ng-show="descriptorForm.floatField{{$index}}.$error.validate"
-											class="msg-error">{{i18n('html5-common.converter-number-error')}} </div>
+											class="msg-error">{{i18n('html5-common.float-error')}} </div>
+									</div>
+										<!-- Byte -->
+									<div ng-if="descCol.detailedType =='BYTE'">
+										<input type="text" id="{{descCol.id}}" name="byteField{{$index}}"
+										ng-model="procSearchViewCtrl.selected[descCol.id]"sd-validate="byte"
+										aid="BCC-ProcSrch-Descriptors-ByteFilter" maxlength="10"/>
+										<div ng-show="descriptorForm.byteField{{$index}}.$error.validate"
+											class="msg-error">{{i18n('html5-common.byte-error')}} </div>
 									</div>
 								</td>
 								
@@ -526,6 +535,7 @@
 								<td></td>
 							</tr>
 						</table>
+						</div>
 					</td>
 				</tr>
 				<tr>

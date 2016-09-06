@@ -66,12 +66,12 @@
 		};
 
 		/*
-		 *
+		 * Get Intersection of descriptors
 		 */
 		ProcessDefinitionService.prototype.getCommonDescriptors = function(
 				procDefids, onlyFilterable) {
 			// Prepare URL
-			var restUrl = REST_BASE_URL + "common-descriptors";
+			var restUrl = REST_BASE_URL + "descriptors/processes";
 
 			var queryParams = "?onlyFilterable="
 					+ (onlyFilterable === true ? true : false);
@@ -86,12 +86,36 @@
 
 			var processDefinition = $resource(restUrl, {}, {
 				fetch : {
-					method : 'PUT',
+					method : 'POST',
 					isArray : true
 				}
 			});
 
 			return processDefinition.fetch({}, postData).$promise;
+		};
+		
+		
+		/*
+		 *Gets Union of descriptors
+		 */
+		ProcessDefinitionService.prototype.getAllDescriptorsByProcess = function (procDefids, onlyFilterable) {
+			// Prepare URL
+			var restUrl = REST_BASE_URL + "all-descriptors/processes";
+
+			var postData = {
+				procDefIDs : procDefids,
+				onlyFilterable : onlyFilterable
+			};
+
+			var allDescriptors = $resource(restUrl, {}, {
+				fetch : {
+					method : 'POST',
+					isArray : true
+				}
+			});
+
+			return allDescriptors.fetch({}, postData).$promise;
+
 		};
 
 	};

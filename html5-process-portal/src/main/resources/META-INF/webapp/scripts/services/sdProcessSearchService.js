@@ -281,6 +281,16 @@
 			return sdProcessDefinitionService.getCommonDescriptors(procDefIds,
 					onlyFilterable);
 		}
+		
+		/*
+		 * 
+		 */
+		ProcessSearchService.prototype.getAllDescriptorsByProcess = function(
+				procDefIds, onlyFilterable) {
+			return sdProcessDefinitionService.getAllDescriptorsByProcess(procDefIds,onlyFilterable);
+		}
+		
+		
 
 		/*
 		 * 

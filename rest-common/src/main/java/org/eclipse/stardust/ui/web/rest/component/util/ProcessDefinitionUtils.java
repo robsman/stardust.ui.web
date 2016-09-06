@@ -228,6 +228,18 @@ public class ProcessDefinitionUtils
        return commonDescriptorsDataPath;
    }
    
+   /**
+    * 
+    * @param processes
+    * @param onlyFilterable
+    * @return
+    */
+   public static DataPath[] getAllDescriptorsByProcess(List<ProcessDefinition> processes, Boolean onlyFilterable)
+   {
+       DataPath[] commonDescriptorsDataPath = CommonDescriptorUtils.getAllDescriptorsByProcess(processes, onlyFilterable);
+       return commonDescriptorsDataPath;
+   }
+   
  
    /**
     * @param dataPaths

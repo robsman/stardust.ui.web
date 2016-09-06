@@ -257,6 +257,12 @@
 	height: 20px;
 }
 
+
+.process-search-descriptors-list {
+	max-height: 480px;
+    overflow-y: auto;
+}
+
 .searchTableLayout td {
 	padding: 3px;
 }

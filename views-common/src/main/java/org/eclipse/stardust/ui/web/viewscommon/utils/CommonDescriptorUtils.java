@@ -720,6 +720,37 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
       DataPath[] descriptors = (DataPath[]) allDescriptors.values().toArray(new DataPath[0]);
       return descriptors;
    }
+   
+   
+   /**
+    * Returns the union of all descriptors from across processes
+    * @param processes
+    * @param onlyFilterable
+    * @return
+    */
+   public static DataPath[] getAllDescriptorsByProcess(List<ProcessDefinition> processes, boolean onlyFilterable)
+   {
+      // We have to use this type of Map because of the predictable order of the keys
+      Map<String, DataPath> allDescriptors = new LinkedHashMap<String, DataPath>();
+    
+      for (int i = 0; i < processes.size(); ++i)
+      {
+         ProcessDefinition process = processes.get(i);
+   
+         for (Iterator descrItr = process.getAllDataPaths().iterator(); descrItr.hasNext();)
+         {
+            DataPath path = (DataPath) descrItr.next();
+            if (Direction.IN.equals(path.getDirection()) && path.isDescriptor() && !DescriptorColumnUtils.isCompositeOrLinkDescriptor(path)
+                  && ((onlyFilterable && DescriptorFilterUtils.isDataFilterable(path)) || !onlyFilterable))
+            {
+               allDescriptors.put(path.getId(), path);
+            }
+         }
+      }
+      DataPath[] descriptors = (DataPath[]) allDescriptors.values().toArray(new DataPath[0]);
+      return descriptors;
+   }
+
 
    
    /**

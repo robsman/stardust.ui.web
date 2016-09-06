@@ -311,6 +311,9 @@
 				});
 
 		this.showProcSearchResult = false;
+		
+		var allDescriptosPromise = this.fetchAllDescriptors();
+		promises.push(allDescriptosPromise.promise);
 
 		_q.all(promises).then(function() {
 			if (Object.keys(params).length != 0) {
@@ -319,10 +322,6 @@
 				});
 			}
 		});
-
-
-
-
 	};
 
 	/**
@@ -393,9 +392,10 @@
 	 *
 	 */
 	ProcessSearchViewCtrl.prototype.processChange = function() {
+		var self = this;
 		var deferred = _q.defer();
 		this.showProcSearchResult = false;
-		this.descritorCols = [];
+	
 		if (this.query.processSearchCriteria.filterObject == 1) {
 			this.procSrchActivities = this.calculateSelectedProcessActivities();
 
@@ -408,36 +408,55 @@
 			this.query.processSearchCriteria.activitySrchCriticalitySelected = this.activitySrchCriticality[0].label;
 		}
 
-		if (this.procSrchProcessSelected[0]
-				&& !(this.procSrchProcessSelected[0].value && this.procSrchProcessSelected[0].value == "All")) {
+		if (this.procSrchProcessSelected.length > 0) {
 			var selectedProcDefIds = getSelectedProcDefIds(this.procSrchProcessSelected);
-			var self = this;
-			_sdProcessSearchService
-					.getCommonDescriptors(selectedProcDefIds, true)
-					.then(
-							function(commonDescriptors) {
-								angular
-										.forEach(
-												commonDescriptors,
-												function(descriptor) {
-													self.descritorCols
-															.push({
-																id : descriptor.id,
-																field : "descriptorValues['"
-																		+ descriptor.id
-																		+ "'].value",
-																title : descriptor.title,
-																dataType : descriptor.type,
-																detailedType : descriptor.detailedType
-															});
-												});
-								deferred.resolve();
-							});
+			return this.fetchRelevantDescriptors(selectedProcDefIds) ;
 		} else {
 			deferred.resolve();
 		}
 		return deferred.promise;
 	};
+	
+	
+	ProcessSearchViewCtrl.prototype.fetchAllDescriptors = function (selectedProcDefIds) {
+		return this.fetchRelevantDescriptors(["All"]);
+	}
+
+	/**
+	 * 
+	 */
+	ProcessSearchViewCtrl.prototype.fetchRelevantDescriptors = function (selectedProcDefIds) {
+		var self= this;
+		if(isAllProcessSelected(selectedProcDefIds)  && this.allDescriptors != undefined) {
+			self.descritorCols = this.allDescriptors.slice();
+			return _q.when(self.descritorCols);
+		}
+		
+		return _sdProcessSearchService.getAllDescriptorsByProcess(selectedProcDefIds, true).then(function (relevantDescriptors) {
+					self.descritorCols = [];
+					angular.forEach(relevantDescriptors, function (descriptor) {
+						self.descritorCols.push({
+							id : descriptor.id,
+							field : "descriptorValues['" + descriptor.id + "'].value",
+							title : descriptor.title,
+							dataType : descriptor.type,
+							detailedType : descriptor.detailedType
+						});
+					});
+					
+					if(isAllProcessSelected(selectedProcDefIds) ) {
+						self.allDescriptors = self.descritorCols.slice();
+					}
+				});
+	}
+	
+	/**
+	 * 
+	 */
+	function isAllProcessSelected (processes) {
+		return processes.indexOf("All") > -1;
+	}
+	
 
 	/*
 	 *
@@ -551,6 +570,7 @@
 		this.selected = {};
 		this.query.processSearchCriteria.descriptors.formatted = {};
 		this.showProcSearchResult = false;
+		this.fetchAllDescriptors();
 	}
 
 	/*
@@ -593,6 +613,7 @@
 		this.procSrchProcessSelected = [ this.procSrchProcess[0] ];
 		this.descritorCols = [];
 		this.filterProcessDefinitionList();
+		this.fetchAllDescriptors();
 	}
 
 	/*
@@ -1502,18 +1523,16 @@ ProcessSearchViewCtrl.prototype.checkDateRangeValidity = function(from, to) {
 	/*
 	 *
 	 */
-	function getSelectedProcDefIds(procSrchProcessSelected, getArray) {
-		var selectedProcDefs = procSrchProcessSelected;
-		var selectedProcDefIds = '';
+	function getSelectedProcDefIds(selectedProcesses, getArray) {
 		var selectedProcDefIdsArr = [];
-		for ( var procDef in selectedProcDefs) {
-			if (selectedProcDefs[procDef].id) {
-				selectedProcDefIds += "," + selectedProcDefs[procDef].id;
-				selectedProcDefIdsArr.push(selectedProcDefs[procDef].id);
+		for ( var procDef in selectedProcesses) {
+			var process = selectedProcesses[procDef];
+			if (process.id || process.value) {
+				var id = process.id ? process.id : process.value;
+				selectedProcDefIdsArr.push(id);
 			}
 		}
-		selectedProcDefIds = selectedProcDefIds.substr(1);
-		return (getArray) ? selectedProcDefIdsArr : selectedProcDefIds
+		return (getArray) ? selectedProcDefIdsArr : selectedProcDefIdsArr.join(",");
 	}
 
 	/*

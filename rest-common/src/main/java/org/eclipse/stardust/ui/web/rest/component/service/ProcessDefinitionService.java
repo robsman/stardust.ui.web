@@ -294,6 +294,28 @@ public class ProcessDefinitionService
    {
       List<ProcessDefinition> processDefinitions = ProcessDefinitionUtils.getProcessDefinitions(procDefIDs);
       DataPath[] descriptors = ProcessDefinitionUtils.getCommonDescriptors(processDefinitions, onlyFilterable);
+      return getDescriptorColumns(descriptors);
+   }
+   
+   /**
+    * @param procDefIDs
+    * @param onlyFilterable
+    */
+   public List<DescriptorColumnDTO> getAllDescriptorsByProcess(List<String> procDefIDs, Boolean onlyFilterable, boolean allProcesses)
+   {
+      List<ProcessDefinition>  processDefinitions =  allProcesses 
+                                                     ? org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils.getAllProcessDefinitionsOfActiveModels()
+                                                     : ProcessDefinitionUtils.getProcessDefinitions(procDefIDs);;
+      DataPath[] descriptors = ProcessDefinitionUtils.getAllDescriptorsByProcess(processDefinitions, onlyFilterable);
+      return getDescriptorColumns(descriptors);
+   }
+   
+   /**
+    * 
+    * @param descriptors
+    * @return
+    */
+   private  List<DescriptorColumnDTO> getDescriptorColumns( DataPath[] descriptors) {
       Map<String, DataPath> commonDescriptors = ProcessDefinitionUtils.getDataPathMap(descriptors);
       List<DescriptorColumnDTO> descriptorCols = createDescriptorColumns(commonDescriptors);
       return descriptorCols;
