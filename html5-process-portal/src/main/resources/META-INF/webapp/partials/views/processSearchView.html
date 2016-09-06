@@ -390,152 +390,177 @@
 						</table>
 					</td>
 					<td style="vertical-align: top;" ng-show="procSearchViewCtrl.descritorCols.length > 0">
-					  <div class="process-search-descriptors-list">
-						<table class="searchTableLayout"  ng-form="descriptorForm">
-							<tr>
-								<td colspan="3">
-									<div class="heading view-panel-toolbar">
-										<label>{{i18n('business-control-center-messages.common-descriptor-title')}}</label>
-									</div>
-								</td>
-							</tr>
+					<br/>
+						<div>
+								<span
+									ng-show="!hasFocus &amp;&amp; (!procSearchViewCtrl.descFilterText || procSearchViewCtrl.descFilterText.title.length===0)"
+									class="pi pi-search search-box-icon"></span> <input type="text"
+									ng-init="procSearchViewCtrl.descFilterText={title : ''} "
+									ng-focus="hasFocus=true" ng-blur="hasFocus=false"
+									ng-model="procSearchViewCtrl.descFilterText.title"
+									class="search"
+									aid="BCC-ProcSrch-Descriptors-descriptor-search-filter">
+							</div>
+							<div class="process-search-descriptors-list">
+								<table class="searchTableLayout" ng-form="descriptorForm">
+									<tr>
+										<td colspan="3">
+											<div class="heading view-panel-toolbar">
+												<label>{{i18n('business-control-center-messages.common-descriptor-title')}}</label>
+											</div>
+										</td>
+									</tr>
+									<tr ng-repeat="descCol in procSearchViewCtrl.descritorCols | filter:procSearchViewCtrl.descFilterText">
+										<td><label>{{descCol.title +
+												i18n('business-control-center-messages.common-colon')}}</label></td>
+										<td ng-if="descCol.dataType =='LIST'"><input type="text"
+											id="{{descCol.id}}" name="listField{{$index}}"
+											ng-model="procSearchViewCtrl.selected[descCol.id]"
+											aid="BCC-ProcSrch-Descriptors-ListTypeFilter" /></td>
 
-							<tr ng-repeat="descCol in procSearchViewCtrl.descritorCols" >
-								<td><label>{{descCol.title +
-										i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td ng-if="descCol.dataType =='LIST'">
-									<input type="text" id="{{descCol.id}}" name="listField{{$index}}"
-									ng-model="procSearchViewCtrl.selected[descCol.id]"
-									aid="BCC-ProcSrch-Descriptors-ListTypeFilter" />
-								</td>
-								
-								<td ng-if="descCol.dataType =='BOOLEAN'">
-									<table>
-										<tr>
-											<td><select
-												ng-model="procSearchViewCtrl.selected[descCol.id]"
-												ng-options="option.value as option.label for option in procSearchViewCtrl.descBoolOptions"
-												aid="BCC-ProcSrch-Descriptors-OnOffFilter"></select></td>
-										</tr>
-									</table>
-								</td>
-								<td ng-if="descCol.dataType== 'STRING'">
-									<input type="text" id="{{descCol.id}}" name="textField{{$index}}"
-									ng-model="procSearchViewCtrl.selected[descCol.id]"
-									aid="BCC-ProcSrch-Descriptors-NumberFilter" />
-								</td>
+										<td ng-if="descCol.dataType =='BOOLEAN'">
+											<table>
+												<tr>
+													<td><select
+														ng-model="procSearchViewCtrl.selected[descCol.id]"
+														ng-options="option.value as option.label for option in procSearchViewCtrl.descBoolOptions"
+														aid="BCC-ProcSrch-Descriptors-OnOffFilter"></select></td>
+												</tr>
+											</table>
+										</td>
+										<td ng-if="descCol.dataType== 'STRING'"><input
+											type="text" id="{{descCol.id}}" name="textField{{$index}}"
+											ng-model="procSearchViewCtrl.selected[descCol.id]"
+											aid="BCC-ProcSrch-Descriptors-NumberFilter" /></td>
 
-								<td ng-if="descCol.dataType =='NUMBER'">
-									<!-- INTEGER -->
-									<div ng-if="descCol.detailedType =='INTEGER'">
-										<input type="text" id="{{descCol.id}}" name="intergerField{{$index}}" maxlength="10"
-										ng-model="procSearchViewCtrl.selected[descCol.id]" sd-validate="integer"
-										aid="BCC-ProcSrch-Descriptors-NumberFilter" />
-										<div ng-show="descriptorForm.intergerField{{$index}}.$error.validate" class="msg-error">{{i18n('html5-common.converter-number-error')}} </div>
-									</div>
-										<!-- DOUBLE -->
-									<div ng-if="descCol.detailedType =='DOUBLE'">
-										<input type="text" id="{{descCol.id}}" name="doubleField{{$index}}"
-										ng-model="procSearchViewCtrl.selected[descCol.id]" ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
-										aid="BCC-ProcSrch-Descriptors-NumberFilter" maxlength="620"/>
-										<div ng-show="descriptorForm.doubleField{{$index}}.$error.pattern"
-											class="msg-error">{{i18n('html5-common.double-error')}} </div>
-									</div>
-										<!-- LONG -->
-									<div ng-if="descCol.detailedType =='LONG'">
-										<input type="text" id="{{descCol.id}}" name="longField{{$index}}"
-										ng-model="procSearchViewCtrl.selected[descCol.id]"sd-validate="long"
-										aid="BCC-ProcSrch-Descriptors-NumberFilter" maxlength="20"/>
-										<div ng-show="descriptorForm.longField{{$index}}.$error.validate"
-											class="msg-error">{{i18n('html5-common.long-error')}} </div>
-									</div>
-										<!-- Float -->
-									<div ng-if="descCol.detailedType =='FLOAT'">
-										<input type="text" id="{{descCol.id}}" name="floatField{{$index}}"
-										ng-model="procSearchViewCtrl.selected[descCol.id]" ng-pattern="/^\-?\d+((\.|\,)\d+)?$/"
-										aid="BCC-ProcSrch-Descriptors-NumberFilter"/>
-										<div ng-show="descriptorForm.floatField{{$index}}.$error.validate"
-											class="msg-error">{{i18n('html5-common.float-error')}} </div>
-									</div>
-										<!-- Byte -->
-									<div ng-if="descCol.detailedType =='BYTE'">
-										<input type="text" id="{{descCol.id}}" name="byteField{{$index}}"
-										ng-model="procSearchViewCtrl.selected[descCol.id]"sd-validate="byte"
-										aid="BCC-ProcSrch-Descriptors-ByteFilter" maxlength="10"/>
-										<div ng-show="descriptorForm.byteField{{$index}}.$error.validate"
-											class="msg-error">{{i18n('html5-common.byte-error')}} </div>
-									</div>
-								</td>
-								
-								<td ng-if="descCol.dataType =='DATETIME'">
-									<table cellspacing="2" cellpadding="2"
-										style="white-space: nowrap;">
-										<tr>
-											<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-first')}}</label></td>
-											<td><div sd-date-time-condensed id="from"
-												name="from{{$index}}"
-												ng-model="procSearchViewCtrl.selected[descCol.id].from"
-												ng-model-onblur
-												aid="BCC-ProcSrch-Descriptors-FromDate" />
-											</td>
-										</tr>
-										<tr>
-											<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-last')}}</label></td>
-											<td><div sd-date-time-condensed id="to"
-												name="to{{$index}}"
-												ng-model="procSearchViewCtrl.selected[descCol.id].to"
-												ng-model-onblur
-												aid="BCC-ProcSrch-Descriptors-ToDate" />
-											</td>
-										</tr>
-										<tr>
-											<td></td>
-											<td>
-												<div ng-show="!procSearchViewCtrl.checkDateRangeValidity(procSearchViewCtrl.selected[descCol.id].from, procSearchViewCtrl.selected[descCol.id].to)" class="msg-error">
-													{{i18n('portal-common-messages.common-filterPopup-betweenFilter-message-rangeNotValid')}}
+										<td ng-if="descCol.dataType =='NUMBER'">
+											<!-- INTEGER -->
+											<div ng-if="descCol.detailedType =='INTEGER'">
+												<input type="text" id="{{descCol.id}}"
+													name="intergerField{{$index}}" maxlength="10"
+													ng-model="procSearchViewCtrl.selected[descCol.id]"
+													sd-validate="integer"
+													aid="BCC-ProcSrch-Descriptors-NumberFilter" />
+												<div
+													ng-show="descriptorForm.intergerField{{$index}}.$error.validate"
+													class="msg-error">{{i18n('html5-common.converter-number-error')}}
 												</div>
-										  </td>
-										</tr>
-
-									</table>
-								</td>
-								<td ng-if="descCol.dataType =='DATE'">
-									<table cellspacing="2" cellpadding="2"
-										style="white-space: nowrap;">
-										<tr>
-											<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-first')}}</label></td>
-											<td><div sd-date-time-condensed sda-date-type="'date'" id="from"
-												name="from{{$index}}"
-												ng-model="procSearchViewCtrl.selected[descCol.id].from"
-												ng-model-onblur
-												aid="BCC-ProcSrch-Descriptors-FromDate" />
-											</td>
-										</tr>
-										<tr>
-											<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-last')}}</label></td>
-											<td><div sd-date-time-condensed sda-date-type="'date'" id="to"
-												name="to{{$index}}"
-												ng-model="procSearchViewCtrl.selected[descCol.id].to"
-												ng-model-onblur
-												aid="BCC-ProcSrch-Descriptors-ToDate" />
-											</td>
-										</tr>
-										<tr>
-											<td></td>
-											<td>
-												<div ng-show="!procSearchViewCtrl.checkDateRangeValidity(procSearchViewCtrl.selected[descCol.id].from, procSearchViewCtrl.selected[descCol.id].to)" class="msg-error">
-													{{i18n('portal-common-messages.common-filterPopup-betweenFilter-message-rangeNotValid')}}
+											</div> <!-- DOUBLE -->
+											<div ng-if="descCol.detailedType =='DOUBLE'">
+												<input type="text" id="{{descCol.id}}"
+													name="doubleField{{$index}}"
+													ng-model="procSearchViewCtrl.selected[descCol.id]"
+													ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
+													aid="BCC-ProcSrch-Descriptors-NumberFilter" maxlength="620" />
+												<div
+													ng-show="descriptorForm.doubleField{{$index}}.$error.pattern"
+													class="msg-error">{{i18n('html5-common.double-error')}}
 												</div>
-										  </td>
-										</tr>
+											</div> <!-- LONG -->
+											<div ng-if="descCol.detailedType =='LONG'">
+												<input type="text" id="{{descCol.id}}"
+													name="longField{{$index}}"
+													ng-model="procSearchViewCtrl.selected[descCol.id]"
+													sd-validate="long"
+													aid="BCC-ProcSrch-Descriptors-NumberFilter" maxlength="20" />
+												<div
+													ng-show="descriptorForm.longField{{$index}}.$error.validate"
+													class="msg-error">{{i18n('html5-common.long-error')}}
+												</div>
+											</div> <!-- Float -->
+											<div ng-if="descCol.detailedType =='FLOAT'">
+												<input type="text" id="{{descCol.id}}"
+													name="floatField{{$index}}"
+													ng-model="procSearchViewCtrl.selected[descCol.id]"
+													ng-pattern="/^\-?\d+((\.|\,)\d+)?$/"
+													aid="BCC-ProcSrch-Descriptors-NumberFilter" />
+												<div
+													ng-show="descriptorForm.floatField{{$index}}.$error.validate"
+													class="msg-error">{{i18n('html5-common.float-error')}}
+												</div>
+											</div> <!-- Byte -->
+											<div ng-if="descCol.detailedType =='BYTE'">
+												<input type="text" id="{{descCol.id}}"
+													name="byteField{{$index}}"
+													ng-model="procSearchViewCtrl.selected[descCol.id]"
+													sd-validate="byte"
+													aid="BCC-ProcSrch-Descriptors-ByteFilter" maxlength="10" />
+												<div
+													ng-show="descriptorForm.byteField{{$index}}.$error.validate"
+													class="msg-error">{{i18n('html5-common.byte-error')}}
+												</div>
+											</div>
+										</td>
 
-									</table>
-								</td>
-								
-								<td></td>
-							</tr>
-						</table>
-						</div>
+										<td ng-if="descCol.dataType =='DATETIME'">
+											<table cellspacing="2" cellpadding="2"
+												style="white-space: nowrap;">
+												<tr>
+													<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-first')}}</label></td>
+													<td><div sd-date-time-condensed id="from"
+															name="from{{$index}}"
+															ng-model="procSearchViewCtrl.selected[descCol.id].from"
+															ng-model-onblur aid="BCC-ProcSrch-Descriptors-FromDate" />
+													</td>
+												</tr>
+												<tr>
+													<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-last')}}</label></td>
+													<td><div sd-date-time-condensed id="to"
+															name="to{{$index}}"
+															ng-model="procSearchViewCtrl.selected[descCol.id].to"
+															ng-model-onblur aid="BCC-ProcSrch-Descriptors-ToDate" />
+													</td>
+												</tr>
+												<tr>
+													<td></td>
+													<td>
+														<div
+															ng-show="!procSearchViewCtrl.checkDateRangeValidity(procSearchViewCtrl.selected[descCol.id].from, procSearchViewCtrl.selected[descCol.id].to)"
+															class="msg-error">
+															{{i18n('portal-common-messages.common-filterPopup-betweenFilter-message-rangeNotValid')}}
+														</div>
+													</td>
+												</tr>
+
+											</table>
+										</td>
+										<td ng-if="descCol.dataType =='DATE'">
+											<table cellspacing="2" cellpadding="2"
+												style="white-space: nowrap;">
+												<tr>
+													<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-first')}}</label></td>
+													<td><div sd-date-time-condensed sda-date-type="'date'"
+															id="from" name="from{{$index}}"
+															ng-model="procSearchViewCtrl.selected[descCol.id].from"
+															ng-model-onblur aid="BCC-ProcSrch-Descriptors-FromDate" />
+													</td>
+												</tr>
+												<tr>
+													<td><label class="label-item">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-last')}}</label></td>
+													<td><div sd-date-time-condensed sda-date-type="'date'"
+															id="to" name="to{{$index}}"
+															ng-model="procSearchViewCtrl.selected[descCol.id].to"
+															ng-model-onblur aid="BCC-ProcSrch-Descriptors-ToDate" />
+													</td>
+												</tr>
+												<tr>
+													<td></td>
+													<td>
+														<div
+															ng-show="!procSearchViewCtrl.checkDateRangeValidity(procSearchViewCtrl.selected[descCol.id].from, procSearchViewCtrl.selected[descCol.id].to)"
+															class="msg-error">
+															{{i18n('portal-common-messages.common-filterPopup-betweenFilter-message-rangeNotValid')}}
+														</div>
+													</td>
+												</tr>
+
+											</table>
+										</td>
+
+										<td></td>
+									</tr>
+								</table>
+							</div>
 					</td>
 				</tr>
 				<tr>

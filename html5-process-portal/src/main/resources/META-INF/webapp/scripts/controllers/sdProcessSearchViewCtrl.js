@@ -570,6 +570,7 @@
 		this.selected = {};
 		this.query.processSearchCriteria.descriptors.formatted = {};
 		this.showProcSearchResult = false;
+		this.descFilterText.title = "";
 		this.fetchAllDescriptors();
 	}
 
@@ -1474,16 +1475,17 @@
 
 		return true;
 	};
+	
+	
+	/**
+	 * 
+	 */
+	ProcessSearchViewCtrl.prototype.checkDateRangeValidity = function(from, to) {
+		return _sdUtilService.validateDateRange(from, to);
+	}
 
-/**
- *
- */
-ProcessSearchViewCtrl.prototype.checkDateRangeValidity = function(from, to) {
-	return _sdUtilService.validateDateRange(from, to);
-}
 
-
-/**
+	/**
 	*
 	 */
 	ProcessSearchViewCtrl.prototype.descriptorsValid = function() {
