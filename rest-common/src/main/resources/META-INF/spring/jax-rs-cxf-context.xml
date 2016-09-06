@@ -62,6 +62,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.resource.StartableProcessResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.resource.ActivitySearchResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.resource.ReportingResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.resource.GanttChartResource" />
          
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
