@@ -762,6 +762,52 @@ define(
 							.openImportModelDialog(linkId, formId);
 				}
 			}
+			
+			var cloneModel = function(modelId) {
+        if (false == m_modelsSaveStatus.areModelsSaved()) {
+          if (parent.iPopupDialog) {
+            parent.iPopupDialog
+                .openPopup({
+                  attributes : {
+                    width : "400px",
+                    height : "200px",
+                    src : m_urlUtils.getPlugsInRoot()
+                        + "bpm-modeler/popups/confirmationPopupDialogContent.html"
+                  },
+                  payload : {
+                    title : m_i18nUtils
+                        .getProperty("modeler.messages.warning"),
+                    message : m_i18nUtils
+                        .getProperty("modeler.messages.info.modelNotSaved"),
+                    acceptButtonText : m_i18nUtils
+                        .getProperty("modeler.messages.confirm.close"),
+                    acceptFunction : function() {
+                      // Do nothing
+                    }
+                  }
+                });
+          } else {
+            alert("Models have unsaved changes. Please save models before continuing.");
+          }
+        } else {
+          var model = m_model.findModel(modelId);
+          if (!model) {
+            for (var i = 0; i < m_model.getErroredModels().length; i++) {
+              if (m_model.getErroredModels()[i].id === modelId) {
+                model = m_model.getErroredModels()[i];
+              }
+            }
+          }
+
+          if (model) {
+            m_commandsController.submitCommand(m_command
+                .createCloneModelCommand(model.uuid, model.id, {})).done(function() {
+                  window.parent.EventHub.events.publish("RELOAD_MODELS");               
+                });
+          }
+        }
+      }
+			
 
 			var undoMostCurrent = function() {
 				m_communicationController.postData({
@@ -938,6 +984,13 @@ define(
 															},false);
 												}
 											},
+											"cloneModel" : {
+                        "label" : m_i18nUtils
+                            .getProperty("modeler.element.properties.commonProperties.clone"),
+                        "action" : function(obj) {
+                             cloneModel(obj.attr("elementId"));
+                         }
+                      },
 											"createProcess" : {
 												"label" : m_i18nUtils
 														.getProperty("modeler.outline.model.contextMenu.createProcess"),

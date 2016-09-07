@@ -187,6 +187,12 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
             changes : changes
          } ]);
       },
+      createCloneModelCommand : function(uuid, modelId, changes) {
+        return new ChangeDescriptor("model.clone", modelId, [ {
+           uuid : uuid,
+           changes : changes
+        } ]);
+      },
       createCreateStructuredDataTypeCommand : function(modelId, oid, changes) {
          return new ChangeDescriptor("structuredDataType.create", modelId, [ {
             oid : oid,
