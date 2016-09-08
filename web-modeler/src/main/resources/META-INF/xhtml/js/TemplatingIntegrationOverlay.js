@@ -85,10 +85,7 @@ define(
                            .jQuerySelect("#templatingIntegrationOverlay #configurationTab #sourceTypeInput");
                   this.sourceTypeInput.hide();
 
-
                   this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
-                  this.parameterDefinitionDirectionSelect = m_utils
-                           .jQuerySelect("#parametersTab #parameterDefinitionDirectionSelect");
 
                   this.locationInput
                            .append("<option value=\"embedded\" selected>"
@@ -219,13 +216,6 @@ define(
                      supportsOtherData : false,
                      hideEnumerations : true
                   });
-
-                  this.parameterDefinitionDirectionSelect.empty();
-                  this.parameterDefinitionDirectionSelect
-                           .append("<option value=\"IN\">"
-                                    + m_i18nUtils
-                                             .getProperty("modeler.element.properties.commonProperties.in")
-                                    + "</option>");
 
                   this.deleteParameterDefinitionButton.attr("src", m_urlUtils
                            .getContextName()
