@@ -83,6 +83,7 @@
 	<!-- sdDialog Directives End -->
 	
 	<i style="position:absolute;font-size:1.5em;cursor:pointer;top:7px;" 
+	   aid ="BCC-benchmarkDef-showHideDef" 
 	   ng-click="ctrl.showBenchmarks = !ctrl.showBenchmarks" 
 	   ng-class="{'pi-arrow-d': ctrl.showBenchmarks,'pi-arrow-r': !ctrl.showBenchmarks}"
 	   class="pi pi-fw pi-arrow-d">
@@ -106,6 +107,7 @@
 	<div ng-show="ctrl.showBenchmarks">
 	
 		<select style="margin-bottom:1em;"
+				aid ="BCC-benchmarkDef-benchMarkFilter" 
 		        ng-model="ctrl.benchmarkFilter" 
 		        ng-change="ctrl.onStatusChange(ctrl.benchmarkFilter)">
 			<option selected value="Design">{{ctrl.textMap.design}}</option>
@@ -138,12 +140,14 @@
 				
 				    <button
 				       ng-click="ctrl.createBenchmark()" 
+				       aid ="BCC-benchmarkDef-createBenchmark"  
 				       title="{{ctrl.textMap.addBenchmark}}" 
 				       class="pi pi-1x pi-plus-sign">
 				    </button>
 	
 				    <button 
 				       ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" 
+				       aid ="BCC-benchmarkDef-delBenchmark" 
 				       ng-disabled="!ctrl.selectedBenchmark"
 				       title="{{ctrl.textMap.deleteBenchmark}}" 
 				       class="pi pi-1x pi-minus-sign">
@@ -155,6 +159,7 @@
 			    
 				    <button
 				       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
+				       aid ="BCC-benchmarkDef-downloadBenchmark" 
 				       ng-disabled="!ctrl.selectedBenchmark"
 				       title="{{ctrl.textMap.downloadBenchmark}}" 
 				       class="pi pi-1x pi-download">
@@ -162,6 +167,7 @@
 				    
 				    <button 
 				       ng-click="ctrl.uploadBenchmarkFromFile()" 
+				       aid ="BCC-benchmarkDef-uploadBenchmark" 
 				       title="{{ctrl.textMap.upload}}" 
 				       class="pi pi-1x pi-upload">
 				    </button>
@@ -172,6 +178,7 @@
 			    
 				    <button 
 				       ng-click="ctrl.cloneBenchmark(ctrl.selectedBenchmark.id)" 
+				       aid ="BCC-benchmarkDef-cloneBenchmark"
 				       ng-disabled="!ctrl.selectedBenchmark"
 				       title="{{ctrl.textMap.cloneBenchmark}}" 
 				       class="pi pi-1x pi-copy">
@@ -179,6 +186,7 @@
 	
 				    <button 
 				       ng-click="ctrl.saveBenchmark(ctrl.selectedBenchmark)" 
+				       aid ="BCC-benchmarkDef-saveBenchmark"
 				       ng-disabled="!ctrl.selectedBenchmark"
 				       title="{{ctrl.textMap.saveBenchmark}}" 
 				       class="pi pi-1x pi-floppy-disk">
@@ -190,6 +198,7 @@
 			    
 				    <button 
 				       ng-if="ctrl.deployRuntimeArtifact"
+				       aid ="BCC-benchmarkDef-publishBenchmark"
 				       ng-disabled="!ctrl.selectedBenchmark"
 				       ng-click="ctrl.publishBenchmark(ctrl.selectedBenchmark.id)" 
 				       title="{{ctrl.textMap.publishBenchmark}}"
@@ -286,6 +295,7 @@
 	    
 		    <div class="tab"
 		    	 ng-class="{selected: ctrl.selectedTab==='General'}"
+		    	 aid ="BCC-benchmarkDef-selectGenTab"
 		    	 ng-click="ctrl.selectedTab = 'General'">
 		    	 <span class="tab-label">{{ctrl.textMap.general}}</span>
 		    	 <div class="tab-arrow" ng-show="ctrl.selectedTab === 'General'"></div>
@@ -293,6 +303,7 @@
 		    
 		    <div class="tab"
 		    	 ng-class="{selected: ctrl.selectedTab === 'Categories'}"
+		    	 aid ="BCC-benchmarkDef-selectCatTab"
 		    	 ng-click="ctrl.selectedTab ='Categories'">
 		    	 <span class="tab-label">{{ctrl.textMap.categories}}</span>
 		    	 <div class="tab-arrow" ng-show="ctrl.selectedTab === 'Categories'"></div>
@@ -318,15 +329,18 @@
 						        required="required"
 						        ng-model="myFilter" 
 						        class="search"
-						        aid="COM-PartMgr-ApplyFilter" />
+						        aid="BCC-benchmarkDef-catTab-filterTxt"/>
 						<button ng-disabled="!myFilter || myFilter.length==0" 
+								aid ="BCC-benchmarkDef-catTab-applyFilter" 
 								title="{{ctrl.textMap.filter}}"
 						        class="pi pi-filter pi-1x" 
 						        ng-click="ctrl.filterModelTreeByName(myFilter)"></button>
-						<button class="pi pi-clear pi-1x" 
+						<button class="pi pi-clear pi-1x"
+								aid ="BCC-benchmarkDef-catTab-clearFilter"  
 								title="{{ctrl.textMap.resetFilter}}"
 						        ng-click="ctrl.resetFilter();myFilter=''"></button>
 						<button class="pi pi-refresh pi-1x" 
+							    aid ="BCC-benchmarkDef-catTab-refresh"  
 								title="{{ctrl.textMap.refreshTree}}"
 						        ng-click="ctrl.loadModels()">
 						</button>
@@ -335,6 +349,7 @@
 					<!-- sdTree Implementation of Model Tree -->
 				    <ul sd-tree="ctrl.onTreeInit(api)"
 				       	sda-event-callback="ctrl.treeCallback(data,e)"
+				       	aid ="BCC-benchmarkDef-catTab-model"
 				       	sda-icon-callback="ctrl.iconCallback(item)"
 				       	sda-menu-callback="ctrl.menuCallback(item)">
 				      <li sd-tree-node 
@@ -395,6 +410,7 @@
 		    			    ng-repeat="category in ctrl.selectedBenchmark.categories | orderBy:'index'">
 		    			
 		    				<div ng-if="ctrl.benchmarkFilter==='Design'"
+		    					 aid ="BCC-benchmarkDef-catTab-menuItem"
 		    				     sd-drop-down-menu 
 		    				     sda-menu-callback="ctrl.categoryMenuCallback(menuItem,e)"
 		    					 sda-menu-items="ctrl.categoryMenu"
@@ -403,12 +419,15 @@
 		    				     <i class="pi pi-arrow-d"></i>
 		    				</div>
 		    				<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+		    					   aid ="BCC-benchmarkDef-catTab-name" 
 		    					   ng-disabled="ctrl.benchmarkFilter==='Published'"
 		    				       type="text" 
 		    				       size="{{category.name.length}}" 
 		    				       ng-model="category.name" 
-		    				       class="tbl-hdr-col-label"/>
+		    				       class="tbl-hdr-col-label"
+		    				       />
 		    				<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+		    					   aid ="BCC-benchmarkDef-catTab-color" 
 		    					   ng-disabled="ctrl.benchmarkFilter==='Published'"
 		    				       type="color" 
 		    				       ng-model="category.color"/>
@@ -430,6 +449,7 @@
 		    						<div>
 				    					<label>
 				    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+				    							   aid ="BCC-benchmarkDef-catTab-enableBenchmrk" 
 				    						       ng-model="data.elementRef.enableBenchmark" 
 				    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
 				    						       style="top:6px;position:relative;"
@@ -441,6 +461,7 @@
 				    					<label>
 				    						{{ctrl.textMap.expectedDuration}}
 				    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+				    							   aid ="BCC-benchmarkDef-catTab-expectedDuration" 
 				    						       ng-model="data.elementRef.expectedDuration"
 				    						       style="width:35px;"
 				    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
@@ -457,6 +478,7 @@
 		    					<div ng-show="data.elementRef.enableBenchmark">
 		    						<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 		    								ie-select-fix
+		    								aid ="BCC-benchmarkDef-catTab-type" 
 		    						        ng-disabled="ctrl.benchmarkFilter==='Published'"
 		    						        ng-model="catInst.type">
 	    						        <option value="freeform">{{ctrl.textMap.freeForm}}</option>
@@ -466,6 +488,7 @@
 		    						<div ng-show="catInst.type==='freeform'">
 			    						<textarea ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
 			    						          ng-disabled="ctrl.benchmarkFilter==='Published'"
+			    						          aid ="BCC-benchmarkDef-catTab-freeformExprssn" 
 			    						          ng-model="catInst.freeformExpression" 
 			    						          rows="" 
 			    						          cols="">
@@ -476,6 +499,7 @@
 		    						
 			    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
 			    							ie-select-fix
+			    							aid ="BCC-benchmarkDef-catTab-selectTimeOpt"
 			    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
 			    					        ng-options="operand.name for operand in ctrl.attributeOperands track by operand.id"
 			    					        ng-model="catInst.details.condition.lhs">
@@ -484,6 +508,7 @@
 		    						<div>
 				    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
 				    							ie-select-fix
+				    							aid ="BCC-benchmarkDef-catTab-selectConditionOpt"
 				    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
 				    					        ng-model="catInst.details.condition.operator">
 				    						<option value=">">{{ctrl.textMap.laterThan}}</option>
@@ -495,6 +520,7 @@
 				    					
 				    					<select ng-model="catInst.details.condition.rhs"
 				    							ie-select-fix
+				    							aid ="BCC-benchmarkDef-catTab-selectDataOpt"
 				    							ng-disabled="ctrl.benchmarkFilter==='Published'"
 				    					 		ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 				    					        ng-options="item.name group by item.groupName for item in data.modelData track by item.id">
@@ -502,7 +528,8 @@
 
 				    					<label ng-show="catInst.details.condition.rhs.dataType =='struct'" 
 				    					       style="display:inline-table;">
-				    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+				    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+				    							   aid ="BCC-benchmarkDef-catTab-customerDataPath" 
 				    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
 				    						       ng-model="catInst.details.condition.rhs.deref"
 				    						       placeHolder="Data Path"
@@ -518,6 +545,7 @@
 				    				<div>	
 					    				<label style="display:inline-table;">
 					    					<input ng-model="catInst.details.condition.offset.useBusinessDays" 
+					    						   aid ="BCC-benchmarkDef-catTab-busDays" 
 					    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 					    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
 							    				   ng-value="true" 
@@ -529,6 +557,7 @@
 						    				
 					    				<label style="display:inline-table;">
 					    					<input ng-model ="catInst.details.condition.offset.useBusinessDays" 
+					    						   aid ="BCC-benchmarkDef-catTab-calDays"
 					    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 					    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
 					    					       ng-attr-name="{{data.nodePath}}{{$index}}ubd" 
@@ -541,6 +570,7 @@
 					    			<div>
 				    					<label>
 				    						<input ng-model="catInst.details.condition.offset.applyOffset" 
+				    							   aid ="BCC-benchmarkDef-catTab-applyOffset"
 				    							   ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 				    							   ng-disabled="ctrl.benchmarkFilter==='Published'"
 				    							   style="position:relative;top:6px;"
@@ -551,6 +581,7 @@
 			    					<div ng-show="catInst.details.condition.offset.applyOffset===true">
 			    					
 				    					<input  ng-model="catInst.details.condition.offset.amount"
+				    							aid ="BCC-benchmarkDef-catTab-offsetDays"
 				    					        ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 				    					        ng-disabled="ctrl.benchmarkFilter==='Published'" 
 				    					        type="number"/>
@@ -558,6 +589,7 @@
 				    					<label style="display:inline-table;">
 				    						{{ctrl.textMap.daysAt}} 
 				    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+				    							   aid ="BCC-benchmarkDef-catTab-offsetTime"
 				    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
 				    							   type="time" 
 				    							   ng-model="catInst.details.condition.offset.time"/>
@@ -583,6 +615,7 @@
 		<div class="container">
 	    	<label style="display:inline-block;width:100px;">{{ctrl.textMap.name}}</label> 
 	    	<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
+	    		   aid ="BCC-benchmarkDef-genTab-name" 
 	    	       ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'"
 	    	       ng-model="ctrl.selectedBenchmark.name" 
 	    	       type="text">
@@ -591,6 +624,7 @@
     	<div style="position:relative;" class="container">
 	    	<label style="position:absolute;">{{ctrl.textMap.description}}</label>
 	    	<textarea ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'" 
+	    			  aid ="BCC-benchmarkDef-genTab-desc" 
 	    			  style="position:relative;left:104px;width:50%;"
 	    			  ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
 	    			  ng-model="ctrl.selectedBenchmark.description"></textarea>
@@ -599,6 +633,7 @@
     	<div class="container">
 	    	<label style="display:inline-block;width:100px;">{{ctrl.textMap.businessCalendar}}</label>
 	    	<select ng-options="item.path as item.name for item in ctrl.calendars | orderBy:'name'" 
+	    			aid ="BCC-benchmarkDef-genTab-cal" 
 	    			ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 	    			ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'"
 	    	        ng-model="ctrl.selectedBenchmark.businessCalendar">
