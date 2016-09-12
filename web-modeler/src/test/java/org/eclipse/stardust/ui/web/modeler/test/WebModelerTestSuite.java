@@ -79,7 +79,8 @@ import org.eclipse.stardust.ui.web.modeler.xpdl.validation.TestXpdlValidation;
                TestDataMappingConstants.class,
                TestModelLoading.class,
                TestDataPaths.class,
-               TestConfigurationVariables.class
+               TestConfigurationVariables.class,
+               TestCloneModel.class
              })
 public class WebModelerTestSuite
 {

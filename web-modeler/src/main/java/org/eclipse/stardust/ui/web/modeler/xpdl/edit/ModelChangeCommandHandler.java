@@ -11,16 +11,16 @@
 
 package org.eclipse.stardust.ui.web.modeler.xpdl.edit;
 
-import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
-import java.util.Iterator;
-import java.util.UUID;
+import java.util.*;
 
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -28,19 +28,20 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.exception.ModelerErrorClass;
 import org.eclipse.stardust.model.xpdl.builder.exception.ModelerException;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.*;
-import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.SchemaLocatorAdapter;
-import org.eclipse.stardust.ui.web.modeler.edit.model.ModelConversionService;
+import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ModelCommandsHandler;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
-
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
 
 /**
  * @author Shrikant.Gangal
@@ -83,7 +84,7 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
          }
          else if ("model.delete".equals(commandId))
          {
-            return deleteModel(commandId, model, request);
+            return deleteModel(commandId, model, request);            
          }
       }
 
@@ -149,24 +150,61 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
     * @param commandId
     * @param request
     */
-   private ModificationDescriptor cloneModel(String commandId, ModelType model, JsonObject request)
+   private ModificationDescriptor cloneModel(String commandId, ModelType orgModel, JsonObject request)
    {
-      ModelConversionService conversionService = springContext
-            .getBean(ModelConversionService.class);
+      ModelBuilderFacade facade = new ModelBuilderFacade(modelService.getModelManagementStrategy());
+      
+      ModelType model = performFilebasedClone(orgModel);
+            
+      Collection<ModelType> models = facade.getModelManagementStrategy().getModels().values();      
+      List<ModelType> list = new ArrayList<ModelType>(models);
+      
+      model.setId(orgModel.getId() + "CLONE");
+      model.setName("CLONE - " + orgModel.getName());
+      
+      String id = NameIdUtils.createIdFromName(list, model);
+      model.setId(id);
 
-      String targetFormat = extractString(request, "targetFormat");
-      if (isEmpty(targetFormat))
+      //This is a unique model UUID used to identify references
+      String modelUUID = UUID.randomUUID().toString();
+      AttributeUtil.setAttribute(model, "carnot:model:uuid", modelUUID);
+
+      modelService.getModelBuilderFacade().setModified(model, model.getCreated());
+      EObjectUUIDMapper mapper = modelService.uuidMapper();
+      mapper.map(model);
+
+      //Add all model elements to the uuid map and additionally re-generate the carnot:model:uuid attribute.
+      for (Iterator<EObject> i = model.eAllContents(); i.hasNext();)
       {
-         targetFormat = "bpmn2";
+         EObject obj = i.next();
+         if (obj instanceof IExtensibleElement)
+         {
+            IExtensibleElement extObj = (IExtensibleElement) obj;
+            modelUUID = UUID.randomUUID().toString();
+            AttributeUtil.setAttribute(extObj, "carnot:model:uuid", modelUUID);
+         }   
+         mapper.map(obj);
       }
-      EObject modelCopy = conversionService.convertModel(model, targetFormat);
+      
+      model.setId(preventDuplicateFilenames(model.getId()));     
+      modelService.getModelManagementStrategy()
+            .getModels()
+            .put(model.getId(), model);
+      modelService.getModelManagementStrategy().saveModel(model);
+      model.eResource().eAdapters().add(new SchemaLocatorAdapter());
 
       ModificationDescriptor changes = new ModificationDescriptor();
-      ModelBinding<EObject> modelBinding = modelService.currentSession()
-            .modelRepository().getModelBinding(modelCopy);
-      changes.added.add(modelBinding.getMarshaller().toModelJson(modelCopy));
+      changes.added.add(modelService.currentSession().xpdlMarshaller().toModelJson(model));
       return changes;
    }
+
+   private ModelType performFilebasedClone(ModelType orgModel)
+   {
+      byte[] orgModelBytes = XpdlModelIoUtils.saveModel(orgModel);     
+      ModelType model = XpdlModelIoUtils.loadModel(orgModelBytes, modelService.getModelManagementStrategy());
+      return model;
+   }
+   
 
    /**
     * @param commandId
