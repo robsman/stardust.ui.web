@@ -14,7 +14,7 @@ define([ 'bpmn2-modeler/js/modelOperationsHandler', "bpm-modeler/js/m_i18nUtils"
 		menuOption : [ {
 			id : "cloneToXpdl",
 			nodeType : "model",
-			label :  "Clone Model", //m_i18nUtils.getProperty("bpmn2Modeler.outline.cloneModelCmd"),
+			label :  "Clone (BPMN2)", //m_i18nUtils.getProperty("bpmn2Modeler.outline.cloneModelCmd"),
 			provider : handler,
 			handlerMethod: "cloneModel",
 			visibility : "preview"
