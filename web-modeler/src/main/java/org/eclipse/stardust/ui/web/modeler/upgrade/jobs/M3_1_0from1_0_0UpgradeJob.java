@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Version;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.defaults.DefaultElementsInitializer;
@@ -107,10 +108,10 @@ public class M3_1_0from1_0_0UpgradeJob extends UpgradeJob
 
    private void checkModelUUIDs(ModelType model)
    {
-      if (AttributeUtil.getAttribute(model, "carnot:model:uuid") == null)
+      if (AttributeUtil.getAttribute(model, PredefinedConstants.MODEL_ELEMENT_UUID) == null)
       {
          UUID modelUUID = UUID.randomUUID();
-         AttributeUtil.setAttribute(model, "carnot:model:uuid", modelUUID.toString());
+         AttributeUtil.setAttribute(model, PredefinedConstants.MODEL_ELEMENT_UUID, modelUUID.toString());
       }
    }
 }

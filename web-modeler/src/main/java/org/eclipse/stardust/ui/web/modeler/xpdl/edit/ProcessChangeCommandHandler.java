@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -212,14 +213,14 @@ public class ProcessChangeCommandHandler
    private void addUUIDs(ProcessDefinitionType clonedProcess)
    {
       //Setting modelUUID for new cloned process
-      AttributeUtil.setAttribute(clonedProcess, "carnot:model:uuid", UUID
+      AttributeUtil.setAttribute(clonedProcess, PredefinedConstants.MODEL_ELEMENT_UUID, UUID
             .randomUUID().toString());
 
       //Setting modelUUID for all cloned activities
       for (Iterator<ActivityType> i = clonedProcess.getActivity().iterator(); i.hasNext();)
       {
          ActivityType activity = i.next();
-         AttributeUtil.setAttribute(activity, "carnot:model:uuid", UUID
+         AttributeUtil.setAttribute(activity, PredefinedConstants.MODEL_ELEMENT_UUID, UUID
                .randomUUID().toString());
       }
 

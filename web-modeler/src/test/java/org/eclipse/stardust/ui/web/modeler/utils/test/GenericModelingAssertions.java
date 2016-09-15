@@ -17,6 +17,7 @@ import org.w3c.dom.Node;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.connectionhandler.EObjectProxyHandler;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
@@ -345,7 +346,7 @@ public class GenericModelingAssertions
       assertThat(typeDeclaration.getName(), is(not(nullValue())));
       assertThat(typeDeclaration.getId(), is(declID));
       assertThat(typeDeclaration.getName(), is(declName));
-      ExtendedAttributeType extAttribute = ExtendedAttributeUtil.getAttribute(typeDeclaration.getExtendedAttributes(),  "carnot:model:uuid");
+      ExtendedAttributeType extAttribute = ExtendedAttributeUtil.getAttribute(typeDeclaration.getExtendedAttributes(),  PredefinedConstants.MODEL_ELEMENT_UUID);
       assertThat(extAttribute, is(not(nullValue())));
       assertThat(extAttribute.getValue(), is(not(nullValue())));
       return typeDeclaration;

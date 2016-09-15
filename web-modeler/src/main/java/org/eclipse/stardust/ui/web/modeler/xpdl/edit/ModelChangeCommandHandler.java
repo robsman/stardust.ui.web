@@ -105,7 +105,7 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
 
       //This is a unique model UUID used to identify references
       String modelUUID = UUID.randomUUID().toString();
-      AttributeUtil.setAttribute(model, "carnot:model:uuid", modelUUID);
+      AttributeUtil.setAttribute(model, PredefinedConstants.MODEL_ELEMENT_UUID, modelUUID);
 
       modelService.getModelBuilderFacade().setModified(model, model.getCreated());
       EObjectUUIDMapper mapper = modelService.uuidMapper();
@@ -167,7 +167,7 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
 
       //This is a unique model UUID used to identify references
       String modelUUID = UUID.randomUUID().toString();
-      AttributeUtil.setAttribute(model, "carnot:model:uuid", modelUUID);
+      AttributeUtil.setAttribute(model, PredefinedConstants.MODEL_ELEMENT_UUID, modelUUID);
 
       modelService.getModelBuilderFacade().setModified(model, model.getCreated());
       EObjectUUIDMapper mapper = modelService.uuidMapper();
@@ -181,7 +181,7 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
          {
             IExtensibleElement extObj = (IExtensibleElement) obj;
             modelUUID = UUID.randomUUID().toString();
-            AttributeUtil.setAttribute(extObj, "carnot:model:uuid", modelUUID);
+            AttributeUtil.setAttribute(extObj, PredefinedConstants.MODEL_ELEMENT_UUID, modelUUID);
          }   
          mapper.map(obj);
       }

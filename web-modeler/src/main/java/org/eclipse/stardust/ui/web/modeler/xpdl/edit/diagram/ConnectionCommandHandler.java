@@ -421,7 +421,7 @@ public class ConnectionCommandHandler
    {
       DataMappingType dataMapping = createDataMapping(target, request);
       String uuid = modelService().uuidMapper().map(dataMapping);
-      AttributeUtil.setAttribute(dataMapping, "carnot:model:uuid", uuid);      
+      AttributeUtil.setAttribute(dataMapping, PredefinedConstants.MODEL_ELEMENT_UUID, uuid);      
    }
 
    @OnCommand(commandId = "datamapping.delete")
