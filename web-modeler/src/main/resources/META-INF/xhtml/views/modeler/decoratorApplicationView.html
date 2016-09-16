@@ -156,13 +156,13 @@
                               </div>
                               <div  ng-if="ap.primitiveDataType =='int'? true : false" ng-show="ap.primitiveDataType =='int'? true : false">
                                  <input name="intField" class="rightAligned" type="text"
-                                    sd-validate="integer" ng-model-onblur
+                                    ng-model-onblur
                                     ng-pattern="/^(\+|-)?([\d]{0,9})$/"
                                     ng-model="ap.attributes['carnot:engine:defaultValue']"
                                     ng-change="overlayPanel.valueChanged(ap)"
                                     maxlength="10" />
                                  <div
-                                    ng-show="subForm.intField.$error.number || subForm.intField.$error.validate"
+                                    ng-show="subForm.intField.$error.number || subForm.intField.$error.pattern"
                                     class="msg-error">{{i18n('html5-common.converter-number-error')}}
                                  </div>
                               </div> 
@@ -174,18 +174,19 @@
                                     ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
                                     ng-change="overlayPanel.valueChanged(ap)" />
                                  <div
-                                    ng-show="subForm.doubleField.$error.number || subForm.doubleField.$error.validate"
+                                    ng-show="subForm.doubleField.$error.number || subForm.doubleField.$error.pattern"
                                     class="msg-error">{{i18n('html5-common.converter-number-error')}}
                                  </div>
                               </div>
                               <div ng-if=" ap.primitiveDataType =='long'? true : false" ng-show=" ap.primitiveDataType =='long'? true : false">
                                  <input name="longField" class="rightAligned" type="text"
-                                    sd-validate="long" ng-model-onblur
+                                    ng-model-onblur
                                     ng-model="ap.attributes['carnot:engine:defaultValue']"
+                                    ng-pattern="/^(\+|-)?([\d]{0,18})$/"
                                     maxlength="19"
                                     ng-change="overlayPanel.valueChanged(ap)" />
                                  <div
-                                    ng-show="subForm.longField.$error.number || subForm.longField.$error.validate"
+                                    ng-show="subForm.longField.$error.number || subForm.longField.$error.pattern"
                                     class="msg-error">{{i18n('html5-common.converter-number-error')}}
                                  </div>
                               </div>
